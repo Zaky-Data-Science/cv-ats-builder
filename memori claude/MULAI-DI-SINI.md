@@ -36,6 +36,8 @@ Politeknik Negeri Samarinda, oleh **Muhammad Agus Riyadh Zaky**.
 | Folder kode | `D:\Website CV` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> (privat, branch `main`) |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
+| Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
+| Project Google Cloud | `CV ATS Builder` (id: `bold-upgrade-507408-a0`) |
 
 **Hasil uji terakhir di production: 10 dari 10 poin lulus, 0 galat
 JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6.
@@ -116,6 +118,8 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/guard.ts` | Pemeriksaan sesi dan kepemilikan data |
 | `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau **dan** cetak |
 | `src/components/editor/ResumeEditor.tsx` | Editor, simpan otomatis, tata letak responsif |
+| `src/app/privasi/` dan `src/app/ketentuan/` | Kebijakan privasi dan ketentuan layanan - disyaratkan Google untuk mempublikasikan aplikasi OAuth |
+| `src/middleware.ts` | Pengalihan awal halaman terlindungi (hanya kenyamanan, bukan lapisan keamanan) |
 | `docs/` | Panduan pengguna, dokumentasi teknis, panduan deploy |
 
 ---
@@ -163,16 +167,7 @@ Berguna bila gejala serupa muncul lagi.
 
 Daftar ini sengaja jujur - berguna sebagai bab saran pengembangan lanjutan.
 
-1. **Login Google belum dinyalakan - terhalang 2FA.** Sejak 16 Mei 2026
-   Google Cloud mewajibkan verifikasi 2 langkah, dan akun
-   `riyadhzaky05@gmail.com` belum mengaktifkannya, sehingga Google Cloud
-   Console menolak akses sama sekali ("Google Cloud access blocked").
-   Urutannya: aktifkan 2FA di <https://myaccount.google.com/signinoptions/twosv>,
-   tunggu beberapa menit, baru ikuti `docs/deploy.md` bagian 7.
-   Kode aplikasinya sendiri sudah siap - tombol "Masuk dengan Google" muncul
-   otomatis begitu `AUTH_GOOGLE_ID` dan `AUTH_GOOGLE_SECRET` diisi di Vercel,
-   tanpa perlu mengubah kode apa pun.
-2. **Repositori masih privat.** Untuk menjadikannya publik (mis. agar
+1. **Repositori masih privat.** Untuk menjadikannya publik (mis. agar
    tautannya dapat dicantumkan di jurnal): buka Settings repositori di GitHub,
    gulir ke bawah, pilih "Change repository visibility". Perlu diingat,
    menjadikan repo publik tidak dapat ditarik kembali sepenuhnya karena

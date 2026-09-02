@@ -131,6 +131,12 @@ Akun yang dihasilkan: `demo@atscv.local` / `demo12345`.
 
 ## 7. Menyalakan login Google (opsional)
 
+> **Sudah dikerjakan.** Login Google pada pemasangan ini sudah aktif dan
+> berstatus *In production* pada project Google Cloud `CV ATS Builder`
+> (id `bold-upgrade-507408-a0`). Langkah di bawah hanya diperlukan bila
+> aplikasi dipasang ulang di akun lain, atau bila domainnya berganti -
+> dalam hal itu tambahkan alamat callback domain baru pada OAuth Client ID.
+
 1. Buka <https://console.cloud.google.com/>, buat sebuah project.
 2. **APIs & Services → OAuth consent screen**: pilih External, isi nama
    aplikasi dan email dukungan.

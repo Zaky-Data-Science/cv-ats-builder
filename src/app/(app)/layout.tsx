@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui";
+import { SITE } from "@/lib/site";
 
 /**
  * Kerangka halaman yang membutuhkan login.
@@ -32,7 +33,7 @@ export default async function AppLayout({
               CV
             </span>
             <span className="hidden text-sm font-semibold text-ink-900 sm:inline">
-              Pembuat CV ATS-Friendly
+              {SITE.name}
             </span>
           </Link>
 

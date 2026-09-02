@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SITE } from "@/lib/site";
 
 export default function AuthLayout({
   children,
@@ -14,7 +15,7 @@ export default function AuthLayout({
               CV
             </span>
             <span className="text-sm font-semibold text-ink-900">
-              Pembuat CV ATS-Friendly
+              {SITE.name}
             </span>
           </Link>
         </div>

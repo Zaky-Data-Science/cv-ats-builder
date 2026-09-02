@@ -135,15 +135,68 @@ kerja).
 
 ---
 
+## Sesi 3 - 2 September 2026: GitHub, login Google, dan dokumen hukum
+
+### Yang dikerjakan
+
+1. **Kode dinaikkan ke GitHub.** Repositori
+   `Zaky-Data-Science/cv-ats-builder` (privat), branch `main`, disambungkan
+   ke Vercel sehingga setiap `git push` memicu deploy otomatis. Terverifikasi
+   dengan satu push nyata yang menghasilkan deployment berstatus READY.
+2. **Halaman kebijakan privasi dan ketentuan layanan.** Diperlukan Google
+   untuk mempublikasikan aplikasi OAuth, tetapi memang sudah seharusnya ada
+   mengingat aplikasi ini menyimpan isi CV lengkap dengan riwayat pendidikan
+   dan pekerjaan penggunanya.
+3. **Login Google diaktifkan sepenuhnya.** Project Google Cloud dibuat,
+   layar persetujuan dikonfigurasi, OAuth Client ID dibuat dengan dua alamat
+   callback (production dan lokal), lalu aplikasi dipublikasikan ke status
+   **In production** sehingga dapat dipakai akun Google siapa pun.
+4. **Middleware pengalihan awal.** Halaman terlindungi kini membalas 307,
+   bukan 200 dengan kerangka pemuatan.
+5. **Nama aplikasi diseragamkan** menjadi "CV ATS Builder" di seluruh
+   antarmuka.
+
+### Hambatan yang ditemui
+
+| Hambatan | Penyelesaian |
+|---|---|
+| Token Vercel pertama ternyata hanya berizin baca - tidak dapat membuat project | Diganti dengan Access Token berizin penuh |
+| Pembuatan basis data lewat API Vercel sudah ditutup (`This feature is no longer available`) | Disiapkan lewat integrasi Storage di dashboard |
+| Google Cloud memblokir akses karena akun belum memakai verifikasi 2 langkah | Pemilik akun mengaktifkan 2FA terlebih dahulu |
+| Tombol publikasi OAuth terkunci karena tautan privasi dan ketentuan belum ada | Dibuatkan halamannya di dalam aplikasi |
+| Migrasi lewat koneksi pooled berisiko menggantung | Konfigurasi CLI memilih koneksi langsung bila tersedia |
+
+### Hasil pengujian
+
+| Yang diuji | Hasil |
+|---|---|
+| Halaman publik di production | 200 seluruhnya |
+| Halaman terlindungi tanpa sesi | 307 ke `/login` |
+| Header keamanan | lengkap; `X-Powered-By` tidak ada |
+| Pendaftaran email di production | 201, dan 409 saat email diulang |
+| Alur OAuth Google dari awal sampai akhir | berhasil masuk ke dashboard |
+| Scope yang diminta | hanya `openid profile email` |
+| Baris basis data setelah login Google | `passwordHash` NULL, `emailVerified` terisi, satu baris tautan provider |
+| Rahasia yang ikut ter-push ke GitHub | tidak ada (93 berkas diperiksa) |
+
+### Catatan keamanan
+
+Kunci `AUTH_SECRET` yang sempat ditampilkan pada percakapan pengembangan
+telah dirotasi, dan salinan environment production dihapus dari penyimpanan
+sementara.
+
+---
+
 ## Rangkuman angka
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma) | 60+ |
-| Baris kode | ~11.000 |
+| Berkas kode (TypeScript, TSX, Prisma) | 68 |
+| Baris kode | ~12.000 |
 | Tabel basis data | 17 |
-| Route aplikasi | 27 |
+| Route aplikasi | 29 |
 | Dimensi penilaian ATS | 5 |
 | Bagian CV yang dapat diisi | 11 |
 | Format unduhan | 4 |
 | Template | 3 |
+| Commit | 10 |
