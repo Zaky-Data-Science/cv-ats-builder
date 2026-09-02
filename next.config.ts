@@ -91,6 +91,13 @@ const nextConfig: NextConfig = {
   // beserta versinya.
   poweredByHeader: false,
 
+  // Mematikan lencana bulat "N" di pojok kiri bawah saat mode pengembangan.
+  // Lencana itu milik Next.js, bukan bagian dari aplikasi, dan memang tidak
+  // pernah ikut terbit ke produksi - tetapi keberadaannya membuat tampilan
+  // lokal berbeda dari Vercel, sehingga menyulitkan saat keduanya dibandingkan
+  // berdampingan untuk memastikan tidak ada fitur yang tertinggal.
+  devIndicators: false,
+
   async headers() {
     return [
       {

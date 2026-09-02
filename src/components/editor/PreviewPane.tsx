@@ -369,7 +369,7 @@ export function PreviewPane({
                 }}
               >
                 <div
-                  className="relative overflow-hidden bg-white shadow-lg"
+                  className="paper-sheet relative overflow-hidden shadow-lg"
                   style={{
                     width: pageWidth,
                     height: pageHeight,

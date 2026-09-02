@@ -75,7 +75,20 @@ export default async function RootLayout({
   const dictionary = getDictionary(locale);
 
   return (
-    <html lang={LOCALE_HTML_LANG[locale]} className={`${inter.variable} h-full`}>
+    <html
+      lang={LOCALE_HTML_LANG[locale]}
+      className={`${inter.variable} h-full`}
+      /*
+        Skrip tema di bawah menulis atribut data-theme sebelum React hidrasi,
+        sehingga DOM yang ditemukan React berbeda dari HTML yang dikirim
+        server - dan React melaporkannya sebagai ketidakcocokan hidrasi.
+        Perbedaan itu memang disengaja dan hanya pada satu atribut di elemen
+        ini; tanpa penulisan lebih awal itu, pengguna mode gelap akan melihat
+        kilatan putih pada setiap perpindahan halaman. Peringatannya dimatikan
+        khusus untuk elemen ini saja, bukan untuk seluruh pohon.
+      */
+      suppressHydrationWarning
+    >
       <head>
         {/*
           Menyetel mode tampilan sebelum halaman digambar. Tanpa ini pengguna

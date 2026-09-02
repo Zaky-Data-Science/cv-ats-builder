@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -18,6 +19,8 @@ import {
   ScanSearch,
   Settings2,
   Sparkles,
+  ExternalLink,
+  TriangleAlert,
 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
 import { useI18n } from "@/components/i18n";
@@ -31,6 +34,15 @@ import {
   PAPER_SIZES,
   RECOMMENDED_PAPER,
 } from "@/lib/resume/paper";
+import {
+  downloadDocx,
+  downloadJson,
+  downloadText,
+} from "@/lib/resume/download";
+import {
+  commitGuestResume,
+  stashForImport,
+} from "@/lib/resume/guest";
 import { sampleResume } from "@/lib/resume/sample";
 import { SECTION_UI } from "@/lib/resume/section-ui";
 import { sectionCount } from "@/lib/resume/sections";
@@ -58,8 +70,24 @@ type Pane = "form" | "preview" | "ats";
 /** Jeda sebelum perubahan dikirim ke server. */
 const AUTOSAVE_DELAY_MS = 800;
 
-export function ResumeEditor({ initial }: { initial: ResumeData }) {
+export function ResumeEditor({
+  initial,
+  guest = false,
+}: {
+  initial: ResumeData;
+  /**
+   * Mode tanpa akun.
+   *
+   * Yang berubah hanya tiga hal - ke mana CV disimpan, dari mana berkas
+   * unduhan dibangun, dan ke mana tombol kembali menuju. Seluruh sisanya
+   * (form, pratinjau, penilaian ATS) persis sama, karena memang tidak ada
+   * alasan membedakannya. Menyalin komponen ini menjadi versi tamu tersendiri
+   * akan membuat setiap perbaikan berikutnya harus dikerjakan dua kali.
+   */
+  guest?: boolean;
+}) {
   const { locale, t } = useI18n();
+  const router = useRouter();
   const [data, setData] = React.useState<ResumeData>(initial);
   const [highlight, setHighlight] = React.useState<string | null>(null);
   const [saveState, setSaveState] = React.useState<SaveState>("idle");
@@ -89,6 +117,22 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   const save = React.useCallback(async (): Promise<boolean> => {
     setSaveState("saving");
     setErrorText(null);
+
+    // Mode tamu tidak pernah menyentuh jaringan: CV-nya ditulis ke
+    // penyimpanan peramban dan selesai di situ.
+    if (guest) {
+      const stored = commitGuestResume(dataRef.current);
+      if (!stored) {
+        setErrorText(t.guest.saveFailed);
+        setSaveState("error");
+        return false;
+      }
+      dirtyRef.current = false;
+      setSavedAt(new Date());
+      setSaveState("saved");
+      return true;
+    }
+
     try {
       const response = await fetch(`/api/resumes/${initial.id}`, {
         method: "PATCH",
@@ -112,7 +156,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
       setSaveState("error");
       return false;
     }
-  }, [initial.id, t]);
+  }, [initial.id, guest, t]);
 
   const update = React.useCallback((patch: Partial<ResumeData>) => {
     dirtyRef.current = true;
@@ -162,6 +206,18 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   async function download(path: string) {
     const ok = await save();
     if (!ok) return;
+
+    // Tanpa akun tidak ada CV di server yang bisa diminta, jadi berkasnya
+    // dibangun di peramban dari data yang sudah ada di layar. Ketiganya
+    // memakai fungsi yang sama dengan yang dipakai server, sehingga isinya
+    // identik dengan unduhan dari akun.
+    if (guest) {
+      if (path === "json") downloadJson(dataRef.current);
+      else if (path === "txt") downloadText(dataRef.current);
+      else if (path === "docx") await downloadDocx(dataRef.current);
+      return;
+    }
+
     const anchor = document.createElement("a");
     anchor.href = `/api/resumes/${initial.id}/export/${path}`;
     anchor.rel = "noopener";
@@ -171,24 +227,77 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   }
 
   /**
-   * Mencetak lewat iframe tersembunyi yang memuat halaman /print.
-   * Halaman itu hanya berisi dokumen CV, sehingga hasil PDF tidak
-   * mengandung sisa antarmuka aplikasi dan teksnya tetap dapat diseleksi.
+   * Mencetak lewat iframe yang memuat halaman /print.
+   *
+   * Halaman itu hanya berisi dokumen CV, sehingga hasil PDF tidak mengandung
+   * sisa antarmuka aplikasi dan teksnya tetap dapat diseleksi.
+   *
+   * Bingkainya disembunyikan dengan **menggesernya ke luar layar**, bukan
+   * dengan `width:0;height:0;visibility:hidden` seperti sebelumnya. Cara lama
+   * itu sumber cacat yang sulit dilacak: sebagian versi Chrome menolak
+   * mencetak bingkai yang tak berukuran atau tersembunyi, lalu diam-diam
+   * mencetak dokumen induknya - yaitu halaman editor. Yang keluar akhirnya
+   * bukan CV, melainkan tata letak dua panel editor tanpa isi yang jelas.
+   *
+   * Bingkainya kini berukuran satu halaman penuh dan tetap terlihat menurut
+   * peramban, hanya berada di luar bidang pandang.
    */
   async function printPdf() {
     const ok = await save();
     if (!ok) return;
 
+    // Halaman cetak tamu membaca CV dari penyimpanan peramban; yang untuk
+    // akun membacanya dari basis data.
+    const url = guest ? "/cetak" : `/resume/${initial.id}/print`;
+
     const frame = document.createElement("iframe");
+    frame.setAttribute("aria-hidden", "true");
+    frame.setAttribute("tabindex", "-1");
+    frame.title = t.editor.actionPdfLabel;
     frame.style.cssText =
-      "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
-    frame.src = `/resume/${initial.id}/print`;
+      "position:fixed;left:-10000px;top:0;width:210mm;height:297mm;border:0;";
+    frame.src = url;
+
     frame.onload = () => {
-      frame.contentWindow?.focus();
-      frame.contentWindow?.print();
-      setTimeout(() => frame.remove(), 60_000);
+      const win = frame.contentWindow;
+      if (!win) {
+        window.open(url, "_blank", "noopener");
+        return;
+      }
+
+      // Satu bingkai animasi diberikan lebih dulu supaya gaya dan huruf
+      // web selesai diterapkan. Memanggil print() pada bingkai yang baru
+      // saja selesai memuat kadang menangkap keadaan sebelum huruf terpasang,
+      // dan hasilnya PDF berhuruf pengganti.
+      requestAnimationFrame(() => {
+        try {
+          win.focus();
+          win.print();
+        } catch {
+          // Bila peramban menolak, halaman cetaknya dibuka apa adanya -
+          // pengguna tetap dapat menekan Ctrl+P di sana.
+          window.open(url, "_blank", "noopener");
+        }
+        setTimeout(() => frame.remove(), 60_000);
+      });
     };
+
     document.body.appendChild(frame);
+  }
+
+  /**
+   * Membuka halaman cetak apa adanya, di tab yang sama.
+   *
+   * Jalan cadangan bila dialog cetak dari bingkai tersembunyi tidak muncul -
+   * hal yang bergantung pada perilaku peramban dan tidak dapat dipastikan dari
+   * sisi aplikasi. Di sana tersedia tombol cetak dan tautan kembali, sehingga
+   * pengguna tidak pernah kehabisan jalan. Tab yang sama, bukan tab baru,
+   * karena pop-up sesudah `await` kerap diblokir peramban.
+   */
+  async function openPrintPage() {
+    const ok = await save();
+    if (!ok) return;
+    router.push(guest ? "/cetak" : `/resume/${initial.id}/print`);
   }
 
   function toggleSection(key: string) {
@@ -210,6 +319,20 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         .querySelector(`#form-anchor-${key}`)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  }
+
+  /**
+   * Menitipkan CV tamu lalu mengantar pengguna ke halaman masuk.
+   *
+   * CV-nya sengaja tidak dikirim ke server di sini. Yang terjadi hanyalah
+   * menyalinnya ke satu kunci titipan di peramban; dashboard nanti menawarkan
+   * mengimpornya setelah pengguna benar-benar masuk. Dengan begitu tidak ada
+   * data pribadi yang menyeberang sebelum ada akun yang memilikinya.
+   */
+  function moveToAccount() {
+    commitGuestResume(dataRef.current);
+    stashForImport(dataRef.current);
+    router.push("/login");
   }
 
   function applySample() {
@@ -238,6 +361,12 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         label={t.editor.actionPdfLabel}
         hint={t.editor.actionPdfHint}
         onClick={printPdf}
+      />
+      <ActionItem
+        icon={ExternalLink}
+        label={t.print.openPrintPage}
+        hint={t.print.openPrintPageHint}
+        onClick={() => openPrintPage()}
       />
       <ActionItem
         icon={FileDown}
@@ -270,10 +399,41 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         {/* ============================================================ */}
         {/* Bilah alat                                                    */}
         {/* ============================================================ */}
+        {/* Keterangan mode tamu. Ditempatkan paling atas dan tidak dapat
+            ditutup: konsekuensi "datanya bisa hilang" harus terlihat selama
+            pengguna masih mengetik, bukan sekali lalu lenyap. */}
+        {guest && (
+          <div className="shrink-0 border-b border-ink-200 bg-ink-100 px-3 py-2.5 sm:px-4">
+            <div className="flex flex-wrap items-start gap-x-3 gap-y-2">
+              <TriangleAlert
+                size={15}
+                className="mt-0.5 shrink-0 text-warn"
+                aria-hidden
+              />
+              <p className="min-w-0 flex-1 text-[11px] leading-relaxed text-ink-600">
+                <strong className="text-ink-900">{t.guest.bannerTitle}</strong>{" "}
+                {t.guest.bannerBody}
+              </p>
+              <Button
+                size="sm"
+                className="press shrink-0"
+                onClick={moveToAccount}
+                title={t.guest.moveHint}
+              >
+                {t.guest.moveToAccount}
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="shrink-0 border-b border-ink-200 bg-white px-3 py-2 sm:px-4 sm:py-2.5">
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/dashboard" className="shrink-0">
-              <Button variant="ghost" size="sm" aria-label={t.editor.backAria}>
+            <Link href={guest ? "/" : "/dashboard"} className="shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label={guest ? t.nav.backHome : t.editor.backAria}
+              >
                 <ArrowLeft size={16} />
               </Button>
             </Link>
@@ -286,7 +446,13 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
             />
 
             <div className="hidden lg:block">
-              <SaveIndicator state={saveState} savedAt={savedAt} t={t} locale={locale} />
+              <SaveIndicator
+                state={saveState}
+                savedAt={savedAt}
+                t={t}
+                locale={locale}
+                guest={guest}
+              />
             </div>
 
             {/* Aksi lengkap di layar lebar */}
@@ -957,11 +1123,13 @@ function SaveIndicator({
   savedAt,
   t,
   locale,
+  guest = false,
 }: {
   state: SaveState;
   savedAt: Date | null;
   t: Dictionary;
   locale: Locale;
+  guest?: boolean;
 }) {
   const base = "flex items-center gap-1.5 text-[11px]";
 
@@ -996,7 +1164,7 @@ function SaveIndicator({
     return (
       <span className={cn(base, "text-good")} role="status">
         <Check size={13} />
-        {t.editor.saveSaved}{" "}
+        {guest ? t.guest.savedLocal : t.editor.saveSaved}{" "}
         {savedAt.toLocaleTimeString(locale === "en" ? "en-GB" : "id-ID", {
           hour: "2-digit",
           minute: "2-digit",

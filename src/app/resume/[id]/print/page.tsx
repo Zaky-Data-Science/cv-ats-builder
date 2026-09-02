@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { PrintToolbar } from "@/components/preview/PrintToolbar";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { paperSpec } from "@/lib/resume/paper";
 import { resumeMargins } from "@/lib/resume/templates";
@@ -38,7 +39,11 @@ export default async function PrintResumePage({
   const margins = resumeMargins(resume);
 
   return (
-    <div className="flex min-h-full justify-center bg-ink-200 print:block print:bg-white">
+    <div className="flex min-h-full justify-center bg-ink-200 pt-14 print:block print:bg-white print:pt-0">
+      {/* Bilah alat agar halaman ini dapat dipakai berdiri sendiri - tidak
+          ikut tercetak. */}
+      <PrintToolbar backHref={`/resume/${id}/edit`} />
+
       {/*
         Ukuran DAN margin kertas disampaikan lewat aturan @page, karena at-rule
         tidak dapat membaca custom property CSS.

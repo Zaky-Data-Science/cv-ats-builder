@@ -399,6 +399,19 @@ body {
   box-sizing: border-box;
 }
 
+/*
+  Lembar kertas pada pratinjau per halaman.
+
+  Warnanya ditulis literal, sama seperti .paper - **bukan** memakai kelas
+  `bg-white`. Token `--color-white` sengaja dibalik menjadi permukaan gelap di
+  mode gelap, sehingga pita margin di atas dan bawah isi akan menghitam dan
+  terbaca seperti kertas yang terpotong hitam. Yang benar: seluruh lembar
+  berwarna kertas, dan margin adalah ruang kosong pada kertas itu.
+*/
+.paper-sheet {
+  background: #ffffff;
+}
+
 /* Penanda batas halaman pada pratinjau layar (tidak ikut tercetak). */
 .page-guide {
   position: absolute;
