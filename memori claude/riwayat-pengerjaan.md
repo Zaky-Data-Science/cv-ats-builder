@@ -382,6 +382,19 @@ sama sekali.
 - Butir terakhir jejak navigasi sengaja bukan tautan dan diberi
   `aria-current="page"`.
 
+### Diagram alur di halaman web diluruskan ke tengah
+
+Versi HTML diagram sempat menggeser simpul jalur kiri dan kanan ke tepi,
+mengikuti data jalur yang sama dengan versi gambarnya. Itu keliru: di versi
+gambar, panah berbelok benar-benar digambar menuju kotak di sampingnya,
+sedangkan di HTML penghubungnya hanya satu garis tegak di tengah - sehingga
+kotak yang tergeser membuat garisnya menggantung tanpa menyambung ke apa pun.
+
+Versi HTML kini satu kolom lurus di tengah dengan lebar kartu seragam.
+Percabangannya tidak hilang: labelnya tetap tampil sebagai lencana di bawah
+simpul keputusan. Data jalurnya tetap disimpan dan tetap dipakai versi
+gambarnya, tempat jalur itu memang bermakna.
+
 ### Hasil pengujian
 
 | Berkas uji | Pemeriksaan | Hasil |

@@ -21,6 +21,10 @@ import { cn } from "@/lib/utils";
  * jenisnya yang tertulis - warna dan bentuk saja tidak cukup, sebab keduanya
  * hilang bagi pembaca layar dan bagi pembaca yang tidak membedakan warna.
  *
+ * Tata letaknya satu kolom lurus di tengah. Jalur kiri dan kanan pada data
+ * diagram sengaja diabaikan di sini - lihat alasannya di komentar dekat
+ * penempatan kotak.
+ *
  * Versi gambarnya dibangkitkan dari data yang sama lewat `npm run diagram`,
  * sehingga keduanya tidak mungkin berbeda isi.
  */
@@ -69,21 +73,26 @@ export function DiagramView({
               </div>
             )}
 
-            <div
-              className={cn(
-                "flex",
-                node.lane === -1
-                  ? "justify-start"
-                  : node.lane === 1
-                    ? "justify-end"
-                    : "justify-center",
-              )}
-            >
+            {/*
+              Seluruh simpul diletakkan di tengah dengan lebar yang sama.
+
+              Data diagramnya memang menyimpan jalur kiri dan kanan, tetapi
+              jalur itu hanya bermakna pada versi gambarnya, di mana panah
+              berbelok benar-benar digambar menuju kotak di sampingnya. Di
+              sini panahnya berupa satu garis tegak di tengah - kotak yang
+              digeser ke samping membuat garis itu menggantung tanpa
+              menyambung ke apa pun, dan justru terbaca sebagai cacat tata
+              letak.
+
+              Percabangannya tidak hilang: labelnya tetap tampil sebagai
+              lencana di bawah simpul keputusan, dan urutan bacaannya memang
+              lurus - persis seperti yang dibacakan pembaca layar.
+            */}
+            <div className="flex justify-center">
               <div
                 className={cn(
                   "w-full max-w-xl rounded-xl border-2 px-4 py-3",
                   KIND_STYLE[node.kind],
-                  node.lane !== 0 && "max-w-md",
                 )}
               >
                 <span
