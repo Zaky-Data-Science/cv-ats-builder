@@ -1,0 +1,204 @@
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { Button, Callout, Card, Field, Input, Spinner } from "@/components/ui";
+
+export function SettingsClient({
+  email,
+  initialName,
+  hasPassword,
+  resumeCount,
+}: {
+  email: string;
+  initialName: string;
+  hasPassword: boolean;
+  resumeCount: number;
+}) {
+  const router = useRouter();
+  const [name, setName] = React.useState(initialName);
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [busy, setBusy] = React.useState<string | null>(null);
+  const [notice, setNotice] = React.useState<{
+    tone: "good" | "bad";
+    text: string;
+  } | null>(null);
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
+
+  async function submit(key: string, body: Record<string, unknown>) {
+    setBusy(key);
+    setNotice(null);
+    try {
+      const response = await fetch("/api/account", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setNotice({ tone: "bad", text: payload.error ?? "Gagal menyimpan." });
+        return false;
+      }
+      setNotice({ tone: "good", text: "Perubahan tersimpan." });
+      router.refresh();
+      return true;
+    } catch {
+      setNotice({ tone: "bad", text: "Tidak dapat terhubung ke server." });
+      return false;
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function deleteAccount() {
+    setBusy("delete");
+    try {
+      const response = await fetch("/api/account", { method: "DELETE" });
+      if (!response.ok) {
+        setNotice({ tone: "bad", text: "Gagal menghapus akun." });
+        setBusy(null);
+        return;
+      }
+      await signOut({ callbackUrl: "/" });
+    } catch {
+      setNotice({ tone: "bad", text: "Tidak dapat terhubung ke server." });
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-2xl space-y-5 px-5 py-8">
+      <div>
+        <h1 className="text-2xl font-bold text-ink-900">Pengaturan Akun</h1>
+        <p className="mt-1 text-sm text-ink-600">
+          {resumeCount} CV tersimpan di akun ini.
+        </p>
+      </div>
+
+      {notice && <Callout tone={notice.tone}>{notice.text}</Callout>}
+
+      {/* Identitas ------------------------------------------------------- */}
+      <Card className="p-5">
+        <h2 className="text-sm font-semibold text-ink-900">Identitas</h2>
+
+        <div className="mt-4 space-y-4">
+          <Field label="Email" hint="Alamat email tidak dapat diubah.">
+            <Input value={email} disabled />
+          </Field>
+
+          <Field label="Nama Tampilan">
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </Field>
+
+          <Button
+            onClick={() => submit("name", { name })}
+            disabled={busy === "name" || !name.trim() || name === initialName}
+          >
+            {busy === "name" && <Spinner />}
+            Simpan Nama
+          </Button>
+        </div>
+      </Card>
+
+      {/* Kata sandi ------------------------------------------------------ */}
+      <Card className="p-5">
+        <h2 className="text-sm font-semibold text-ink-900">
+          {hasPassword ? "Ubah Kata Sandi" : "Buat Kata Sandi"}
+        </h2>
+        {!hasPassword && (
+          <p className="mt-1 text-xs leading-relaxed text-ink-500">
+            Akun ini dibuat lewat Google dan belum memiliki kata sandi. Dengan
+            membuatnya, Anda dapat masuk lewat email dan kata sandi juga.
+          </p>
+        )}
+
+        <div className="mt-4 space-y-4">
+          {hasPassword && (
+            <Field label="Kata Sandi Saat Ini">
+              <Input
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+            </Field>
+          )}
+
+          <Field label="Kata Sandi Baru" hint="Minimal 8 karakter.">
+            <Input
+              type="password"
+              autoComplete="new-password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </Field>
+
+          <Button
+            onClick={async () => {
+              const ok = await submit("password", {
+                currentPassword,
+                newPassword,
+              });
+              if (ok) {
+                setCurrentPassword("");
+                setNewPassword("");
+              }
+            }}
+            disabled={busy === "password" || newPassword.length < 8}
+          >
+            {busy === "password" && <Spinner />}
+            Simpan Kata Sandi
+          </Button>
+        </div>
+      </Card>
+
+      {/* Hapus akun ------------------------------------------------------ */}
+      <Card className="border-red-200 p-5">
+        <h2 className="text-sm font-semibold text-bad">Hapus Akun</h2>
+        <p className="mt-1 text-xs leading-relaxed text-ink-600">
+          Seluruh CV beserta isinya akan terhapus permanen dan tidak dapat
+          dikembalikan. Sebaiknya unduh cadangan JSON setiap CV terlebih dahulu.
+        </p>
+
+        {confirmDelete ? (
+          <div className="mt-4 space-y-3">
+            <Field
+              label='Ketik "HAPUS AKUN" untuk mengonfirmasi'
+              hint="Langkah ini disengaja dibuat merepotkan agar tidak terjadi karena salah tekan."
+            >
+              <Input
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="HAPUS AKUN"
+              />
+            </Field>
+            <div className="flex gap-2">
+              <Button
+                variant="danger"
+                onClick={deleteAccount}
+                disabled={deleteConfirmText !== "HAPUS AKUN" || busy === "delete"}
+              >
+                {busy === "delete" && <Spinner />}
+                Hapus akun saya
+              </Button>
+              <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
+                Batal
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            variant="danger"
+            className="mt-4"
+            onClick={() => setConfirmDelete(true)}
+          >
+            Saya ingin menghapus akun
+          </Button>
+        )}
+      </Card>
+    </div>
+  );
+}

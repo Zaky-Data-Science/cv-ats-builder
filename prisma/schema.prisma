@@ -1,0 +1,347 @@
+// ============================================================================
+//  ATS-Friendly CV Builder - Skema Basis Data
+//  DBMS   : PostgreSQL (Neon)
+//  ORM    : Prisma 7
+//
+//  Catatan desain:
+//  - Semua tanggal CV disimpan sebagai String "YYYY-MM" (presisi bulan).
+//    Alasan: CV hanya butuh bulan+tahun, cocok dengan <input type="month">,
+//    dan bebas dari bug zona waktu yang muncul jika memakai DateTime.
+//  - Kolom teks memakai default "" (bukan NULL) agar penanganan form
+//    di frontend konsisten dan tidak perlu null-check di mana-mana.
+//  - Seluruh tabel anak memakai onDelete: Cascade dari Resume.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------------------------------
+// ENUM
+// ----------------------------------------------------------------------------
+
+enum TemplateId {
+  CLASSIC
+  MODERN
+  COMPACT
+}
+
+enum ResumeLanguage {
+  ID
+  EN
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+  VOLUNTEER
+}
+
+enum LanguageProficiency {
+  NATIVE
+  FLUENT
+  ADVANCED
+  INTERMEDIATE
+  BASIC
+}
+
+// ----------------------------------------------------------------------------
+// AUTENTIKASI
+// ----------------------------------------------------------------------------
+
+/// Pengguna aplikasi. passwordHash bernilai NULL apabila pengguna
+/// mendaftar lewat Google OAuth (tidak pernah menetapkan kata sandi).
+model User {
+  id            String    @id @default(cuid())
+  name          String    @default("")
+  email         String    @unique
+  emailVerified DateTime?
+  image         String    @default("")
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  resumes  Resume[]
+
+  @@map("users")
+}
+
+/// Tautan akun penyedia OAuth (Google) ke User lokal.
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// ----------------------------------------------------------------------------
+// DOKUMEN CV
+// ----------------------------------------------------------------------------
+
+/// Satu dokumen CV. Seorang pengguna boleh memiliki banyak versi CV
+/// (misalnya versi "Frontend Developer" dan versi "Product Manager").
+model Resume {
+  id          String         @id @default(cuid())
+  userId      String
+  title       String         @default("CV Saya")
+  template    TemplateId     @default(CLASSIC)
+  accentColor String         @default("#111827")
+  fontFamily  String         @default("Arial")
+  fontSize    Int            @default(10)
+  lineHeight  Float          @default(1.35)
+  language    ResumeLanguage @default(ID)
+
+  /// Urutan tampil section pada CV, contoh:
+  /// ["summary","experience","education","skill","project"]
+  sectionOrder Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personalInfo   PersonalInfo?
+  experiences    Experience[]
+  educations     Education[]
+  skills         Skill[]
+  projects       Project[]
+  certifications Certification[]
+  organizations  Organization[]
+  awards         Award[]
+  languages      LanguageSkill[]
+  publications   Publication[]
+  customSections CustomSection[]
+  atsAnalyses    AtsAnalysis[]
+
+  @@index([userId])
+  @@map("resumes")
+}
+
+/// Identitas dan kontak. Relasi satu-ke-satu dengan Resume.
+model PersonalInfo {
+  id           String  @id @default(cuid())
+  resumeId     String  @unique
+  fullName     String  @default("")
+  headline     String  @default("")
+  email        String  @default("")
+  phone        String  @default("")
+  city         String  @default("")
+  province     String  @default("")
+  country      String  @default("")
+  linkedinUrl  String  @default("")
+  portfolioUrl String  @default("")
+  githubUrl    String  @default("")
+  photoUrl     String  @default("")
+  showPhoto    Boolean @default(false)
+  summary      String  @default("")
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@map("personal_infos")
+}
+
+model Experience {
+  id             String          @id @default(cuid())
+  resumeId       String
+  jobTitle       String          @default("")
+  company        String          @default("")
+  employmentType EmploymentType?
+  city           String          @default("")
+  country        String          @default("")
+  startDate      String          @default("")
+  endDate        String          @default("")
+  isCurrent      Boolean         @default(false)
+  bullets        String[]        @default([])
+  order          Int             @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("experiences")
+}
+
+model Education {
+  id           String   @id @default(cuid())
+  resumeId     String
+  institution  String   @default("")
+  degree       String   @default("")
+  fieldOfStudy String   @default("")
+  city         String   @default("")
+  startDate    String   @default("")
+  endDate      String   @default("")
+  isCurrent    Boolean  @default(false)
+  gpa          String   @default("")
+  maxGpa       String   @default("4.00")
+  bullets      String[] @default([])
+  order        Int      @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("educations")
+}
+
+/// Keahlian dikelompokkan per kategori (mis. "Bahasa Pemrograman", "Tools").
+model Skill {
+  id       String @id @default(cuid())
+  resumeId String
+  name     String @default("")
+  category String @default("Umum")
+  order    Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("skills")
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  resumeId  String
+  name      String   @default("")
+  role      String   @default("")
+  url       String   @default("")
+  startDate String   @default("")
+  endDate   String   @default("")
+  bullets   String[] @default([])
+  order     Int      @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("projects")
+}
+
+model Certification {
+  id           String @id @default(cuid())
+  resumeId     String
+  name         String @default("")
+  issuer       String @default("")
+  issueDate    String @default("")
+  expiryDate   String @default("")
+  credentialId String @default("")
+  url          String @default("")
+  order        Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("certifications")
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  resumeId  String
+  name      String   @default("")
+  role      String   @default("")
+  city      String   @default("")
+  startDate String   @default("")
+  endDate   String   @default("")
+  isCurrent Boolean  @default(false)
+  bullets   String[] @default([])
+  order     Int      @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("organizations")
+}
+
+model Award {
+  id          String @id @default(cuid())
+  resumeId    String
+  title       String @default("")
+  issuer      String @default("")
+  date        String @default("")
+  description String @default("")
+  order       Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("awards")
+}
+
+model LanguageSkill {
+  id          String              @id @default(cuid())
+  resumeId    String
+  name        String              @default("")
+  proficiency LanguageProficiency @default(INTERMEDIATE)
+  order       Int                 @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("language_skills")
+}
+
+model Publication {
+  id        String @id @default(cuid())
+  resumeId  String
+  title     String @default("")
+  publisher String @default("")
+  date      String @default("")
+  url       String @default("")
+  doi       String @default("")
+  order     Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("publications")
+}
+
+/// Section bebas buatan pengguna. Kolom items berisi array objek
+/// { title, subtitle, startDate, endDate, bullets[] }.
+model CustomSection {
+  id       String @id @default(cuid())
+  resumeId String
+  title    String @default("")
+  items    Json   @default("[]")
+  order    Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("custom_sections")
+}
+
+// ----------------------------------------------------------------------------
+// ANALISIS ATS
+// ----------------------------------------------------------------------------
+
+/// Riwayat hasil penilaian ATS. Disimpan (bukan sekadar dihitung sesaat)
+/// agar peningkatan skor sebelum dan sesudah perbaikan dapat dianalisis
+/// sebagai data penelitian.
+model AtsAnalysis {
+  id             String   @id @default(cuid())
+  resumeId       String
+  score          Int
+  /// Skor per dimensi: completeness, parseability, contentQuality,
+  /// keywordMatch, structure - beserta detail temuannya.
+  breakdown      Json
+  /// Daftar saran perbaikan yang dapat ditindaklanjuti pengguna.
+  suggestions    Json
+  jobDescription String   @default("")
+  createdAt      DateTime @default(now())
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId, createdAt])
+  @@map("ats_analyses")
+}
