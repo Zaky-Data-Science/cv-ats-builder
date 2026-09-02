@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AUTHOR, SITE, baseUrl } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-app-sans",
@@ -9,12 +10,48 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl()),
   title: {
-    default: "Pembuat CV ATS-Friendly",
-    template: "%s - Pembuat CV ATS-Friendly",
+    default: `${SITE.name} - ${SITE.tagline}`,
+    template: `%s - ${SITE.name}`,
   },
-  description:
-    "Susun CV yang terbaca sistem ATS lewat field terstruktur, lihat hasilnya seketika, unduh sebagai PDF atau Word, dan simpan datanya untuk diedit kapan saja.",
+  description: SITE.description,
+  applicationName: SITE.name,
+  authors: [{ name: AUTHOR.name }],
+  creator: AUTHOR.name,
+  publisher: AUTHOR.institution,
+  keywords: [
+    "CV ATS",
+    "pembuat CV",
+    "CV ATS friendly",
+    "resume builder Indonesia",
+    "contoh CV",
+    "template CV ATS",
+    "skor ATS",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: SITE.name,
+    title: `${SITE.name} - ${SITE.tagline}`,
+    description: SITE.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} - ${SITE.tagline}`,
+    description: SITE.description,
+  },
+  manifest: "/manifest.webmanifest",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  // Pengguna tetap boleh memperbesar halaman. Mengunci perbesaran akan
+  // menyulitkan pembaca dengan penglihatan terbatas, dan tidak ada alasan
+  // teknis untuk melakukannya di sini.
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({

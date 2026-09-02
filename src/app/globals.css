@@ -27,6 +27,11 @@
   --color-good: #15803d;
   --color-warn: #b45309;
   --color-bad: #b91c1c;
+
+  /* Titik henti tambahan untuk ponsel besar (iPhone Plus, sebagian Android).
+     Bawaan Tailwind melompat dari 0 langsung ke 40rem, padahal di rentang
+     ini pratinjau CV sudah muat diperbesar. */
+  --breakpoint-xs: 26rem;
 }
 
 :root {
@@ -144,6 +149,156 @@ body {
   .section-heading {
     break-after: avoid;
     page-break-after: avoid;
+  }
+}
+
+/* ==========================================================================
+   Gerak dan efek kedalaman
+   --------------------------------------------------------------------------
+   Seluruh efek di bawah ini memakai transform dan opacity CSS - keduanya
+   dianimasikan oleh compositor GPU sehingga tidak memicu layout ulang.
+   Tidak ada pustaka 3D yang dimuat, sehingga halaman tetap ringan di
+   perangkat kelas bawah.
+
+   Setiap animasi dimatikan sepenuhnya bila sistem pengguna meminta
+   pengurangan gerak - lihat blok prefers-reduced-motion di bagian akhir.
+   ========================================================================== */
+
+.scene {
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+
+/* Kartu yang bereaksi terhadap posisi kursor. Sudut kemiringan dikirim dari
+   JavaScript melalui custom property, bukan lewat penulisan ulang style,
+   agar transisinya tetap ditangani CSS. */
+.tilt-card {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    translateZ(0);
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.tilt-card--active {
+  transition: transform 90ms linear;
+}
+
+/* Lapisan yang diangkat ke depan kartu, memberi kesan kedalaman nyata. */
+.layer-front {
+  transform: translateZ(48px);
+}
+.layer-mid {
+  transform: translateZ(26px);
+}
+.layer-back {
+  transform: translateZ(-24px);
+}
+
+/* Pantulan cahaya tipis yang bergerak mengikuti kemiringan. */
+.tilt-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--sheen-angle, 120deg),
+    rgba(255, 255, 255, 0) 32%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0) 68%
+  );
+  opacity: var(--sheen-opacity, 0);
+  transition: opacity 300ms ease;
+  mix-blend-mode: overlay;
+}
+
+/* Muncul perlahan saat tergulir ke dalam layar. */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Gerak mengambang yang sangat pelan, untuk elemen dekoratif. */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+}
+
+.float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+/* Kilau lembut pada latar dekoratif. */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 6s ease-in-out infinite;
+}
+
+/* Umpan balik sentuh pada tombol - penting di layar sentuh, karena di sana
+   tidak ada keadaan hover yang bisa dirasakan pengguna. */
+.press {
+  transition:
+    transform 130ms ease,
+    box-shadow 130ms ease;
+}
+.press:active {
+  transform: scale(0.975);
+}
+
+/*
+  Pengguna yang memilih mengurangi gerak - misalnya karena sensitif terhadap
+  animasi atau memakai perangkat lambat - tetap memperoleh seluruh isi
+  halaman, hanya tanpa geraknya.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .tilt-card {
+    transform: none !important;
+  }
+
+  .layer-front,
+  .layer-mid,
+  .layer-back {
+    transform: none !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .tilt-sheen {
+    display: none !important;
   }
 }
 

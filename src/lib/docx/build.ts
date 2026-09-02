@@ -346,9 +346,13 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
   const margin = Math.round(15 * MM_TO_TWIP);
 
   const doc = new Document({
-    creator: "ATS-Friendly CV Builder",
+    // Properti dokumen diisi dengan identitas pemilik CV, bukan nama
+    // aplikasi maupun pembuatnya. Berkas ini adalah dokumen milik pengguna;
+    // mencantumkan pihak lain di properti Author akan tampak janggal bila
+    // perekrut memeriksanya.
+    creator: info.fullName || data.title,
     title: data.title,
-    description: "CV yang dihasilkan dalam format ramah ATS",
+    description: "Curriculum Vitae",
     styles: {
       default: {
         document: {

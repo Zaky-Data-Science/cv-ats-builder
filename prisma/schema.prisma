@@ -345,3 +345,24 @@ model AtsAnalysis {
   @@index([resumeId, createdAt])
   @@map("ats_analyses")
 }
+
+// ----------------------------------------------------------------------------
+// PEMBATASAN LAJU PERMINTAAN
+// ----------------------------------------------------------------------------
+
+/// Penghitung percobaan untuk membatasi laju permintaan sensitif
+/// (pendaftaran dan masuk).
+///
+/// Disimpan di basis data, bukan di memori proses, karena aplikasi berjalan
+/// pada lingkungan serverless: setiap permintaan dapat dilayani instans yang
+/// berbeda, sehingga penghitung di memori mudah dilewati begitu saja.
+model RateLimit {
+  /// Kunci pembatas, mis. "login:budi@email.com" atau "register:203.0.113.5".
+  key       String   @id
+  count     Int      @default(0)
+  /// Batas akhir jendela waktu berjalan.
+  windowEnd DateTime
+
+  @@index([windowEnd])
+  @@map("rate_limits")
+}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { errorResponse, HttpError } from "@/lib/guard";
+import { checkRateLimit, clientIp, LIMITS } from "@/lib/rate-limit";
 import { registerSchema } from "@/lib/resume/schema";
 
 /** Jumlah putaran bcrypt. 12 adalah kompromi lazim antara keamanan dan waktu proses. */
@@ -15,6 +16,20 @@ const BCRYPT_ROUNDS = 12;
  */
 export async function POST(request: Request) {
   try {
+    // Pembatasan laju agar satu sumber tidak dapat membuat akun secara massal.
+    const limit = await checkRateLimit({
+      key: `register:${clientIp(request)}`,
+      ...LIMITS.register,
+    });
+    if (!limit.allowed) {
+      throw new HttpError(
+        429,
+        `Terlalu banyak percobaan pendaftaran. Coba lagi dalam ${Math.ceil(
+          limit.retryAfterSeconds / 60,
+        )} menit.`,
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const { name, email, password } = registerSchema.parse(body);
     const normalizedEmail = email.trim().toLowerCase();

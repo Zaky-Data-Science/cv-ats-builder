@@ -1,0 +1,345 @@
+# Panduan Pengguna
+
+Petunjuk pemakaian aplikasi **CV ATS Builder** dari awal sampai CV siap
+dikirim. Ditulis untuk pengguna yang baru pertama kali membuat CV sekalipun.
+
+Versi ringkas panduan ini juga tersedia langsung di dalam aplikasi pada
+halaman **Panduan**.
+
+---
+
+## Daftar Isi
+
+1. [Sebelum mulai: apa itu ATS](#1-sebelum-mulai-apa-itu-ats)
+2. [Alur penggunaan](#2-alur-penggunaan)
+3. [Membuat akun](#3-membuat-akun)
+4. [Membuat CV pertama](#4-membuat-cv-pertama)
+5. [Mengenal layar editor](#5-mengenal-layar-editor)
+6. [Mengisi tiap bagian](#6-mengisi-tiap-bagian)
+7. [Membaca skor ATS](#7-membaca-skor-ats)
+8. [Mencocokkan dengan iklan lowongan](#8-mencocokkan-dengan-iklan-lowongan)
+9. [Mengunduh CV](#9-mengunduh-cv)
+10. [Mengelola banyak CV](#10-mengelola-banyak-cv)
+11. [Memakai dari ponsel](#11-memakai-dari-ponsel)
+12. [Pengaturan akun dan data](#12-pengaturan-akun-dan-data)
+13. [Kalau ada masalah](#13-kalau-ada-masalah)
+
+---
+
+## 1. Sebelum mulai: apa itu ATS
+
+**ATS** (*Applicant Tracking System*) adalah perangkat lunak yang dipakai
+banyak perusahaan untuk menerima dan menyaring lamaran. Sebelum sampai ke
+tangan manusia, berkas CV diurai lebih dulu oleh mesin untuk diambil datanya:
+nama, kontak, riwayat pekerjaan, dan keahlian.
+
+Masalahnya, cara kebanyakan orang membuat CV justru menyulitkan proses itu:
+
+| Yang sering dipakai | Kenapa bermasalah |
+|---|---|
+| Tata letak dua kolom | Mesin membaca dari kiri ke kanan menyeberangi kedua kolom, sehingga kalimat tercampur |
+| Tabel untuk merapikan | Isi antar-sel terbaca melompat-lompat |
+| Ikon menggantikan tulisan | Ikon telepon tanpa label membuat nomor tidak dikenali sebagai nomor telepon |
+| CV disimpan sebagai gambar | Tidak ada teks sama sekali yang bisa diambil |
+| Judul kreatif seperti "Jejak Karierku" | Mesin mencocokkan judul dengan daftar baku; judul tak dikenal membuat seluruh isinya gagal dipetakan |
+
+Aplikasi ini menutup semua kemungkinan tersebut sejak awal. Anda hanya mengisi
+field - tata letaknya diurus aplikasi, dan semua template sudah dipastikan
+memenuhi kaidah di atas.
+
+---
+
+## 2. Alur penggunaan
+
+```mermaid
+flowchart TD
+    A([Buka situs]) --> B{Sudah punya akun?}
+    B -- Belum --> C[Daftar: nama, email, kata sandi]
+    B -- Sudah --> D[Masuk]
+    C --> E[Dashboard]
+    D --> E
+
+    E --> F{Pilih titik awal}
+    F -- Disarankan --> G[Mulai dari Contoh<br/>CV terisi contoh lengkap]
+    F --> H[Buat CV Baru<br/>mulai dari kosong]
+    F --> I[Impor JSON<br/>dari cadangan lama]
+
+    G --> J[Editor terbuka]
+    H --> J
+    I --> J
+
+    J --> K[Isi field bagian demi bagian]
+    K --> L[/Tersimpan otomatis
+    0,8 detik setelah berhenti mengetik/]
+    L --> M[Lihat pratinjau CV
+    dan skor ATS]
+
+    M --> N{Skor 70 ke atas?}
+    N -- Belum --> O[Buka saran perbaikan,
+    klik untuk lompat ke field]
+    O --> K
+    N -- Sudah --> P[Tempel iklan lowongan
+    pada halaman Analisis ATS]
+
+    P --> Q{Kata kunci penting
+    sudah muncul?}
+    Q -- Belum --> R[Tambahkan keahlian yang
+    memang Anda kuasai]
+    R --> K
+    Q -- Sudah --> S[Unduh PDF atau Word]
+
+    S --> T([Kirim lamaran])
+    T --> U[Lowongan berikutnya:
+    duplikasi CV lalu sesuaikan]
+    U --> K
+
+    style A fill:#dae4ff,stroke:#3b53d9
+    style T fill:#dcfce7,stroke:#15803d
+    style L fill:#f1f5f9,stroke:#64748b
+```
+
+---
+
+## 3. Membuat akun
+
+1. Buka halaman utama, tekan **Daftar Gratis**.
+2. Isi nama lengkap, email aktif, dan kata sandi minimal 8 karakter.
+3. Tekan **Buat Akun**. Anda langsung masuk tanpa perlu mengetik ulang.
+
+Bila tombol **Masuk dengan Google** tersedia, Anda dapat memakainya sebagai
+gantinya - tidak perlu mengingat kata sandi baru.
+
+> **Kenapa harus punya akun?** Karena inilah yang membuat CV Anda tersimpan.
+> Tanpa akun, data akan hilang begitu tab ditutup.
+
+**Kata sandi Anda tidak pernah disimpan apa adanya.** Yang masuk ke basis data
+hanya hasil pengacakan satu arah (*hash* bcrypt), sehingga tidak dapat dibaca
+kembali oleh siapa pun - termasuk pengelola aplikasi.
+
+---
+
+## 4. Membuat CV pertama
+
+Di dashboard ada tiga tombol:
+
+| Tombol | Kapan dipakai |
+|---|---|
+| **Mulai dari Contoh** | **Disarankan untuk pemakaian pertama.** CV langsung terisi contoh lengkap dan realistis. Anda bisa melihat bentuk CV jadi, lalu menimpanya dengan data sendiri satu per satu. |
+| **Buat CV Baru** | Mulai dari kosong. Cocok bila Anda sudah paham bentuk CV yang dituju. |
+| **Impor JSON** | Memulihkan CV dari berkas cadangan yang pernah Anda unduh. |
+
+---
+
+## 5. Mengenal layar editor
+
+Layar editor terbagi dua di komputer dan tablet lebar:
+
+```
+┌──────────────────────────────┬────────────────────────────────┐
+│  KIRI - FORMULIR             │  KANAN - PRATINJAU CV          │
+│                              │                                │
+│  ▾ Data Pribadi              │   ┌──────────────────────────┐ │
+│     Nama Lengkap  [........]─┼──▶│      BUDI SANTOSO        │ │
+│     Email         [........] │   │  Frontend Developer      │ │
+│                              │   │  budi@email.com · +62... │ │
+│  ▸ Ringkasan Profil      (1) │   ├──────────────────────────┤ │
+│  ▸ Pengalaman Kerja      (3) │   │  RINGKASAN PROFIL        │ │
+│  ▸ Pendidikan            (2) │   │  ░░░░░░░░░░░░░░░░░░░░░   │ │
+│  ▸ Keahlian             (15) │   │                          │ │
+│                              │   │  PENGALAMAN KERJA        │ │
+│  ✓ Tersimpan 14.33           │   └──────────────────────────┘ │
+└──────────────────────────────┴────────────────────────────────┘
+      Isi Data Contoh · Tampilan · PDF · Word · Teks · JSON
+```
+
+Tiga hal yang membuat Anda selalu tahu sedang mengisi bagian mana:
+
+1. **Pratinjau langsung** - CV di kanan berubah seketika saat Anda mengetik.
+2. **Sorotan sinkron** - begitu sebuah field disentuh, bagian yang bersangkutan
+   di CV ikut disorot berwarna kuning.
+3. **Penghitung isi** - angka di sebelah judul bagian menunjukkan berapa entri
+   yang sudah terisi.
+
+**Bagian yang kosong tidak akan dicetak di CV**, jadi Anda bebas melewatkan
+bagian yang tidak relevan.
+
+### Mengubah urutan bagian
+
+Gunakan tombol panah atas dan bawah di sisi kanan judul setiap bagian.
+Urutannya langsung berubah di pratinjau.
+
+### Mengubah tampilan
+
+Tombol **Tampilan** membuka pengaturan template (Classic, Modern, Compact),
+jenis huruf, ukuran huruf, jarak baris, dan bahasa judul bagian. Semua pilihan
+jenis huruf yang tersedia sudah dipastikan aman untuk ATS.
+
+---
+
+## 6. Mengisi tiap bagian
+
+| Bagian | Isi | Catatan |
+|---|---|---|
+| **Data Pribadi** | Nama, jabatan yang dituju, email, telepon, domisili, tautan profil | Samakan jabatan dengan judul lowongan yang dilamar |
+| **Ringkasan Profil** | 2-4 kalimat, 30-120 kata | Rumus: peran + lama pengalaman + keahlian utama + satu pencapaian berangka. Hindari kata "saya" |
+| **Pengalaman Kerja** | Jabatan, perusahaan, periode, poin pencapaian | Urutkan dari yang paling baru. Minimal 2 poin per pengalaman |
+| **Pendidikan** | Jenjang, program studi, institusi, periode, IPK | Cantumkan IPK bila 3.00 ke atas |
+| **Keahlian** | Nama keahlian per kategori | Tulis apa adanya: "JavaScript", bukan "JavaScript (mahir)" |
+| **Proyek** | Nama, peran, tautan, poin hasil | Sangat membantu bagi fresh graduate |
+| **Sertifikasi** | Nama, penerbit, tanggal, ID kredensial | ID kredensial memudahkan verifikasi perekrut |
+| **Organisasi** | Jabatan, organisasi, periode, poin kontribusi | Tunjukkan dampak, bukan sekadar keanggotaan |
+| **Penghargaan** | Nama, pemberi, tanggal, keterangan | Sebutkan tingkat kompetisi dan peringkat |
+| **Bahasa** | Nama bahasa dan tingkat penguasaan | Hindari diagram bintang; pakai tingkat baku |
+| **Publikasi** | Judul, penerbit, tanggal, DOI | Relevan untuk jalur akademik dan riset |
+| **Section Tambahan** | Bebas | Gunakan judul berupa teks biasa tanpa emoji |
+
+### Menulis poin pencapaian yang kuat
+
+Rumusnya: **kata kerja aksi + apa yang dikerjakan + hasil berangka**.
+
+| Kurang baik | Lebih baik |
+|---|---|
+| Bertanggung jawab atas pengembangan website perusahaan. | Mengembangkan ulang halaman checkout sehingga tingkat konversi naik dari 2,1% menjadi 3,4% dalam 6 bulan. |
+| Membantu tim dalam berbagai proyek. | Memimpin tim beranggotakan 4 orang dalam migrasi 60 komponen antarmuka, memangkas waktu pengembangan fitur sekitar 30%. |
+| Menguasai React dan berbagai tools modern. | Menyusun 120 unit test dengan Jest dan React Testing Library, meningkatkan cakupan pengujian dari 38% menjadi 82%. |
+
+> **Tidak punya angka?** Angka tidak selalu berarti persentase. Jumlah orang
+> yang Anda latih, banyaknya dokumen yang Anda proses per minggu, atau jumlah
+> peserta acara yang Anda selenggarakan - semuanya angka yang sah.
+
+### Soal pas foto
+
+Opsi menampilkan pas foto tersedia, tetapi **dimatikan secara bawaan**.
+Sebagian besar pengurai ATS tidak dapat membaca gambar, dan tata letak di
+sekitar foto kerap membuat urutan teks terbaca kacau. Aktifkan hanya bila
+lowongan secara eksplisit memintanya.
+
+---
+
+## 7. Membaca skor ATS
+
+Buka tab **Skor ATS** di sebelah pratinjau. Skor berada pada rentang 0-100,
+dihitung sebagai rata-rata berbobot dari lima dimensi.
+
+| Dimensi | Bobot | Memeriksa |
+|---|---:|---|
+| Kelengkapan Data | 25% | Apakah semua informasi yang dicari perekrut sudah ada |
+| Keterbacaan Mesin | 25% | Format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, foto |
+| Kualitas Konten | 20% | Kata kerja aksi, angka terukur, panjang poin, frasa klise |
+| Kecocokan Kata Kunci | 20% | Kata kunci lowongan yang muncul di CV (perlu iklan lowongan ditempel) |
+| Panjang & Struktur | 10% | Jumlah halaman, urutan bagian, kronologi, jeda kerja |
+
+| Nilai | Rentang | Artinya |
+|:--:|---|---|
+| A | 85-100 | Siap dikirim |
+| B | 70-84 | Sudah baik, tinggal poles |
+| C | 55-69 | Ada hal penting yang terlewat |
+| D | 0-54 | Berisiko tersaring sebelum dibaca manusia |
+
+Di bawah skor terdapat daftar temuan dalam tiga tingkat: **Harus diperbaiki**,
+**Sebaiknya diperbaiki**, dan **Saran penyempurnaan**. Setiap temuan memiliki
+tombol **Buka field terkait** yang melompat langsung ke field bermasalah.
+
+> **Penting:** skor tinggi berarti CV Anda memenuhi kaidah yang diperiksa -
+> bukan jaminan lolos seleksi. Setiap perusahaan memakai produk ATS berbeda
+> dengan pengurai yang tidak dipublikasikan. Anggap skor ini sebagai daftar
+> periksa, bukan ramalan hasil.
+
+---
+
+## 8. Mencocokkan dengan iklan lowongan
+
+1. Dari editor, tekan **Cocokkan dengan lowongan**.
+2. Salin **seluruh** teks iklan lowongan - termasuk bagian kualifikasi dan
+   tanggung jawab - lalu tempel di kotak sebelah kiri.
+3. Skor dan daftar kata kunci diperbarui seketika.
+
+Anda akan melihat dua daftar: kata kunci yang **sudah ada** di CV, dan yang
+**belum ada**. Tambahkan kata kunci yang belum ada ke bagian Keahlian atau ke
+poin pencapaian.
+
+> **Jangan menempelkan keahlian yang tidak Anda kuasai.** Skornya memang naik,
+> tetapi akan terbongkar pada tahap wawancara.
+
+Tombol **Simpan Hasil ke Riwayat** mencatat skor saat itu. Perbaiki CV Anda,
+simpan lagi, dan Anda dapat melihat perkembangan skornya dari waktu ke waktu.
+
+---
+
+## 9. Mengunduh CV
+
+| Format | Kapan dipakai |
+|---|---|
+| **PDF** | Pilihan utama untuk dikirim ke perusahaan. Teksnya tetap dapat diseleksi dan disalin, sehingga terbaca mesin |
+| **Word (.docx)** | Bila sistem lamaran secara khusus meminta berkas .doc atau .docx. Sebagian ATS mengurai Word lebih akurat daripada PDF |
+| **Teks (.txt)** | Untuk ditempel ke formulir lamaran daring yang hanya menerima teks polos |
+| **JSON** | Bukan format lamaran. Ini cadangan seluruh data Anda, dapat diimpor kembali kapan saja |
+
+Saat menekan **PDF**, kotak dialog cetak peramban akan muncul. Pilih
+**Save as PDF** sebagai tujuan, lalu simpan.
+
+**CV yang Anda unduh murni berisi data Anda sendiri** - tanpa logo, tanpa
+watermark, dan tanpa nama aplikasi maupun pembuatnya.
+
+---
+
+## 10. Mengelola banyak CV
+
+CV sebaiknya disesuaikan untuk setiap lowongan. Agar tidak perlu menyusun ulang
+dari nol:
+
+1. Di dashboard, tekan tombol **duplikat** pada CV yang ingin disalin.
+2. Ganti namanya, misalnya "CV - Backend Engineer PT ABC".
+3. Sesuaikan ringkasan profil dan urutan keahliannya dengan lowongan itu.
+
+Setiap kartu CV di dashboard menampilkan skor ATS terakhir, template yang
+dipakai, dan kapan terakhir diubah.
+
+---
+
+## 11. Memakai dari ponsel
+
+Aplikasi ini dapat dipakai penuh dari ponsel. Layar dibagi menjadi tiga panel
+yang dapat diganti lewat bilah di bagian bawah:
+
+| Panel | Isi |
+|---|---|
+| **Isi Data** | Formulir seluruh bagian CV |
+| **Pratinjau** | CV ukuran A4, perbesarannya otomatis disesuaikan lebar layar |
+| **Skor ATS** | Penilaian beserta daftar saran |
+
+Seluruh tombol unduhan dan pengaturan diringkas ke dalam menu **⋯** di pojok
+kanan atas.
+
+Anda juga dapat memasang aplikasi ini ke layar utama ponsel lewat menu
+peramban ("Tambahkan ke Layar Utama"), sehingga terbuka seperti aplikasi biasa.
+
+---
+
+## 12. Pengaturan akun dan data
+
+Halaman **Pengaturan** menyediakan:
+
+- **Ubah nama tampilan.**
+- **Ubah kata sandi** - wajib memasukkan kata sandi lama terlebih dahulu.
+- **Buat kata sandi** - bagi akun yang mendaftar lewat Google dan belum
+  memiliki kata sandi.
+- **Hapus akun** - menghapus seluruh CV beserta isinya secara permanen.
+  Konfirmasinya sengaja dibuat merepotkan (harus mengetik `HAPUS AKUN`) agar
+  tidak terjadi karena salah tekan.
+
+> **Sebelum menghapus akun**, unduh cadangan JSON setiap CV Anda. Setelah
+> dihapus, datanya tidak dapat dikembalikan.
+
+---
+
+## 13. Kalau ada masalah
+
+| Gejala | Penyebab dan solusi |
+|---|---|
+| Muncul "Gagal menyimpan" | Koneksi internet terputus. Jangan tutup halaman - data yang sudah diketik masih ada di layar. Setelah koneksi pulih, ketik satu huruf apa saja untuk memicu penyimpanan ulang |
+| CV menjadi tiga halaman | Indikator jumlah halaman berubah kuning. Pangkas pengalaman yang tidak relevan, gabungkan poin yang mirip, atau kecilkan ukuran huruf lewat menu Tampilan |
+| Tombol PDF tidak memunculkan apa pun | Dialog cetak mungkin terblokir. Matikan pemblokir pop-up untuk situs ini, atau unduh format Word yang tidak memerlukan dialog cetak |
+| Bagian yang diisi tidak muncul di CV | Bagian yang seluruh entrinya kosong sengaja tidak dicetak. Pastikan minimal satu field pada entri itu terisi |
+| Lupa kata sandi | Pemulihan lewat email belum tersedia. Bila email Anda sama dengan akun Google, masuklah lewat tombol Google, lalu buat kata sandi baru di halaman Pengaturan |
+| Terlalu banyak percobaan masuk | Demi keamanan, percobaan masuk dibatasi 8 kali per 15 menit untuk tiap alamat email. Tunggu beberapa saat lalu coba lagi |

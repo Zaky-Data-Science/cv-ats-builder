@@ -11,8 +11,11 @@ import {
   FileJson,
   FileText,
   Gauge,
+  LayoutList,
   Loader2,
+  MoreHorizontal,
   Printer,
+  ScanSearch,
   Settings2,
   Sparkles,
 } from "lucide-react";
@@ -23,12 +26,17 @@ import { ATS_SAFE_FONTS } from "@/lib/ats/vocabulary";
 import { sampleResume } from "@/lib/resume/sample";
 import { SECTION_META, sectionCount } from "@/lib/resume/sections";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
+import { AUTHOR } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { EditorProvider, moveItem } from "./context";
 import { PersonalSection, SECTION_FORMS } from "./sections";
 import { SectionCard } from "./parts";
 import { PreviewPane } from "./PreviewPane";
 
 type SaveState = "idle" | "dirty" | "saving" | "saved" | "error";
+
+/** Panel yang sedang ditampilkan. Di layar lebar, formulir selalu terlihat. */
+type Pane = "form" | "preview" | "ats";
 
 /** Jeda sebelum perubahan dikirim ke server. */
 const AUTOSAVE_DELAY_MS = 800;
@@ -40,7 +48,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   const [savedAt, setSavedAt] = React.useState<Date | null>(null);
   const [errorText, setErrorText] = React.useState<string | null>(null);
   const [pages, setPages] = React.useState(1);
-  const [tab, setTab] = React.useState<"preview" | "ats">("preview");
+  const [pane, setPane] = React.useState<Pane>("form");
   const [showSettings, setShowSettings] = React.useState(false);
   const [confirmSample, setConfirmSample] = React.useState(false);
   const [openSections, setOpenSections] = React.useState<Set<string>>(
@@ -125,7 +133,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   );
 
   /* ---------------------------------------------------------------- */
-  /* Unduhan                                                           */
+  /* Unduhan dan cetak                                                 */
   /* ---------------------------------------------------------------- */
 
   async function download(path: string) {
@@ -169,12 +177,65 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
     });
   }
 
+  function jumpToSection(key: string) {
+    setPane("form");
+    setOpenSections((prev) => new Set(prev).add(key));
+    // Menunggu satu siklus render agar section sempat terbuka sebelum
+    // digulirkan ke posisinya.
+    requestAnimationFrame(() => {
+      document
+        .querySelector(`#form-anchor-${key}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   function applySample() {
     const sample = sampleResume(data.id);
     update({ ...sample, id: data.id, title: data.title });
     setOpenSections(new Set(["personal", "experience"]));
     setConfirmSample(false);
   }
+
+  const actions = (
+    <>
+      <ActionItem
+        icon={Sparkles}
+        label="Isi Data Contoh"
+        hint="Ganti seluruh isi dengan contoh lengkap"
+        onClick={() => setConfirmSample(true)}
+      />
+      <ActionItem
+        icon={Settings2}
+        label="Tampilan CV"
+        hint="Template, jenis huruf, ukuran, bahasa"
+        onClick={() => setShowSettings((v) => !v)}
+      />
+      <ActionItem
+        icon={Printer}
+        label="Unduh PDF"
+        hint="Untuk dikirim ke perusahaan"
+        onClick={printPdf}
+      />
+      <ActionItem
+        icon={FileDown}
+        label="Unduh Word"
+        hint="Bila sistem lamaran meminta .docx"
+        onClick={() => download("docx")}
+      />
+      <ActionItem
+        icon={FileText}
+        label="Unduh Teks"
+        hint="Untuk ditempel ke formulir daring"
+        onClick={() => download("txt")}
+      />
+      <ActionItem
+        icon={FileJson}
+        label="Unduh JSON"
+        hint="Cadangan data, bisa diimpor lagi"
+        onClick={() => download("json")}
+      />
+    </>
+  );
 
   /* ---------------------------------------------------------------- */
   /* Tampilan                                                          */
@@ -186,52 +247,57 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         {/* ============================================================ */}
         {/* Bilah alat                                                    */}
         {/* ============================================================ */}
-        <div className="shrink-0 border-b border-ink-200 bg-white px-4 py-2.5">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm" title="Kembali ke dashboard">
-                <ArrowLeft size={15} />
+        <div className="shrink-0 border-b border-ink-200 bg-white px-3 py-2 sm:px-4 sm:py-2.5">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/dashboard" className="shrink-0">
+              <Button variant="ghost" size="sm" aria-label="Kembali ke dashboard">
+                <ArrowLeft size={16} />
               </Button>
             </Link>
 
             <Input
               value={data.title}
               onChange={(e) => update({ title: e.target.value })}
-              className="h-8 w-56 min-w-40 flex-1 text-sm font-semibold lg:max-w-80"
+              className="h-9 min-w-0 flex-1 text-sm font-semibold lg:max-w-80"
               aria-label="Judul CV"
             />
 
-            <SaveIndicator state={saveState} savedAt={savedAt} />
+            <div className="hidden lg:block">
+              <SaveIndicator state={saveState} savedAt={savedAt} />
+            </div>
 
-            <div className="ml-auto flex flex-wrap items-center gap-1.5">
+            {/* Aksi lengkap di layar lebar */}
+            <div className="ml-auto hidden items-center gap-1.5 lg:flex">
               <Button
                 size="sm"
                 variant="outline"
+                className="press"
                 onClick={() => setConfirmSample(true)}
-                title="Isi seluruh CV dengan data contoh"
               >
                 <Sparkles size={14} />
                 Isi Data Contoh
               </Button>
-
               <Button
                 size="sm"
                 variant="outline"
+                className="press"
                 onClick={() => setShowSettings((v) => !v)}
+                aria-expanded={showSettings}
               >
                 <Settings2 size={14} />
                 Tampilan
               </Button>
 
-              <span className="mx-1 h-5 w-px bg-ink-200" />
+              <span className="mx-1 h-5 w-px bg-ink-200" aria-hidden />
 
-              <Button size="sm" variant="outline" onClick={printPdf}>
+              <Button size="sm" variant="outline" className="press" onClick={printPdf}>
                 <Printer size={14} />
                 PDF
               </Button>
               <Button
                 size="sm"
                 variant="outline"
+                className="press"
                 onClick={() => download("docx")}
               >
                 <FileDown size={14} />
@@ -240,6 +306,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
               <Button
                 size="sm"
                 variant="outline"
+                className="press"
                 onClick={() => download("txt")}
                 title="Teks polos untuk ditempel ke formulir lamaran"
               >
@@ -249,6 +316,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
               <Button
                 size="sm"
                 variant="outline"
+                className="press"
                 onClick={() => download("json")}
                 title="Cadangan data agar dapat diimpor kembali"
               >
@@ -256,6 +324,23 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 JSON
               </Button>
             </div>
+
+            {/* Aksi diringkas jadi satu menu di layar sempit */}
+            <div className="ml-auto lg:hidden">
+              <ActionsMenu>{actions}</ActionsMenu>
+            </div>
+          </div>
+
+          {/* Status simpan di layar sempit - diberi baris sendiri agar tidak
+              menekan lebar kolom judul. */}
+          <div className="mt-1.5 flex items-center justify-between gap-3 lg:hidden">
+            <SaveIndicator state={saveState} savedAt={savedAt} />
+            <Link
+              href={`/resume/${initial.id}/ats`}
+              className="text-[11px] font-medium text-brand-600"
+            >
+              Cocokkan dengan lowongan
+            </Link>
           </div>
 
           {/* Panel pengaturan tampilan */}
@@ -265,9 +350,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 <Select
                   value={data.template}
                   onChange={(e) =>
-                    update({
-                      template: e.target.value as ResumeData["template"],
-                    })
+                    update({ template: e.target.value as ResumeData["template"] })
                   }
                 >
                   <option value="CLASSIC">Classic - formal</option>
@@ -297,7 +380,8 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                   step={0.5}
                   value={data.fontSize}
                   onChange={(e) => update({ fontSize: Number(e.target.value) })}
-                  className="w-full"
+                  className="w-full accent-brand-600"
+                  aria-label="Ukuran huruf"
                 />
               </Field>
 
@@ -308,21 +392,18 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                   max={1.6}
                   step={0.05}
                   value={data.lineHeight}
-                  onChange={(e) =>
-                    update({ lineHeight: Number(e.target.value) })
-                  }
-                  className="w-full"
+                  onChange={(e) => update({ lineHeight: Number(e.target.value) })}
+                  className="w-full accent-brand-600"
+                  aria-label="Jarak baris"
                 />
               </Field>
 
               <div className="space-y-3">
-                <Field label="Bahasa Judul Section">
+                <Field label="Bahasa Judul Bagian">
                   <Select
                     value={data.language}
                     onChange={(e) =>
-                      update({
-                        language: e.target.value as ResumeData["language"],
-                      })
+                      update({ language: e.target.value as ResumeData["language"] })
                     }
                   >
                     <option value="ID">Indonesia</option>
@@ -336,6 +417,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                       value={data.accentColor}
                       onChange={(e) => update({ accentColor: e.target.value })}
                       className="h-9 w-full cursor-pointer rounded-lg border border-ink-300"
+                      aria-label="Warna aksen"
                     />
                   </Field>
                 )}
@@ -378,106 +460,117 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         {/* ============================================================ */}
         {/* Dua panel                                                     */}
         {/* ============================================================ */}
-        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(380px,44%)_1fr]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(360px,42%)_1fr]">
           {/* ---------------------------------------------------------- */}
           {/* Kiri: formulir                                              */}
           {/* ---------------------------------------------------------- */}
-          <div className="thin-scrollbar min-h-0 space-y-3 overflow-y-auto border-r border-ink-200 bg-ink-100 p-4">
-            <SectionCard
-              id="form-anchor-personal"
-              title="Data Pribadi"
-              hint="Bagian paling atas CV. Nama, kontak, dan tautan profil - inilah yang pertama dicari pengurai ATS."
-              open={openSections.has("personal")}
-              onToggle={() => toggleSection("personal")}
-            >
-              <PersonalSection />
-            </SectionCard>
+          <div
+            className={cn(
+              "thin-scrollbar min-h-0 flex-col overflow-y-auto border-r border-ink-200 bg-ink-100 p-3 sm:p-4",
+              pane === "form" ? "flex" : "hidden lg:flex",
+            )}
+          >
+            <div className="space-y-3">
+              <SectionCard
+                id="form-anchor-personal"
+                title="Data Pribadi"
+                hint="Bagian paling atas CV. Nama, kontak, dan tautan profil - inilah yang pertama dicari pengurai ATS."
+                open={openSections.has("personal")}
+                onToggle={() => toggleSection("personal")}
+              >
+                <PersonalSection />
+              </SectionCard>
 
-            {data.sectionOrder.map((key, index) => {
-              const meta = SECTION_META[key];
-              const Form = SECTION_FORMS[key];
-              return (
-                <SectionCard
-                  key={key}
-                  id={`form-anchor-${key}`}
-                  title={meta.label}
-                  hint={meta.hint}
-                  count={sectionCount(data, key)}
-                  open={openSections.has(key)}
-                  onToggle={() => toggleSection(key)}
-                  onMoveUp={
-                    index > 0
-                      ? () =>
-                          update({
-                            sectionOrder: moveItem(
-                              data.sectionOrder,
-                              index,
-                              index - 1,
-                            ) as SectionKey[],
-                          })
-                      : undefined
-                  }
-                  onMoveDown={
-                    index < data.sectionOrder.length - 1
-                      ? () =>
-                          update({
-                            sectionOrder: moveItem(
-                              data.sectionOrder,
-                              index,
-                              index + 1,
-                            ) as SectionKey[],
-                          })
-                      : undefined
-                  }
-                >
-                  <Form />
-                </SectionCard>
-              );
-            })}
+              {data.sectionOrder.map((key, index) => {
+                const meta = SECTION_META[key];
+                const Form = SECTION_FORMS[key];
+                return (
+                  <SectionCard
+                    key={key}
+                    id={`form-anchor-${key}`}
+                    title={meta.label}
+                    hint={meta.hint}
+                    count={sectionCount(data, key)}
+                    open={openSections.has(key)}
+                    onToggle={() => toggleSection(key)}
+                    onMoveUp={
+                      index > 0
+                        ? () =>
+                            update({
+                              sectionOrder: moveItem(
+                                data.sectionOrder,
+                                index,
+                                index - 1,
+                              ) as SectionKey[],
+                            })
+                        : undefined
+                    }
+                    onMoveDown={
+                      index < data.sectionOrder.length - 1
+                        ? () =>
+                            update({
+                              sectionOrder: moveItem(
+                                data.sectionOrder,
+                                index,
+                                index + 1,
+                              ) as SectionKey[],
+                            })
+                        : undefined
+                    }
+                  >
+                    <Form />
+                  </SectionCard>
+                );
+              })}
 
-            <p className="px-1 pt-2 pb-6 text-[11px] leading-relaxed text-ink-500">
-              Section yang belum diisi tidak akan muncul di CV, jadi Anda boleh
-              melewatinya. Gunakan tombol panah di sisi kanan judul untuk
-              mengubah urutan tampilnya.
-            </p>
+              <p className="px-1 pt-2 text-[11px] leading-relaxed text-ink-500">
+                Bagian yang belum diisi tidak akan muncul di CV, jadi Anda boleh
+                melewatinya. Gunakan tombol panah di sisi kanan judul untuk
+                mengubah urutan tampilnya.
+              </p>
+
+              {/* Kredit pembuat. Hanya muncul di antarmuka aplikasi -
+                  tidak pernah ikut tercetak pada CV pengguna. */}
+              <p className="border-t border-ink-200 px-1 pt-3 pb-24 text-[11px] leading-relaxed text-ink-400 lg:pb-6">
+                {AUTHOR.credit}
+              </p>
+            </div>
           </div>
 
           {/* ---------------------------------------------------------- */}
           {/* Kanan: pratinjau atau penilaian                              */}
           {/* ---------------------------------------------------------- */}
-          <div className="flex min-h-0 flex-col">
-            <div className="flex shrink-0 items-center gap-1 border-b border-ink-200 bg-white px-3">
+          <div
+            className={cn(
+              "min-h-0 flex-col",
+              pane === "form" ? "hidden lg:flex" : "flex",
+            )}
+          >
+            {/* Tab hanya relevan di layar lebar; di layar sempit navigasinya
+                ada di bilah bawah. */}
+            <div className="hidden shrink-0 items-center gap-1 border-b border-ink-200 bg-white px-3 lg:flex">
               <TabButton
-                active={tab === "preview"}
-                onClick={() => setTab("preview")}
+                active={pane !== "ats"}
+                onClick={() => setPane("preview")}
               >
                 Pratinjau CV
               </TabButton>
-              <TabButton active={tab === "ats"} onClick={() => setTab("ats")}>
+              <TabButton active={pane === "ats"} onClick={() => setPane("ats")}>
                 <Gauge size={14} />
                 Skor ATS
-                <Badge
-                  tone={
-                    analysis.score >= 70
-                      ? "good"
-                      : analysis.score >= 55
-                        ? "warn"
-                        : "bad"
-                  }
-                >
-                  {analysis.score}
-                </Badge>
+                <ScoreBadge score={analysis.score} />
               </TabButton>
 
               <Link
                 href={`/resume/${initial.id}/ats`}
-                className="ml-auto text-[11px] font-medium text-brand-600 hover:underline"
+                className="ml-auto flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline"
               >
+                <ScanSearch size={13} />
                 Cocokkan dengan lowongan
               </Link>
             </div>
 
-            <div className={tab === "preview" ? "min-h-0 flex-1" : "hidden"}>
+            <div className={cn("min-h-0 flex-1", pane === "ats" && "hidden")}>
               <PreviewPane
                 data={data}
                 highlight={highlight}
@@ -485,22 +578,41 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
               />
             </div>
 
-            {tab === "ats" && (
-              <div className="thin-scrollbar min-h-0 flex-1 overflow-y-auto bg-ink-50 p-5">
-                <AtsPanel
-                  result={analysis}
-                  onJumpTo={(section) => {
-                    const key = section === "personal" ? "personal" : section;
-                    setOpenSections((prev) => new Set(prev).add(key));
-                    document
-                      .querySelector(`#form-anchor-${key}`)
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                />
+            {pane === "ats" && (
+              <div className="thin-scrollbar min-h-0 flex-1 overflow-y-auto bg-ink-50 p-4 pb-24 sm:p-5 lg:pb-5">
+                <AtsPanel result={analysis} onJumpTo={jumpToSection} />
               </div>
             )}
           </div>
         </div>
+
+        {/* ============================================================ */}
+        {/* Navigasi bawah - hanya layar sempit                           */}
+        {/* ============================================================ */}
+        <nav
+          aria-label="Panel editor"
+          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-ink-200 bg-white/95 backdrop-blur lg:hidden"
+        >
+          <PaneButton
+            active={pane === "form"}
+            onClick={() => setPane("form")}
+            icon={LayoutList}
+            label="Isi Data"
+          />
+          <PaneButton
+            active={pane === "preview"}
+            onClick={() => setPane("preview")}
+            icon={FileText}
+            label="Pratinjau"
+          />
+          <PaneButton
+            active={pane === "ats"}
+            onClick={() => setPane("ats")}
+            icon={Gauge}
+            label="Skor ATS"
+            badge={analysis.score}
+          />
+        </nav>
       </div>
     </EditorProvider>
   );
@@ -523,13 +635,145 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-semibold transition-colors ${
+      aria-pressed={active}
+      className={cn(
+        "flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-semibold transition-colors",
         active
           ? "border-brand-600 text-brand-700"
-          : "border-transparent text-ink-500 hover:text-ink-800"
-      }`}
+          : "border-transparent text-ink-500 hover:text-ink-800",
+      )}
     >
       {children}
+    </button>
+  );
+}
+
+function ScoreBadge({ score }: { score: number }) {
+  return (
+    <Badge tone={score >= 70 ? "good" : score >= 55 ? "warn" : "bad"}>
+      {score}
+    </Badge>
+  );
+}
+
+/** Tombol navigasi panel di bilah bawah (layar sempit). */
+function PaneButton({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+  badge,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ size?: number }>;
+  label: string;
+  badge?: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold transition-colors",
+        // Tinggi sentuh minimal 44 piksel mengikuti panduan antarmuka sentuh.
+        "min-h-[3.25rem]",
+        active ? "text-brand-700" : "text-ink-500",
+      )}
+    >
+      <span className="relative">
+        <Icon size={18} />
+        {badge !== undefined && (
+          <span
+            className={cn(
+              "absolute -top-1.5 -right-3.5 rounded-full px-1 text-[9px] leading-4 font-bold text-white",
+              badge >= 70 ? "bg-good" : badge >= 55 ? "bg-warn" : "bg-bad",
+            )}
+          >
+            {badge}
+          </span>
+        )}
+      </span>
+      {label}
+    </button>
+  );
+}
+
+/** Menu aksi ringkas untuk layar sempit. */
+function ActionsMenu({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!ref.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label="Menu aksi"
+      >
+        <MoreHorizontal size={16} />
+      </Button>
+
+      {open && (
+        <div
+          role="menu"
+          onClick={() => setOpen(false)}
+          className="absolute right-0 z-40 mt-1.5 w-64 overflow-hidden rounded-xl border border-ink-200 bg-white shadow-xl"
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ActionItem({
+  icon: Icon,
+  label,
+  hint,
+  onClick,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  hint: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={onClick}
+      className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-ink-50"
+    >
+      <Icon size={16} className="mt-0.5 shrink-0 text-ink-500" />
+      <span className="min-w-0">
+        <span className="block text-sm font-medium text-ink-900">{label}</span>
+        <span className="block text-[11px] leading-snug text-ink-500">
+          {hint}
+        </span>
+      </span>
     </button>
   );
 }
@@ -542,9 +786,11 @@ function SaveIndicator({
   state: SaveState;
   savedAt: Date | null;
 }) {
+  const base = "flex items-center gap-1.5 text-[11px]";
+
   if (state === "saving") {
     return (
-      <span className="flex items-center gap-1.5 text-[11px] text-ink-500">
+      <span className={cn(base, "text-ink-500")} role="status">
         <Loader2 size={13} className="animate-spin" />
         Menyimpan...
       </span>
@@ -553,7 +799,7 @@ function SaveIndicator({
 
   if (state === "error") {
     return (
-      <span className="flex items-center gap-1.5 text-[11px] font-medium text-bad">
+      <span className={cn(base, "font-medium text-bad")} role="status">
         <CloudOff size={13} />
         Gagal menyimpan
       </span>
@@ -562,7 +808,7 @@ function SaveIndicator({
 
   if (state === "dirty") {
     return (
-      <span className="flex items-center gap-1.5 text-[11px] text-ink-500">
+      <span className={cn(base, "text-ink-500")}>
         <AlertTriangle size={13} />
         Belum tersimpan
       </span>
@@ -571,7 +817,7 @@ function SaveIndicator({
 
   if (savedAt) {
     return (
-      <span className="flex items-center gap-1.5 text-[11px] text-good">
+      <span className={cn(base, "text-good")} role="status">
         <Check size={13} />
         Tersimpan{" "}
         {savedAt.toLocaleTimeString("id-ID", {
@@ -582,7 +828,5 @@ function SaveIndicator({
     );
   }
 
-  return (
-    <span className="text-[11px] text-ink-400">Tersimpan otomatis</span>
-  );
+  return <span className="text-[11px] text-ink-400">Tersimpan otomatis</span>;
 }

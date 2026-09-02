@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { checkRateLimit, LIMITS, resetRateLimit } from "@/lib/rate-limit";
 
 /**
  * Konfigurasi autentikasi (Auth.js v5).
@@ -45,6 +46,14 @@ const config: NextAuthConfig = {
         if (!parsed.success) return null;
 
         const email = parsed.data.email.trim().toLowerCase();
+
+        // Pembatasan laju berdasarkan alamat email, bukan alamat IP.
+        // Penebakan kata sandi menyasar satu akun tertentu, sementara alamat
+        // IP mudah diganti-ganti oleh penyerang.
+        const limitKey = `login:${email}`;
+        const limit = await checkRateLimit({ key: limitKey, ...LIMITS.login });
+        if (!limit.allowed) return null;
+
         const user = await prisma.user.findUnique({ where: { email } });
 
         // Akun yang dibuat lewat Google tidak punya passwordHash.
@@ -55,6 +64,10 @@ const config: NextAuthConfig = {
           user.passwordHash,
         );
         if (!valid) return null;
+
+        // Percobaan yang berhasil mengosongkan penghitung, agar pengguna sah
+        // yang sempat salah ketik beberapa kali tidak terkunci setelahnya.
+        await resetRateLimit(limitKey);
 
         return {
           id: user.id,

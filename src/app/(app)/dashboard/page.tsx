@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
+import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/db";
 import type { ResumeSummary } from "@/lib/resume/types";
 
@@ -40,5 +41,10 @@ export default async function DashboardPage() {
     latestScore: row.atsAnalyses[0]?.score ?? null,
   }));
 
-  return <DashboardClient initialResumes={resumes} />;
+  return (
+    <>
+      <DashboardClient initialResumes={resumes} />
+      <SiteFooter compact />
+    </>
+  );
 }

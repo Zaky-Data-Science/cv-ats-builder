@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { AtsPageClient } from "@/components/ats/AtsPageClient";
+import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/db";
 import { getResume } from "@/lib/resume/persist";
 
@@ -27,6 +28,7 @@ export default async function AtsPage({
   });
 
   return (
+    <>
     <AtsPageClient
       resume={resume}
       initialHistory={history.map((h) => ({
@@ -35,5 +37,7 @@ export default async function AtsPage({
         createdAt: h.createdAt.toISOString(),
       }))}
     />
+    <SiteFooter compact />
+    </>
   );
 }

@@ -54,6 +54,50 @@ Dua hal yang membedakan rancangan ini:
 
 ---
 
+## 1b. Diagram Use Case
+
+```mermaid
+flowchart LR
+    P((Pengguna))
+    T((Pengunjung))
+
+    subgraph Sistem["CV ATS Builder"]
+        U1[Mendaftar / Masuk]
+        U2[Membuat CV]
+        U3[Mengisi data CV]
+        U4[Melihat pratinjau langsung]
+        U5[Melihat skor ATS]
+        U6[Mencocokkan dengan lowongan]
+        U7[Mengunduh PDF / DOCX / TXT]
+        U8[Mengekspor / mengimpor JSON]
+        U9[Menduplikasi CV]
+        U10[Mengelola akun]
+        U11[Membaca panduan]
+    end
+
+    T --> U11
+    T --> U1
+    P --> U2
+    P --> U3
+    P --> U4
+    P --> U5
+    P --> U6
+    P --> U7
+    P --> U8
+    P --> U9
+    P --> U10
+
+    U3 -. otomatis .-> U4
+    U3 -. otomatis .-> U5
+    U6 -. memperluas .-> U5
+```
+
+Pengunjung yang belum masuk hanya dapat membaca halaman publik (beranda,
+panduan, tentang) dan mendaftar. Seluruh operasi terhadap data CV menuntut
+sesi yang sah, dan tiap operasi memeriksa kepemilikan datanya sendiri.
+
+---
+
 ## 2. Rancangan Basis Data
 
 ### 2.1 Diagram Relasi Entitas
@@ -346,8 +390,11 @@ lowongan tertentu, meski mutu penulisan CV-nya sama.
 | Pesan galat login | Tidak membedakan "email tidak terdaftar" dan "kata sandi salah", agar tidak dapat dipakai menebak email mana yang terdaftar. |
 | Penautan akun Google | Hanya dilakukan bila Google sudah memverifikasi kepemilikan email (`profile.email_verified`). Tanpa pemeriksaan ini, akun Google beralamat sama berpotensi mengambil alih akun. |
 | Penggantian kata sandi | Mewajibkan kata sandi lama bagi akun yang sudah memilikinya. |
-| Validasi masukan | Seluruh payload diperiksa dengan skema Zod sebelum menyentuh basis data. |
+| Validasi masukan | Seluruh payload diperiksa dengan skema Zod sebelum menyentuh basis data, lengkap dengan batas panjang tiap kolom dan batas jumlah entri tiap section. |
 | Penghapusan akun | Meminta pengguna mengetik `HAPUS AKUN` secara persis. |
+| Pembatasan laju | Percobaan masuk dibatasi 8 kali per 15 menit **per alamat email** - bukan per alamat IP, sebab penebakan kata sandi menyasar satu akun tertentu sementara alamat IP mudah diganti. Pendaftaran dibatasi 5 kali per jam per alamat IP. Penghitungnya disimpan di basis data, bukan di memori proses: pada platform serverless tiap permintaan dapat dilayani instans berbeda, sehingga penghitung di memori akan mudah dilewati. |
+| Header keamanan | `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` mematikan seluruh perangkat keras, `Strict-Transport-Security` di production, serta Content-Security-Policy. Header `X-Powered-By` dimatikan. |
+| Kebocoran informasi | Alamat editor memuat id CV, sehingga `Referrer-Policy` menahan pengiriman alamat lengkap ke situs pihak ketiga. Halaman yang memerlukan login juga dikecualikan dari perayapan mesin pencari lewat `robots.txt`. |
 
 ---
 
@@ -368,7 +415,11 @@ Pengujian dilakukan terhadap aplikasi yang benar-benar berjalan.
 | Teks PDF | Membuat PDF sungguhan lalu mengekstraksi teksnya | 77 baris terekstraksi, urutan benar, seluruh field kunci ditemukan |
 | Struktur DOCX | Membuka isi berkas `.docx` | Tanpa tabel, tanpa kotak teks, tanpa header/footer, memakai daftar berpoin asli Word |
 | Galat peramban | Menelusuri seluruh halaman sambil merekam console | 0 galat |
-| Build production | `npm run build` | Berhasil, 20 route |
+| Build production | `npm run build` | Berhasil, 26 route |
+| Tata letak responsif | 7 halaman diuji pada 4 ukuran layar (390, 768, 1280, 1680 piksel) | Tidak ada halaman yang meluber ke samping; perpindahan panel editor di layar sempit berfungsi |
+| Perbesaran pratinjau di ponsel | Membuka panel pratinjau pada layar 390 piksel | Kertas A4 otomatis diperkecil ke 45% sehingga muat selebar layar tanpa gulir menyamping |
+| Pembatasan laju | Percobaan masuk berulang terhadap satu email | Ditolak setelah melewati batas; penghitung tereset setelah masuk berhasil |
+| Galat peramban lintas ukuran | Menelusuri seluruh halaman pada 4 ukuran layar sambil merekam console | 0 galat |
 
 ---
 
@@ -392,3 +443,140 @@ Disebutkan terbuka agar dapat ditulis pada bab keterbatasan penelitian.
    sisi server tanpa proses render.
 5. **Belum ada berkas uji otomatis di dalam repositori.** Verifikasi pada
    bagian 6 dilakukan lewat skrip terpisah terhadap aplikasi yang berjalan.
+   Menjadikannya berkas uji yang tersimpan di dalam repositori adalah langkah
+   lanjutan yang wajar.
+6. **Pemulihan kata sandi lewat surel belum tersedia,** sebab memerlukan
+   layanan pengirim surel. Pengguna yang lupa kata sandi dapat masuk lewat
+   Google bila alamat surelnya sama, lalu membuat kata sandi baru.
+7. **Content-Security-Policy masih memuat `'unsafe-inline'` pada script-src.**
+   Next.js menyisipkan skrip bootstrap sebaris untuk proses hidrasi;
+   menghapusnya menuntut penerapan nonce menyeluruh yang berada di luar
+   cakupan versi ini.
+
+---
+
+## 8. Rancangan Antarmuka
+
+### 8.1 Tata Letak Responsif
+
+Aplikasi ini kemungkinan besar dibuka dari ponsel - pencarian kerja kerap
+dilakukan sambil bepergian. Karena itu tata letaknya tidak sekadar
+"dipersempit", melainkan disusun ulang.
+
+| Ukuran layar | Susunan editor |
+|---|---|
+| Di bawah 1024 piksel | Satu panel penuh layar pada satu waktu, berganti lewat bilah navigasi bawah: **Isi Data**, **Pratinjau**, **Skor ATS**. Seluruh tombol unduhan diringkas ke satu menu. |
+| 1024 piksel ke atas | Dua panel berdampingan: formulir di kiri, pratinjau atau penilaian di kanan. |
+
+Perpindahan panel dikerjakan lewat kelas CSS, bukan lewat kueri media di
+JavaScript. Konsekuensinya: keluaran server dan hasil hidrasi di peramban
+selalu identik, sehingga tidak ada kedipan tata letak maupun galat hidrasi
+saat halaman pertama kali dimuat.
+
+Pada panel pratinjau, tingkat perbesaran awal dihitung dari lebar area yang
+tersedia. Tanpa itu, pengguna ponsel menerima kertas selebar 794 piksel di
+layar 390 piksel dan harus menggulir menyamping hanya untuk membaca satu
+baris. Pengukuran sengaja ditunda sampai panelnya benar-benar terlihat -
+mengukur saat panel masih tersembunyi menghasilkan lebar nol dan mengunci
+perbesaran pada nilai terkecil.
+
+### 8.2 Gerak dan Kedalaman
+
+Halaman depan memakai efek kedalaman: kartu CV miring mengikuti kursor,
+lencana melayang di depannya, dan bagian-bagian halaman muncul saat tergulir.
+
+Seluruhnya dibangun dari `transform` dan `opacity` CSS, **tanpa pustaka 3D**.
+Ini keputusan sadar, bukan keterbatasan:
+
+- Mesin 3D seperti Three.js menambah ratusan kilobyte. Pengguna aplikasi ini
+  sedang melamar kerja, kerap dari ponsel kelas menengah ke bawah dan jaringan
+  seluler - memperlambat halaman demi hiasan berlawanan dengan tujuan
+  aplikasinya.
+- `transform` dan `opacity` dianimasikan oleh compositor GPU dan tidak memicu
+  perhitungan ulang tata letak, sehingga tetap lancar pada perangkat lambat.
+- Efek kemiringan hanya aktif pada perangkat yang memiliki penunjuk presisi.
+  Di layar sentuh tidak ada kursor untuk diikuti, dan memaksakan gerak justru
+  mengganggu saat menggulir.
+
+Setiap animasi dimatikan sepenuhnya ketika sistem pengguna meminta pengurangan
+gerak (`prefers-reduced-motion`). Tidak satu pun informasi disampaikan hanya
+lewat gerak, sehingga halaman tetap utuh tanpanya.
+
+### 8.3 Aksesibilitas
+
+| Aspek | Penerapan |
+|---|---|
+| Navigasi papan ketik | Cincin fokus selalu terlihat; tersedia tautan "Lompat ke konten utama" di awal tiap halaman publik |
+| Pembaca layar | Bagian yang dapat dilipat memakai elemen `details`/`summary` bawaan HTML; tombol panel memakai `aria-pressed`; status simpan memakai `role="status"` |
+| Diagram alur | Dibangun dari elemen HTML bertulisan asli, bukan gambar - dapat dibacakan pembaca layar dan diperbesar tanpa pecah |
+| Perbesaran halaman | Tidak dikunci; `maximum-scale` disetel 5 |
+| Sasaran sentuh | Tombol pada bilah navigasi bawah berukuran minimal 52 piksel |
+| Warna | Status tidak hanya dibedakan warna - selalu disertai ikon dan teks (mis. "Harus diperbaiki") |
+
+---
+
+## 9. Catatan Lingkungan Pengembangan
+
+### 9.1 Basis Data Lokal
+
+Pengembangan lokal memakai PostgreSQL yang disediakan `npx prisma dev`,
+sehingga tidak ada perangkat lunak yang perlu dipasang terpisah.
+
+**Peringatan penting:** menjalankan `prisma migrate dev` terhadap basis data
+tersebut ditemukan **menghapus isi tabel dan tabel `_prisma_migrations`**.
+Karena itu berkas migrasi pada project ini dibuat secara eksplisit:
+
+```bash
+# 1. Hasilkan SQL selisih antara riwayat migrasi dan skema terbaru
+npx prisma migrate diff \
+  --from-migrations prisma/migrations \
+  --to-schema prisma/schema.prisma \
+  --script -o migration.sql
+
+# 2. Simpan sebagai folder migrasi bertanggal, lalu terapkan ke basis data lokal
+```
+
+Cara ini justru lebih menguntungkan: riwayat migrasi tetap utuh dan dapat
+ditelusuri, dan di production `prisma migrate deploy` menerapkannya seperti
+biasa pada PostgreSQL sungguhan (Neon) tanpa kendala apa pun.
+
+### 9.2 Lumbung Koneksi
+
+Adapter `PrismaPg` dikonfigurasi dengan lumbung koneksi kecil
+(`max: 5`) dan penutupan koneksi menganggur yang cepat
+(`idleTimeoutMillis: 10000`).
+
+Alasannya menyangkut lingkungan penyebaran: pada platform serverless setiap
+instans fungsi memegang lumbungnya sendiri, dan puluhan instans dapat hidup
+bersamaan saat lalu lintas naik. Lumbung besar akan menghabiskan batas koneksi
+basis data bukan karena bebannya berat, melainkan karena koneksi menumpuk
+tanpa dipakai.
+
+Penutupan cepat juga mencegah galat `ConnectionClosed`: bila aplikasi menahan
+koneksi lebih lama daripada batas diam di sisi server, permintaan berikutnya
+berpeluang memungut koneksi yang sebenarnya sudah ditutup. Galat ini sempat
+teramati selama pengembangan dan hilang setelah pengaturan tersebut
+diterapkan.
+
+---
+
+## 10. Ringkasan Struktur Berkas
+
+| Berkas / folder | Isi |
+|---|---|
+| `prisma/schema.prisma` | Definisi 17 tabel beserta relasinya |
+| `prisma/migrations/` | Riwayat perubahan skema |
+| `prisma/seed.ts` | Akun demo dan CV contoh |
+| `src/auth.ts` | Konfigurasi autentikasi, callback penautan akun Google |
+| `src/lib/ats/engine.ts` | Mesin penilaian lima dimensi |
+| `src/lib/ats/keywords.ts` | Ekstraksi dan pencocokan kata kunci |
+| `src/lib/ats/vocabulary.ts` | Kata henti, kata kerja aksi, frasa klise |
+| `src/lib/resume/plaintext.ts` | Pengubah CV menjadi teks polos |
+| `src/lib/resume/persist.ts` | Baca-tulis CV dalam satu transaksi |
+| `src/lib/guard.ts` | Pemeriksaan sesi dan kepemilikan data |
+| `src/lib/rate-limit.ts` | Pembatasan laju berbasis basis data |
+| `src/lib/docx/build.ts` | Pembangun berkas Word |
+| `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau sekaligus cetak |
+| `src/components/editor/` | Formulir per-bagian, panel pratinjau, simpan otomatis |
+| `src/components/motion.tsx` | Efek kedalaman dan kemunculan |
+| `docs/panduan-pengguna.md` | Panduan pemakaian lengkap |

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { SettingsClient } from "@/components/settings/SettingsClient";
+import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = { title: "Pengaturan" };
@@ -21,11 +22,14 @@ export default async function SettingsPage() {
   });
 
   return (
+    <>
     <SettingsClient
       email={user.email}
       initialName={user.name}
       hasPassword={Boolean(user.passwordHash)}
       resumeCount={user._count.resumes}
     />
+    <SiteFooter compact />
+    </>
   );
 }

@@ -1,9 +1,16 @@
-# Pembuat CV ATS-Friendly
+# CV ATS Builder
 
 Aplikasi web untuk menyusun CV yang terbaca sistem *Applicant Tracking System* (ATS)
 melalui field terstruktur, dengan pratinjau langsung, penilaian ATS beserta saran
 perbaikan, ekspor PDF/Word/teks/JSON, dan penyimpanan permanen di basis data
 sehingga CV dapat diedit kembali kapan saja.
+
+> **Tugas Akhir** - Muhammad Agus Riyadh Zaky
+> Mahasiswa D3 Teknik Komputer, Politeknik Negeri Samarinda
+
+**Dokumentasi lain:**
+- [Panduan Pengguna](docs/panduan-pengguna.md) - cara memakai aplikasi, lengkap dengan diagram alur
+- [Dokumentasi Teknis](docs/dokumentasi-teknis.md) - ERD, use case, arsitektur, aturan penilaian, hasil verifikasi
 
 ---
 
@@ -110,6 +117,20 @@ npm run db:migrate
 npm run db:seed
 ```
 
+> **Peringatan untuk basis data lokal `prisma dev`.**
+> Menjalankan `prisma migrate dev` terhadap basis data ini ditemukan
+> **menghapus seluruh isi tabel**. Bila nanti Anda mengubah `schema.prisma`,
+> jangan pakai `npm run db:migrate` di lokal - buat berkas migrasinya secara
+> eksplisit:
+>
+> ```bash
+> npx prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script -o migration.sql
+> ```
+>
+> lalu simpan hasilnya ke `prisma/migrations/<tanggal>_<nama>/migration.sql`
+> dan jalankan SQL-nya ke basis data lokal. Di production (Neon) tidak ada
+> kendala ini - `npm run db:deploy` berjalan normal.
+
 ### 6. Jalankan
 
 ```bash
@@ -135,7 +156,7 @@ Akun tersebut sudah berisi satu CV contoh lengkap.
 
 ```
 prisma/
-  schema.prisma          Skema basis data (16 tabel)
+  schema.prisma          Skema basis data (17 tabel)
   migrations/            Riwayat perubahan skema
   seed.ts                Akun demo dan CV contoh
 
@@ -144,6 +165,12 @@ src/
 
   app/
     page.tsx             Halaman depan
+    panduan/             Panduan penggunaan (publik)
+    tentang/             Latar belakang, rancangan, batasan (publik)
+    icon.tsx             Ikon situs, dibuat server
+    opengraph-image.tsx  Gambar pratinjau saat tautan dibagikan
+    robots.ts sitemap.ts manifest.ts
+    not-found.tsx error.tsx loading.tsx
     (auth)/              Masuk dan daftar
     (app)/               Halaman yang memerlukan login
       dashboard/         Daftar CV
@@ -155,14 +182,18 @@ src/
 
   components/
     ui.tsx               Komponen dasar (tombol, input, kartu)
+    motion.tsx           Efek kedalaman dan kemunculan (CSS, tanpa pustaka 3D)
+    PublicHeader.tsx SiteFooter.tsx FlowDiagram.tsx
     preview/             Dokumen CV - dipakai pratinjau sekaligus cetak
     editor/              Formulir per-section, panel pratinjau, autosave
     ats/                 Tampilan hasil penilaian
     dashboard/, auth/, settings/
 
   lib/
-    db.ts                Klien Prisma
+    db.ts                Klien Prisma beserta pengaturan lumbung koneksi
     guard.ts             Pemeriksaan sesi dan kepemilikan data
+    rate-limit.ts        Pembatasan laju masuk dan pendaftaran
+    site.ts              Identitas aplikasi dan pembuat
     utils.ts             Format tanggal, penggabung teks
     resume/              Tipe, validasi, contoh, penyimpanan, teks polos
     ats/                 Mesin penilaian, kata kunci, kosakata
