@@ -12,6 +12,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useI18n } from "@/components/i18n";
+import { GuestImport } from "@/components/dashboard/GuestImport";
 import { Interactive } from "@/components/motion";
 import { Badge, Button, Callout, Card, Input, Spinner } from "@/components/ui";
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -189,6 +190,10 @@ export function DashboardClient({
           <Callout tone="bad">{error}</Callout>
         </div>
       )}
+
+      {/* Tawaran memindahkan CV yang disusun tanpa akun. Tidak menampilkan
+          apa pun bila tidak ada titipan. */}
+      <GuestImport />
 
       {/* ---------------------------------------------------------------- */}
       {/* Keadaan kosong                                                    */}
