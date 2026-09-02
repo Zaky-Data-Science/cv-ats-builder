@@ -12,6 +12,8 @@ import {
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
+import { paperSpec } from "@/lib/resume/paper";
+import { resumeMargins } from "@/lib/resume/templates";
 import {
   ensureHttp,
   formatDateRange,
@@ -343,7 +345,13 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
     }
   }
 
-  const margin = Math.round(15 * MM_TO_TWIP);
+  // Margin mengikuti pilihan pengguna - sama persis dengan yang dipakai
+  // pratinjau dan hasil PDF. Sebelumnya nilainya dipatok 15 mm, sehingga
+  // berkas Word diam-diam berbeda dari PDF yang baru saja dilihat pengguna.
+  const paper = paperSpec(data.pageSize);
+  const margins = resumeMargins(data);
+  const marginY = Math.round(margins.y * MM_TO_TWIP);
+  const marginX = Math.round(margins.x * MM_TO_TWIP);
 
   const doc = new Document({
     // Properti dokumen diisi dengan identitas pemilik CV, bukan nama
@@ -371,11 +379,18 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
       {
         properties: {
           page: {
+            // Ukuran kertas ikut disetel; tanpa ini Word memakai bawaannya
+            // sendiri - kerap Letter - sehingga berkasnya berbeda ukuran dari
+            // PDF yang dihasilkan aplikasi yang sama.
+            size: {
+              width: Math.round(paper.widthMm * MM_TO_TWIP),
+              height: Math.round(paper.heightMm * MM_TO_TWIP),
+            },
             margin: {
-              top: margin,
-              bottom: margin,
-              left: margin,
-              right: margin,
+              top: marginY,
+              bottom: marginY,
+              left: marginX,
+              right: marginX,
             },
           },
         },

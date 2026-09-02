@@ -2,7 +2,13 @@ import * as React from "react";
 import { paperSpec } from "@/lib/resume/paper";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
-import { templateStyle, type TemplateStyle } from "@/lib/resume/templates";
+import {
+  paperPadding,
+  resumeMargins,
+  templateStyle,
+  type PaddingMode,
+  type TemplateStyle,
+} from "@/lib/resume/templates";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import {
   ensureHttp,
@@ -42,6 +48,16 @@ export interface ResumeDocumentProps {
   highlight?: string | null;
   /** Menonaktifkan sorotan dan efek layar saat dipakai untuk mencetak. */
   printMode?: boolean;
+  /**
+   * Siapa yang menyediakan margin halaman.
+   *
+   * "full" berarti dokumen ini yang menyediakannya - benar untuk pratinjau
+   * bersambung dan pratinjau template, yang memang menampilkan satu kertas
+   * utuh. "horizontal" dan "none" menyerahkannya kepada lembar pratinjau atau
+   * kepada aturan @page saat mencetak, sehingga margin atas dan bawah
+   * diperoleh **setiap** halaman - bukan hanya halaman pertama dan terakhir.
+   */
+  padding?: PaddingMode;
   className?: string;
 }
 
@@ -49,10 +65,12 @@ export function ResumeDocument({
   data,
   highlight,
   printMode = false,
+  padding = "full",
   className,
 }: ResumeDocumentProps) {
   const style = templateStyle(data.template);
   const paper = paperSpec(data.pageSize);
+  const margins = resumeMargins(data);
   const lang = data.language;
   const accent = style.useAccent ? data.accentColor : "#000000";
 
@@ -98,12 +116,16 @@ export function ResumeDocument({
           fontFamily: `${data.fontFamily}, Arial, Helvetica, sans-serif`,
           fontSize: `${data.fontSize}pt`,
           lineHeight: data.lineHeight,
-          padding: style.padding,
+          padding: paperPadding(margins, padding),
           // Ukuran kertas dikirim sebagai custom property, bukan lebar/tinggi
           // langsung, agar aturan cetak di globals.css dapat menimpanya
           // dengan "width: auto" tanpa berbenturan dengan style sebaris.
           "--paper-width": `${paper.widthMm}mm`,
-          "--paper-height": `${paper.heightMm}mm`,
+          // Tinggi minimum hanya berlaku saat dokumen ini memang mewakili satu
+          // kertas utuh. Pada mode per halaman, lembarnyalah yang menentukan
+          // tinggi; memaksakan tinggi kertas di sini akan membuat CV pendek
+          // terhitung dua halaman.
+          "--paper-height": padding === "full" ? `${paper.heightMm}mm` : "0",
         } as React.CSSProperties
       }
       data-resume-document

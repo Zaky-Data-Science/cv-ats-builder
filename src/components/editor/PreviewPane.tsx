@@ -5,7 +5,8 @@ import { Columns2, Maximize2, Minus, Plus, StretchVertical } from "lucide-react"
 import { useI18n } from "@/components/i18n";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { Badge, Button } from "@/components/ui";
-import { paperPx, paperSpec } from "@/lib/resume/paper";
+import { mmToPx, paperPx, paperSpec } from "@/lib/resume/paper";
+import { resumeMargins } from "@/lib/resume/templates";
 import type { ResumeData } from "@/lib/resume/types";
 import { cn } from "@/lib/utils";
 
@@ -32,13 +33,32 @@ export type PreviewMode = "paged" | "continuous";
  *  - **Sambung** menampilkannya sebagai satu gulungan panjang, lebih nyaman
  *    dibaca cepat sambil menyunting.
  *
- * Cara memotongnya perlu dijelaskan karena tidak biasa: dokumennya **tidak**
- * dipecah menjadi beberapa dokumen. Setiap lembar berisi dokumen yang sama
- * utuh, digeser ke atas sejauh satu halaman dikali nomor lembarnya, lalu
- * dipangkas oleh induknya yang setinggi satu halaman. Dengan begitu aliran
- * teksnya tetap dihitung peramban persis seperti saat dicetak - tidak ada
- * kemungkinan pratinjau memecah paragraf di tempat yang berbeda dari
- * hasil PDF-nya.
+ * ---------------------------------------------------------------------------
+ * Soal margin, karena inilah bagian yang paling mudah salah
+ * ---------------------------------------------------------------------------
+ *
+ * Margin halaman **tidak** boleh berasal dari padding dokumennya. Padding
+ * hanya berlaku sekali untuk seluruh dokumen yang mengalir: halaman pertama
+ * memperoleh margin atas, halaman terakhir memperoleh margin bawah, dan setiap
+ * pergantian halaman di antaranya tidak memperoleh apa pun - teks di dasar
+ * halaman menempel ke tepi kertas.
+ *
+ * Karena itu pada mode per halaman dokumennya dirender **tanpa margin atas dan
+ * bawah**, lalu setiap lembar menyediakannya sendiri. Tinggi yang benar-benar
+ * dapat diisi menjadi:
+ *
+ *     tinggi terpakai = tinggi kertas - margin atas - margin bawah
+ *
+ * dan itulah satuan yang dipakai menghitung jumlah halaman maupun menggeser
+ * isi tiap lembar. Angka yang sama dipasang sebagai `@page { margin }` pada
+ * halaman cetak, sehingga pratinjau dan hasil PDF memotong di tempat yang
+ * persis sama.
+ *
+ * Cara memotongnya sendiri perlu dijelaskan karena tidak biasa: dokumennya
+ * **tidak** dipecah menjadi beberapa dokumen. Setiap lembar berisi dokumen
+ * yang sama utuh, digeser ke atas sejauh satu tinggi terpakai dikali nomor
+ * lembarnya, lalu dipangkas oleh induknya. Dengan begitu aliran teksnya tetap
+ * dihitung peramban persis seperti saat dicetak.
  *
  * Pada layar sempit, tingkat perbesaran awal dihitung agar lebar kertas pas
  * dengan lebar layar. Tanpa itu, pengguna ponsel akan menerima kertas selebar
@@ -66,6 +86,13 @@ export function PreviewPane({
 
   const paper = paperSpec(data.pageSize);
   const { width: pageWidth, height: pageHeight } = paperPx(data.pageSize);
+
+  const margins = resumeMargins(data);
+  const marginTopPx = mmToPx(margins.y);
+  // Tinggi yang benar-benar dapat diisi teks pada satu halaman. Dijaga tetap
+  // positif: margin yang mustahil besar tidak boleh membuat jumlah halaman
+  // menjadi tak hingga.
+  const usableHeight = Math.max(120, pageHeight - marginTopPx * 2);
 
   /** Perbesaran yang membuat lebar kertas pas dengan lebar area yang tersedia. */
   const fitZoom = React.useCallback(() => {
@@ -130,7 +157,15 @@ export function PreviewPane({
       // penilaian), tingginya menjadi nol. Pengukuran itu harus diabaikan,
       // bukan dianggap sebagai "CV menyusut jadi satu halaman".
       if (height === 0) return;
-      const next = Math.max(1, Math.ceil(height / pageHeight - 0.02));
+
+      // Pada mode bersambung, dokumennya membawa margin atas dan bawahnya
+      // sendiri; keduanya dikurangi agar yang dibandingkan selalu tinggi isi,
+      // bukan tinggi kertas. Tanpa penyeragaman ini, jumlah halaman akan
+      // berbeda antara kedua mode - dan salah satunya pasti salah.
+      const content =
+        mode === "continuous" ? height - marginTopPx * 2 : height;
+
+      const next = Math.max(1, Math.ceil(content / usableHeight - 0.02));
       setPages(next);
       onPageCountChange?.(next);
     };
@@ -139,7 +174,7 @@ export function PreviewPane({
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     return () => observer.disconnect();
-  }, [data, pageHeight, onPageCountChange]);
+  }, [data, mode, marginTopPx, usableHeight, onPageCountChange]);
 
   // Menggulirkan pratinjau ke blok yang sedang disorot.
   React.useEffect(() => {
@@ -161,12 +196,12 @@ export function PreviewPane({
     const offset =
       target.getBoundingClientRect().top -
       article.getBoundingClientRect().top;
-    const index = Math.max(0, Math.floor(offset / pageHeight));
+    const index = Math.max(0, Math.floor(offset / usableHeight));
     sheetRefs.current[index]?.scrollIntoView({
       behavior: "smooth",
       block: "center",
     });
-  }, [highlight, mode, pageHeight]);
+  }, [highlight, mode, usableHeight]);
 
   const currentZoom = zoom ?? 0.72;
 
@@ -302,12 +337,15 @@ export function PreviewPane({
             >
               <ResumeDocument data={data} highlight={highlight} />
 
-              {/* Garis batas halaman - hanya penanda di layar. */}
+              {/* Garis batas halaman - hanya penanda di layar. Diletakkan
+                  sejauh margin atas ditambah kelipatan tinggi terpakai,
+                  sehingga menunjuk tempat yang sama dengan potongan pada
+                  mode per halaman maupun pada hasil cetak. */}
               {Array.from({ length: pages - 1 }, (_, index) => (
                 <div
                   key={index}
                   className="page-guide"
-                  style={{ top: pageHeight * (index + 1) }}
+                  style={{ top: marginTopPx + usableHeight * (index + 1) }}
                 >
                   <span>
                     {t.preview.pageLabel} {index + 2}
@@ -331,7 +369,7 @@ export function PreviewPane({
                 }}
               >
                 <div
-                  className="overflow-hidden bg-white shadow-lg"
+                  className="relative overflow-hidden bg-white shadow-lg"
                   style={{
                     width: pageWidth,
                     height: pageHeight,
@@ -339,8 +377,25 @@ export function PreviewPane({
                     transformOrigin: "top left",
                   }}
                 >
-                  <div style={{ transform: `translateY(${-index * pageHeight}px)` }}>
-                    <ResumeDocument data={data} highlight={highlight} />
+                  {/*
+                    Jendela isi: dimulai sejauh margin atas dan setinggi ruang
+                    yang benar-benar terpakai. Sisa ruang di bawahnya itulah
+                    margin bawah - besarnya sama persis dengan margin atas, dan
+                    diperoleh setiap lembar, bukan hanya lembar terakhir.
+                  */}
+                  <div
+                    className="absolute inset-x-0 overflow-hidden"
+                    style={{ top: marginTopPx, height: usableHeight }}
+                  >
+                    <div
+                      style={{ transform: `translateY(${-index * usableHeight}px)` }}
+                    >
+                      <ResumeDocument
+                        data={data}
+                        highlight={highlight}
+                        padding="horizontal"
+                      />
+                    </div>
                   </div>
                 </div>
 

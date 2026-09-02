@@ -130,6 +130,13 @@ model Resume {
   language    ResumeLanguage @default(ID)
   pageSize    PaperSize      @default(A4)
 
+  /// Margin halaman dalam milimeter, bila pengguna menyetelnya sendiri.
+  /// NULL berarti "ikut template" - disimpan sebagai NULL, bukan disalin
+  /// angkanya, supaya CV yang belum pernah disetel manual ikut menyesuaikan
+  /// sendiri ketika templatenya diganti.
+  marginYMm   Int?
+  marginXMm   Int?
+
   /// Urutan tampil section pada CV, contoh:
   /// ["summary","experience","education","skill","project"]
   sectionOrder Json

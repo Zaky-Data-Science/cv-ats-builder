@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
-import type { TemplateId } from "@/lib/resume/types";
+import type { ResumeData, TemplateId } from "@/lib/resume/types";
 
 /**
  * ============================================================================
@@ -35,7 +35,17 @@ export type HeadingStyle =
   | "double-rule";
 
 export interface TemplateStyle {
-  padding: string;
+  /**
+   * Margin halaman dalam milimeter.
+   *
+   * Disimpan sebagai angka, bukan sebagai untai CSS, karena nilai yang sama
+   * dipakai di dua tempat yang tidak dapat saling membaca: properti padding
+   * pada elemen kertas, dan aturan @page saat mencetak. Margin atas dan bawah
+   * dibuat sama besar - itulah yang membuat teks tidak terlihat jatuh
+   * terlalu ke bawah pada halaman mana pun.
+   */
+  paddingYMm: number;
+  paddingXMm: number;
   nameSize: string;
   nameAlign: "left" | "center";
   nameWeight: number;
@@ -63,7 +73,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Formal dan konservatif - pilihan teraman untuk instansi, BUMN, dan
   // perusahaan besar yang masih memakai ATS generasi lama.
   CLASSIC: {
-    padding: "15mm 16mm",
+    paddingYMm: 15,
+    paddingXMm: 16,
     nameSize: "20pt",
     nameAlign: "center",
     nameWeight: 700,
@@ -87,7 +98,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Lebih lapang dengan aksen warna pada judul section. Cocok untuk
   // perusahaan teknologi dan startup.
   MODERN: {
-    padding: "16mm 17mm",
+    paddingYMm: 16,
+    paddingXMm: 17,
     nameSize: "22pt",
     nameAlign: "left",
     nameWeight: 700,
@@ -111,7 +123,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Paling padat - untuk pelamar dengan pengalaman panjang yang tetap ingin
   // muat dalam satu halaman.
   COMPACT: {
-    padding: "12mm 13mm",
+    paddingYMm: 12,
+    paddingXMm: 13,
     nameSize: "17pt",
     nameAlign: "left",
     nameWeight: 700,
@@ -135,7 +148,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Nama besar dengan garis tebal di bawahnya. Kesan senior tanpa satu pun
   // elemen grafis - yang membentuk kesan itu hanya ukuran dan bobot huruf.
   EXECUTIVE: {
-    padding: "16mm 18mm",
+    paddingYMm: 16,
+    paddingXMm: 18,
     nameSize: "25pt",
     nameAlign: "left",
     nameWeight: 700,
@@ -160,7 +174,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // dan bobot huruf - paling bersih, dan paling tidak mungkin membingungkan
   // pengurai mana pun.
   MINIMAL: {
-    padding: "18mm 19mm",
+    paddingYMm: 18,
+    paddingXMm: 19,
     nameSize: "21pt",
     nameAlign: "left",
     nameWeight: 600,
@@ -185,7 +200,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Garisnya murni border CSS, bukan gambar, jadi tidak ikut terbaca sebagai
   // isi oleh pengurai.
   TIMELINE: {
-    padding: "15mm 16mm",
+    paddingYMm: 15,
+    paddingXMm: 16,
     nameSize: "21pt",
     nameAlign: "left",
     nameWeight: 700,
@@ -209,7 +225,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Huruf kecil dan rapat, untuk CV yang panjang karena berisi publikasi,
   // organisasi, dan penghargaan - lazim pada lamaran beasiswa dan akademik.
   ACADEMIC: {
-    padding: "14mm 15mm",
+    paddingYMm: 14,
+    paddingXMm: 15,
     nameSize: "18pt",
     nameAlign: "center",
     nameWeight: 600,
@@ -233,7 +250,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Paling formal: nama di tengah, garis ganda, judul bagian huruf besar.
   // Bentuk yang masih diharapkan banyak seleksi instansi dan BUMN.
   GOVERNMENT: {
-    padding: "15mm 17mm",
+    paddingYMm: 15,
+    paddingXMm: 17,
     nameSize: "19pt",
     nameAlign: "center",
     nameWeight: 700,
@@ -258,7 +276,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Teksnya tetap mengalir satu kolom - foto adalah elemen mengambang yang
   // tidak menyela urutan bacaan.
   PORTRAIT: {
-    padding: "14mm 16mm",
+    paddingYMm: 14,
+    paddingXMm: 16,
     nameSize: "21pt",
     nameAlign: "left",
     nameWeight: 700,
@@ -282,7 +301,8 @@ export const TEMPLATE_STYLES: Record<TemplateId, TemplateStyle> = {
   // Berfoto, luwes: foto bulat di tengah atas. Untuk bidang yang memang
   // menuntut penampilan - layanan pelanggan, pramugari, perhotelan.
   PROFILE: {
-    padding: "14mm 16mm",
+    paddingYMm: 14,
+    paddingXMm: 16,
     nameSize: "20pt",
     nameAlign: "center",
     nameWeight: 700,
@@ -438,4 +458,50 @@ export function templateSupportsPhoto(template: TemplateId): boolean {
 
 export function templateStyle(template: TemplateId): TemplateStyle {
   return TEMPLATE_STYLES[template] ?? TEMPLATE_STYLES.CLASSIC;
+}
+
+/** Cara mengisi ruang tepi kertas pada sebuah keluaran. */
+export type PaddingMode =
+  /** Margin penuh - dipakai pratinjau bersambung dan pratinjau template. */
+  | "full"
+  /**
+   * Hanya margin kiri-kanan. Dipakai pratinjau per halaman: margin atas dan
+   * bawah di sana disediakan oleh lembarnya, bukan oleh dokumennya, supaya
+   * setiap lembar memperolehnya - bukan hanya lembar pertama dan terakhir.
+   */
+  | "horizontal"
+  /** Tanpa margin sama sekali - saat mencetak, @page yang menyediakannya. */
+  | "none";
+
+/**
+ * Margin halaman yang benar-benar berlaku pada sebuah CV, dalam milimeter.
+ *
+ * Bawaannya mengikuti template, tetapi pengguna boleh menimpanya lewat panel
+ * Tampilan. Nilai null berarti "ikut template" - disimpan begitu, bukan
+ * disalin angkanya, supaya CV yang belum pernah disetel manual ikut berubah
+ * sendiri ketika templatenya diganti. Menyalin angkanya akan membuat CV
+ * terkunci pada margin template lama tanpa pengguna pernah memintanya.
+ */
+export function resumeMargins(
+  data: Pick<ResumeData, "template" | "marginYMm" | "marginXMm">,
+): { y: number; x: number } {
+  const style = templateStyle(data.template);
+  return {
+    y: data.marginYMm ?? style.paddingYMm,
+    x: data.marginXMm ?? style.paddingXMm,
+  };
+}
+
+/** Batas yang masuk akal untuk margin CV, dalam milimeter. */
+export const MARGIN_MIN_MM = 8;
+export const MARGIN_MAX_MM = 30;
+
+/** Nilai properti padding CSS untuk elemen kertas. */
+export function paperPadding(
+  margins: { y: number; x: number },
+  mode: PaddingMode = "full",
+): string {
+  if (mode === "none") return "0";
+  if (mode === "horizontal") return `0 ${margins.x}mm`;
+  return `${margins.y}mm ${margins.x}mm`;
 }

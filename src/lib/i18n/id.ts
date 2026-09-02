@@ -308,6 +308,13 @@ export const id = {
     headingLanguageHint:
       "Bahasa untuk judul bagian di dalam CV - terpisah dari bahasa antarmuka aplikasi.",
     accentColor: "Warna Aksen",
+    margin: "Margin Halaman",
+    marginY: "Margin Atas-Bawah",
+    marginX: "Margin Kiri-Kanan",
+    marginFollowTemplate: "ikut template",
+    marginReset: "Kembalikan ke bawaan template",
+    marginHint:
+      "Margin atas dan bawah selalu sama besar, dan berlaku pada setiap halaman - bukan hanya halaman pertama. Di bawah 10 mm sebagian pencetak akan memotong tepinya.",
     paperSize: "Ukuran Kertas",
     photoUnsupported:
       "Template ini tidak menampilkan foto. Pilih template Berfoto bila lowongan Anda memintanya.",

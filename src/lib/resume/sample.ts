@@ -308,6 +308,8 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
     lineHeight: 1.35,
     language: locale === "en" ? "EN" : "ID",
     pageSize: "A4",
+    marginYMm: null,
+    marginXMm: null,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
 
     personalInfo: {

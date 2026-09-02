@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { paperSpec } from "@/lib/resume/paper";
+import { resumeMargins } from "@/lib/resume/templates";
 import { getResume } from "@/lib/resume/persist";
 
 export const metadata: Metadata = {
@@ -34,20 +35,27 @@ export default async function PrintResumePage({
   if (!resume) notFound();
 
   const paper = paperSpec(resume.pageSize);
+  const margins = resumeMargins(resume);
 
   return (
     <div className="flex min-h-full justify-center bg-ink-200 print:block print:bg-white">
       {/*
-        Ukuran kertas harus disampaikan lewat aturan @page, dan at-rule tidak
-        dapat membaca custom property CSS. Karena itu satu aturan kecil
-        disisipkan di sini dengan ukuran yang dipilih pengguna - tanpa ini,
-        CV berukuran Letter atau F4 tetap akan dicetak pada bidang A4 dan
-        terpotong di tepinya.
+        Ukuran DAN margin kertas disampaikan lewat aturan @page, karena at-rule
+        tidak dapat membaca custom property CSS.
+
+        Margin sengaja ditaruh di sini, bukan sebagai padding pada elemen
+        kertas. Padding hanya berlaku sekali untuk seluruh dokumen yang
+        mengalir: halaman pertama memperoleh margin atas, halaman terakhir
+        memperoleh margin bawah, dan setiap pergantian halaman di antaranya
+        tidak memperoleh apa pun - teks di dasar halaman menempel ke tepi
+        kertas. Aturan @page berlaku pada **setiap** halaman, dan itulah yang
+        benar.
       */}
-      <style>{`@page { size: ${paper.cssSize}; margin: 0; }`}</style>
+      <style>{`@page { size: ${paper.cssSize}; margin: ${margins.y}mm ${margins.x}mm; }`}</style>
       <ResumeDocument
         data={resume}
         printMode
+        padding="none"
         className="shadow-lg print:shadow-none"
       />
     </div>

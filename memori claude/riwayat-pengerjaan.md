@@ -321,16 +321,58 @@ Empat perbaikan setelah tampilannya dilihat langsung:
    dan tidak ada lagi tombol yang menjanjikan dashboard kepada orang yang
    belum punya akun.
 
+### Perbaikan margin halaman dan margin kustom
+
+Ditemukan saat meninjau mode pratinjau per halaman: teks di dasar halaman
+menempel ke tepi kertas, dan halaman berikutnya dimulai dari tepi atas.
+
+**Penyebabnya bukan pratinjaunya.** Margin halaman berupa properti `padding`
+pada elemen kertas, sementara aturan cetaknya `@page { margin: 0 }`. Padding
+hanya berlaku sekali untuk seluruh dokumen yang mengalir - jadi hanya halaman
+pertama yang memperoleh margin atas dan hanya halaman terakhir yang memperoleh
+margin bawah. Cacat yang sama ikut terbawa ke berkas PDF, bukan sekadar tampil
+salah di layar.
+
+Yang dikerjakan:
+
+1. Margin dipindah ke `@page { margin: <atas-bawah> <kiri-kanan> }` yang memang
+   berlaku pada setiap halaman, dan padding kertas dikosongkan saat mencetak.
+2. Pratinjau per halaman meniru hal yang sama: dokumennya dirender tanpa margin
+   atas-bawah, lalu tiap lembar menyediakannya sendiri. Jumlah halaman dan
+   pergeseran isi tiap lembar kini dihitung dari **tinggi terpakai** = tinggi
+   kertas dikurangi kedua margin - satuan yang sama dengan yang dipakai
+   peramban saat mencetak.
+3. Nilai padding template diubah dari untai CSS menjadi angka milimeter
+   (`paddingYMm`, `paddingXMm`). Selama nilainya berupa untai teks, properti
+   CSS dan aturan `@page` mustahil dijaga tetap sama - keduanya tidak dapat
+   saling membaca.
+4. **Margin kini dapat disetel sendiri** lewat dua penggeser di panel Tampilan,
+   8-30 mm, disimpan pada kolom baru `resumes.marginYMm` dan `marginXMm`.
+   Keduanya boleh NULL, dan NULL berarti "ikut template" - disimpan begitu,
+   bukan disalin angkanya, supaya CV yang belum pernah disetel manual ikut
+   menyesuaikan sendiri ketika templatenya diganti.
+5. Berkas Word ikut memakai margin dan ukuran kertas yang sama. Sebelumnya
+   marginnya dipatok 15 mm dan ukuran kertasnya tidak pernah disetel sama
+   sekali, sehingga Word memakai bawaannya - kerap Letter. Berkas Word diam-diam
+   berbeda dari PDF yang baru saja dilihat pengguna.
+6. `estimatePages()` di mesin penilaian ikut memakai ukuran kertas dan margin
+   sebenarnya, bukan angka A4 dan 15 mm yang dipatok.
+
+Berkas uji bertambah delapan pemeriksaan yang mengunci perilaku ini -
+termasuk bahwa mode per halaman benar-benar melepas margin atas-bawah dari
+dokumennya, dan bahwa margin bawaan ikut berubah saat template diganti.
+Totalnya kini **107 pemeriksaan, 107 lulus**.
+
 ### Hasil pengujian
 
 | Berkas uji | Pemeriksaan | Hasil |
 |---|---:|---|
 | Kamus dwibahasa | 3 | lulus |
 | Mesin penilaian CV terstruktur | 14 | lulus |
-| Template CV dan ukuran kertas | 55 | lulus |
+| Template CV, ukuran kertas, margin | 63 | lulus |
 | Penilai berkas CV | 18 | lulus |
 | Pembacaan PDF dan penilaiannya | 9 | lulus |
-| **Total** | **99** | **99 lulus, 0 gagal** |
+| **Total** | **107** | **107 lulus, 0 gagal** |
 
 Kalibrasi skor setelah perubahan:
 
@@ -385,7 +427,7 @@ Angka di bawah ini per akhir sesi 4.
 | Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 98 |
 | Baris kode termasuk berkas uji dan skrip | ~22.700 |
 | Tabel basis data | 16 |
-| Berkas migrasi | 3 |
+| Berkas migrasi | 4 |
 | Route aplikasi | 31 |
 | Dimensi penilaian ATS | 5 |
 | Bagian CV yang dapat diisi | 11 |
@@ -394,4 +436,4 @@ Angka di bawah ini per akhir sesi 4.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 99 |
+| Pemeriksaan otomatis | 107 |

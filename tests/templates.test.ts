@@ -6,6 +6,7 @@ import { PAPER_ORDER, PAPER_SIZES } from "../src/lib/resume/paper";
 import { resumeToPlainText } from "../src/lib/resume/plaintext";
 import { sampleResume } from "../src/lib/resume/sample";
 import {
+  resumeMargins,
   TEMPLATE_INFO,
   TEMPLATE_ORDER,
   templateStyle,
@@ -98,6 +99,82 @@ export function runTemplateTests(): void {
     "template berfoto memperoleh skor lebih rendah",
     photoScore < baselineScore,
     `${photoScore} vs ${baselineScore}`,
+  );
+
+  section("Margin halaman");
+
+  // Margin harus berasal dari template selama pengguna belum menyetelnya,
+  // dan harus ikut berubah saat templatenya diganti - bukan terkunci pada
+  // angka template lama.
+  const classic = resumeMargins({
+    template: "CLASSIC",
+    marginYMm: null,
+    marginXMm: null,
+  });
+  equal("margin bawaan mengikuti template", classic.y, templateStyle("CLASSIC").paddingYMm);
+  const minimal = resumeMargins({
+    template: "MINIMAL",
+    marginYMm: null,
+    marginXMm: null,
+  });
+  check(
+    "margin ikut berubah saat template diganti",
+    minimal.y !== classic.y,
+    `${classic.y}mm vs ${minimal.y}mm`,
+  );
+
+  const custom = resumeMargins({
+    template: "CLASSIC",
+    marginYMm: 22,
+    marginXMm: 9,
+  });
+  equal("margin pilihan pengguna menimpa bawaan template", custom.y, 22);
+  equal("margin kiri-kanan ikut dihormati", custom.x, 9);
+
+  // Inilah cacat yang diperbaiki: margin atas dan bawah harus disediakan
+  // lembar atau aturan @page, bukan padding dokumen - kalau tidak, hanya
+  // halaman pertama dan terakhir yang memperolehnya.
+  const withMargin = renderToStaticMarkup(
+    React.createElement(ResumeDocument, {
+      data: { ...base, marginYMm: 20, marginXMm: 20 },
+      printMode: true,
+    }),
+  );
+  check(
+    "mode penuh memasang margin atas dan bawah pada dokumen",
+    /padding:\s*20mm 20mm/.test(withMargin),
+    withMargin.match(/padding:[^;"]*/)?.[0] ?? "-",
+  );
+
+  const pagedMarkup = renderToStaticMarkup(
+    React.createElement(ResumeDocument, {
+      data: { ...base, marginYMm: 20, marginXMm: 20 },
+      printMode: true,
+      padding: "horizontal" as const,
+    }),
+  );
+  check(
+    "mode per halaman melepas margin atas dan bawah dari dokumen",
+    /padding:\s*0 20mm/.test(pagedMarkup),
+    pagedMarkup.match(/padding:[^;"]*/)?.[0] ?? "-",
+  );
+  check(
+    "mode per halaman tidak memaksakan tinggi kertas",
+    /--paper-height:\s*0/.test(pagedMarkup),
+    pagedMarkup.match(/--paper-height:[^;"]*/)?.[0] ?? "-",
+  );
+
+  const printMarkup = renderToStaticMarkup(
+    React.createElement(ResumeDocument, {
+      data: { ...base, marginYMm: 20, marginXMm: 20 },
+      printMode: true,
+      padding: "none" as const,
+    }),
+  );
+  check(
+    "mode cetak melepas seluruh margin - @page yang menyediakannya",
+    /padding:\s*0[;"]/.test(printMarkup),
+    printMarkup.match(/padding:[^;"]*/)?.[0] ?? "-",
   );
 
   section("Ukuran kertas");

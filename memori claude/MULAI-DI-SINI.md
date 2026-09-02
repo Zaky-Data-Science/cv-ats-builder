@@ -132,6 +132,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/i18n/id.ts`, `en.ts` | Kamus antarmuka. `en.ts` diketik sebagai `Dictionary`, jadi kunci yang lupa diterjemahkan menggagalkan build |
 | `src/lib/resume/templates.ts` | Katalog 10 template beserta ciri rupanya |
 | `src/lib/resume/paper.ts` | Ukuran kertas A4/Letter/Legal/F4 |
+| `resumeMargins()` di `templates.ts` | Margin yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template |
 | `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
 | `tests/` | 99 pemeriksaan; `npm test` |
@@ -176,6 +177,8 @@ supaya tidak perlu diingat-ingat lagi.
 | **Tombol utama menuju `/login`, bukan `/dashboard` atau `/register`** | Halaman login sudah mengalihkan pengguna yang sudah masuk langsung ke dashboard, sehingga satu tautan melayani kedua keadaan - dan tidak ada tombol yang menjanjikan dashboard kepada orang yang belum punya akun. |
 | **Cahaya kursor memakai kurva peluruhan bercacah, bukan tiga titik henti** | Gradasi CSS menarik garis lurus antar-titik henti; tiga titik menghasilkan dua ruas lurus, dan dua ruas lurus terbaca sebagai cakram berwarna - bukan cahaya. Delapan titik mendekati kurva (1-r)^3: separuh kepekatan hilang sebelum 15% jari-jari, lalu menipis hingga tepat nol pada 100%. |
 | **Gerak kartu (`Interactive`) jauh lebih halus daripada `TiltCard`** | `TiltCard` dipakai sekali per halaman untuk benda utama; `Interactive` dipakai berpuluh kali. Puluhan kartu yang miring setegas kartu utama membuat halaman terasa goyah, bukan hidup. |
+| **Margin halaman berasal dari `@page`, bukan dari padding elemen kertas** | Padding hanya berlaku sekali untuk seluruh dokumen yang mengalir: halaman pertama memperoleh margin atas, halaman terakhir memperoleh margin bawah, dan pergantian halaman di antaranya tidak memperoleh apa pun. `@page` berlaku pada setiap halaman. Pratinjau per halaman meniru hal yang sama lewat "tinggi terpakai" = tinggi kertas dikurangi kedua margin. |
+| **Margin kustom disimpan NULL saat mengikuti template** | Menyalin angka template ke kolomnya akan mengunci CV pada margin template lama tanpa pengguna pernah memintanya. NULL membuat CV ikut menyesuaikan sendiri saat templatenya diganti. |
 | **Kredit pembuat tidak ikut di CV** | CV adalah dokumen milik pelamar. Mencantumkan nama pihak lain akan membingungkan perekrut dan merugikan penggunanya. |
 | **Tidak mencantumkan statistik "sekian persen CV ditolak ATS"** | Angka yang beredar luas itu tidak punya sumber primer yang dapat diverifikasi - berisiko dipertanyakan penguji. |
 
@@ -202,6 +205,8 @@ Berguna bila gejala serupa muncul lagi.
 | Lint menolak `document.cookie` di badan komponen | Aturan React Compiler melarang efek samping di sana | Dipindah ke fungsi biasa `persistLocale()` di luar komponen |
 | `migrate deploy` menolak jalan di basis data lokal | Tabel `_prisma_migrations` hilang akibat kejadian sesi sebelumnya | `prisma migrate resolve --applied` untuk kedua migrasi lama, lalu deploy normal |
 | Cahaya kursor terbaca sebagai cakram, bukan cahaya | Gradasi hanya tiga titik henti dan berhenti di 72% jari-jari | Delapan titik henti mendekati kurva (1-r)^3, berakhir tepat nol di 100% |
+| Teks menempel ke tepi bawah kertas pada CV lebih dari satu halaman - ikut terbawa ke PDF | Margin berupa `padding` elemen kertas, yang hanya berlaku sekali untuk seluruh dokumen yang mengalir; `@page` bermargin nol | Margin dipindah ke `@page`, padding dikosongkan saat mencetak, pratinjau per halaman memakai "tinggi terpakai" |
+| Berkas Word diam-diam berbeda dari PDF | Margin DOCX dipatok 15 mm dan ukuran kertasnya tidak pernah disetel (Word memakai bawaannya, kerap Letter) | Keduanya kini mengikuti pilihan pengguna |
 
 ---
 

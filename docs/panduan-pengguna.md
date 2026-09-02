@@ -328,6 +328,28 @@ Indikator jumlah halaman di atas pratinjau memberi tahu keadaannya:
 | 2 halaman (abu) | Masih wajar bila pengalaman Anda lebih dari lima tahun |
 | 3 halaman ke atas (kuning) | Terlalu panjang - perekrut umumnya hanya memindai halaman pertama |
 
+### Margin halaman
+
+Bawaannya mengikuti template yang Anda pilih - tiap template punya karakter
+sendiri, dari Padat (12 mm) sampai Minimalis (18 mm). Bila kurang pas, atur
+sendiri lewat dua penggeser di menu **Tampilan**:
+
+| Penggeser | Rentang | Catatan |
+|---|---|---|
+| Margin Atas-Bawah | 8-30 mm | Berlaku pada **setiap** halaman, bukan hanya halaman pertama |
+| Margin Kiri-Kanan | 8-30 mm | |
+
+Selama belum Anda sentuh, penggesernya bertanda *(ikut template)* dan ikut
+berubah sendiri setiap kali Anda mengganti template. Begitu Anda menggesernya,
+angka Anda yang berlaku - dan muncul tautan **Kembalikan ke bawaan template**
+bila ingin melepasnya lagi.
+
+Di bawah 10 mm sebagian pencetak akan memotong tepi kertas, jadi angka itu
+sebaiknya jadi batas bawah praktis Anda.
+
+Margin yang sama dipakai pratinjau, berkas PDF, **dan** berkas Word - ketiganya
+tidak mungkin berbeda.
+
 ### Ukuran kertas
 
 | Ukuran | Kapan dipakai |

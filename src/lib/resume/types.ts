@@ -184,6 +184,12 @@ export interface ResumeData {
   language: ResumeLanguage;
   /** Ukuran kertas. Menentukan lebar pratinjau sekaligus aturan @page cetak. */
   pageSize: PaperSize;
+  /**
+   * Margin halaman dalam milimeter, bila pengguna menyetelnya sendiri.
+   * null berarti mengikuti bawaan template - lihat resumeMargins().
+   */
+  marginYMm: number | null;
+  marginXMm: number | null;
   sectionOrder: SectionKey[];
   personalInfo: PersonalInfoData;
   experiences: ExperienceItem[];

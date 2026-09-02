@@ -289,6 +289,13 @@ export const en: Dictionary = {
     headingLanguageHint:
       "The language used for headings inside the CV itself - separate from the language of this interface.",
     accentColor: "Accent colour",
+    margin: "Page margins",
+    marginY: "Top and bottom",
+    marginX: "Left and right",
+    marginFollowTemplate: "template default",
+    marginReset: "Back to the template default",
+    marginHint:
+      "The top and bottom margins are always equal, and apply to every page - not just the first. Below 10 mm some printers will clip the edges.",
     paperSize: "Paper size",
     photoUnsupported:
       "This template does not show a photo. Pick one of the photo templates if the job ad asks for one.",

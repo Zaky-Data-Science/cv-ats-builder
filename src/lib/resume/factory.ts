@@ -150,6 +150,8 @@ export function emptyResume(id = ""): ResumeData {
     lineHeight: 1.35,
     language: "ID",
     pageSize: "A4",
+    marginYMm: null,
+    marginXMm: null,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
     personalInfo: emptyPersonalInfo(),
     experiences: [],

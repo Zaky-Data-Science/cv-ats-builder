@@ -184,6 +184,12 @@ export const resumeDataSchema = z.object({
   // Berkas JSON hasil ekspor versi lama belum memuat pageSize. Nilai bawaan
   // A4 membuatnya tetap dapat diimpor dan menghasilkan CV yang identik.
   pageSize: paperSizeSchema.default("A4"),
+  // Batasnya ditegakkan di sisi server, bukan hanya oleh penggeser di
+  // antarmuka: margin 0 mm menghasilkan CV yang tercetak sampai ke tepi
+  // kertas dan terpotong hampir semua pencetak, sedangkan margin sangat
+  // besar menyisakan ruang tulis yang tidak masuk akal.
+  marginYMm: z.number().int().min(8).max(30).nullable().default(null),
+  marginXMm: z.number().int().min(8).max(30).nullable().default(null),
   sectionOrder: z.array(sectionKeySchema).max(20).default([]),
   personalInfo: personalInfoSchema,
   experiences: z.array(experienceSchema).max(40).default([]),

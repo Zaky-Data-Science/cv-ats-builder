@@ -1,6 +1,8 @@
 import type { Locale } from "@/lib/i18n/config";
 import { allBullets, groupSkills, resumeToPlainText } from "@/lib/resume/plaintext";
+import { paperSpec } from "@/lib/resume/paper";
 import { isSectionVisible } from "@/lib/resume/sections";
+import { resumeMargins } from "@/lib/resume/templates";
 import type { ResumeData } from "@/lib/resume/types";
 import { analyzeKeywords, type KeywordAnalysis, tokenize } from "./keywords";
 import { atsMessages, type AtsMessages } from "./messages";
@@ -143,17 +145,19 @@ class DimensionScorer {
 // ---------------------------------------------------------------------------
 
 /**
- * Memperkirakan jumlah halaman A4 tanpa perlu me-render dokumen.
+ * Memperkirakan jumlah halaman tanpa perlu me-render dokumen.
  *
  * Perhitungan memakai geometri kertas yang sama dengan template cetak:
- * tinggi A4 297 mm dikurangi margin atas-bawah, dibagi tinggi baris
+ * tinggi kertas yang dipilih dikurangi margin atas-bawah, dibagi tinggi baris
  * (ukuran huruf dalam pt dikali line-height, dikonversi ke mm).
  * Nilai ini adalah perkiraan; antarmuka editor menampilkan jumlah halaman
  * sebenarnya dari hasil pengukuran DOM.
  */
 export function estimatePages(data: ResumeData): number {
-  const PAGE_HEIGHT_MM = 297;
-  const MARGIN_MM = 15 * 2;
+  const paper = paperSpec(data.pageSize);
+  const margins = resumeMargins(data);
+  const PAGE_HEIGHT_MM = paper.heightMm;
+  const MARGIN_MM = margins.y * 2;
   const PT_TO_MM = 0.3528;
   const lineHeightMm = data.fontSize * data.lineHeight * PT_TO_MM;
   const linesPerPage = Math.max(
@@ -162,9 +166,10 @@ export function estimatePages(data: ResumeData): number {
   );
 
   // Perkiraan lebar teks: 180 mm area cetak dibagi lebar rata-rata karakter.
+  const printWidthMm = paper.widthMm - margins.x * 2;
   const charsPerLine = Math.max(
     40,
-    Math.floor(180 / (data.fontSize * PT_TO_MM * 0.5)),
+    Math.floor(printWidthMm / (data.fontSize * PT_TO_MM * 0.5)),
   );
   const wrap = (text: string) =>
     Math.max(1, Math.ceil(text.length / charsPerLine));

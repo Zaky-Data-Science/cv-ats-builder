@@ -40,6 +40,8 @@ export function toResumeData(row: any): ResumeData {
     lineHeight: row.lineHeight,
     language: row.language,
     pageSize: row.pageSize,
+    marginYMm: row.marginYMm,
+    marginXMm: row.marginXMm,
     sectionOrder: normalizeSectionOrder(row.sectionOrder),
     personalInfo: info
       ? {

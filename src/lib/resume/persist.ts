@@ -56,6 +56,8 @@ export async function createResume(
       lineHeight: data.lineHeight,
       language: data.language,
       pageSize: data.pageSize,
+      marginYMm: data.marginYMm,
+      marginXMm: data.marginXMm,
       sectionOrder: normalizeSectionOrder(data.sectionOrder),
       personalInfo: { create: { ...data.personalInfo } },
     },
@@ -96,6 +98,8 @@ export async function saveResume(
         lineHeight: data.lineHeight,
         language: data.language,
         pageSize: data.pageSize,
+      marginYMm: data.marginYMm,
+      marginXMm: data.marginXMm,
         sectionOrder: normalizeSectionOrder(data.sectionOrder),
       },
     });

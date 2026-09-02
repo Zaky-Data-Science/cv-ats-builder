@@ -35,6 +35,9 @@ import { sampleResume } from "@/lib/resume/sample";
 import { SECTION_UI } from "@/lib/resume/section-ui";
 import { sectionCount } from "@/lib/resume/sections";
 import {
+  MARGIN_MAX_MM,
+  MARGIN_MIN_MM,
+  resumeMargins,
   TEMPLATE_INFO,
   TEMPLATE_ORDER,
   templateStyle,
@@ -144,6 +147,13 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
     () => analyzeResume(data, "", pages, locale),
     [data, pages, locale],
   );
+
+  // Margin yang benar-benar berlaku: pilihan pengguna bila ada, kalau tidak
+  // bawaan templatenya. Dihitung di sini supaya penggeser di panel Tampilan
+  // menunjukkan angka yang sama dengan yang dipakai pratinjau.
+  const margins = resumeMargins(data);
+  const usesTemplateMargin =
+    data.marginYMm === null && data.marginXMm === null;
 
   /* ---------------------------------------------------------------- */
   /* Unduhan dan cetak                                                 */
@@ -498,6 +508,81 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                     />
                   </Field>
                 )}
+              </div>
+
+              {/* ------------------------------------------------------- */}
+              {/* Margin halaman                                           */}
+              {/* ------------------------------------------------------- */}
+              <div className="rounded-lg border border-ink-200 bg-white p-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="text-xs font-semibold tracking-wide text-ink-700">
+                    {t.appearance.margin}
+                  </span>
+                  {/*
+                    Tombol pengembali hanya muncul saat memang ada yang perlu
+                    dikembalikan. Tombol yang selalu tampak tetapi tidak
+                    melakukan apa-apa mengajari pengguna untuk mengabaikannya.
+                  */}
+                  {!usesTemplateMargin && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        update({ marginYMm: null, marginXMm: null })
+                      }
+                      className="text-[11px] font-medium text-ink-700 underline"
+                    >
+                      {t.appearance.marginReset}
+                    </button>
+                  )}
+                </div>
+
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <Field
+                    label={`${t.appearance.marginY}: ${margins.y} mm${
+                      data.marginYMm === null
+                        ? ` (${t.appearance.marginFollowTemplate})`
+                        : ""
+                    }`}
+                  >
+                    <input
+                      type="range"
+                      min={MARGIN_MIN_MM}
+                      max={MARGIN_MAX_MM}
+                      step={1}
+                      value={margins.y}
+                      onChange={(e) =>
+                        update({ marginYMm: Number(e.target.value) })
+                      }
+                      className="w-full accent-ink-900"
+                      aria-label={t.appearance.marginY}
+                    />
+                  </Field>
+
+                  <Field
+                    label={`${t.appearance.marginX}: ${margins.x} mm${
+                      data.marginXMm === null
+                        ? ` (${t.appearance.marginFollowTemplate})`
+                        : ""
+                    }`}
+                  >
+                    <input
+                      type="range"
+                      min={MARGIN_MIN_MM}
+                      max={MARGIN_MAX_MM}
+                      step={1}
+                      value={margins.x}
+                      onChange={(e) =>
+                        update({ marginXMm: Number(e.target.value) })
+                      }
+                      className="w-full accent-ink-900"
+                      aria-label={t.appearance.marginX}
+                    />
+                  </Field>
+                </div>
+
+                <p className="mt-2 text-[11px] leading-relaxed text-ink-500">
+                  {t.appearance.marginHint}
+                </p>
               </div>
 
               {/* Saran panjang CV. Ditempatkan di panel tampilan karena di

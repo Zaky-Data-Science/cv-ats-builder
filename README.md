@@ -51,6 +51,7 @@ dikirim ke server.
 | Pencocokan lowongan | Tempel iklan lowongan untuk melihat kata kunci yang belum ada di CV |
 | 10 template | Delapan tanpa foto, dua berfoto - seluruhnya satu kolom dan aman untuk ATS |
 | 4 ukuran kertas | A4 (bawaan dan disarankan), Letter, Legal, dan F4 |
+| Margin dapat disetel | Bawaannya mengikuti template, tetapi dapat disetel sendiri 8-30 mm; margin atas dan bawah berlaku pada setiap halaman |
 | Pratinjau per halaman | Dokumen dapat dilihat tersambung panjang atau terpotong per halaman seperti di Word |
 | Bandingkan & pindai CV | Unggah 1-5 berkas PDF/DOCX/TXT, lihat kelebihan-kekurangan tiap CV dan mana yang paling siap dikirim - diproses di peramban, tanpa akun |
 | Dwibahasa | Antarmuka Indonesia dan Inggris; bahasa judul bagian CV diatur terpisah |
@@ -351,7 +352,7 @@ seluruh yang diuji berupa fungsi murni. Isinya:
 |---|---|
 | `tests/i18n.test.ts` | Kelengkapan kamus dwibahasa; menangkap kalimat yang belum diterjemahkan |
 | `tests/ats-engine.test.ts` | Kalibrasi skor: CV kosong, CV contoh, saran satu halaman, pengaruh iklan lowongan |
-| `tests/templates.test.ts` | Kesepuluh template dirender, menghasilkan teks yang identik; keempat ukuran kertas |
+| `tests/templates.test.ts` | Kesepuluh template dirender, menghasilkan teks yang identik; keempat ukuran kertas; margin per halaman |
 | `tests/document.test.ts` | Penilai berkas unggahan: kelebihan, kekurangan, dan pemilihan CV terbaik |
 | `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom |
 
@@ -374,7 +375,7 @@ disimpan sebagai berkas biner - sehingga isi berkas ujinya terbaca sebagai kode.
 | `npm run db:deploy` | Menerapkan migrasi di production |
 | `npm run db:seed` | Mengisi akun demo dan CV contoh |
 | `npm run db:studio` | Membuka penjelajah basis data |
-| `npm test` | Menjalankan berkas uji (99 pemeriksaan, tanpa server maupun basis data) |
+| `npm test` | Menjalankan berkas uji (107 pemeriksaan, tanpa server maupun basis data) |
 | `npm run diagram` | Membangkitkan ulang gambar diagram SVG dan PNG dari `src/lib/diagrams.ts` |
 
 > `npm run db:migrate` sengaja tidak dipakai pada basis data lokal `prisma dev` -

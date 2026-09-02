@@ -387,9 +387,42 @@ panjang yang seluruhnya relevan, memaksakan satu halaman justru membuang bukti.
 Meski demikian, saran memadatkannya tetap ditampilkan pada CV dua halaman:
 pengguna berhak tahu bahwa satu halaman lebih baik, lalu memutuskan sendiri.
 
-Ukuran kertas (A4, Letter, Legal, F4) tidak ikut dinilai. Ukurannya menentukan
-berapa halaman isi yang sama akan memakan tempat, dan pengaruh itu sudah
-tercermin pada jumlah halamannya.
+Ukuran kertas (A4, Letter, Legal, F4) dan margin tidak ikut dinilai. Keduanya
+menentukan berapa halaman isi yang sama akan memakan tempat, dan pengaruh itu
+sudah tercermin pada jumlah halamannya.
+
+#### Catatan penerapan: margin halaman berasal dari @page, bukan dari padding
+
+Sempat terdapat cacat yang perlu dicatat karena mudah terulang. Margin halaman
+semula berupa properti `padding` pada elemen kertas, sementara aturan cetaknya
+`@page { margin: 0 }`.
+
+Padding hanya berlaku **sekali untuk seluruh dokumen yang mengalir**. Akibatnya
+pada CV lebih dari satu halaman: halaman pertama memperoleh margin atas,
+halaman terakhir memperoleh margin bawah, dan setiap pergantian halaman di
+antaranya tidak memperoleh apa pun - teks di dasar halaman menempel ke tepi
+kertas, dan halaman berikutnya dimulai dari tepi atas. Cacat ini ikut terbawa
+ke berkas PDF, bukan sekadar tampil salah di layar.
+
+Perbaikannya memindahkan margin ke `@page { margin: <atas-bawah> <kiri-kanan> }`
+yang memang berlaku pada setiap halaman, dan mengosongkan padding kertas saat
+mencetak. Pratinjau per halaman meniru hal yang sama: dokumennya dirender tanpa
+margin atas-bawah, lalu tiap lembar menyediakannya sendiri. Tinggi yang
+benar-benar dapat diisi menjadi
+
+```
+tinggi terpakai = tinggi kertas - margin atas - margin bawah
+```
+
+dan satuan itulah yang dipakai menghitung jumlah halaman sekaligus menggeser
+isi tiap lembar - sehingga pratinjau dan hasil PDF memotong di tempat yang
+persis sama. Berkas Word memakai angka yang sama pula.
+
+Margin bawaannya mengikuti template, tetapi dapat disetel pengguna 8-30 mm dan
+disimpan pada kolom `resumes.marginYMm` dan `marginXMm`. Keduanya boleh NULL,
+dan NULL berarti "ikut template" - disimpan begitu, bukan disalin angkanya,
+supaya CV yang belum pernah disetel manual ikut menyesuaikan sendiri ketika
+templatenya diganti.
 
 ### 4.6 Penanganan Dimensi yang Tidak Berlaku
 
@@ -507,12 +540,12 @@ npm test
 |---|---|---:|
 | `tests/i18n.test.ts` | Kelengkapan kamus dwibahasa; menangkap kalimat yang belum diterjemahkan | 3 |
 | `tests/ats-engine.test.ts` | Kalibrasi skor CV terstruktur, saran satu halaman, pengaruh iklan lowongan, kesamaan skor antar-bahasa | 14 |
-| `tests/templates.test.ts` | Kesepuluh template dirender dan menghasilkan teks yang identik; keempat ukuran kertas | 55 |
+| `tests/templates.test.ts` | Kesepuluh template dirender dan menghasilkan teks yang identik; keempat ukuran kertas; margin per halaman | 63 |
 | `tests/document.test.ts` | Penilai berkas unggahan, daftar kelebihan-kekurangan, pemilihan CV terbaik | 18 |
 | `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom | 9 |
-| **Total** | | **99** |
+| **Total** | | **107** |
 
-Hasil terakhir: **99 dari 99 lulus**.
+Hasil terakhir: **107 dari 107 lulus**.
 
 Berkas PDF ujinya dibangkitkan sendiri oleh `tests/fixtures/make-pdf.ts`, bukan
 disimpan sebagai berkas biner di dalam repositori. Dengan begitu isi berkas
