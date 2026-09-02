@@ -20,6 +20,15 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           <span className="font-semibold text-ink-700">{AUTHOR.name}</span>,{" "}
           {AUTHOR.role} {AUTHOR.institution}
         </p>
+        <p className="mt-1.5 text-center text-[11px] text-ink-500">
+          <Link href="/privasi" className="hover:text-brand-600">
+            Kebijakan Privasi
+          </Link>
+          <span className="mx-2 text-ink-300">|</span>
+          <Link href="/ketentuan" className="hover:text-brand-600">
+            Ketentuan Layanan
+          </Link>
+        </p>
       </footer>
     );
   }
@@ -65,6 +74,16 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               <li>
                 <Link href="/register" className="hover:text-brand-600">
                   Daftar Gratis
+                </Link>
+              </li>
+              <li>
+                <Link href="/privasi" className="hover:text-brand-600">
+                  Kebijakan Privasi
+                </Link>
+              </li>
+              <li>
+                <Link href="/ketentuan" className="hover:text-brand-600">
+                  Ketentuan Layanan
                 </Link>
               </li>
             </ul>
