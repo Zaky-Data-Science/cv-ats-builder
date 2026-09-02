@@ -34,7 +34,8 @@ Politeknik Negeri Samarinda, oleh **Muhammad Agus Riyadh Zaky**.
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV` |
-| Repositori Git | lokal saja, branch `master` - **belum** dinaikkan ke GitHub |
+| Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> (privat, branch `main`) |
+| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
 
 **Hasil uji terakhir di production: 10 dari 10 poin lulus, 0 galat
 JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6.
@@ -84,7 +85,17 @@ Bila nomor port `prisma dev` berubah, sesuaikan `DATABASE_URL` dan
 
 ```bash
 npm run typecheck && npm run lint && npm run build   # gerbang kualitas
-vercel deploy --prod --yes --scope zaky17            # perlu login: vercel login
+git add -A && git commit -m "pesan" && git push      # deploy jalan otomatis
+```
+
+Repositori GitHub sudah tersambung ke Vercel, jadi `git push` ke branch `main`
+langsung memicu build dan deploy. Tidak perlu perintah `vercel` sama sekali.
+
+Bila suatu saat ingin deploy manual tanpa lewat Git:
+
+```bash
+vercel login                                # sekali saja
+vercel deploy --prod --yes --scope zaky17
 ```
 
 Perintah build di `vercel.json` otomatis menjalankan
@@ -156,11 +167,20 @@ Berguna bila gejala serupa muncul lagi.
 
 Daftar ini sengaja jujur - berguna sebagai bab saran pengembangan lanjutan.
 
-1. **Kode belum dinaikkan ke GitHub.** Riwayat commit sudah rapi di lokal.
-   Tinggal buat repositori kosong lalu `git remote add origin ... && git push -u origin main`.
-2. **Login Google belum dinyalakan.** Kodenya sudah siap; tombolnya otomatis
-   muncul begitu `AUTH_GOOGLE_ID` dan `AUTH_GOOGLE_SECRET` diisi di Vercel.
-   Langkahnya ada di `docs/deploy.md` bagian 7.
+1. **Login Google belum dinyalakan - terhalang 2FA.** Sejak 16 Mei 2026
+   Google Cloud mewajibkan verifikasi 2 langkah, dan akun
+   `riyadhzaky05@gmail.com` belum mengaktifkannya, sehingga Google Cloud
+   Console menolak akses sama sekali ("Google Cloud access blocked").
+   Urutannya: aktifkan 2FA di <https://myaccount.google.com/signinoptions/twosv>,
+   tunggu beberapa menit, baru ikuti `docs/deploy.md` bagian 7.
+   Kode aplikasinya sendiri sudah siap - tombol "Masuk dengan Google" muncul
+   otomatis begitu `AUTH_GOOGLE_ID` dan `AUTH_GOOGLE_SECRET` diisi di Vercel,
+   tanpa perlu mengubah kode apa pun.
+2. **Repositori masih privat.** Untuk menjadikannya publik (mis. agar
+   tautannya dapat dicantumkan di jurnal): buka Settings repositori di GitHub,
+   gulir ke bawah, pilih "Change repository visibility". Perlu diingat,
+   menjadikan repo publik tidak dapat ditarik kembali sepenuhnya karena
+   isinya dapat terlanjur disalin orang lain.
 3. **Belum ada berkas uji otomatis di dalam repositori.** Verifikasi selama
    ini dijalankan lewat skrip terpisah terhadap aplikasi yang berjalan.
 4. **Pemulihan kata sandi lewat surel belum ada** - memerlukan layanan
