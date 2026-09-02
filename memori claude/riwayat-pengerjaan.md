@@ -450,17 +450,105 @@ data contohnya memang satu dan hanya prosanya yang diterjemahkan.
 
 ---
 
+## Sesi 5 - 2 September 2026: margin per halaman, cetak PDF, mode tanpa akun
+
+### Yang dikerjakan
+
+1. **Margin yang berlaku di setiap halaman.** Sebelumnya margin adalah
+   `padding` pada elemen dokumen, sehingga hanya berlaku sekali untuk seluruh
+   dokumen yang mengalir - halaman kedua dan seterusnya tercetak tanpa margin
+   atas sama sekali. Diganti dengan aturan `@page { margin }`, satu-satunya
+   mekanisme yang dihormati peramban di setiap halaman cetak.
+2. **Margin dapat disetel sendiri.** Dua penggeser di panel Tampilan
+   (8-30 mm), tersimpan di kolom `marginYMm` dan `marginXMm`. Nilai kosong
+   berarti mengikuti bawaan template, sehingga CV lama tidak berubah tampilan.
+3. **Pratinjau per halaman tidak lagi memotong hitam.** Lembar kertas memakai
+   kelas `.paper-sheet` berlatar putih harfiah. Sebelumnya memakai `bg-white`
+   Tailwind, yang di mode gelap ikut dibalik menjadi `#101013` - itulah pita
+   hitam yang terlihat. Tinggi terpakai tiap lembar dihitung
+   `tinggi halaman - 2 x margin atas`, sehingga jarak bawah sama dengan atas.
+4. **Ekspor PDF diperbaiki.** Bingkai cetak tersembunyi dulu berukuran
+   `0x0` dengan `visibility:hidden`; Chrome mengabaikannya dan mencetak
+   dokumen induknya - editor dua panel - itulah "kolom 2 tidak jelas" yang
+   terlihat pengguna. Kini bingkainya berukuran kertas sungguhan dan
+   diletakkan di luar layar. Ditambahkan pula halaman cetak mandiri dengan
+   bilah "Kembali ke editor" dan "Cetak / Simpan PDF" sebagai jalur cadangan.
+5. **Menyusun CV tanpa akun** (`/coba` dan `/cetak`). Datanya hanya di
+   `localStorage` peramban pengguna, tidak pernah menyentuh server. Tersedia
+   tombol memindahkannya ke akun; pemindahannya berupa tawaran di dashboard,
+   bukan impor otomatis, karena komputer bersama membuat impor diam-diam
+   memindahkan CV orang lain ke akun siapa pun yang masuk berikutnya.
+6. **Panah kembali di bilah atas** setiap halaman, menuju halaman induk yang
+   tetap - bukan memundurkan riwayat peramban, yang tidak berfungsi pada
+   halaman yang dibuka dari tautan.
+7. **Ajakan tindakan diperjelas.** "Mulai Buat CV" menjadi "Masuk atau Daftar
+   Akun", berdampingan dengan "Coba tanpa akun", sehingga kedua jalurnya
+   terbaca sebagai pilihan yang setara. Tombol Masuk di bilah atas tidak lagi
+   disembunyikan di layar sempit.
+8. **Lencana "N" Next.js dimatikan** lewat `devIndicators: false`. Lencana itu
+   milik kerangka kerja dan memang tidak pernah terbit ke produksi, tetapi
+   keberadaannya membuat tampilan lokal berbeda dari Vercel.
+9. **Simpul diagram dirapikan ke tengah** pada versi HTML.
+
+### Pengujian
+
+Selain `npm test` (107 pemeriksaan), tiga hal diuji dengan menjalankan Chrome
+sungguhan lewat DevTools Protocol - satu-satunya cara jujur menguji hal yang
+hidup di peramban.
+
+| Yang diuji | Hasil |
+|---|---|
+| Mode tanpa akun (13 pemeriksaan) | 13 lulus |
+| Jalur berakun + cetak PDF (14 pemeriksaan) | 14 lulus |
+| Ajakan tindakan & lencana dev (9 pemeriksaan) | 9 lulus |
+
+PDF yang dihasilkan diperiksa isinya, bukan hanya keberadaannya: 2 halaman,
+`MediaBox` 595x842 pt (A4), 115 KB.
+
+### Pemisahan data antar pengguna
+
+Diuji langsung dengan membuat akun kedua, lalu mencoba membuka CV milik akun
+pertama:
+
+| Jalur | Hasil |
+|---|---|
+| `GET/PATCH/DELETE /api/resumes/[id]` | 404 |
+| `POST .../duplicate`, `POST .../ats` | 404 |
+| `GET .../export/docx`, `.../export/json` | 404 |
+| `/resume/[id]/edit`, `/print`, `/ats` | halaman "tidak ditemukan" |
+
+Sempat terlihat seolah data bocor karena nama "Budi Santoso" muncul satu kali
+di HTML yang diterima akun kedua. Ternyata itu teks contoh pengisian di kamus
+bahasa, yang memang dikirim ke setiap pengunjung. Diuji ulang dengan kalimat
+yang hanya ada di isi CV dan tidak ada di kamus: nol kemunculan bagi akun
+kedua, satu kemunculan bagi pemiliknya. Pelajarannya, memeriksa keberadaan
+kata yang kebetulan juga dipakai sebagai contoh menghasilkan kesimpulan yang
+salah.
+
+### Cacat yang ditemukan dan diperbaiki
+
+1. Margin hanya berlaku di halaman pertama (lihat butir 1).
+2. Pita hitam di pratinjau per halaman (butir 3).
+3. Ekspor PDF mencetak dokumen yang salah (butir 4).
+4. Peringatan "1 issue" di mode pengembangan berasal dari ketidakcocokan
+   hidrasi pada atribut `data-theme` - skrip tema memang sengaja menuliskannya
+   sebelum halaman digambar, sehingga berbeda dari HTML server. Diselesaikan
+   dengan `suppressHydrationWarning` pada `<html>`, disertai komentar
+   alasannya agar tidak disalahartikan sebagai menyembunyikan masalah.
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 4.
+Angka di bawah ini per akhir sesi 5.
 
 | Ukuran | Nilai |
 |---|---:|
 | Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 98 |
 | Baris kode termasuk berkas uji dan skrip | ~22.700 |
 | Tabel basis data | 16 |
-| Berkas migrasi | 4 |
-| Route aplikasi | 31 |
+| Berkas migrasi | 5 |
+| Route aplikasi | 33 |
 | Dimensi penilaian ATS | 5 |
 | Bagian CV yang dapat diisi | 11 |
 | Template CV | 10 |

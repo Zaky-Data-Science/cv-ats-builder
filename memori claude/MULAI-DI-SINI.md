@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **2 September 2026** (sesi 4)
+Terakhir diperbarui: **2 September 2026** (sesi 5)
 
 ---
 
@@ -63,7 +63,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 99 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 107 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -135,7 +135,11 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `resumeMargins()` di `templates.ts` | Margin yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template |
 | `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
-| `tests/` | 99 pemeriksaan; `npm test` |
+| `tests/` | 107 pemeriksaan; `npm test` |
+| `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
+| `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
+| `src/components/HeaderBack.tsx` | Panah kembali di bilah atas; menuju halaman induk tetap, bukan riwayat peramban |
+| `src/components/preview/PrintToolbar.tsx` | Bilah pada halaman cetak; mencetak sendiri bila alamatnya berakhiran `?cetak=1` |
 | `src/lib/resume/types.ts` | Bentuk data CV yang dipakai seluruh aplikasi |
 | `src/lib/resume/persist.ts` | Baca-tulis CV dalam satu transaksi |
 | `src/lib/guard.ts` | Pemeriksaan sesi dan kepemilikan data |
@@ -157,6 +161,9 @@ supaya tidak perlu diingat-ingat lagi.
 | Keputusan | Alasan |
 |---|---|
 | **PostgreSQL, bukan SQLite** | Rencana awal memakai SQLite, tetapi filesystem platform serverless bersifat sementara - berkas `.db` akan hilang setiap kali deploy ulang. |
+| **Margin memakai `@page`, bukan `padding`** | `padding` pada elemen hanya berlaku sekali untuk dokumen yang mengalir, sehingga halaman kedua dan seterusnya tercetak tanpa margin atas. Hanya `@page { margin }` yang dihormati peramban di setiap halaman. |
+| **CV tanpa akun disimpan di peramban, bukan di server** | Tidak ada pemilik yang dapat dipertanggungjawabkan untuk data tanpa akun. Menyimpannya di server berarti menaruh data pribadi orang yang tidak dapat dihubungi, dihapus permintaannya, maupun dibuktikan haknya. |
+| **Memindahkan CV tamu ke akun berupa tawaran, bukan otomatis** | Komputer bersama - warnet, laboratorium kampus - membuat impor diam-diam menyalin CV orang lain ke akun siapa pun yang kebetulan masuk berikutnya. |
 | **Mesin penilaian berbasis kaidah, bukan model bahasa** | Deterministik: masukan sama selalu menghasilkan skor sama, sehingga hasil pengujian dapat direproduksi. Setiap angka juga dapat ditelusuri ke aturannya, dan tidak ada biaya maupun ketergantungan layanan luar. |
 | **Penilaian berjalan di peramban** | Fungsi murni tanpa akses jaringan, jadi modul yang sama bisa dijalankan di sisi klien. Skor berubah seketika saat mengetik tanpa satu pun permintaan jaringan. |
 | **Satu komponen untuk pratinjau dan cetak** | Menutup kemungkinan hasil PDF berbeda dari yang dilihat pengguna. |
@@ -235,8 +242,18 @@ Daftar ini sengaja jujur - berguna sebagai bab saran pengembangan lanjutan.
    cookie bahasa. Bila suatu saat perlu statis lagi, jalannya adalah
    memindahkan bahasa ke segmen alamat (`/en/...`).
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, 99 pemeriksaan
-di folder `tests/`).
+9. **Mode tanpa akun hanya menyimpan satu CV.** Cukup untuk mencoba, tetapi
+   riwayat beberapa CV memang menuntut akun. Ini batasan yang disengaja,
+   bukan kekurangan yang terlewat.
+10. **Penyimpanan akun memakai basis data aplikasi sendiri.** Masuk lewat
+    Google hanya dipakai untuk membuktikan identitas; datanya tidak
+    disimpan di dalam akun Google pengguna, dan Google API tidak dipakai
+    untuk menyimpan apa pun.
+
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 107
+pemeriksaan di folder `tests/`). Sejak sesi 5, jalur peramban diuji dengan
+menjalankan Chrome sungguhan lewat DevTools Protocol - termasuk memeriksa
+isi berkas PDF yang benar-benar dihasilkan, bukan sekadar keberadaannya.
 
 ---
 

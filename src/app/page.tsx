@@ -141,19 +141,20 @@ export default async function LandingPage() {
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Link href="/login">
+                  <Link href={signedIn ? "/dashboard" : "/login"}>
                     <Button size="lg" className="press w-full sm:w-auto">
                       {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
                       <ArrowRight size={18} />
                     </Button>
                   </Link>
-                  <Link href="/bandingkan">
+                  <Link href="/coba">
                     <Button
                       variant="outline"
                       size="lg"
                       className="press w-full sm:w-auto"
+                      title={t.guest.ctaTryHint}
                     >
-                      {t.home.heroCtaCompare}
+                      {t.guest.ctaTry}
                     </Button>
                   </Link>
                 </div>
@@ -276,12 +277,19 @@ export default async function LandingPage() {
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
                     {t.home.pathBuildBody}
                   </p>
-                    <Link href="/login" className="mt-5">
-                      <Button className="press">
-                        {t.home.pathBuildCta}
-                        <ArrowRight size={15} />
-                      </Button>
-                    </Link>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Link href={signedIn ? "/dashboard" : "/login"}>
+                        <Button className="press">
+                          {signedIn ? t.home.heroCtaDashboard : t.home.pathBuildCta}
+                          <ArrowRight size={15} />
+                        </Button>
+                      </Link>
+                      <Link href="/coba">
+                        <Button variant="outline" className="press">
+                          {t.guest.ctaTry}
+                        </Button>
+                      </Link>
+                    </div>
                   </Card>
                 </Interactive>
               </Reveal>
@@ -471,7 +479,7 @@ export default async function LandingPage() {
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-ink-300">
                 {t.home.ctaBody}
               </p>
-              <Link href="/login">
+              <Link href={signedIn ? "/dashboard" : "/login"}>
                 <Button
                   size="lg"
                   variant="outline"

@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { HeaderBack } from "@/components/HeaderBack";
 import { useI18n, LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui";
@@ -39,18 +40,21 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-5">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2"
-          aria-label={`${SITE.name} - ${t.nav.homeAria}`}
-        >
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
-            CV
-          </span>
-          <span className="text-sm font-semibold text-ink-900">
-            {SITE.name}
-          </span>
-        </Link>
+        <div className="flex min-w-0 shrink-0 items-center gap-1.5">
+          <HeaderBack href="/" />
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-2"
+            aria-label={`${SITE.name} - ${t.nav.homeAria}`}
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
+              CV
+            </span>
+            <span className="text-sm font-semibold text-ink-900">
+              {SITE.name}
+            </span>
+          </Link>
+        </div>
 
         {/* Navigasi layar lebar */}
         <nav
@@ -85,7 +89,13 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
             </Link>
           ) : (
             <>
-              <Link href="/login" className="hidden sm:block">
+              {/*
+                Dulu tombol ini disembunyikan di layar sempit dan hanya muncul
+                di dalam menu. Akibatnya pengunjung ponsel cuma melihat
+                "Daftar Gratis", dan yang sudah punya akun mengira harus
+                mendaftar ulang. Kedua pilihan kini selalu berdampingan.
+              */}
+              <Link href="/login">
                 <Button variant="ghost" size="sm">
                   {t.nav.login}
                 </Button>
@@ -134,16 +144,6 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
                 </Link>
               </li>
             ))}
-            {!signedIn && (
-              <li className="border-t border-ink-100 pt-2 sm:hidden">
-                <Link
-                  href="/login"
-                  className="block rounded-lg px-3 py-2.5 text-sm text-ink-700"
-                >
-                  {t.nav.login}
-                </Link>
-              </li>
-            )}
           </ul>
         </nav>
       )}

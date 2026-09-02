@@ -218,6 +218,33 @@ export const en: Dictionary = {
     sectionMoveDown: "Move section down",
   },
 
+  guest: {
+    metaTitle: "Build a CV without an account",
+    metaDescription:
+      "Build a complete ATS-friendly CV without signing up. It is stored in your own browser and downloads as PDF, Word, plain text, or JSON.",
+    ctaTry: "Try without an account",
+    ctaTryHint: "No sign-up, no email",
+    loading: "Preparing the editor...",
+
+    bannerTitle: "This CV lives only in this browser.",
+    bannerBody:
+      "Nothing is sent to a server, which is why no account is needed. The trade-off: opening it on another device, clearing site data, or using a private window means this CV is gone. Download the files, or move it into an account if you want it kept permanently.",
+    savedLocal: "Saved in this browser",
+    saveFailed:
+      "The browser refused to save. The CV is still on screen - download the files now.",
+    moveToAccount: "Move to an account",
+    moveHint:
+      "You will be asked to sign in or sign up, and can then import this CV into that account.",
+
+    importTitle: "There is a CV you built without an account",
+    importBody:
+      "It is still stored in this browser. Import it now so it is kept permanently in your account and reachable from any device.",
+    importButton: "Import into my account",
+    importDismiss: "Not now",
+    importDone: "The CV has been imported into your account.",
+    importFailed: "The CV could not be imported. Please try again.",
+  },
+
   editor: {
     back: "Dashboard",
     backAria: "Back to dashboard",
@@ -326,7 +353,7 @@ export const en: Dictionary = {
     heroTitleLine3: "builds itself.",
     heroBody:
       "Many employers screen applications with software that reads CVs automatically. Files with complicated layouts - two columns, tables, text inside images - are often parsed into nonsense, so the qualifications you genuinely have never register. This app arranges your CV into a structure that machines can read safely, then scores it and shows you exactly what to fix.",
-    heroCtaNew: "Start building",
+    heroCtaNew: "Sign in or create an account",
     heroCtaDashboard: "Go to dashboard",
     heroCtaCompare: "Compare CVs you already have",
     statSections: "CV sections",
@@ -344,7 +371,7 @@ export const en: Dictionary = {
     pathBuildTitle: "Build a new CV",
     pathBuildBody:
       "Fill in structured fields, watch the result appear in a true-to-size paper preview, fix what the ATS score flags, then download as PDF, Word, plain text, or JSON.",
-    pathBuildCta: "Build a CV free",
+    pathBuildCta: "Sign in or create an account",
     pathCompareTitle: "Compare or scan a CV",
     pathCompareBody:
       "Upload one file to scan it, or up to five to compare them. Every CV gets a score, a list of strengths, and a list of weaknesses with how to fix them - and then which one is most ready to send. Files are processed in your browser and never uploaded.",
@@ -402,7 +429,7 @@ export const en: Dictionary = {
     ctaTitle: "Build it once, reuse it many times",
     ctaBody:
       "Your data lives in your account. For the next job ad, duplicate an existing CV and adjust what needs adjusting - no starting from a blank page again.",
-    ctaButton: "Sign up free",
+    ctaButton: "Sign in or create an account",
     ctaButtonSignedIn: "Open dashboard",
     ctaNote: "No cost, and no watermark on your CV.",
   },
@@ -552,6 +579,13 @@ export const en: Dictionary = {
     historySaveFailed: "The result could not be saved.",
     historyOffline: "Cannot reach the server.",
     backToEditor: "Back to the editor",
+  },
+
+  print: {
+    backToEditor: "Back to the editor",
+    printNow: "Print / Save as PDF",
+    openPrintPage: "Open the print page",
+    openPrintPageHint: "If the print dialog does not appear on its own",
   },
 
   preview: {

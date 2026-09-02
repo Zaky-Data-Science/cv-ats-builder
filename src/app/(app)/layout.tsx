@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { auth, signOut } from "@/auth";
+import { HeaderBack } from "@/components/HeaderBack";
 import { LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui";
@@ -32,14 +33,17 @@ export default async function AppLayout({
     <div className="flex min-h-full flex-col">
       <header className="sticky top-0 z-30 shrink-0 border-b border-ink-200 bg-white">
         <div className="flex h-14 items-center justify-between gap-4 px-5">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="grid h-7 w-7 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
-              CV
-            </span>
-            <span className="hidden text-sm font-semibold text-ink-900 sm:inline">
-              {SITE.name}
-            </span>
-          </Link>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <HeaderBack href="/dashboard" />
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
+                CV
+              </span>
+              <span className="hidden text-sm font-semibold text-ink-900 sm:inline">
+                {SITE.name}
+              </span>
+            </Link>
+          </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
             <span className="hidden max-w-40 truncate text-xs text-ink-500 lg:inline">

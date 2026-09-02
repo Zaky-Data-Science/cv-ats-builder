@@ -235,6 +235,34 @@ export const id = {
     sectionMoveDown: "Turunkan urutan section",
   },
 
+  /* ------------------------------------------------------------ mode tamu */
+  guest: {
+    metaTitle: "Buat CV tanpa akun",
+    metaDescription:
+      "Susun CV ramah ATS lengkap tanpa mendaftar. Datanya tersimpan di peramban Anda sendiri, dan dapat diunduh sebagai PDF, Word, teks, atau JSON.",
+    ctaTry: "Coba tanpa akun",
+    ctaTryHint: "Tanpa daftar, tanpa email",
+    loading: "Menyiapkan editor...",
+
+    bannerTitle: "CV ini hanya tersimpan di peramban ini.",
+    bannerBody:
+      "Tidak ada yang dikirim ke server, jadi tidak perlu akun. Konsekuensinya: membuka dari perangkat lain, membersihkan data situs, atau memakai mode penyamaran berarti CV ini hilang. Unduh berkasnya, atau pindahkan ke akun bila ingin disimpan permanen.",
+    savedLocal: "Tersimpan di peramban ini",
+    saveFailed:
+      "Peramban menolak menyimpan. CV masih ada di layar - segera unduh berkasnya.",
+    moveToAccount: "Pindahkan ke akun",
+    moveHint:
+      "Anda akan diminta masuk atau mendaftar, lalu CV ini dapat diimpor ke akun tersebut.",
+
+    importTitle: "Ada CV yang Anda buat tanpa akun",
+    importBody:
+      "CV itu masih tersimpan di peramban ini. Impor sekarang agar tersimpan permanen di akun Anda dan dapat dibuka dari perangkat mana saja.",
+    importButton: "Impor ke akun saya",
+    importDismiss: "Nanti saja",
+    importDone: "CV berhasil diimpor ke akun Anda.",
+    importFailed: "CV gagal diimpor. Coba lagi.",
+  },
+
   /* ------------------------------------------------------------- editor CV */
   editor: {
     back: "Dashboard",
@@ -347,7 +375,7 @@ export const id = {
     heroTitleLine3: "tersusun sendiri.",
     heroBody:
       "Banyak perusahaan menyaring lamaran lewat sistem yang membaca CV secara otomatis. Berkas dengan tata letak rumit - dua kolom, tabel, teks di dalam gambar - kerap terbaca berantakan, sehingga kualifikasi yang sebenarnya Anda miliki tidak terdeteksi. Aplikasi ini menyusun CV Anda ke dalam struktur yang aman dibaca mesin, lalu menilai dan menunjukkan persis apa yang perlu diperbaiki.",
-    heroCtaNew: "Mulai Buat CV",
+    heroCtaNew: "Masuk atau Daftar Akun",
     heroCtaDashboard: "Lanjutkan ke Dashboard",
     heroCtaCompare: "Bandingkan CV yang sudah ada",
     statSections: "bagian CV",
@@ -365,7 +393,7 @@ export const id = {
     pathBuildTitle: "Susun CV baru",
     pathBuildBody:
       "Isi field terstruktur, lihat hasilnya seketika di pratinjau seukuran kertas sebenarnya, perbaiki lewat skor ATS, lalu unduh sebagai PDF, Word, teks, atau JSON.",
-    pathBuildCta: "Buat CV gratis",
+    pathBuildCta: "Masuk atau Daftar Akun",
     pathCompareTitle: "Bandingkan atau pindai CV",
     pathCompareBody:
       "Unggah satu berkas untuk memindainya, atau sampai lima berkas untuk membandingkannya. Setiap CV memperoleh skor, daftar kelebihan, dan daftar kekurangan beserta cara memperbaikinya - lalu disebutkan mana yang paling siap dikirim. Berkasnya diproses di peramban Anda, tidak diunggah ke mana pun.",
@@ -423,7 +451,7 @@ export const id = {
     ctaTitle: "Buat satu kali, pakai berkali-kali",
     ctaBody:
       "Data Anda tersimpan di akun. Untuk lowongan berikutnya, duplikasi CV yang sudah ada lalu sesuaikan seperlunya - tidak perlu mulai dari halaman kosong lagi.",
-    ctaButton: "Daftar Gratis Sekarang",
+    ctaButton: "Masuk atau Daftar Akun",
     ctaButtonSignedIn: "Buka Dashboard",
     ctaNote: "Tanpa biaya, tanpa watermark di CV Anda.",
   },
@@ -578,6 +606,14 @@ export const id = {
     historySaveFailed: "Gagal menyimpan hasil penilaian.",
     historyOffline: "Tidak dapat terhubung ke server.",
     backToEditor: "Kembali ke editor",
+  },
+
+  /* ----------------------------------------------------------- halaman cetak */
+  print: {
+    backToEditor: "Kembali ke editor",
+    printNow: "Cetak / Simpan PDF",
+    openPrintPage: "Buka halaman cetak",
+    openPrintPageHint: "Bila dialog cetak tidak muncul sendiri",
   },
 
   /* --------------------------------------------------------- pratinjau CV */
