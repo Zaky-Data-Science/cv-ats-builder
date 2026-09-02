@@ -102,10 +102,6 @@ Perintah build di `vercel.json` otomatis menjalankan
 `prisma generate && prisma migrate deploy && next build`, sehingga skema basis
 data production selalu mengikuti berkas migrasi tanpa langkah manual.
 
-Bila nanti kode sudah dinaikkan ke GitHub dan project disambungkan di
-dashboard Vercel, setiap `git push` ke branch utama akan memicu deploy
-sendiri - `vercel deploy` manual tidak diperlukan lagi.
-
 ---
 
 ## 5. Peta kode
