@@ -1,7 +1,17 @@
+import type { Locale } from "@/lib/i18n/config";
 import { allBullets, groupSkills, resumeToPlainText } from "@/lib/resume/plaintext";
 import { isSectionVisible } from "@/lib/resume/sections";
-import type { ResumeData, SectionKey } from "@/lib/resume/types";
+import type { ResumeData } from "@/lib/resume/types";
 import { analyzeKeywords, type KeywordAnalysis, tokenize } from "./keywords";
+import { atsMessages, type AtsMessages } from "./messages";
+import type {
+  AtsFinding,
+  AtsResult,
+  AtsStats,
+  DimensionKey,
+  DimensionResult,
+  Severity,
+} from "./types";
 import {
   ACTION_VERBS,
   ATS_SAFE_FONTS,
@@ -21,61 +31,24 @@ import {
  *  - penilaian berjalan tanpa biaya maupun koneksi ke layanan pihak ketiga.
  *
  * Setiap aturan mengembalikan bukan hanya nilai, tetapi juga saran perbaikan
- * yang dapat langsung ditindaklanjuti pengguna. Inilah pembeda utamanya
- * dari pembuat CV yang hanya menyimpan data.
+ * yang dapat langsung ditindaklanjuti pengguna. Inilah pembeda utamanya dari
+ * pembuat CV yang hanya menyimpan data.
+ *
+ * Kalimat sarannya sendiri tidak ditulis di sini melainkan di messages.ts,
+ * sehingga berkas ini murni berisi angka dan syarat - dan bahasa antarmuka
+ * dapat berganti tanpa satu pun aturan penilaian ikut tersentuh. Perhatikan
+ * bahwa skornya sendiri tidak bergantung bahasa: masukan yang sama selalu
+ * menghasilkan angka yang sama.
  */
 
-export type DimensionKey =
-  | "completeness"
-  | "parseability"
-  | "contentQuality"
-  | "keywordMatch"
-  | "structure";
-
-export type Severity = "error" | "warning" | "info";
-
-export interface AtsFinding {
-  dimension: DimensionKey;
-  severity: Severity;
-  /** Masalah yang ditemukan. */
-  message: string;
-  /** Langkah konkret untuk memperbaikinya. */
-  fix: string;
-  /** Section tujuan saat saran diklik di antarmuka. */
-  section?: SectionKey | "personal";
-}
-
-export interface DimensionResult {
-  key: DimensionKey;
-  label: string;
-  /** Nilai akhir dimensi ini pada skala bobotnya. */
-  score: number;
-  weight: number;
-  /** Persentase pencapaian dimensi (0-100). */
-  percent: number;
-  applicable: boolean;
-  findings: AtsFinding[];
-}
-
-export interface AtsStats {
-  wordCount: number;
-  bulletCount: number;
-  estimatedPages: number;
-  actionVerbRatio: number;
-  quantifiedRatio: number;
-  skillCount: number;
-  experienceCount: number;
-}
-
-export interface AtsResult {
-  score: number;
-  grade: "A" | "B" | "C" | "D";
-  verdict: string;
-  dimensions: DimensionResult[];
-  suggestions: AtsFinding[];
-  keywords: KeywordAnalysis | null;
-  stats: AtsStats;
-}
+export type {
+  AtsFinding,
+  AtsResult,
+  AtsStats,
+  DimensionKey,
+  DimensionResult,
+  Severity,
+};
 
 export const DIMENSION_WEIGHTS: Record<DimensionKey, number> = {
   completeness: 25,
@@ -85,26 +58,17 @@ export const DIMENSION_WEIGHTS: Record<DimensionKey, number> = {
   structure: 10,
 };
 
-export const DIMENSION_LABELS: Record<DimensionKey, string> = {
-  completeness: "Kelengkapan Data",
-  parseability: "Keterbacaan Mesin",
-  contentQuality: "Kualitas Konten",
-  keywordMatch: "Kecocokan Kata Kunci",
-  structure: "Panjang & Struktur",
-};
+/** Label dimensi mengikuti bahasa antarmuka. */
+export function dimensionLabels(locale: Locale): Record<DimensionKey, string> {
+  return atsMessages(locale).dimensionLabel;
+}
 
-export const DIMENSION_DESCRIPTIONS: Record<DimensionKey, string> = {
-  completeness:
-    "Apakah semua informasi yang dicari perekrut sudah ada di CV Anda.",
-  parseability:
-    "Apakah CV Anda dapat diurai mesin dengan benar: format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, dan tanpa elemen yang menyulitkan parser.",
-  contentQuality:
-    "Apakah poin pencapaian ditulis dengan kata kerja aksi dan didukung angka, bukan sekadar daftar tugas.",
-  keywordMatch:
-    "Seberapa banyak kata kunci penting dari iklan lowongan yang benar-benar muncul di CV Anda.",
-  structure:
-    "Apakah panjang dan urutan CV wajar, serta tidak ada jeda waktu yang tidak dijelaskan.",
-};
+/** Penjelasan singkat tiap dimensi, untuk panel penilaian. */
+export function dimensionDescriptions(
+  locale: Locale,
+): Record<DimensionKey, string> {
+  return atsMessages(locale).dimensionDescription;
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 const MONTH_PATTERN = /^\d{4}-\d{2}$/;
@@ -118,7 +82,10 @@ class DimensionScorer {
   private max = 0;
   readonly findings: AtsFinding[] = [];
 
-  constructor(private readonly key: DimensionKey) {}
+  constructor(
+    private readonly key: DimensionKey,
+    private readonly label: string,
+  ) {}
 
   /** Aturan lolos/gagal. */
   rule(
@@ -161,7 +128,7 @@ class DimensionScorer {
     const percent = this.max === 0 ? 100 : (this.earned / this.max) * 100;
     return {
       key: this.key,
-      label: DIMENSION_LABELS[this.key],
+      label: this.label,
       weight,
       score: Math.round(((percent / 100) * weight + Number.EPSILON) * 10) / 10,
       percent: Math.round(percent),
@@ -274,37 +241,35 @@ export function estimatePages(data: ResumeData): number {
 // Dimensi 1: kelengkapan data
 // ---------------------------------------------------------------------------
 
-function scoreCompleteness(data: ResumeData): DimensionResult {
-  const s = new DimensionScorer("completeness");
+function scoreCompleteness(data: ResumeData, m: AtsMessages): DimensionResult {
+  const s = new DimensionScorer("completeness", m.dimensionLabel.completeness);
   const info = data.personalInfo;
 
   s.rule(4, info.fullName.trim().length > 0, {
     severity: "error",
-    message: "Nama lengkap belum diisi.",
-    fix: "Isi field Nama Lengkap di section Data Pribadi. Ini field pertama yang dibaca setiap parser ATS.",
+    message: m.nameMissing,
+    fix: m.nameMissingFix,
     section: "personal",
   });
 
   s.rule(4, EMAIL_PATTERN.test(info.email.trim()), {
     severity: "error",
-    message: info.email.trim()
-      ? "Format email tidak valid."
-      : "Alamat email belum diisi.",
-    fix: "Gunakan email aktif berformat nama@domain.com. Tanpa email yang terbaca, sistem rekrutmen tidak dapat menghubungi Anda meski CV lolos seleksi.",
+    message: info.email.trim() ? m.emailInvalid : m.emailMissing,
+    fix: m.emailFix,
     section: "personal",
   });
 
   s.rule(3, info.phone.replace(/\D/g, "").length >= 8, {
     severity: "error",
-    message: "Nomor telepon belum diisi atau terlalu pendek.",
-    fix: "Isi nomor telepon lengkap dengan kode negara, contoh: +62 812-3456-7890.",
+    message: m.phoneMissing,
+    fix: m.phoneFix,
     section: "personal",
   });
 
   s.rule(2, info.headline.trim().length > 0, {
     severity: "warning",
-    message: "Jabatan/posisi yang dituju belum diisi.",
-    fix: "Isi field Jabatan dengan posisi yang Anda lamar, mis. \"Frontend Developer\". Sesuaikan dengan judul lowongan agar cocok saat pencocokan kata kunci.",
+    message: m.headlineMissing,
+    fix: m.headlineFix,
     section: "personal",
   });
 
@@ -313,8 +278,8 @@ function scoreCompleteness(data: ResumeData): DimensionResult {
     [info.city, info.province, info.country].some((v) => v.trim().length > 0),
     {
       severity: "warning",
-      message: "Domisili belum diisi.",
-      fix: "Isi minimal kota tempat tinggal. Banyak perusahaan memfilter kandidat berdasarkan lokasi.",
+      message: m.locationMissing,
+      fix: m.locationFix,
       section: "personal",
     },
   );
@@ -324,33 +289,33 @@ function scoreCompleteness(data: ResumeData): DimensionResult {
     severity: summaryWords === 0 ? "error" : "warning",
     message:
       summaryWords === 0
-        ? "Ringkasan profil belum diisi."
+        ? m.summaryMissing
         : summaryWords < 30
-          ? `Ringkasan profil terlalu singkat (${summaryWords} kata).`
-          : `Ringkasan profil terlalu panjang (${summaryWords} kata).`,
-    fix: "Tulis 30-120 kata yang memuat: peran Anda, lama pengalaman, keahlian utama, dan satu pencapaian berangka.",
+          ? m.summaryTooShort(summaryWords)
+          : m.summaryTooLong(summaryWords),
+    fix: m.summaryFix,
     section: "summary",
   });
 
   s.rule(4, data.experiences.length >= 1 || data.projects.length >= 2, {
     severity: "error",
-    message: "Belum ada pengalaman kerja maupun proyek yang cukup.",
-    fix: "Isi minimal satu Pengalaman Kerja. Jika Anda fresh graduate, isi minimal dua Proyek sebagai penggantinya.",
+    message: m.experienceMissing,
+    fix: m.experienceMissingFix,
     section: "experience",
   });
 
   s.rule(2, data.educations.length >= 1, {
     severity: "warning",
-    message: "Riwayat pendidikan belum diisi.",
-    fix: "Isi minimal jenjang pendidikan terakhir beserta tahunnya.",
+    message: m.educationMissing,
+    fix: m.educationMissingFix,
     section: "education",
   });
 
   const skillCount = data.skills.filter((sk) => sk.name.trim()).length;
   s.ratioRule(3, Math.min(skillCount / 5, 1), 1, {
     severity: "warning",
-    message: `Jumlah keahlian masih sedikit (${skillCount} dari minimal 5).`,
-    fix: "Tambahkan keahlian teknis maupun perangkat yang Anda kuasai. Section Keahlian adalah tempat utama ATS mencari kecocokan kata kunci.",
+    message: m.skillsFew(skillCount),
+    fix: m.skillsFewFix,
     section: "skill",
   });
 
@@ -361,8 +326,8 @@ function scoreCompleteness(data: ResumeData): DimensionResult {
     ),
     {
       severity: "info",
-      message: "Belum ada tautan profil profesional.",
-      fix: "Tambahkan minimal satu tautan: LinkedIn, portofolio, atau GitHub.",
+      message: m.linksMissing,
+      fix: m.linksMissingFix,
       section: "personal",
     },
   );
@@ -374,26 +339,26 @@ function scoreCompleteness(data: ResumeData): DimensionResult {
 // Dimensi 2: keterbacaan mesin
 // ---------------------------------------------------------------------------
 
-function scoreParseability(data: ResumeData): DimensionResult {
-  const s = new DimensionScorer("parseability");
+function scoreParseability(data: ResumeData, m: AtsMessages): DimensionResult {
+  const s = new DimensionScorer("parseability", m.dimensionLabel.parseability);
 
   s.rule(3, !data.personalInfo.showPhoto, {
     severity: "warning",
-    message: "CV menampilkan pas foto.",
-    fix: "Matikan opsi Tampilkan Foto. Sebagian besar parser ATS tidak dapat membaca gambar, dan tata letak di sekitar foto sering membuat teks terbaca berantakan. Aktifkan hanya bila lowongan secara eksplisit memintanya.",
+    message: m.photoUsed,
+    fix: m.photoUsedFix,
     section: "personal",
   });
 
   s.rule(3, ATS_SAFE_FONTS.includes(data.fontFamily), {
     severity: "warning",
-    message: `Jenis huruf "${data.fontFamily}" bukan huruf yang aman untuk ATS.`,
-    fix: `Gunakan salah satu dari: ${ATS_SAFE_FONTS.slice(0, 4).join(", ")}. Huruf yang tidak tersedia di sistem penerima akan disubstitusi dan dapat merusak tata letak.`,
+    message: m.fontUnsafe(data.fontFamily),
+    fix: m.fontUnsafeFix(ATS_SAFE_FONTS.slice(0, 4).join(", ")),
   });
 
   s.rule(2, data.fontSize >= 9 && data.fontSize <= 12, {
     severity: "warning",
-    message: `Ukuran huruf ${data.fontSize}pt berada di luar rentang aman.`,
-    fix: "Gunakan 10-11pt. Huruf di bawah 9pt sulit dibaca manusia maupun mesin OCR.",
+    message: m.fontSizeOutOfRange(data.fontSize),
+    fix: m.fontSizeFix,
   });
 
   // Konsistensi format tanggal
@@ -410,8 +375,8 @@ function scoreParseability(data: ResumeData): DimensionResult {
     1,
     {
       severity: "error",
-      message: "Ada tanggal dengan format tidak baku.",
-      fix: "Isi seluruh tanggal lewat pemilih bulan yang tersedia agar formatnya seragam. Format tanggal yang campur aduk membuat parser gagal menghitung lama pengalaman kerja.",
+      message: m.dateFormatMixed,
+      fix: m.dateFormatFix,
       section: "experience",
     },
   );
@@ -423,16 +388,16 @@ function scoreParseability(data: ResumeData): DimensionResult {
     ).length;
     s.ratioRule(5, complete / data.experiences.length, 1, {
       severity: "error",
-      message: "Ada pengalaman kerja tanpa jabatan atau tanpa nama perusahaan.",
-      fix: "Lengkapi kedua field tersebut pada setiap entri. Parser ATS memetakan pengalaman kerja berdasarkan pasangan jabatan-perusahaan; salah satu kosong membuat entri itu terbuang.",
+      message: m.experienceIncomplete,
+      fix: m.experienceIncompleteFix,
       section: "experience",
     });
 
     const dated = data.experiences.filter((e) => e.startDate.trim()).length;
     s.ratioRule(4, dated / data.experiences.length, 1, {
       severity: "error",
-      message: "Ada pengalaman kerja tanpa tanggal mulai.",
-      fix: "Isi bulan dan tahun mulai pada setiap pengalaman. Tanpa itu, sistem tidak dapat menghitung total lama pengalaman Anda.",
+      message: m.experienceNoStart,
+      fix: m.experienceNoStartFix,
       section: "experience",
     });
   } else {
@@ -445,8 +410,8 @@ function scoreParseability(data: ResumeData): DimensionResult {
     ).length;
     s.ratioRule(3, complete / data.educations.length, 1, {
       severity: "warning",
-      message: "Ada riwayat pendidikan tanpa nama institusi atau jenjang.",
-      fix: "Lengkapi nama institusi dan jenjang (mis. \"S1\", \"SMA\") pada setiap entri pendidikan.",
+      message: m.educationIncomplete,
+      fix: m.educationIncompleteFix,
       section: "education",
     });
   }
@@ -461,8 +426,8 @@ function scoreParseability(data: ResumeData): DimensionResult {
     }).length;
     s.ratioRule(3, clean / skills.length, 1, {
       severity: "warning",
-      message: "Ada nama keahlian yang disertai keterangan tingkat penguasaan.",
-      fix: "Tulis nama keahlian apa adanya, mis. \"JavaScript\" bukan \"JavaScript (mahir)\". ATS mencocokkan kata kunci secara harfiah, sehingga tambahan dalam kurung justru menurunkan kecocokan.",
+      message: m.skillNoisy,
+      fix: m.skillNoisyFix,
       section: "skill",
     });
   }
@@ -472,8 +437,8 @@ function scoreParseability(data: ResumeData): DimensionResult {
   const risky = bullets.filter((b) => /[\t│┃|]{1}/.test(b)).length;
   s.rule(2, risky === 0, {
     severity: "warning",
-    message: "Ada poin yang memuat karakter tabel atau pemisah kolom.",
-    fix: "Hapus karakter seperti | atau tab dari isi poin. Karakter tersebut membuat parser mengira ada struktur tabel dan memecah kalimat Anda.",
+    message: m.tableChars,
+    fix: m.tableCharsFix,
   });
 
   const badTitles = data.customSections.filter((c) =>
@@ -481,8 +446,8 @@ function scoreParseability(data: ResumeData): DimensionResult {
   ).length;
   s.rule(2, badTitles === 0, {
     severity: "warning",
-    message: "Ada judul section tambahan yang memuat emoji.",
-    fix: "Gunakan judul berupa teks biasa. Emoji tidak dikenali parser dan dapat membuat seluruh isi section tersebut gagal dipetakan.",
+    message: m.emojiHeading,
+    fix: m.emojiHeadingFix,
     section: "custom",
   });
 
@@ -493,15 +458,15 @@ function scoreParseability(data: ResumeData): DimensionResult {
 // Dimensi 3: kualitas konten
 // ---------------------------------------------------------------------------
 
-function scoreContentQuality(data: ResumeData): DimensionResult {
-  const s = new DimensionScorer("contentQuality");
+function scoreContentQuality(data: ResumeData, m: AtsMessages): DimensionResult {
+  const s = new DimensionScorer("contentQuality", m.dimensionLabel.contentQuality);
   const bullets = allBullets(data);
 
   if (bullets.length === 0) {
     s.rule(6, false, {
       severity: "error",
-      message: "Belum ada poin pencapaian sama sekali.",
-      fix: "Tambahkan minimal 2-3 poin pada setiap pengalaman kerja atau proyek. Bagian inilah yang membedakan Anda dari pelamar lain.",
+      message: m.noBullets,
+      fix: m.noBulletsFix,
       section: "experience",
     });
     return s.result();
@@ -510,32 +475,32 @@ function scoreContentQuality(data: ResumeData): DimensionResult {
   const withVerb = bullets.filter((b) => startsWithActionVerb(b)).length;
   s.ratioRule(6, withVerb / bullets.length, 0.7, {
     severity: "warning",
-    message: `Baru ${Math.round((withVerb / bullets.length) * 100)}% poin yang diawali kata kerja aksi.`,
-    fix: "Mulai setiap poin dengan kata kerja aksi seperti Mengembangkan, Meningkatkan, Memimpin, atau Mengoptimasi. Hindari pembuka pasif seperti \"Bertanggung jawab atas\".",
+    message: m.actionVerbLow(Math.round((withVerb / bullets.length) * 100)),
+    fix: m.actionVerbFix,
     section: "experience",
   });
 
   const quantified = bullets.filter((b) => hasMetric(b)).length;
   s.ratioRule(5, quantified / bullets.length, 0.5, {
     severity: "warning",
-    message: `Baru ${Math.round((quantified / bullets.length) * 100)}% poin yang memuat angka terukur.`,
-    fix: "Sertakan angka pada minimal separuh poin: persentase, jumlah pengguna, nominal, atau durasi. Contoh: \"Menurunkan waktu muat 45% (3,2 detik menjadi 1,8 detik)\".",
+    message: m.quantifiedLow(Math.round((quantified / bullets.length) * 100)),
+    fix: m.quantifiedFix,
     section: "experience",
   });
 
   const notTooLong = bullets.filter((b) => b.length <= 220).length;
   s.ratioRule(3, notTooLong / bullets.length, 0.9, {
     severity: "info",
-    message: "Ada poin yang terlalu panjang.",
-    fix: "Pertahankan tiap poin dalam 1-2 baris (maksimal sekitar 220 karakter). Poin yang panjang cenderung dilewati saat perekrut memindai CV.",
+    message: m.bulletTooLong,
+    fix: m.bulletTooLongFix,
     section: "experience",
   });
 
   const notTooShort = bullets.filter((b) => b.length >= 40).length;
   s.ratioRule(2, notTooShort / bullets.length, 0.8, {
     severity: "info",
-    message: "Ada poin yang terlalu singkat sehingga kurang informatif.",
-    fix: "Kembangkan poin singkat dengan menambahkan konteks dan hasil, bukan sekadar nama tugas.",
+    message: m.bulletTooShort,
+    fix: m.bulletTooShortFix,
     section: "experience",
   });
 
@@ -543,8 +508,13 @@ function scoreContentQuality(data: ResumeData): DimensionResult {
   const found = CLICHE_PHRASES.filter((p) => haystack.includes(p));
   s.rule(3, found.length === 0, {
     severity: "info",
-    message: `Terdapat frasa klise: ${found.slice(0, 3).map((f) => `"${f}"`).join(", ")}.`,
-    fix: "Ganti klaim umum dengan bukti. Alih-alih \"pekerja keras\", tulis pencapaian nyata yang menunjukkannya.",
+    message: m.clichesFound(
+      found
+        .slice(0, 3)
+        .map((f) => `"${f}"`)
+        .join(", "),
+    ),
+    fix: m.clichesFix,
     section: "summary",
   });
 
@@ -552,8 +522,8 @@ function scoreContentQuality(data: ResumeData): DimensionResult {
   const usesFirstPerson = /\b(saya|aku)\b/.test(summaryLower);
   s.rule(2, !usesFirstPerson, {
     severity: "info",
-    message: "Ringkasan profil memakai kata ganti orang pertama.",
-    fix: "Hilangkan kata \"saya\". Tulis \"Frontend Developer dengan pengalaman 4 tahun...\" alih-alih \"Saya adalah seorang...\". Ini konvensi baku penulisan CV.",
+    message: m.firstPerson,
+    fix: m.firstPersonFix,
     section: "summary",
   });
 
@@ -563,8 +533,8 @@ function scoreContentQuality(data: ResumeData): DimensionResult {
     ).length;
     s.ratioRule(3, enough / data.experiences.length, 1, {
       severity: "warning",
-      message: "Ada pengalaman kerja dengan kurang dari 2 poin pencapaian.",
-      fix: "Isi minimal 2 poin per pengalaman, idealnya 3-4 pada posisi terbaru.",
+      message: m.tooFewBullets,
+      fix: m.tooFewBulletsFix,
       section: "experience",
     });
   }
@@ -578,8 +548,9 @@ function scoreContentQuality(data: ResumeData): DimensionResult {
 
 function scoreKeywordMatch(
   analysis: KeywordAnalysis | null,
+  m: AtsMessages,
 ): DimensionResult {
-  const s = new DimensionScorer("keywordMatch");
+  const s = new DimensionScorer("keywordMatch", m.dimensionLabel.keywordMatch);
 
   if (!analysis || analysis.keywords.length === 0) {
     // Tanpa deskripsi lowongan, dimensi ini tidak dinilai dan bobotnya
@@ -588,8 +559,8 @@ function scoreKeywordMatch(
     result.findings.push({
       dimension: "keywordMatch",
       severity: "info",
-      message: "Deskripsi lowongan belum ditempelkan.",
-      fix: "Tempelkan teks lowongan yang Anda incar untuk mengetahui kata kunci apa saja yang belum muncul di CV. Dimensi ini belum dihitung ke dalam skor.",
+      message: m.noJobDescription,
+      fix: m.noJobDescriptionFix,
     });
     return result;
   }
@@ -601,8 +572,11 @@ function scoreKeywordMatch(
 
   s.ratioRule(20, analysis.coverage, 0.6, {
     severity: analysis.coverage < 0.35 ? "error" : "warning",
-    message: `Kecocokan kata kunci baru ${Math.round(analysis.coverage * 100)}%. Belum muncul di CV: ${missingTop}.`,
-    fix: "Masukkan kata kunci yang relevan dan benar-benar Anda kuasai ke section Keahlian atau ke poin pencapaian. Jangan menempelkan kata kunci yang tidak Anda kuasai - itu akan terbongkar saat wawancara.",
+    message: m.keywordCoverage(
+      Math.round(analysis.coverage * 100),
+      missingTop,
+    ),
+    fix: m.keywordCoverageFix,
     section: "skill",
   });
 
@@ -613,16 +587,43 @@ function scoreKeywordMatch(
 // Dimensi 5: panjang dan struktur
 // ---------------------------------------------------------------------------
 
-function scoreStructure(data: ResumeData, pages: number): DimensionResult {
-  const s = new DimensionScorer("structure");
+function scoreStructure(
+  data: ResumeData,
+  pages: number,
+  m: AtsMessages,
+): DimensionResult {
+  const s = new DimensionScorer("structure", m.dimensionLabel.structure);
 
-  s.rule(4, pages >= 1 && pages <= 2, {
+  /*
+    Panjang CV dinilai bertingkat, bukan lolos-atau-gagal.
+
+    Satu halaman memperoleh nilai penuh karena itulah panjang yang benar
+    untuk hampir semua pelamar: perekrut memindai CV dalam hitungan detik,
+    dan apa pun yang jatuh ke halaman kedua besar kemungkinan tidak pernah
+    dibaca. Dua halaman tetap memperoleh sebagian besar nilainya - bagi
+    pelamar dengan pengalaman panjang yang seluruhnya relevan, memaksakan
+    satu halaman justru membuang bukti. Yang benar-benar dihukum adalah
+    tiga halaman ke atas.
+
+    Meski nilainya bertingkat, sarannya tetap muncul pada CV dua halaman:
+    pengguna berhak tahu bahwa satu halaman lebih baik, lalu memutuskan
+    sendiri.
+  */
+  const lengthRatio = pages === 1 ? 1 : pages === 2 ? 0.75 : 0.25;
+  s.ratioRule(4, lengthRatio, 1, {
     severity: pages > 2 ? "warning" : "info",
-    message: `Perkiraan panjang CV ${pages} halaman.`,
+    message:
+      pages === 1
+        ? m.lengthOnePage
+        : pages === 2
+          ? m.lengthTwoPages
+          : m.lengthTooLong(pages),
     fix:
-      pages > 2
-        ? "Pangkas menjadi maksimal 2 halaman: buang pengalaman yang tidak relevan dan gabungkan poin yang mirip."
-        : "Tambahkan isi sampai CV memenuhi minimal satu halaman penuh.",
+      pages === 1
+        ? m.lengthOnePageFix
+        : pages === 2
+          ? m.lengthTwoPagesFix
+          : m.lengthTooLongFix,
   });
 
   const order = data.sectionOrder;
@@ -633,8 +634,8 @@ function scoreStructure(data: ResumeData, pages: number): DimensionResult {
     summaryIndex === -1 || experienceIndex === -1 || summaryIndex < experienceIndex,
     {
       severity: "info",
-      message: "Ringkasan profil berada setelah pengalaman kerja.",
-      fix: "Letakkan Ringkasan Profil di urutan teratas. Bagian ini berfungsi sebagai pembuka yang dibaca lebih dulu.",
+      message: m.summaryAfterExperience,
+      fix: m.summaryAfterExperienceFix,
     },
   );
 
@@ -648,18 +649,16 @@ function scoreStructure(data: ResumeData, pages: number): DimensionResult {
   }
   s.rule(2, sorted, {
     severity: "warning",
-    message: "Pengalaman kerja belum urut dari yang paling baru.",
-    fix: "Susun pengalaman secara kronologis terbalik - posisi terbaru di urutan pertama. Ini format yang diharapkan hampir semua perekrut dan ATS.",
+    message: m.experienceUnsorted,
+    fix: m.experienceUnsortedFix,
     section: "experience",
   });
 
   const gap = findEmploymentGap(data);
   s.rule(2, gap === null, {
     severity: "info",
-    message: gap
-      ? `Terdapat jeda ${gap} bulan antar-pengalaman kerja.`
-      : "Terdapat jeda antar-pengalaman kerja.",
-    fix: "Jeda lebih dari 12 bulan sebaiknya dijelaskan - isi dengan proyek, kursus, atau kegiatan organisasi pada periode tersebut.",
+    message: gap ? m.employmentGap(gap) : m.employmentGapUnknown,
+    fix: m.employmentGapFix,
     section: "experience",
   });
 
@@ -692,7 +691,9 @@ export function analyzeResume(
   data: ResumeData,
   jobDescription = "",
   measuredPages?: number,
+  locale: Locale = "id",
 ): AtsResult {
+  const m = atsMessages(locale);
   const plainText = resumeToPlainText(data);
   const keywords = jobDescription.trim()
     ? analyzeKeywords(plainText, jobDescription)
@@ -701,8 +702,8 @@ export function analyzeResume(
   const pages = measuredPages ?? estimatePages(data);
   const substantial = hasSubstance(data);
 
-  const parseability = scoreParseability(data);
-  const structure = scoreStructure(data, pages);
+  const parseability = scoreParseability(data, m);
+  const structure = scoreStructure(data, pages, m);
 
   if (!substantial) {
     for (const dimension of [parseability, structure]) {
@@ -711,8 +712,8 @@ export function analyzeResume(
         {
           dimension: dimension.key,
           severity: "info",
-          message: `${dimension.label} belum dapat dinilai.`,
-          fix: "Isi dulu ringkasan profil dan minimal satu pengalaman kerja atau proyek, lalu dimensi ini akan ikut dihitung.",
+          message: m.notScorable(dimension.label),
+          fix: m.notScorableFix,
           section: "experience",
         },
       ];
@@ -720,10 +721,10 @@ export function analyzeResume(
   }
 
   const dimensions: DimensionResult[] = [
-    scoreCompleteness(data),
+    scoreCompleteness(data, m),
     parseability,
-    scoreContentQuality(data),
-    scoreKeywordMatch(keywords),
+    scoreContentQuality(data, m),
+    scoreKeywordMatch(keywords, m),
     structure,
   ];
 
@@ -761,7 +762,7 @@ export function analyzeResume(
   return {
     score,
     grade: gradeOf(score),
-    verdict: verdictOf(score, keywords !== null),
+    verdict: verdictOf(score, keywords !== null, m),
     dimensions,
     suggestions,
     keywords,
@@ -820,15 +821,14 @@ function gradeOf(score: number): "A" | "B" | "C" | "D" {
   return "D";
 }
 
-function verdictOf(score: number, withJob: boolean): string {
-  const suffix = withJob
-    ? ""
-    : " Skor ini belum memperhitungkan kecocokan dengan lowongan tertentu.";
-  if (score >= 85)
-    return `CV Anda sudah sangat siap dikirim.${suffix}`;
-  if (score >= 70)
-    return `CV Anda sudah baik, tinggal beberapa perbaikan kecil.${suffix}`;
-  if (score >= 55)
-    return `CV Anda cukup, namun ada beberapa hal penting yang perlu diperbaiki.${suffix}`;
-  return `CV Anda berisiko tersaring sistem sebelum dibaca manusia.${suffix}`;
+function verdictOf(
+  score: number,
+  withJob: boolean,
+  m: AtsMessages,
+): string {
+  const suffix = withJob ? "" : m.verdictNoJobSuffix;
+  if (score >= 85) return `${m.verdictExcellent}${suffix}`;
+  if (score >= 70) return `${m.verdictGood}${suffix}`;
+  if (score >= 55) return `${m.verdictFair}${suffix}`;
+  return `${m.verdictPoor}${suffix}`;
 }

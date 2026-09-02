@@ -20,11 +20,25 @@ import {
   Sparkles,
 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
+import { useI18n } from "@/components/i18n";
 import { Badge, Button, Callout, Field, Input, Select } from "@/components/ui";
 import { analyzeResume } from "@/lib/ats/engine";
 import { ATS_SAFE_FONTS } from "@/lib/ats/vocabulary";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import {
+  PAPER_NOTE,
+  PAPER_ORDER,
+  PAPER_SIZES,
+  RECOMMENDED_PAPER,
+} from "@/lib/resume/paper";
 import { sampleResume } from "@/lib/resume/sample";
-import { SECTION_META, sectionCount } from "@/lib/resume/sections";
+import { SECTION_UI } from "@/lib/resume/section-ui";
+import { sectionCount } from "@/lib/resume/sections";
+import {
+  TEMPLATE_INFO,
+  TEMPLATE_ORDER,
+  templateStyle,
+} from "@/lib/resume/templates";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import { AUTHOR } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -42,6 +56,7 @@ type Pane = "form" | "preview" | "ats";
 const AUTOSAVE_DELAY_MS = 800;
 
 export function ResumeEditor({ initial }: { initial: ResumeData }) {
+  const { locale, t } = useI18n();
   const [data, setData] = React.useState<ResumeData>(initial);
   const [highlight, setHighlight] = React.useState<string | null>(null);
   const [saveState, setSaveState] = React.useState<SaveState>("idle");
@@ -80,7 +95,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
 
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
-        setErrorText(payload.error ?? "Perubahan gagal disimpan.");
+        setErrorText(payload.error ?? t.editor.saveFailedGeneric);
         setSaveState("error");
         return false;
       }
@@ -90,13 +105,11 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
       setSaveState("saved");
       return true;
     } catch {
-      setErrorText(
-        "Tidak dapat terhubung ke server. Perubahan Anda masih ada di layar - jangan tutup halaman ini sampai koneksi pulih.",
-      );
+      setErrorText(t.editor.saveFailedOffline);
       setSaveState("error");
       return false;
     }
-  }, [initial.id]);
+  }, [initial.id, t]);
 
   const update = React.useCallback((patch: Partial<ResumeData>) => {
     dirtyRef.current = true;
@@ -128,8 +141,8 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   // di peramban. Skor ikut berubah seketika saat pengguna mengetik, tanpa
   // perlu memanggil server sama sekali.
   const analysis = React.useMemo(
-    () => analyzeResume(data, "", pages),
-    [data, pages],
+    () => analyzeResume(data, "", pages, locale),
+    [data, pages, locale],
   );
 
   /* ---------------------------------------------------------------- */
@@ -190,7 +203,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
   }
 
   function applySample() {
-    const sample = sampleResume(data.id);
+    const sample = sampleResume(data.id, locale);
     update({ ...sample, id: data.id, title: data.title });
     setOpenSections(new Set(["personal", "experience"]));
     setConfirmSample(false);
@@ -200,38 +213,38 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
     <>
       <ActionItem
         icon={Sparkles}
-        label="Isi Data Contoh"
-        hint="Ganti seluruh isi dengan contoh lengkap"
+        label={t.editor.actionSampleLabel}
+        hint={t.editor.actionSampleHint}
         onClick={() => setConfirmSample(true)}
       />
       <ActionItem
         icon={Settings2}
-        label="Tampilan CV"
-        hint="Template, jenis huruf, ukuran, bahasa"
+        label={t.editor.actionAppearanceLabel}
+        hint={t.editor.actionAppearanceHint}
         onClick={() => setShowSettings((v) => !v)}
       />
       <ActionItem
         icon={Printer}
-        label="Unduh PDF"
-        hint="Untuk dikirim ke perusahaan"
+        label={t.editor.actionPdfLabel}
+        hint={t.editor.actionPdfHint}
         onClick={printPdf}
       />
       <ActionItem
         icon={FileDown}
-        label="Unduh Word"
-        hint="Bila sistem lamaran meminta .docx"
+        label={t.editor.actionWordLabel}
+        hint={t.editor.actionWordHint}
         onClick={() => download("docx")}
       />
       <ActionItem
         icon={FileText}
-        label="Unduh Teks"
-        hint="Untuk ditempel ke formulir daring"
+        label={t.editor.actionTxtLabel}
+        hint={t.editor.actionTxtHint}
         onClick={() => download("txt")}
       />
       <ActionItem
         icon={FileJson}
-        label="Unduh JSON"
-        hint="Cadangan data, bisa diimpor lagi"
+        label={t.editor.actionJsonLabel}
+        hint={t.editor.actionJsonHint}
         onClick={() => download("json")}
       />
     </>
@@ -250,7 +263,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         <div className="shrink-0 border-b border-ink-200 bg-white px-3 py-2 sm:px-4 sm:py-2.5">
           <div className="flex items-center gap-2 sm:gap-3">
             <Link href="/dashboard" className="shrink-0">
-              <Button variant="ghost" size="sm" aria-label="Kembali ke dashboard">
+              <Button variant="ghost" size="sm" aria-label={t.editor.backAria}>
                 <ArrowLeft size={16} />
               </Button>
             </Link>
@@ -259,11 +272,11 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
               value={data.title}
               onChange={(e) => update({ title: e.target.value })}
               className="h-9 min-w-0 flex-1 text-sm font-semibold lg:max-w-80"
-              aria-label="Judul CV"
+              aria-label={t.editor.titleAria}
             />
 
             <div className="hidden lg:block">
-              <SaveIndicator state={saveState} savedAt={savedAt} />
+              <SaveIndicator state={saveState} savedAt={savedAt} t={t} locale={locale} />
             </div>
 
             {/* Aksi lengkap di layar lebar */}
@@ -275,7 +288,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 onClick={() => setConfirmSample(true)}
               >
                 <Sparkles size={14} />
-                Isi Data Contoh
+                {t.editor.btnSample}
               </Button>
               <Button
                 size="sm"
@@ -285,14 +298,14 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 aria-expanded={showSettings}
               >
                 <Settings2 size={14} />
-                Tampilan
+                {t.editor.btnAppearance}
               </Button>
 
               <span className="mx-1 h-5 w-px bg-ink-200" aria-hidden />
 
               <Button size="sm" variant="outline" className="press" onClick={printPdf}>
                 <Printer size={14} />
-                PDF
+                {t.editor.btnPdf}
               </Button>
               <Button
                 size="sm"
@@ -301,27 +314,27 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 onClick={() => download("docx")}
               >
                 <FileDown size={14} />
-                Word
+                {t.editor.btnWord}
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 className="press"
                 onClick={() => download("txt")}
-                title="Teks polos untuk ditempel ke formulir lamaran"
+                title={t.editor.btnTextTitle}
               >
                 <FileText size={14} />
-                Teks
+                {t.editor.btnText}
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 className="press"
                 onClick={() => download("json")}
-                title="Cadangan data agar dapat diimpor kembali"
+                title={t.editor.btnJsonTitle}
               >
                 <FileJson size={14} />
-                JSON
+                {t.editor.btnJson}
               </Button>
             </div>
 
@@ -334,115 +347,191 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
           {/* Status simpan di layar sempit - diberi baris sendiri agar tidak
               menekan lebar kolom judul. */}
           <div className="mt-1.5 flex items-center justify-between gap-3 lg:hidden">
-            <SaveIndicator state={saveState} savedAt={savedAt} />
+            <SaveIndicator state={saveState} savedAt={savedAt} t={t} locale={locale} />
             <Link
               href={`/resume/${initial.id}/ats`}
-              className="text-[11px] font-medium text-brand-600"
+              className="text-[11px] font-medium text-ink-700 underline"
             >
-              Cocokkan dengan lowongan
+              {t.editor.matchJob}
             </Link>
           </div>
 
-          {/* Panel pengaturan tampilan */}
+          {/* ------------------------------------------------------------ */}
+          {/* Panel pengaturan tampilan CV                                   */}
+          {/* ------------------------------------------------------------ */}
           {showSettings && (
-            <div className="mt-3 grid gap-3 rounded-lg border border-ink-200 bg-ink-50 p-3 sm:grid-cols-2 lg:grid-cols-5">
-              <Field label="Template">
-                <Select
-                  value={data.template}
-                  onChange={(e) =>
-                    update({ template: e.target.value as ResumeData["template"] })
-                  }
+            <div className="mt-3 space-y-3 rounded-lg border border-ink-200 bg-ink-50 p-3">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Field
+                  label={t.appearance.template}
+                  hint={TEMPLATE_INFO[locale][data.template].description}
                 >
-                  <option value="CLASSIC">Classic - formal</option>
-                  <option value="MODERN">Modern - lapang</option>
-                  <option value="COMPACT">Compact - padat</option>
-                </Select>
-              </Field>
+                  <Select
+                    value={data.template}
+                    onChange={(e) =>
+                      update({
+                        template: e.target.value as ResumeData["template"],
+                      })
+                    }
+                  >
+                    {/*
+                      Template dikelompokkan berdasarkan ada-tidaknya foto,
+                      karena itulah pertanyaan pertama yang muncul di benak
+                      pengguna saat memilih - bukan nama templatenya.
+                    */}
+                    <optgroup label={t.appearance.templateWithoutPhoto}>
+                      {TEMPLATE_ORDER.filter(
+                        (id) => templateStyle(id).photo === "none",
+                      ).map((id) => (
+                        <option key={id} value={id}>
+                          {TEMPLATE_INFO[locale][id].name}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label={t.appearance.templateWithPhoto}>
+                      {TEMPLATE_ORDER.filter(
+                        (id) => templateStyle(id).photo !== "none",
+                      ).map((id) => (
+                        <option key={id} value={id}>
+                          {TEMPLATE_INFO[locale][id].name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </Select>
+                </Field>
 
-              <Field label="Jenis Huruf" hint="Semua pilihan aman untuk ATS.">
-                <Select
-                  value={data.fontFamily}
-                  onChange={(e) => update({ fontFamily: e.target.value })}
+                <Field
+                  label={t.appearance.paperSize}
+                  hint={PAPER_NOTE[locale][data.pageSize]}
                 >
-                  {ATS_SAFE_FONTS.map((font) => (
-                    <option key={font} value={font}>
-                      {font}
-                    </option>
-                  ))}
-                </Select>
-              </Field>
+                  <Select
+                    value={data.pageSize}
+                    onChange={(e) =>
+                      update({
+                        pageSize: e.target.value as ResumeData["pageSize"],
+                      })
+                    }
+                  >
+                    {PAPER_ORDER.map((size) => (
+                      <option key={size} value={size}>
+                        {PAPER_SIZES[size].label}
+                        {size === RECOMMENDED_PAPER
+                          ? ` - ${t.preview.paperRecommended}`
+                          : ""}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
 
-              <Field label={`Ukuran Huruf: ${data.fontSize}pt`}>
-                <input
-                  type="range"
-                  min={9}
-                  max={12}
-                  step={0.5}
-                  value={data.fontSize}
-                  onChange={(e) => update({ fontSize: Number(e.target.value) })}
-                  className="w-full accent-brand-600"
-                  aria-label="Ukuran huruf"
-                />
-              </Field>
+                <Field label={t.appearance.font} hint={t.appearance.fontHint}>
+                  <Select
+                    value={data.fontFamily}
+                    onChange={(e) => update({ fontFamily: e.target.value })}
+                  >
+                    {ATS_SAFE_FONTS.map((font) => (
+                      <option key={font} value={font}>
+                        {font}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
 
-              <Field label={`Jarak Baris: ${data.lineHeight.toFixed(2)}`}>
-                <input
-                  type="range"
-                  min={1.1}
-                  max={1.6}
-                  step={0.05}
-                  value={data.lineHeight}
-                  onChange={(e) => update({ lineHeight: Number(e.target.value) })}
-                  className="w-full accent-brand-600"
-                  aria-label="Jarak baris"
-                />
-              </Field>
-
-              <div className="space-y-3">
-                <Field label="Bahasa Judul Bagian">
+                <Field
+                  label={t.appearance.headingLanguage}
+                  hint={t.appearance.headingLanguageHint}
+                >
                   <Select
                     value={data.language}
                     onChange={(e) =>
-                      update({ language: e.target.value as ResumeData["language"] })
+                      update({
+                        language: e.target.value as ResumeData["language"],
+                      })
                     }
                   >
                     <option value="ID">Indonesia</option>
                     <option value="EN">English</option>
                   </Select>
                 </Field>
-                {data.template === "MODERN" && (
-                  <Field label="Warna Aksen">
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Field label={`${t.appearance.fontSize}: ${data.fontSize}pt`}>
+                  <input
+                    type="range"
+                    min={9}
+                    max={12}
+                    step={0.5}
+                    value={data.fontSize}
+                    onChange={(e) =>
+                      update({ fontSize: Number(e.target.value) })
+                    }
+                    className="w-full accent-ink-900"
+                    aria-label={t.appearance.fontSize}
+                  />
+                </Field>
+
+                <Field
+                  label={`${t.appearance.lineHeight}: ${data.lineHeight.toFixed(2)}`}
+                >
+                  <input
+                    type="range"
+                    min={1.1}
+                    max={1.6}
+                    step={0.05}
+                    value={data.lineHeight}
+                    onChange={(e) =>
+                      update({ lineHeight: Number(e.target.value) })
+                    }
+                    className="w-full accent-ink-900"
+                    aria-label={t.appearance.lineHeight}
+                  />
+                </Field>
+
+                {templateStyle(data.template).useAccent && (
+                  <Field label={t.appearance.accentColor}>
                     <input
                       type="color"
                       value={data.accentColor}
                       onChange={(e) => update({ accentColor: e.target.value })}
                       className="h-9 w-full cursor-pointer rounded-lg border border-ink-300"
-                      aria-label="Warna aksen"
+                      aria-label={t.appearance.accentColor}
                     />
                   </Field>
                 )}
               </div>
+
+              {/* Saran panjang CV. Ditempatkan di panel tampilan karena di
+                  sinilah pengguna mengubah ukuran huruf dan kertas - dua hal
+                  yang paling sering dipakai untuk memaksa CV muat, padahal
+                  yang seharusnya dipangkas adalah isinya. */}
+              <p className="text-[11px] leading-relaxed text-ink-500">
+                {t.preview.onePageAdvice}
+              </p>
+
+              {data.personalInfo.showPhoto &&
+                templateStyle(data.template).photo === "none" && (
+                  <Callout tone="warn">
+                    {t.appearance.photoUnsupported}
+                  </Callout>
+                )}
             </div>
           )}
 
           {confirmSample && (
             <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
               <p className="text-xs leading-relaxed text-warn">
-                Seluruh isi CV ini akan diganti dengan data contoh lengkap.
-                Berguna untuk melihat bentuk CV jadi dan tahu setiap field
-                muncul di bagian mana - tetapi data yang sudah Anda ketik akan
-                hilang.
+                {t.editor.fillSampleConfirm}
               </p>
               <div className="mt-2.5 flex gap-2">
                 <Button size="sm" onClick={applySample}>
-                  Ya, isi dengan contoh
+                  {t.editor.fillSampleYes}
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => setConfirmSample(false)}
                 >
-                  Batal
+                  {t.common.cancel}
                 </Button>
               </div>
             </div>
@@ -450,7 +539,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
 
           {errorText && (
             <div className="mt-3">
-              <Callout tone="bad" title="Gagal menyimpan">
+              <Callout tone="bad" title={t.editor.saveFailedTitle}>
                 {errorText}
               </Callout>
             </div>
@@ -473,8 +562,8 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
             <div className="space-y-3">
               <SectionCard
                 id="form-anchor-personal"
-                title="Data Pribadi"
-                hint="Bagian paling atas CV. Nama, kontak, dan tautan profil - inilah yang pertama dicari pengurai ATS."
+                title={t.form.personalTitle}
+                hint={t.form.personalHint}
                 open={openSections.has("personal")}
                 onToggle={() => toggleSection("personal")}
               >
@@ -482,7 +571,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
               </SectionCard>
 
               {data.sectionOrder.map((key, index) => {
-                const meta = SECTION_META[key];
+                const meta = SECTION_UI[locale][key];
                 const Form = SECTION_FORMS[key];
                 return (
                   <SectionCard
@@ -524,9 +613,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
               })}
 
               <p className="px-1 pt-2 text-[11px] leading-relaxed text-ink-500">
-                Bagian yang belum diisi tidak akan muncul di CV, jadi Anda boleh
-                melewatinya. Gunakan tombol panah di sisi kanan judul untuk
-                mengubah urutan tampilnya.
+                {t.editor.sectionOrderHint}
               </p>
 
               {/* Kredit pembuat. Hanya muncul di antarmuka aplikasi -
@@ -553,11 +640,11 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 active={pane !== "ats"}
                 onClick={() => setPane("preview")}
               >
-                Pratinjau CV
+                {t.editor.tabPreview}
               </TabButton>
               <TabButton active={pane === "ats"} onClick={() => setPane("ats")}>
                 <Gauge size={14} />
-                Skor ATS
+                {t.editor.tabScore}
                 <ScoreBadge score={analysis.score} />
               </TabButton>
 
@@ -566,7 +653,7 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
                 className="ml-auto flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline"
               >
                 <ScanSearch size={13} />
-                Cocokkan dengan lowongan
+                {t.editor.matchJob}
               </Link>
             </div>
 
@@ -590,26 +677,26 @@ export function ResumeEditor({ initial }: { initial: ResumeData }) {
         {/* Navigasi bawah - hanya layar sempit                           */}
         {/* ============================================================ */}
         <nav
-          aria-label="Panel editor"
+          aria-label={t.editor.panelNav}
           className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-ink-200 bg-white/95 backdrop-blur lg:hidden"
         >
           <PaneButton
             active={pane === "form"}
             onClick={() => setPane("form")}
             icon={LayoutList}
-            label="Isi Data"
+            label={t.editor.paneForm}
           />
           <PaneButton
             active={pane === "preview"}
             onClick={() => setPane("preview")}
             icon={FileText}
-            label="Pratinjau"
+            label={t.editor.panePreview}
           />
           <PaneButton
             active={pane === "ats"}
             onClick={() => setPane("ats")}
             icon={Gauge}
-            label="Skor ATS"
+            label={t.editor.paneScore}
             badge={analysis.score}
           />
         </nav>
@@ -702,6 +789,7 @@ function PaneButton({
 
 /** Menu aksi ringkas untuk layar sempit. */
 function ActionsMenu({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -731,7 +819,7 @@ function ActionsMenu({ children }: { children: React.ReactNode }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="Menu aksi"
+        aria-label={t.editor.actionsMenu}
       >
         <MoreHorizontal size={16} />
       </Button>
@@ -782,9 +870,13 @@ function ActionItem({
 function SaveIndicator({
   state,
   savedAt,
+  t,
+  locale,
 }: {
   state: SaveState;
   savedAt: Date | null;
+  t: Dictionary;
+  locale: Locale;
 }) {
   const base = "flex items-center gap-1.5 text-[11px]";
 
@@ -792,7 +884,7 @@ function SaveIndicator({
     return (
       <span className={cn(base, "text-ink-500")} role="status">
         <Loader2 size={13} className="animate-spin" />
-        Menyimpan...
+        {t.editor.saveSaving}
       </span>
     );
   }
@@ -801,7 +893,7 @@ function SaveIndicator({
     return (
       <span className={cn(base, "font-medium text-bad")} role="status">
         <CloudOff size={13} />
-        Gagal menyimpan
+        {t.editor.saveError}
       </span>
     );
   }
@@ -810,7 +902,7 @@ function SaveIndicator({
     return (
       <span className={cn(base, "text-ink-500")}>
         <AlertTriangle size={13} />
-        Belum tersimpan
+        {t.editor.saveNotYet}
       </span>
     );
   }
@@ -819,8 +911,8 @@ function SaveIndicator({
     return (
       <span className={cn(base, "text-good")} role="status">
         <Check size={13} />
-        Tersimpan{" "}
-        {savedAt.toLocaleTimeString("id-ID", {
+        {t.editor.saveSaved}{" "}
+        {savedAt.toLocaleTimeString(locale === "en" ? "en-GB" : "id-ID", {
           hour: "2-digit",
           minute: "2-digit",
         })}
@@ -828,5 +920,5 @@ function SaveIndicator({
     );
   }
 
-  return <span className="text-[11px] text-ink-400">Tersimpan otomatis</span>;
+  return <span className="text-[11px] text-ink-400">{t.editor.saveAuto}</span>;
 }

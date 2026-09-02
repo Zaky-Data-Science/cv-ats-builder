@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { ArrowLeft, Gauge, Loader2 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
+import { useI18n } from "@/components/i18n";
 import { Button, Callout, Card, Textarea } from "@/components/ui";
 import { analyzeResume, type AtsResult } from "@/lib/ats/engine";
 import type { ResumeData } from "@/lib/resume/types";
@@ -28,14 +29,21 @@ export function AtsPageClient({
   resume: ResumeData;
   initialHistory: HistoryEntry[];
 }) {
+  const { locale, t } = useI18n();
   const [jobDescription, setJobDescription] = React.useState("");
   const [history, setHistory] = React.useState(initialHistory);
   const [saving, setSaving] = React.useState(false);
-  const [notice, setNotice] = React.useState<string | null>(null);
+  // Disimpan sebagai pasangan nada + teks, bukan teks saja. Menebak berhasil
+  // atau gagal dengan memeriksa isi kalimatnya akan langsung meleset begitu
+  // bahasanya berganti.
+  const [notice, setNotice] = React.useState<{
+    tone: "good" | "bad";
+    text: string;
+  } | null>(null);
 
   const result: AtsResult = React.useMemo(
-    () => analyzeResume(resume, jobDescription),
-    [resume, jobDescription],
+    () => analyzeResume(resume, jobDescription, undefined, locale),
+    [resume, jobDescription, locale],
   );
 
   async function saveToHistory() {
@@ -49,7 +57,10 @@ export function AtsPageClient({
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        setNotice(payload.error ?? "Gagal menyimpan hasil penilaian.");
+        setNotice({
+          tone: "bad",
+          text: payload.error ?? t.ats.historySaveFailed,
+        });
         return;
       }
       setHistory((prev) => [
@@ -60,15 +71,17 @@ export function AtsPageClient({
         },
         ...prev,
       ]);
-      setNotice("Hasil penilaian tersimpan ke riwayat.");
+      setNotice({ tone: "good", text: t.ats.historySaved });
     } catch {
-      setNotice("Tidak dapat terhubung ke server.");
+      setNotice({ tone: "bad", text: t.ats.historyOffline });
     } finally {
       setSaving(false);
     }
   }
 
-  const best = history.length > 0 ? Math.max(...history.map((h) => h.score)) : null;
+  const best =
+    history.length > 0 ? Math.max(...history.map((h) => h.score)) : null;
+  const dateLocale = locale === "en" ? "en-GB" : "id-ID";
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-6">
@@ -77,31 +90,30 @@ export function AtsPageClient({
           <Link href={`/resume/${resume.id}/edit`}>
             <Button variant="ghost" size="sm">
               <ArrowLeft size={15} />
-              Kembali ke editor
+              {t.ats.backToEditor}
             </Button>
           </Link>
           <div>
             <h1 className="text-lg font-bold text-ink-900">
-              Analisis ATS - {resume.title}
+              {t.ats.pageTitle} - {resume.title}
             </h1>
-            <p className="text-xs text-ink-500">
-              Tempelkan iklan lowongan untuk melihat kata kunci yang belum ada
-              di CV Anda.
-            </p>
+            <p className="text-xs text-ink-500">{t.ats.pageSubtitle}</p>
           </div>
         </div>
 
         <Button onClick={saveToHistory} disabled={saving}>
-          {saving ? <Loader2 size={15} className="animate-spin" /> : <Gauge size={15} />}
-          Simpan Hasil ke Riwayat
+          {saving ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <Gauge size={15} />
+          )}
+          {t.ats.saveToHistory}
         </Button>
       </div>
 
       {notice && (
         <div className="mt-4">
-          <Callout tone={notice.includes("tersimpan") ? "good" : "bad"}>
-            {notice}
-          </Callout>
+          <Callout tone={notice.tone}>{notice.text}</Callout>
         </div>
       )}
 
@@ -112,43 +124,39 @@ export function AtsPageClient({
         <div className="space-y-4">
           <Card className="p-5">
             <h2 className="text-sm font-semibold text-ink-900">
-              Deskripsi Lowongan
+              {t.ats.jobDescTitle}
             </h2>
             <p className="mt-1 mb-3 text-xs leading-relaxed text-ink-500">
-              Salin seluruh teks iklan lowongan - termasuk bagian kualifikasi
-              dan tanggung jawab - lalu tempel di bawah ini. Kata kunci akan
-              diekstraksi secara otomatis.
+              {t.ats.jobDescHint}
             </p>
             <Textarea
               rows={14}
               value={jobDescription}
+              aria-label={t.ats.jobLabel}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder={
-                "Contoh:\n\nKami mencari Frontend Developer dengan pengalaman minimal 3 tahun.\n\nKualifikasi:\n- Menguasai React dan TypeScript\n- Terbiasa dengan REST API dan Git\n- Memahami responsive design dan web performance\n..."
-              }
+              placeholder={t.ats.jobPlaceholder}
             />
             {jobDescription.trim().length > 0 && (
               <p className="mt-2 text-[11px] text-ink-500">
-                {jobDescription.trim().split(/\s+/).length} kata dianalisis.
+                {jobDescription.trim().split(/\s+/).length} {t.ats.wordsAnalyzed}
               </p>
             )}
           </Card>
 
           <Card className="p-5">
             <h2 className="text-sm font-semibold text-ink-900">
-              Riwayat Penilaian
+              {t.ats.historyTitle}
             </h2>
             {history.length === 0 ? (
               <p className="mt-2 text-xs leading-relaxed text-ink-500">
-                Belum ada riwayat. Tekan &quot;Simpan Hasil ke Riwayat&quot;
-                untuk mencatat skor saat ini, lalu perbaiki CV Anda dan simpan
-                lagi untuk melihat perkembangannya.
+                {t.ats.historyEmpty}
               </p>
             ) : (
               <>
                 {best !== null && (
                   <p className="mt-1 text-xs text-ink-500">
-                    Skor tertinggi: <strong className="text-ink-800">{best}</strong>
+                    {t.ats.historyBest}{" "}
+                    <strong className="text-ink-800">{best}</strong>
                   </p>
                 )}
                 <ul className="mt-3 space-y-1.5">
@@ -158,7 +166,7 @@ export function AtsPageClient({
                       className="flex items-center justify-between rounded-lg bg-ink-50 px-3 py-2"
                     >
                       <span className="text-xs text-ink-600">
-                        {new Date(entry.createdAt).toLocaleString("id-ID", {
+                        {new Date(entry.createdAt).toLocaleString(dateLocale, {
                           day: "numeric",
                           month: "short",
                           hour: "2-digit",

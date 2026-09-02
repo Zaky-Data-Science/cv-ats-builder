@@ -4,8 +4,12 @@ import { auth } from "@/auth";
 import { SettingsClient } from "@/components/settings/SettingsClient";
 import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/db";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Pengaturan" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t.settings.title };
+}
 
 export default async function SettingsPage() {
   const session = await auth();

@@ -3,8 +3,12 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth, googleEnabled } from "@/auth";
 import { LoginForm } from "@/components/auth/AuthForms";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Masuk" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t.auth.loginTitle };
+}
 
 export default async function LoginPage() {
   const session = await auth();

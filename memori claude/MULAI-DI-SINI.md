@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **2 September 2026**
+Terakhir diperbarui: **2 September 2026** (sesi 4)
 
 ---
 
@@ -15,12 +15,23 @@ Terakhir diperbarui: **2 September 2026**
 
 **CV ATS Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
 (*Applicant Tracking System*). Pengguna mengisi field terstruktur, melihat
-hasilnya seketika di pratinjau A4, memperoleh skor ATS beserta saran
-perbaikan, lalu mengunduh PDF/Word/teks/JSON. Datanya tersimpan permanen
-sehingga dapat diedit kapan saja.
+hasilnya seketika di pratinjau seukuran kertas sebenarnya, memperoleh skor ATS
+beserta saran perbaikan, lalu mengunduh PDF/Word/teks/JSON. Datanya tersimpan
+permanen sehingga dapat diedit kapan saja.
 
-Dibangun sebagai **Tugas Akhir** Program Studi D3 Teknik Komputer,
-Politeknik Negeri Samarinda, oleh **Muhammad Agus Riyadh Zaky**.
+Sejak sesi 4, aplikasi ini juga **memindai dan membandingkan CV yang sudah
+ada**: berkas PDF/DOCX/TXT dibaca dan dinilai di dalam peramban, tanpa pernah
+dikirim ke server. Antarmukanya dwibahasa (Indonesia/Inggris), bertema
+monokrom, dan punya mode terang/gelap.
+
+Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
+Politeknik Negeri Samarinda.
+
+> Catatan: keterangan "Tugas Akhir" sengaja **dihapus dari seluruh teks yang
+> dilihat pengguna** pada sesi 4. Alasannya ada di komentar `src/lib/site.ts` -
+> aplikasinya dipakai orang sungguhan untuk melamar kerja, dan keterangan bahwa
+> ini pekerjaan kampus membuatnya terbaca sebagai purwarupa yang belum tentu
+> bertahan. Identitas pembuatnya tetap dicantumkan.
 
 ---
 
@@ -52,6 +63,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
+npm test             # 99 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -111,12 +123,24 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | Lokasi | Isi |
 |---|---|
 | `prisma/schema.prisma` | 17 tabel beserta relasinya |
-| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 5 dimensi |
+| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 5 dimensi untuk CV terstruktur |
+| `src/lib/ats/messages.ts` | Seluruh kalimat keluaran mesin penilaian, dua bahasa. engine.ts tinggal berisi angka dan syarat |
+| `src/lib/ats/document.ts` | Penilai **berkas CV yang diunggah** - menebak strukturnya dari teks. Sengaja terpisah dari engine.ts; alasannya ada di komentar berkasnya |
+| `src/lib/ats/document-messages.ts` | Kalimat kelebihan/kekurangan untuk penilai berkas |
+| `src/lib/intake/extract.ts` | Pembaca PDF (pdf.js) dan DOCX (zip + XML) di peramban, beserta deteksi jumlah kolom |
 | `src/lib/ats/vocabulary.ts` | Kata henti, kata kerja aksi, frasa klise |
+| `src/lib/i18n/id.ts`, `en.ts` | Kamus antarmuka. `en.ts` diketik sebagai `Dictionary`, jadi kunci yang lupa diterjemahkan menggagalkan build |
+| `src/lib/resume/templates.ts` | Katalog 10 template beserta ciri rupanya |
+| `src/lib/resume/paper.ts` | Ukuran kertas A4/Letter/Legal/F4 |
+| `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
+| `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
+| `tests/` | 99 pemeriksaan; `npm test` |
 | `src/lib/resume/types.ts` | Bentuk data CV yang dipakai seluruh aplikasi |
 | `src/lib/resume/persist.ts` | Baca-tulis CV dalam satu transaksi |
 | `src/lib/guard.ts` | Pemeriksaan sesi dan kepemilikan data |
-| `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau **dan** cetak |
+| `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau, halaman cetak, **dan** pratinjau template di halaman depan |
+| `src/components/compare/CompareClient.tsx` | Halaman bandingkan/pindai CV |
+| `src/components/CursorGlow.tsx` | Cahaya pengikut kursor dan percikan sentuh |
 | `src/components/editor/ResumeEditor.tsx` | Editor, simpan otomatis, tata letak responsif |
 | `src/app/privasi/` dan `src/app/ketentuan/` | Kebijakan privasi dan ketentuan layanan - disyaratkan Google untuk mempublikasikan aplikasi OAuth |
 | `src/middleware.ts` | Pengalihan awal halaman terlindungi (hanya kenyamanan, bukan lapisan keamanan) |
@@ -142,6 +166,16 @@ supaya tidak perlu diingat-ingat lagi.
 | **Pembatasan laju disimpan di basis data** | Di platform serverless setiap permintaan bisa dilayani instans berbeda; penghitung di memori mudah dilewati dan memberi rasa aman yang keliru. |
 | **Efek 3D memakai CSS, bukan Three.js** | Penggunanya sedang melamar kerja, kerap dari ponsel kelas menengah. Menambah ratusan kilobyte demi hiasan berlawanan dengan tujuan aplikasinya. |
 | **Migrasi lewat koneksi langsung, aplikasi lewat pooled** | PgBouncer mode transaksi tidak mendukung penguncian tingkat sesi yang dipakai Prisma saat migrasi. |
+| **Mode gelap dengan membalik nilai token, bukan menulis varian `dark:`** | Seluruh komponen yang sudah ada ikut bermode gelap tanpa satu pun className diubah, dan tidak ada elemen yang "lupa" dibuatkan varian gelapnya. Termasuk `--color-white`, yang di mode gelap menjadi permukaan kartu gelap - sehingga `bg-ink-900 text-white` tetap berarti "latar gelap, teks terang" di kedua mode. |
+| **Bahasa antarmuka disimpan di cookie, bukan localStorage** | Sebagian besar halaman dirender di server; dengan localStorage, halaman akan selalu terkirim berbahasa Indonesia lebih dulu lalu berkedip berganti - dan mesin pencari tidak akan pernah melihat versi Inggrisnya. Konsekuensinya, halaman menjadi dinamis, bukan statis. |
+| **Berkas CV yang dibandingkan diproses di peramban** | Isi CV adalah data pribadi lengkap, dan fitur ini justru mengundang orang mengunggah CV yang bukan miliknya. Menyimpannya di server menimbulkan kewajiban perlindungan data yang tidak sepadan, sementara analisisnya memang bisa dikerjakan peramban. Efek sampingnya menguntungkan: fitur ini tidak perlu akun. |
+| **Penilai berkas terpisah dari penilai CV terstruktur** | Yang satu punya data terstruktur, yang lain harus menebak strukturnya dari teks. Menyatukannya memaksa salah satu berpura-pura. Yang dibagi hanya yang memang sama: bobot dimensi, daftar kata kerja, dan mesin kata kunci - sehingga skor keduanya tetap dapat dibandingkan. |
+| **Saran diubah dari "maksimal 2 halaman" menjadi "satu halaman"** | Perekrut memindai CV dalam hitungan detik; apa pun di halaman kedua besar kemungkinan tidak terbaca. Penilaiannya bertingkat, bukan lolos-gagal: 1 halaman nilai penuh, 2 halaman 75%, 3 halaman ke atas 25%. |
+| **Diagram dibangkitkan dari data, bukan digambar** | Diagram yang disimpan sebagai gambar hasil gambar tangan selalu berakhir usang. `src/lib/diagrams.ts` melayani halaman /alur sekaligus berkas SVG/PNG di `docs/diagram/`. |
+| **Sakelar tema satu tombol, tanpa pilihan "ikut sistem"** | Menu tiga pilihan menuntut dua tindakan untuk sesuatu yang hanya punya dua keadaan. Setelan sistem tetap dihormati, tetapi perannya bergeser menjadi penentu keadaan **awal** - dituliskan skrip di `<head>` sebagai atribut `data-theme` sebelum halaman digambar. |
+| **Tombol utama menuju `/login`, bukan `/dashboard` atau `/register`** | Halaman login sudah mengalihkan pengguna yang sudah masuk langsung ke dashboard, sehingga satu tautan melayani kedua keadaan - dan tidak ada tombol yang menjanjikan dashboard kepada orang yang belum punya akun. |
+| **Cahaya kursor memakai kurva peluruhan bercacah, bukan tiga titik henti** | Gradasi CSS menarik garis lurus antar-titik henti; tiga titik menghasilkan dua ruas lurus, dan dua ruas lurus terbaca sebagai cakram berwarna - bukan cahaya. Delapan titik mendekati kurva (1-r)^3: separuh kepekatan hilang sebelum 15% jari-jari, lalu menipis hingga tepat nol pada 100%. |
+| **Gerak kartu (`Interactive`) jauh lebih halus daripada `TiltCard`** | `TiltCard` dipakai sekali per halaman untuk benda utama; `Interactive` dipakai berpuluh kali. Puluhan kartu yang miring setegas kartu utama membuat halaman terasa goyah, bukan hidup. |
 | **Kredit pembuat tidak ikut di CV** | CV adalah dokumen milik pelamar. Mencantumkan nama pihak lain akan membingungkan perekrut dan merugikan penggunanya. |
 | **Tidak mencantumkan statistik "sekian persen CV ditolak ATS"** | Angka yang beredar luas itu tidak punya sumber primer yang dapat diverifikasi - berisiko dipertanyakan penguji. |
 
@@ -160,6 +194,14 @@ Berguna bila gejala serupa muncul lagi.
 | Perbesaran ponsel mentok 28% | Diukur saat panel masih tersembunyi | Pengukuran ditunda sampai panel terlihat |
 | Galat `ConnectionClosed` | Koneksi menganggur ditutup server lebih dulu | Lumbung koneksi diperkecil, koneksi menganggur ditutup cepat |
 | `/dashboard` membalas 200 tanpa login | Kerangka pemuatan sempat dialirkan sebelum pengalihan | Middleware mengalihkan lebih awal, kini 307 |
+| Deteksi dua kolom tidak jalan pada halaman berisi sedikit teks | Ambangnya 40 potongan teks, terlalu tinggi | Diturunkan ke 12 |
+| Worker pdf.js menumpuk setiap PDF dibuka | pdf.js 6 memindahkan metode pembebasan dari objek dokumen ke objek tugas pemuatannya | `task.destroy()`, bukan `document.destroy()` |
+| Satu berkas terbaca sebagai berkas biner oleh grep | Karakter NUL literal tertulis di dalam pola regex pembersih teks | Diganti rentang karakter kendali yang ditulis sebagai escape |
+| CV contoh berbahasa Inggris bernilai satu poin lebih rendah | Daftar kata kerja aksi Inggris kehilangan bentuk lampau tak beraturan ("rebuilt", "wrote", "ran", "used") | Daftar diperluas 40 kata |
+| Label panah balik pada diagram tertutup kotak | Kotak digambar setelah panah | Label panah balik digambar paling akhir; jalurnya dihitung dari kotak paling kiri di seluruh diagram |
+| Lint menolak `document.cookie` di badan komponen | Aturan React Compiler melarang efek samping di sana | Dipindah ke fungsi biasa `persistLocale()` di luar komponen |
+| `migrate deploy` menolak jalan di basis data lokal | Tabel `_prisma_migrations` hilang akibat kejadian sesi sebelumnya | `prisma migrate resolve --applied` untuk kedua migrasi lama, lalu deploy normal |
+| Cahaya kursor terbaca sebagai cakram, bukan cahaya | Gradasi hanya tiga titik henti dan berhenti di 72% jari-jari | Delapan titik henti mendekati kurva (1-r)^3, berakhir tepat nol di 100% |
 
 ---
 
@@ -172,15 +214,22 @@ Daftar ini sengaja jujur - berguna sebagai bab saran pengembangan lanjutan.
    gulir ke bawah, pilih "Change repository visibility". Perlu diingat,
    menjadikan repo publik tidak dapat ditarik kembali sepenuhnya karena
    isinya dapat terlanjur disalin orang lain.
-3. **Belum ada berkas uji otomatis di dalam repositori.** Verifikasi selama
-   ini dijalankan lewat skrip terpisah terhadap aplikasi yang berjalan.
-4. **Pemulihan kata sandi lewat surel belum ada** - memerlukan layanan
+3. **Pemulihan kata sandi lewat surel belum ada** - memerlukan layanan
    pengirim surel.
-5. **Pencocokan kata kunci masih leksikal.** "frontend" dan "front-end"
+4. **Pencocokan kata kunci masih leksikal.** "frontend" dan "front-end"
    dikenali berbeda; sinonim belum dikenali.
-6. **Foto lewat tautan gambar, belum unggah berkas.**
-7. **CSP masih memuat `'unsafe-inline'`** pada script-src, karena Next.js
+5. **Foto lewat tautan gambar, belum unggah berkas.**
+6. **CSP masih memuat `'unsafe-inline'`** pada script-src, karena Next.js
    menyisipkan skrip bootstrap sebaris.
+7. **Struktur CV yang diunggah ditebak dari teksnya.** CV dengan judul bagian
+   tidak lazim dinilai lebih rendah daripada seharusnya - meski itu sendiri
+   pertanda yang benar, karena pengurai ATS pun akan kesulitan yang sama.
+8. **Halaman publik kini dirender dinamis**, bukan statis, karena membaca
+   cookie bahasa. Bila suatu saat perlu statis lagi, jalannya adalah
+   memindahkan bahasa ke segmen alamat (`/en/...`).
+
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, 99 pemeriksaan
+di folder `tests/`).
 
 ---
 
@@ -192,7 +241,15 @@ Cukup sampaikan hal-hal ini:
 > lalu `docs/dokumentasi-teknis.md`. Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
 > basis data lokal. Sebelum menyatakan selesai, jalankan
-> `npm run typecheck && npm run lint && npm run build`.
+> `npm run typecheck && npm run lint && npm test && npm run build`.
+
+Dua hal yang paling mudah terlewat saat menambah fitur:
+
+1. **Setiap teks baru harus masuk kedua kamus** (`src/lib/i18n/id.ts` dan
+   `en.ts`). Kunci yang terlewat menggagalkan `typecheck`; kalimat yang
+   disalin tanpa diterjemahkan ditangkap `npm test`.
+2. **Skema basis data berubah = tulis migrasi manual.** Lihat jebakan di
+   bagian 3.
 
 Catatan gaya yang dipakai di seluruh kode ini:
 

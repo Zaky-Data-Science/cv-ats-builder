@@ -5,8 +5,12 @@ import { AtsPageClient } from "@/components/ats/AtsPageClient";
 import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/db";
 import { getResume } from "@/lib/resume/persist";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Analisis ATS" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t.ats.pageTitle };
+}
 
 export default async function AtsPage({
   params,

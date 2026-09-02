@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1644" viewBox="0 0 1000 1644" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<title>Alur pengguna: menyusun CV</title>
+<desc>Dari membuka aplikasi sampai berkas CV terunduh. Perhatikan bahwa penyimpanan berjalan sendiri di latar belakang, dan perbaikan berdasarkan skor merupakan putaran - bukan satu langkah sekali jalan.</desc>
+<defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
+<rect width="1000" height="1644" fill="#ffffff"/>
+<text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">Alur pengguna: menyusun CV</text>
+<line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
+<path d="M 500 174 V 212" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 280 V 303 H 284 V 318" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="294" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="307" text-anchor="middle" font-size="11.5" fill="#52525a">belum</text>
+<path d="M 284 386 V 409 H 500 V 424" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 280 V 424" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="360" font-size="11.5" fill="#52525a">sudah</text>
+<path d="M 500 492 V 530" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 598 V 636" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 726 V 764" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 870 V 893 H 716 V 908" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 870 V 1036" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 1142 V 1180" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 1286 V 1324" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 290 1362 H 88 V 821 H 290" fill="none" stroke="#74747a" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#panah)"/>
+<path d="M 500 1392 V 1430" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="1419" font-size="11.5" fill="#52525a">sudah</text>
+<path d="M 500 1498 V 1536" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="60" rx="10" fill="#0a0a0b" stroke="#0a0a0b" stroke-width="2"/>
+<text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#c9c9cd">MULAI</text>
+<text x="308" y="155" font-size="15" font-weight="600" fill="#ffffff">Membuka aplikasi</text>
+<rect x="290" y="220" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="244" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
+<text x="308" y="261" font-size="15" font-weight="600" fill="#0a0a0b">Sudah punya akun?</text>
+<rect x="114" y="326" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="350" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="132" y="367" font-size="15" font-weight="600" fill="#0a0a0b">Daftar - email atau Google</text>
+<rect x="290" y="432" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="456" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="473" font-size="15" font-weight="600" fill="#0a0a0b">Masuk</text>
+<rect x="290" y="538" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="562" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="579" font-size="15" font-weight="600" fill="#0a0a0b">Dashboard - daftar CV</text>
+<rect x="290" y="644" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="668" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="685" font-size="15" font-weight="600" fill="#0a0a0b">Buat CV baru atau duplikasi</text>
+<text x="308" y="708" font-size="12.5" fill="#52525a">Bisa dimulai dari kosong atau dari data contoh lengkap.</text>
+<rect x="290" y="772" width="420" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="796" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="813" font-size="15" font-weight="600" fill="#0a0a0b">Isi field terstruktur</text>
+<text x="308" y="836" font-size="12.5" fill="#52525a">11 bagian. Setiap kotak memuat contoh pengisian berwarna</text>
+<text x="308" y="852" font-size="12.5" fill="#52525a">abu.</text>
+<rect x="546" y="916" width="340" height="82" rx="10" fill="#fafafa" stroke="#a1a1a8" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="564" y="940" font-size="10" letter-spacing="0.08em" fill="#52525a">DATA</text>
+<text x="564" y="957" font-size="15" font-weight="600" fill="#0a0a0b">Simpan otomatis ke basis data</text>
+<text x="564" y="980" font-size="12.5" fill="#52525a">0,8 detik setelah pengguna berhenti mengetik.</text>
+<rect x="290" y="1044" width="420" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1068" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="1085" font-size="15" font-weight="600" fill="#0a0a0b">Pratinjau seukuran kertas</text>
+<text x="308" y="1108" font-size="12.5" fill="#52525a">A4, Letter, Legal, atau F4 - tersambung panjang atau</text>
+<text x="308" y="1124" font-size="12.5" fill="#52525a">terpotong per halaman.</text>
+<rect x="290" y="1188" width="420" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1212" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="1229" font-size="15" font-weight="600" fill="#0a0a0b">Hitung skor ATS</text>
+<text x="308" y="1252" font-size="12.5" fill="#52525a">Lima dimensi berbobot, dihitung di peramban tanpa</text>
+<text x="308" y="1268" font-size="12.5" fill="#52525a">permintaan jaringan.</text>
+<rect x="290" y="1332" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="1356" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
+<text x="308" y="1373" font-size="15" font-weight="600" fill="#0a0a0b">Skor sudah memadai?</text>
+<rect x="290" y="1438" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1462" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="1479" font-size="15" font-weight="600" fill="#0a0a0b">Unduh PDF, Word, teks, atau JSON</text>
+<rect x="290" y="1544" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="1568" font-size="10" letter-spacing="0.08em" fill="#52525a">SELESAI</text>
+<text x="308" y="1585" font-size="15" font-weight="600" fill="#0a0a0b">Kirim lamaran</text>
+<rect x="32.4" y="1081.5" width="111.2" height="20" rx="10" fill="#ffffff" stroke="#e6e6e8"/>
+<text x="88" y="1095.5" text-anchor="middle" font-size="11.5" fill="#52525a">belum - perbaiki</text>
+</svg>

@@ -3,8 +3,12 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { ResumeEditor } from "@/components/editor/ResumeEditor";
 import { getResume } from "@/lib/resume/persist";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Editor CV" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: `${t.editor.paneForm} - ${t.common.appName}` };
+}
 
 export default async function EditResumePage({
   params,

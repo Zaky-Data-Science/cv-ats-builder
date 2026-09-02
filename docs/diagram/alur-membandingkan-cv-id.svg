@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1266" viewBox="0 0 1000 1266" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<title>Alur pengguna: membandingkan dan memindai CV</title>
+<desc>Seluruh langkah pada alur ini berjalan di dalam peramban pengguna. Tidak ada berkas yang dikirim ke server, sehingga tidak ada pula yang tersimpan.</desc>
+<defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
+<rect width="1000" height="1266" fill="#ffffff"/>
+<text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">Alur pengguna: membandingkan dan memindai CV</text>
+<line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
+<path d="M 500 196 V 234" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 302 V 325 H 716 V 340" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 302 V 446" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 552 V 590" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 696 V 734" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 716 408 V 575 H 500 V 734" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 802 V 840" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 908 V 931 H 284 V 946" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="922" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="935" text-anchor="middle" font-size="11.5" fill="#52525a">1 berkas</text>
+<path d="M 500 908 V 1052" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="988" font-size="11.5" fill="#52525a">2-5 berkas</text>
+<path d="M 284 1014 V 1090 H 500 V 1158" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 1120 V 1158" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="82" rx="10" fill="#0a0a0b" stroke="#0a0a0b" stroke-width="2"/>
+<text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#c9c9cd">MULAI</text>
+<text x="308" y="155" font-size="15" font-weight="600" fill="#ffffff">Membuka halaman Bandingkan CV</text>
+<text x="308" y="178" font-size="12.5" fill="#c9c9cd">Tanpa perlu akun.</text>
+<rect x="290" y="242" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="266" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="283" font-size="15" font-weight="600" fill="#0a0a0b">Pilih 1-5 berkas PDF, DOCX, atau TXT</text>
+<rect x="546" y="348" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="564" y="372" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="564" y="389" font-size="15" font-weight="600" fill="#0a0a0b">Tempel iklan lowongan (opsional)</text>
+<rect x="290" y="454" width="420" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="478" font-size="10" letter-spacing="0.08em" fill="#52525a">DI PERAMBAN</text>
+<text x="308" y="495" font-size="15" font-weight="600" fill="#0a0a0b">Ekstraksi teks di peramban</text>
+<text x="308" y="518" font-size="12.5" fill="#52525a">PDF lewat pdf.js; DOCX dibuka sebagai arsip zip lalu</text>
+<text x="308" y="534" font-size="12.5" fill="#52525a">XML-nya dibaca.</text>
+<rect x="290" y="598" width="420" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="622" font-size="10" letter-spacing="0.08em" fill="#52525a">DI PERAMBAN</text>
+<text x="308" y="639" font-size="15" font-weight="600" fill="#0a0a0b">Deteksi jumlah halaman dan kolom</text>
+<text x="308" y="662" font-size="12.5" fill="#52525a">Celah kosong yang membelah halaman menandakan tata letak</text>
+<text x="308" y="678" font-size="12.5" fill="#52525a">dua kolom.</text>
+<rect x="290" y="742" width="420" height="60" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="766" font-size="10" letter-spacing="0.08em" fill="#52525a">DI PERAMBAN</text>
+<text x="308" y="783" font-size="15" font-weight="600" fill="#0a0a0b">Nilai tiap CV - lima dimensi</text>
+<rect x="290" y="848" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="872" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
+<text x="308" y="889" font-size="15" font-weight="600" fill="#0a0a0b">Berapa berkas?</text>
+<rect x="114" y="954" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="978" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="132" y="995" font-size="15" font-weight="600" fill="#0a0a0b">Satu: hasil pindaian</text>
+<rect x="290" y="1060" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1084" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="1101" font-size="15" font-weight="600" fill="#0a0a0b">Dua atau lebih: peringkat dan pemenang</text>
+<rect x="290" y="1166" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="1190" font-size="10" letter-spacing="0.08em" fill="#52525a">SELESAI</text>
+<text x="308" y="1207" font-size="15" font-weight="600" fill="#0a0a0b">Kelebihan, kekurangan, dan cara memperbaikinya</text>
+</svg>

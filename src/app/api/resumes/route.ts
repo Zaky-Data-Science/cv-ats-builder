@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { errorResponse, requireUser } from "@/lib/guard";
 import { emptyResume } from "@/lib/resume/factory";
 import { createResume } from "@/lib/resume/persist";
+import { getLocale } from "@/lib/i18n/server";
 import { sampleResume } from "@/lib/resume/sample";
 import { createResumeSchema, resumeDataSchema } from "@/lib/resume/schema";
 import type { ResumeSummary } from "@/lib/resume/types";
@@ -58,7 +59,8 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const { title, preset } = createResumeSchema.parse(body);
 
-    const base = preset === "sample" ? sampleResume() : emptyResume();
+    const base =
+      preset === "sample" ? sampleResume("", await getLocale()) : emptyResume();
     if (title) base.title = title;
 
     const parsed = resumeDataSchema.parse(base);

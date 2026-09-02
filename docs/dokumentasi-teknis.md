@@ -6,6 +6,14 @@ arsitektur, alur proses, dan rincian aturan penilaian ATS.
 Diagram ditulis dalam sintaks [Mermaid](https://mermaid.js.org), yang dirender
 otomatis oleh GitHub dan sebagian besar editor Markdown.
 
+Selain diagram Mermaid di berkas ini, tersedia pula empat diagram alur yang
+**dibangkitkan langsung dari kode** - alur menyusun CV, alur membandingkan CV,
+arsitektur dan alur data, serta workflow pengembangan. Keempatnya ada dalam
+bentuk SVG dan PNG, dua bahasa, di folder [`docs/diagram/`](diagram/), dan
+dapat dibangun ulang dengan `npm run diagram`. Sumbernya satu berkas:
+`src/lib/diagrams.ts`, yang juga melayani halaman `/alur` di aplikasinya -
+sehingga diagram di laporan tidak mungkin bercerita berbeda dari aplikasinya.
+
 ---
 
 ## 1. Arsitektur Sistem
@@ -15,8 +23,12 @@ flowchart TB
     subgraph Peramban["Peramban Pengguna"]
         UI["Editor CV<br/>(React Client Component)"]
         MESIN["Mesin Penilaian ATS<br/>(fungsi murni TypeScript)"]
+        BANDING["Pembanding CV<br/>pdf.js + pembaca DOCX"]
+        BERKAS[/"Berkas PDF / DOCX / TXT"/]
         UI -->|"data CV"| MESIN
         MESIN -->|"skor dan saran"| UI
+        BERKAS --> BANDING
+        BANDING -->|"teks + jumlah kolom"| MESIN
     end
 
     subgraph Server["Server Next.js"]
@@ -34,9 +46,15 @@ flowchart TB
     RSC -->|"muat awal"| DB
     GUARD --> DB
 
-    style MESIN fill:#eef4ff,stroke:#4f6ef7
-    style DB fill:#f1f5f9,stroke:#64748b
+    style MESIN fill:#f4f4f5,stroke:#0a0a0b
+    style BANDING fill:#f4f4f5,stroke:#0a0a0b
+    style DB fill:#fafafa,stroke:#74747a
 ```
+
+Perhatikan bahwa kotak **Pembanding CV** tidak memiliki satu pun panah menuju
+Server. Itu disengaja: berkas CV yang diunggah untuk dibandingkan dibaca dan
+dinilai sepenuhnya di dalam peramban, dan tidak pernah dikirim ke mana pun.
+Konsekuensi yang menguntungkan: fitur itu dapat dipakai tanpa akun.
 
 Dua hal yang membedakan rancangan ini:
 
@@ -48,9 +66,14 @@ Dua hal yang membedakan rancangan ini:
    hasil penilaian ke riwayat.
 
 2. **Dokumen CV adalah satu komponen yang dipakai bersama.**
-   `ResumeDocument` dirender di panel pratinjau maupun di halaman cetak,
-   sehingga tidak mungkin terjadi selisih antara yang dilihat pengguna dan
-   yang tercetak di PDF.
+   `ResumeDocument` dirender di panel pratinjau, di halaman cetak, dan pada
+   pratinjau kesepuluh template di halaman depan - sehingga tidak mungkin
+   terjadi selisih antara yang dilihat pengguna dan yang tercetak di PDF, dan
+   tidak ada gambar pratinjau yang perlu dibuat ulang saat template berubah.
+
+3. **Berkas CV dari luar dinilai tanpa meninggalkan perangkat pengguna.**
+   pdf.js dan pembaca DOCX berjalan di peramban; yang menyeberang ke server
+   hanyalah CV yang memang sengaja disusun pengguna di dalam aplikasi ini.
 
 ---
 
@@ -343,10 +366,30 @@ Tahapannya:
 
 | Aturan | Poin |
 |---|---:|
-| Panjang CV 1-2 halaman | 4 |
+| Panjang CV - bertingkat, lihat di bawah | 4 |
 | Ringkasan profil berada sebelum pengalaman kerja | 2 |
 | Pengalaman tersusun kronologis terbalik | 2 |
 | Tidak ada jeda kerja lebih dari 12 bulan | 2 |
+
+Aturan panjang CV **tidak** berbentuk lolos-atau-gagal, melainkan bertingkat:
+
+| Jumlah halaman | Bagian nilai yang diperoleh |
+|---:|---:|
+| 1 | 100% |
+| 2 | 75% |
+| 3 ke atas | 25% |
+
+Satu halaman memperoleh nilai penuh karena itulah panjang yang benar untuk
+hampir semua pelamar: perekrut memindai CV dalam hitungan detik, dan apa pun
+yang jatuh ke halaman kedua besar kemungkinan tidak pernah dibaca. Dua halaman
+tetap memperoleh sebagian besar nilainya - bagi pelamar dengan pengalaman
+panjang yang seluruhnya relevan, memaksakan satu halaman justru membuang bukti.
+Meski demikian, saran memadatkannya tetap ditampilkan pada CV dua halaman:
+pengguna berhak tahu bahwa satu halaman lebih baik, lalu memutuskan sendiri.
+
+Ukuran kertas (A4, Letter, Legal, F4) tidak ikut dinilai. Ukurannya menentukan
+berapa halaman isi yang sama akan memakan tempat, dan pengaruh itu sudah
+tercermin pada jumlah halamannya.
 
 ### 4.6 Penanganan Dimensi yang Tidak Berlaku
 
@@ -371,13 +414,64 @@ skor = (jumlah nilai dimensi berlaku / jumlah bobot dimensi berlaku) x 100
 | Keadaan CV | Skor | Nilai |
 |---|---:|---|
 | CV kosong (baru dibuat) | 4 | D |
-| CV contoh, tanpa iklan lowongan | 98 | A |
+| CV contoh, satu halaman, tanpa iklan lowongan | 98 | A |
+| CV contoh, dua halaman | 96 | A |
+| CV contoh, empat halaman | 91 | A |
+| CV contoh dengan pas foto | 95 | A |
 | CV contoh (Frontend) vs lowongan Frontend Developer | 94 | A |
 | CV contoh (Frontend) vs lowongan Backend Engineer | 85 | A |
 
-Selisih pada dua baris terakhir memperlihatkan bahwa dimensi kecocokan kata
-kunci memang membedakan CV yang relevan dari yang kurang relevan terhadap
-lowongan tertentu, meski mutu penulisan CV-nya sama.
+Dua baris terakhir memperlihatkan bahwa dimensi kecocokan kata kunci memang
+membedakan CV yang relevan dari yang kurang relevan terhadap lowongan tertentu,
+meski mutu penulisan CV-nya sama.
+
+Seluruh angka pada tabel ini dikunci oleh berkas uji `tests/ats-engine.test.ts`,
+sehingga perubahan aturan penilaian yang tidak disengaja akan langsung terlihat
+sebagai kegagalan `npm test`.
+
+### 4.8 Penilai Berkas CV yang Diunggah
+
+Fitur bandingkan dan pindai CV memakai mesin **terpisah**
+(`src/lib/ats/document.ts`). Pemisahan ini disengaja: mesin di bagian 4
+menilai CV terstruktur yang setiap fieldnya diketahui, sedangkan mesin ini
+menerima teks apa adanya dari berkas PDF atau Word dan harus menebak
+strukturnya. Menyatukan keduanya akan memaksa salah satunya berpura-pura -
+entah penilai berkas berpura-pura punya data terstruktur, atau penilai CV
+sendiri kehilangan ketelitiannya.
+
+Yang dibagi bersama hanyalah yang memang sama: bobot kelima dimensi, daftar
+kata kerja aksi, daftar frasa klise, dan mesin pencocokan kata kunci. Karena
+itu skor dari kedua jalur tetap berada pada skala yang sama dan dapat
+dibandingkan.
+
+Yang khas pada mesin ini:
+
+| Pemeriksaan | Cara | Mengapa penting |
+|---|---|---|
+| Lapisan teks | Rasio jumlah karakter terhadap jumlah halaman; di bawah 250 dianggap tidak berteks | CV berupa gambar hasil pindai terbaca ATS sebagai dokumen kosong, berapa pun bagus isinya |
+| Jumlah kolom | Seluruh potongan teks dipetakan ke posisi horizontalnya, lalu dicari celah lebar yang membelah halaman dan tidak pernah dilewati satu pun potongan teks | Kerusakan akibat tata letak dua kolom tidak terlihat sama sekali dari teks hasil ekstraksinya |
+| Judul bagian | Dicocokkan terhadap daftar istilah baku dua bahasa, termasuk variasi yang benar-benar dipakai orang Indonesia ("Riwayat Pekerjaan") | Pengurai ATS memetakan isi berdasarkan judul bagiannya |
+| Poin pencapaian | Dikenali dari penanda di awal baris; bila CV tidak memakai penanda sama sekali, baris berukuran kalimat penuh dipakai sebagai gantinya | Tanpa jalan cadangan itu, CV yang menulis poin sebagai baris biasa akan dinilai kosong |
+
+Setiap aturan menyerahkan dua kalimat sekaligus - satu untuk keadaan terpenuhi
+(**kelebihan**) dan satu untuk keadaan tidak (**kekurangan** beserta cara
+memperbaikinya). Daftar kelebihan dan kekurangan karena itu tumbuh dari sumber
+yang sama dan tidak mungkin bertentangan satu sama lain.
+
+Hasil kalibrasinya:
+
+| Berkas | Skor | Catatan |
+|---|---:|---|
+| PDF satu kolom, tersusun mengikuti kaidah | 98 | 12 kelebihan, 1 kekurangan |
+| PDF dua kolom, isi sama baiknya | 53 | Tata letak dua kolom terdeteksi sebagai galat |
+| CV lemah: tanpa email, tanpa poin berangka, memakai frasa klise | 45 | 13 kekurangan |
+
+Perbandingan antar-berkas tidak berhenti pada peringkat. Selisih tiap dimensi
+ikut dihitung agar alasan kemenangannya dapat disebutkan - "unggul karena
+keterbacaan mesinnya 41 poin lebih tinggi" jauh lebih berguna daripada
+"skornya 98 berbanding 53". Selisih akhir di bawah 5 poin sengaja dinyatakan
+sebagai seri: mesin ini berbasis kaidah, dan selisih sekecil itu bisa berasal
+dari satu aturan kecil saja.
 
 ---
 
@@ -400,7 +494,36 @@ lowongan tertentu, meski mutu penulisan CV-nya sama.
 
 ## 6. Hasil Verifikasi
 
-Pengujian dilakukan terhadap aplikasi yang benar-benar berjalan.
+### 6.1 Berkas Uji Otomatis
+
+Sejak versi ini, verifikasi yang tidak memerlukan server tersimpan sebagai
+berkas uji di dalam repositori dan dijalankan dengan satu perintah:
+
+```bash
+npm test
+```
+
+| Berkas | Yang diuji | Pemeriksaan |
+|---|---|---:|
+| `tests/i18n.test.ts` | Kelengkapan kamus dwibahasa; menangkap kalimat yang belum diterjemahkan | 3 |
+| `tests/ats-engine.test.ts` | Kalibrasi skor CV terstruktur, saran satu halaman, pengaruh iklan lowongan, kesamaan skor antar-bahasa | 14 |
+| `tests/templates.test.ts` | Kesepuluh template dirender dan menghasilkan teks yang identik; keempat ukuran kertas | 55 |
+| `tests/document.test.ts` | Penilai berkas unggahan, daftar kelebihan-kekurangan, pemilihan CV terbaik | 18 |
+| `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom | 9 |
+| **Total** | | **99** |
+
+Hasil terakhir: **99 dari 99 lulus**.
+
+Berkas PDF ujinya dibangkitkan sendiri oleh `tests/fixtures/make-pdf.ts`, bukan
+disimpan sebagai berkas biner di dalam repositori. Dengan begitu isi berkas
+ujinya terbaca sebagai kode - jelas apa yang sedang diuji dan mengapa.
+
+Satu uji perlu disebut khusus: **kesepuluh template harus menghasilkan teks
+polos yang identik**. Itulah klaim yang dipegang aplikasi ini - berganti
+template mengubah rupanya, bukan isinya - dan uji itulah yang akan menangkapnya
+bila suatu saat ada template yang menyusun ulang urutan isinya.
+
+### 6.2 Pengujian terhadap Aplikasi yang Berjalan
 
 | Yang diuji | Cara | Hasil |
 |---|---|---|
@@ -415,7 +538,7 @@ Pengujian dilakukan terhadap aplikasi yang benar-benar berjalan.
 | Teks PDF | Membuat PDF sungguhan lalu mengekstraksi teksnya | 77 baris terekstraksi, urutan benar, seluruh field kunci ditemukan |
 | Struktur DOCX | Membuka isi berkas `.docx` | Tanpa tabel, tanpa kotak teks, tanpa header/footer, memakai daftar berpoin asli Word |
 | Galat peramban | Menelusuri seluruh halaman sambil merekam console | 0 galat |
-| Build production | `npm run build` | Berhasil, 26 route |
+| Build production | `npm run build` | Berhasil, 31 route |
 | Tata letak responsif | 7 halaman diuji pada 4 ukuran layar (390, 768, 1280, 1680 piksel) | Tidak ada halaman yang meluber ke samping; perpindahan panel editor di layar sempit berfungsi |
 | Perbesaran pratinjau di ponsel | Membuka panel pratinjau pada layar 390 piksel | Kertas A4 otomatis diperkecil ke 45% sehingga muat selebar layar tanpa gulir menyamping |
 | Pembatasan laju | Percobaan masuk berulang terhadap satu email | Ditolak setelah melewati batas; penghitung tereset setelah masuk berhasil |
@@ -441,14 +564,23 @@ Disebutkan terbuka agar dapat ditulis pada bab keterbatasan penelitian.
    Antarmuka editor menampilkan jumlah halaman sebenarnya dari hasil
    pengukuran DOM; angka heuristik hanya dipakai saat penilaian dijalankan di
    sisi server tanpa proses render.
-5. **Belum ada berkas uji otomatis di dalam repositori.** Verifikasi pada
-   bagian 6 dilakukan lewat skrip terpisah terhadap aplikasi yang berjalan.
-   Menjadikannya berkas uji yang tersimpan di dalam repositori adalah langkah
-   lanjutan yang wajar.
-6. **Pemulihan kata sandi lewat surel belum tersedia,** sebab memerlukan
+5. **Penilaian membaca teks, bukan memahami maknanya.** Mesin ini dapat
+   memastikan sebuah CV terbaca mesin, tetapi tidak dapat menilai apakah
+   pengalaman pelamarnya cocok untuk sebuah jabatan. Pada fitur pembanding,
+   hal ini disampaikan terbuka kepada pengguna di bawah hasil perbandingannya.
+6. **Struktur CV yang diunggah ditebak dari teksnya.** CV dengan judul bagian
+   yang tidak lazim akan dinilai lebih rendah daripada seharusnya - meski itu
+   sendiri pertanda yang benar, karena pengurai ATS pun akan kesulitan yang
+   sama.
+7. **Halaman publik kini dirender dinamis, bukan statis,** karena membaca
+   cookie bahasa antarmuka. Itu harga yang dibayar agar HTML pertama yang
+   diterima pengunjung sudah berbahasa yang ia pilih. Bila suatu saat perlu
+   statis kembali, jalannya adalah memindahkan bahasa ke segmen alamat
+   (`/en/...`).
+8. **Pemulihan kata sandi lewat surel belum tersedia,** sebab memerlukan
    layanan pengirim surel. Pengguna yang lupa kata sandi dapat masuk lewat
    Google bila alamat surelnya sama, lalu membuat kata sandi baru.
-7. **Content-Security-Policy masih memuat `'unsafe-inline'` pada script-src.**
+9. **Content-Security-Policy masih memuat `'unsafe-inline'` pada script-src.**
    Next.js menyisipkan skrip bootstrap sebaris untuk proses hidrasi;
    menghapusnya menuntut penerapan nonce menyeluruh yang berada di luar
    cakupan versi ini.
@@ -564,13 +696,22 @@ diterapkan.
 
 | Berkas / folder | Isi |
 |---|---|
-| `prisma/schema.prisma` | Definisi 17 tabel beserta relasinya |
+| `prisma/schema.prisma` | Definisi 16 tabel beserta relasinya |
 | `prisma/migrations/` | Riwayat perubahan skema |
 | `prisma/seed.ts` | Akun demo dan CV contoh |
 | `src/auth.ts` | Konfigurasi autentikasi, callback penautan akun Google |
-| `src/lib/ats/engine.ts` | Mesin penilaian lima dimensi |
+| `src/lib/ats/engine.ts` | Mesin penilaian lima dimensi untuk CV terstruktur |
+| `src/lib/ats/messages.ts` | Seluruh kalimat keluaran mesin penilaian, dua bahasa |
+| `src/lib/ats/document.ts` | Mesin penilaian untuk berkas CV yang diunggah |
+| `src/lib/ats/document-messages.ts` | Kalimat kelebihan dan kekurangan untuk mesin di atas |
 | `src/lib/ats/keywords.ts` | Ekstraksi dan pencocokan kata kunci |
 | `src/lib/ats/vocabulary.ts` | Kata henti, kata kerja aksi, frasa klise |
+| `src/lib/intake/extract.ts` | Pembaca PDF dan DOCX di peramban, beserta deteksi jumlah kolom |
+| `src/lib/i18n/` | Kamus antarmuka dua bahasa dan pembacanya di sisi server |
+| `src/lib/diagrams.ts` | Sumber data diagram - dipakai halaman /alur dan pembangkit gambar |
+| `src/lib/theme.ts` | Penyimpan pilihan mode terang/gelap |
+| `src/lib/resume/templates.ts` | Katalog sepuluh template beserta ciri rupanya |
+| `src/lib/resume/paper.ts` | Ukuran kertas beserta dimensi milimeternya |
 | `src/lib/resume/plaintext.ts` | Pengubah CV menjadi teks polos |
 | `src/lib/resume/persist.ts` | Baca-tulis CV dalam satu transaksi |
 | `src/lib/guard.ts` | Pemeriksaan sesi dan kepemilikan data |
@@ -579,4 +720,11 @@ diterapkan.
 | `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau sekaligus cetak |
 | `src/components/editor/` | Formulir per-bagian, panel pratinjau, simpan otomatis |
 | `src/components/motion.tsx` | Efek kedalaman dan kemunculan |
+| `src/components/CursorGlow.tsx` | Cahaya pengikut kursor dan percikan sentuh |
+| `src/components/compare/CompareClient.tsx` | Halaman bandingkan dan pindai CV |
+| `src/components/Diagram.tsx` | Perender diagram alur sebagai HTML |
+| `scripts/render-diagrams.ts` | Pembangkit berkas SVG dan PNG diagram |
+| `scripts/copy-pdf-worker.mjs` | Menyalin worker pdf.js ke folder public saat pemasangan |
+| `tests/` | Berkas uji otomatis - 99 pemeriksaan |
+| `docs/diagram/` | Diagram alur dalam bentuk SVG dan PNG, dua bahasa |
 | `docs/panduan-pengguna.md` | Panduan pemakaian lengkap |

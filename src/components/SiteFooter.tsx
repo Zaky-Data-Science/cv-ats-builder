@@ -1,37 +1,56 @@
+"use client";
+
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
-import { AUTHOR, SITE, YEAR } from "@/lib/site";
+import { useI18n } from "@/components/i18n";
+import { AUTHOR, SITE, SITE_META, YEAR } from "@/lib/site";
 
 /**
  * Footer beserta identitas pembuat.
  *
- * Kredit sengaja hanya muncul di antarmuka aplikasi dan tidak pernah ikut
- * tercetak pada CV yang diunduh pengguna. CV adalah dokumen milik pelamar;
- * membubuhkan nama pihak lain di atasnya akan membingungkan perekrut dan
- * merugikan penggunanya. Yang ditanamkan pada berkas unduhan hanyalah
- * properti dokumen (Author/Creator), yang tidak tampak saat dibaca.
+ * Yang dicantumkan hanya identitas - nama, peran, institusi. Keterangan
+ * bahwa aplikasi ini pekerjaan kampus sengaja tidak ditulis: pengunjung yang
+ * datang untuk menyusun CV lamaran kerjanya perlu tahu siapa yang memegang
+ * datanya, bukan untuk keperluan mata kuliah apa aplikasinya dibuat.
+ *
+ * Kredit ini juga tidak pernah ikut tercetak pada CV yang diunduh pengguna.
+ * CV adalah dokumen milik pelamar; membubuhkan nama pihak lain di atasnya
+ * akan membingungkan perekrut dan merugikan penggunanya. Yang ditanamkan
+ * pada berkas unduhan hanyalah properti dokumen (Author/Creator), yang tidak
+ * tampak saat dibaca.
  */
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
+  const { locale, t } = useI18n();
+
   if (compact) {
     return (
       <footer className="border-t border-ink-200 px-5 py-6">
         <p className="text-center text-[11px] leading-relaxed text-ink-500">
-          {SITE.name} - dibuat oleh{" "}
-          <span className="font-semibold text-ink-700">{AUTHOR.name}</span>,{" "}
-          {AUTHOR.role} {AUTHOR.institution}
+          {SITE.name} - {t.footer.madeBy}{" "}
+          <span className="font-semibold text-ink-700">{AUTHOR.name}</span>
         </p>
         <p className="mt-1.5 text-center text-[11px] text-ink-500">
-          <Link href="/privasi" className="hover:text-brand-600">
-            Kebijakan Privasi
+          <Link href="/privasi" className="hover:text-ink-900">
+            {t.footer.privacy}
           </Link>
           <span className="mx-2 text-ink-300">|</span>
-          <Link href="/ketentuan" className="hover:text-brand-600">
-            Ketentuan Layanan
+          <Link href="/ketentuan" className="hover:text-ink-900">
+            {t.footer.terms}
           </Link>
         </p>
       </footer>
     );
   }
+
+  const links = [
+    { href: "/", label: t.nav.home },
+    { href: "/bandingkan", label: t.nav.compare },
+    { href: "/panduan", label: t.nav.guide },
+    { href: "/tentang", label: t.nav.about },
+    { href: "/alur", label: t.nav.flowNav },
+    { href: "/register", label: t.footer.registerFree },
+    { href: "/privasi", label: t.footer.privacy },
+    { href: "/ketentuan", label: t.footer.terms },
+  ];
 
   return (
     <footer className="border-t border-ink-200 bg-white">
@@ -48,72 +67,45 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               </span>
             </div>
             <p className="mt-3 max-w-sm text-xs leading-relaxed text-ink-600">
-              {SITE.description}
+              {SITE_META[locale].description}
             </p>
           </div>
 
           {/* Tautan */}
-          <nav aria-label="Tautan halaman">
-            <h2 className="text-xs font-semibold text-ink-900">Halaman</h2>
+          <nav aria-label={t.footer.pagesHeading}>
+            <h2 className="text-xs font-semibold text-ink-900">
+              {t.footer.pagesHeading}
+            </h2>
             <ul className="mt-3 space-y-2 text-xs text-ink-600">
-              <li>
-                <Link href="/" className="hover:text-brand-600">
-                  Beranda
-                </Link>
-              </li>
-              <li>
-                <Link href="/panduan" className="hover:text-brand-600">
-                  Panduan Penggunaan
-                </Link>
-              </li>
-              <li>
-                <Link href="/tentang" className="hover:text-brand-600">
-                  Tentang Aplikasi
-                </Link>
-              </li>
-              <li>
-                <Link href="/register" className="hover:text-brand-600">
-                  Daftar Gratis
-                </Link>
-              </li>
-              <li>
-                <Link href="/privasi" className="hover:text-brand-600">
-                  Kebijakan Privasi
-                </Link>
-              </li>
-              <li>
-                <Link href="/ketentuan" className="hover:text-brand-600">
-                  Ketentuan Layanan
-                </Link>
-              </li>
+              {links.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="hover:text-ink-900">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
           {/* Pembuat */}
           <div>
-            <h2 className="text-xs font-semibold text-ink-900">Pembuat</h2>
-            <div className="mt-3 flex gap-2.5">
-              <GraduationCap
-                size={16}
-                className="mt-0.5 shrink-0 text-brand-600"
-                aria-hidden
-              />
-              <address className="text-xs leading-relaxed text-ink-600 not-italic">
-                <span className="block font-semibold text-ink-900">
-                  {AUTHOR.name}
-                </span>
-                {AUTHOR.role}
-                <br />
-                {AUTHOR.institution}
-              </address>
-            </div>
+            <h2 className="text-xs font-semibold text-ink-900">
+              {t.footer.authorHeading}
+            </h2>
+            <address className="mt-3 text-xs leading-relaxed text-ink-600 not-italic">
+              <span className="block font-semibold text-ink-900">
+                {AUTHOR.name}
+              </span>
+              {AUTHOR.role}
+              <br />
+              {AUTHOR.institution}
+            </address>
           </div>
         </div>
 
         <div className="mt-8 border-t border-ink-100 pt-6">
           <p className="text-center text-[11px] text-ink-500">
-            &copy; {YEAR} {AUTHOR.name}. Dibangun sebagai Tugas Akhir Program
-            Studi D3 Teknik Komputer, {AUTHOR.institution}.
+            &copy; {YEAR} {AUTHOR.name}. {t.footer.rights}
           </p>
         </div>
       </div>

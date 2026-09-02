@@ -5,8 +5,12 @@ import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/db";
 import type { ResumeSummary } from "@/lib/resume/types";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t.nav.dashboard };
+}
 
 export default async function DashboardPage() {
   const session = await auth();

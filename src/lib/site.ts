@@ -6,6 +6,8 @@
  * halaman, dan properti dokumen berkas yang diunduh.
  */
 
+import type { Locale } from "@/lib/i18n/config";
+
 export const SITE = {
   name: "CV ATS Builder",
   tagline: "Susun CV yang terbaca mesin perekrut",
@@ -13,13 +15,54 @@ export const SITE = {
     "Aplikasi web untuk menyusun CV ramah ATS lewat field terstruktur, dengan pratinjau langsung, penilaian otomatis beserta saran perbaikan, dan penyimpanan permanen sehingga dapat diedit kapan saja.",
 } as const;
 
+/** Judul dan deskripsi situs untuk metadata, mengikuti bahasa antarmuka. */
+export const SITE_META: Record<
+  Locale,
+  { tagline: string; description: string; keywords: string[] }
+> = {
+  id: {
+    tagline: SITE.tagline,
+    description: SITE.description,
+    keywords: [
+      "CV ATS",
+      "pembuat CV",
+      "CV ATS friendly",
+      "resume builder Indonesia",
+      "contoh CV",
+      "template CV ATS",
+      "skor ATS",
+      "bandingkan CV",
+    ],
+  },
+  en: {
+    tagline: "Build a CV that recruiting software can actually read",
+    description:
+      "A web app for building ATS-friendly CVs from structured fields, with a live preview, automatic scoring and improvement suggestions, and permanent storage so you can edit it any time.",
+    keywords: [
+      "ATS CV",
+      "ATS resume checker",
+      "resume builder",
+      "ATS friendly CV template",
+      "CV score",
+      "compare resumes",
+    ],
+  },
+};
+
+/**
+ * Identitas pembuat.
+ *
+ * Sengaja hanya identitas - tanpa keterangan "tugas akhir" atau nama mata
+ * kuliah. Aplikasinya dipakai orang sungguhan untuk melamar kerja, dan
+ * keterangan bahwa ini pekerjaan kampus membuatnya terbaca sebagai purwarupa
+ * yang belum tentu bertahan, padahal datanya tersimpan permanen.
+ */
 export const AUTHOR = {
   name: "Muhammad Agus Riyadh Zaky",
   role: "Mahasiswa D3 Teknik Komputer",
   institution: "Politeknik Negeri Samarinda",
   /** Baris tunggal untuk footer dan properti dokumen. */
-  credit:
-    "Muhammad Agus Riyadh Zaky - Mahasiswa D3 Teknik Komputer, Politeknik Negeri Samarinda",
+  credit: "Muhammad Agus Riyadh Zaky",
 } as const;
 
 /**

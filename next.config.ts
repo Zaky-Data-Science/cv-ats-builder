@@ -66,6 +66,10 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "connect-src 'self'",
+  // pdf.js menjalankan penguraian PDF di dalam Web Worker. Berkas worker-nya
+  // dilayani dari domain sendiri; blob: disertakan karena sebagian jalur
+  // fallback pdf.js membungkus worker-nya sebagai blob.
+  "worker-src 'self' blob:",
   "frame-src 'self'",
   "frame-ancestors 'self'",
   "form-action 'self'",

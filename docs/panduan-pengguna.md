@@ -18,11 +18,14 @@ halaman **Panduan**.
 6. [Mengisi tiap bagian](#6-mengisi-tiap-bagian)
 7. [Membaca skor ATS](#7-membaca-skor-ats)
 8. [Mencocokkan dengan iklan lowongan](#8-mencocokkan-dengan-iklan-lowongan)
-9. [Mengunduh CV](#9-mengunduh-cv)
-10. [Mengelola banyak CV](#10-mengelola-banyak-cv)
-11. [Memakai dari ponsel](#11-memakai-dari-ponsel)
-12. [Pengaturan akun dan data](#12-pengaturan-akun-dan-data)
-13. [Kalau ada masalah](#13-kalau-ada-masalah)
+9. [Panjang dan ukuran kertas](#9-panjang-dan-ukuran-kertas)
+10. [Mengunduh CV](#10-mengunduh-cv)
+11. [Membandingkan CV yang sudah ada](#11-membandingkan-cv-yang-sudah-ada)
+12. [Mengelola banyak CV](#12-mengelola-banyak-cv)
+13. [Bahasa dan mode tampilan](#13-bahasa-dan-mode-tampilan)
+14. [Memakai dari ponsel](#14-memakai-dari-ponsel)
+15. [Pengaturan akun dan data](#15-pengaturan-akun-dan-data)
+16. [Kalau ada masalah](#16-kalau-ada-masalah)
 
 ---
 
@@ -93,10 +96,15 @@ flowchart TD
     duplikasi CV lalu sesuaikan]
     U --> K
 
-    style A fill:#dae4ff,stroke:#3b53d9
-    style T fill:#dcfce7,stroke:#15803d
-    style L fill:#f1f5f9,stroke:#64748b
+    style A fill:#e6e6e8,stroke:#0a0a0b
+    style T fill:#0a0a0b,stroke:#0a0a0b,color:#ffffff
+    style L fill:#fafafa,stroke:#74747a
 ```
+
+Diagram yang sama - beserta tiga diagram lain: alur membandingkan CV,
+arsitektur, dan workflow pengembangan - tersedia juga sebagai berkas gambar di
+[`docs/diagram/`](diagram/), dan dapat dilihat langsung di halaman **Alur**
+pada aplikasinya.
 
 ---
 
@@ -170,9 +178,33 @@ Urutannya langsung berubah di pratinjau.
 
 ### Mengubah tampilan
 
-Tombol **Tampilan** membuka pengaturan template (Classic, Modern, Compact),
-jenis huruf, ukuran huruf, jarak baris, dan bahasa judul bagian. Semua pilihan
-jenis huruf yang tersedia sudah dipastikan aman untuk ATS.
+Tombol **Tampilan** membuka pengaturan template, ukuran kertas, jenis huruf,
+ukuran huruf, jarak baris, dan bahasa judul bagian. Semua pilihan jenis huruf
+yang tersedia sudah dipastikan aman untuk ATS.
+
+Tersedia **sepuluh template**, dikelompokkan menjadi dua:
+
+| Kelompok | Template |
+|---|---|
+| Tanpa foto | Klasik, Modern, Padat, Eksekutif, Minimalis, Kronologis, Akademik, Instansi |
+| Dengan foto | Berfoto - Formal (pasfoto 3x4 di kanan atas), Berfoto - Bulat (foto bulat di tengah atas) |
+
+Seluruhnya bertata letak satu kolom tanpa tabel, dengan judul bagian baku.
+Yang berbeda hanya tipografi, jarak, garis, dan penempatan foto - jadi tidak
+ada template yang lebih berisiko terbaca kacau dibanding yang lain, dan
+berganti template tidak mengubah data Anda sedikit pun.
+
+### Melihat pratinjau per halaman
+
+Di atas pratinjau ada dua tombol: **Per halaman** dan **Sambung**.
+
+- **Per halaman** memotong dokumen menjadi lembaran terpisah seperti di
+  pengolah kata, sehingga Anda melihat persis kalimat mana yang jatuh ke
+  halaman berikutnya.
+- **Sambung** menampilkannya sebagai satu gulungan panjang - lebih nyaman
+  dibaca cepat sambil menyunting.
+
+Keduanya menampilkan dokumen yang sama; yang berbeda hanya cara melihatnya.
 
 ---
 
@@ -209,10 +241,16 @@ Rumusnya: **kata kerja aksi + apa yang dikerjakan + hasil berangka**.
 
 ### Soal pas foto
 
-Opsi menampilkan pas foto tersedia, tetapi **dimatikan secara bawaan**.
-Sebagian besar pengurai ATS tidak dapat membaca gambar, dan tata letak di
-sekitar foto kerap membuat urutan teks terbaca kacau. Aktifkan hanya bila
-lowongan secara eksplisit memintanya.
+Opsi menampilkan pas foto tersedia, tetapi **dimatikan secara bawaan**, dan
+delapan dari sepuluh template memang tidak menyediakan tempatnya sama sekali.
+
+Alasannya: sebagian besar pengurai ATS tidak dapat membaca gambar, dan tata
+letak di sekitar foto kerap membuat urutan teks terbaca kacau. Di banyak
+negara, foto juga dihindari untuk mengurangi bias dalam seleksi.
+
+Bila lowongan Anda memang memintanya, nyalakan opsinya lalu pilih salah satu
+template pada kelompok **Dengan foto**. Bila fotonya tidak muncul, hampir pasti
+template yang sedang dipakai memang tidak menyediakan tempat foto.
 
 ---
 
@@ -266,7 +304,45 @@ simpan lagi, dan Anda dapat melihat perkembangan skornya dari waktu ke waktu.
 
 ---
 
-## 9. Mengunduh CV
+## 9. Panjang dan ukuran kertas
+
+### Berapa halaman sebaiknya?
+
+**Satu halaman.** Itu panjang yang tepat untuk hampir semua pelamar, termasuk
+yang sudah berpengalaman. Perekrut memindai satu CV dalam hitungan detik, dan
+apa pun yang jatuh ke halaman kedua besar kemungkinan tidak pernah terbaca.
+
+Dua halaman baru sepadan bila Anda punya lebih dari lima tahun pengalaman yang
+seluruhnya relevan dengan lowongan yang dituju. Tiga halaman hampir tidak
+pernah dapat dibenarkan.
+
+Bila CV Anda terlanjur panjang, yang perlu dipangkas **isinya** - bukan ukuran
+hurufnya. Mengecilkan huruf sampai 8pt memang membuatnya muat, tetapi sekaligus
+membuatnya tidak terbaca manusia maupun mesin OCR.
+
+Indikator jumlah halaman di atas pratinjau memberi tahu keadaannya:
+
+| Tampilan | Artinya |
+|---|---|
+| 1 halaman (hijau) | Panjang ideal |
+| 2 halaman (abu) | Masih wajar bila pengalaman Anda lebih dari lima tahun |
+| 3 halaman ke atas (kuning) | Terlalu panjang - perekrut umumnya hanya memindai halaman pertama |
+
+### Ukuran kertas
+
+| Ukuran | Kapan dipakai |
+|---|---|
+| **A4** | **Disarankan.** Standar di Indonesia dan hampir seluruh dunia; ini bawaan aplikasi |
+| Letter | Lamaran ke perusahaan di Amerika Serikat atau Kanada |
+| Legal | Hanya bila instansi yang dituju memintanya secara khusus |
+| F4 (Folio) | Ukuran folio yang masih dipakai sebagian kantor di Indonesia |
+
+Ukuran yang Anda pilih ikut terpakai saat mencetak, sehingga hasil PDF-nya
+persis seukuran pratinjaunya.
+
+---
+
+## 10. Mengunduh CV
 
 | Format | Kapan dipakai |
 |---|---|
@@ -283,7 +359,47 @@ watermark, dan tanpa nama aplikasi maupun pembuatnya.
 
 ---
 
-## 10. Mengelola banyak CV
+## 11. Membandingkan CV yang sudah ada
+
+Halaman **Bandingkan CV** menerima berkas PDF, DOCX, atau TXT dari mana pun -
+termasuk CV lama yang dibuat di aplikasi lain. Tidak perlu punya akun untuk
+memakainya.
+
+### Caranya
+
+1. Jatuhkan **satu berkas** untuk memindainya, atau **dua sampai lima berkas**
+   untuk membandingkannya.
+2. Bila mau, tempel juga iklan lowongan yang Anda incar. Kecocokan kata
+   kuncinya ikut dinilai - dan justru dimensi itulah yang paling menentukan CV
+   mana yang sebaiknya Anda kirim untuk lowongan tersebut.
+3. Tekan **Analisis Sekarang**.
+
+### Yang Anda peroleh
+
+- Skor 0-100 untuk setiap CV, beserta rinciannya per dimensi.
+- **Daftar kelebihan** - hal yang sudah benar dan sebaiknya tidak diubah.
+- **Daftar kekurangan** beserta cara memperbaikinya, terurut dari yang paling
+  mendesak.
+- Bila berkasnya lebih dari satu: **mana yang paling siap dikirim**, beserta
+  alasannya - dimensi mana yang membuatnya unggul dan seberapa besar
+  selisihnya.
+
+### Soal privasi
+
+Berkas Anda **tidak diunggah ke mana pun**. Seluruh pembacaan dan penilaian
+berjalan di dalam peramban Anda sendiri; menutup halaman itu menghapus
+semuanya. Itu pula sebabnya fitur ini dapat dipakai tanpa membuat akun.
+
+### Bila berkas gagal dibaca
+
+Pesan yang menyebut dokumen nyaris tidak memuat teks berarti CV Anda
+kemungkinan berupa gambar hasil pindai atau ekspor gambar. Itu sendiri temuan
+penting: ATS akan membacanya sebagai dokumen kosong, sebagus apa pun isinya.
+Ekspor ulang sebagai PDF teks, bukan gambar.
+
+---
+
+## 12. Mengelola banyak CV
 
 CV sebaiknya disesuaikan untuk setiap lowongan. Agar tidak perlu menyusun ulang
 dari nol:
@@ -297,7 +413,36 @@ dipakai, dan kapan terakhir diubah.
 
 ---
 
-## 11. Memakai dari ponsel
+## 13. Bahasa dan mode tampilan
+
+Dua tombol di bilah atas mengatur keduanya.
+
+### Bahasa
+
+Ikon bola dunia mengganti bahasa antarmuka antara **Indonesia** dan
+**English**. Pilihan ini tersimpan, jadi tidak perlu diatur ulang setiap kali
+berkunjung.
+
+Perhatikan bahwa ini adalah bahasa **antarmuka**, bukan bahasa CV. Bahasa judul
+bagian di dalam CV diatur terpisah lewat menu Tampilan - karena orang yang sama
+bisa saja memakai antarmuka bahasa Indonesia untuk menyusun CV berbahasa
+Inggris, dan itu memang lazim.
+
+### Mode terang dan gelap
+
+Ikon matahari atau bulan adalah sakelar: sekali tekan, tampilan langsung
+berganti. Tidak ada menu yang perlu dibuka.
+
+Kunjungan pertama Anda mengikuti setelan perangkat - bila ponsel atau komputer
+Anda sedang bermode gelap, aplikasinya ikut gelap. Begitu Anda menekan
+sakelarnya, pilihan Anda yang berlaku dan tersimpan untuk kunjungan berikutnya.
+
+Kertas CV di panel pratinjau tetap putih pada kedua mode, karena itulah yang
+akan tercetak.
+
+---
+
+## 14. Memakai dari ponsel
 
 Aplikasi ini dapat dipakai penuh dari ponsel. Layar dibagi menjadi tiga panel
 yang dapat diganti lewat bilah di bagian bawah:
@@ -316,7 +461,7 @@ peramban ("Tambahkan ke Layar Utama"), sehingga terbuka seperti aplikasi biasa.
 
 ---
 
-## 12. Pengaturan akun dan data
+## 15. Pengaturan akun dan data
 
 Halaman **Pengaturan** menyediakan:
 
@@ -333,7 +478,7 @@ Halaman **Pengaturan** menyediakan:
 
 ---
 
-## 13. Kalau ada masalah
+## 16. Kalau ada masalah
 
 | Gejala | Penyebab dan solusi |
 |---|---|

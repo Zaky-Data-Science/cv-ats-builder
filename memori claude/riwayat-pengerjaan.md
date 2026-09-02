@@ -185,18 +185,213 @@ Kunci `AUTH_SECRET` yang sempat ditampilkan pada percakapan pengembangan
 telah dirotasi, dan salinan environment production dihapus dari penyimpanan
 sementara.
 
+## Sesi 4 - 2 September 2026: tema, dwibahasa, pembanding CV, dan diagram
+
+Sesi terpanjang sejauh ini. Sepuluh permintaan dikerjakan sekaligus, dibagi
+menjadi lima fase agar tiap fase dapat diverifikasi sebelum lanjut.
+
+### Fase 1 - fondasi tampilan
+
+1. **Palet monokrom.** Seluruh token warna diganti menjadi hitam, putih, dan
+   tangga abu netral. Warna semantik (baik/waspada/buruk) dipertahankan karena
+   skor ATS memerlukan isyarat yang dapat dibedakan sekilas, tetapi
+   kejenuhannya ditahan.
+2. **Mode terang dan gelap.** Diterapkan dengan *membalik nilai token*, bukan
+   menulis varian `dark:` pada tiap elemen. Termasuk `--color-white`, yang di
+   mode gelap menjadi permukaan kartu gelap - sehingga `bg-ink-900 text-white`
+   tetap berarti "latar gelap, teks terang" di kedua mode. Kertas CV
+   dikecualikan: nilainya literal `#ffffff`, karena itulah yang akan tercetak.
+   Pilihan disimpan di localStorage dan diterapkan skrip sebaris sebelum
+   halaman digambar, sehingga tidak ada kilatan putih saat berpindah halaman.
+3. **Dwibahasa Indonesia-Inggris.** Kamus di `src/lib/i18n/`; kamus Inggris
+   diketik sebagai `Dictionary`, jadi kunci yang lupa diterjemahkan
+   menggagalkan `typecheck`. Bahasa disimpan di cookie, bukan localStorage,
+   supaya HTML dari server sudah datang dalam bahasa yang benar.
+4. **Cahaya mengikuti kursor**, dan percikan cahaya pada setiap sapuan jari di
+   layar sentuh. Tanpa state React sama sekali - posisi ditulis langsung ke
+   custom property di dalam requestAnimationFrame, satu tulisan per bingkai.
+5. **Keterangan "Tugas Akhir" dihapus** dari seluruh teks yang dilihat
+   pengguna. Identitas pembuat tetap dicantumkan.
+6. **Ikon buka-tutup** pada daftar pertanyaan diubah dari `+` menjadi `>`
+   yang berputar 90 derajat saat terbuka.
+
+### Fase 2 - editor
+
+7. **Ukuran kertas** A4, Letter, Legal, dan F4, dengan A4 sebagai bawaan dan
+   yang disarankan. Ukurannya dikirim ke CSS lewat custom property, sehingga
+   satu aturan `.paper` melayani keempatnya, dan halaman cetak menyisipkan
+   aturan `@page` yang sesuai.
+8. **Pratinjau per halaman.** Dokumen dapat dilihat tersambung panjang atau
+   terpotong menjadi lembaran terpisah seperti di pengolah kata. Cara
+   memotongnya perlu dicatat karena tidak biasa: dokumennya **tidak** dipecah.
+   Setiap lembar berisi dokumen yang sama utuh, digeser ke atas sejauh satu
+   halaman dikali nomor lembarnya, lalu dipangkas induknya yang setinggi satu
+   halaman. Dengan begitu aliran teksnya dihitung peramban persis seperti saat
+   dicetak.
+9. **Contoh pengisian di setiap field.** Diaudit satu per satu; yang belum
+   punya - judul dan keterangan pada section tambahan - dilengkapi.
+10. **Saran panjang CV diubah dari "maksimal 2 halaman" menjadi "satu
+    halaman"**, dengan penilaian bertingkat: 1 halaman nilai penuh, 2 halaman
+    75%, 3 halaman ke atas 25%. CV dua halaman tetap memperoleh saran
+    memadatkannya, tetapi tidak dihukum berat.
+
+### Fase 3 - template
+
+11. **Sepuluh template**, dari sebelumnya tiga: Klasik, Modern, Padat,
+    Eksekutif, Minimalis, Kronologis, Akademik, Instansi, dan dua template
+    berfoto (Formal 3x4 di kanan atas, dan Bulat di tengah atas). Seluruhnya
+    tetap satu kolom; yang berbeda hanya tipografi, jarak, garis, dan
+    penempatan foto.
+12. Pada template berfoto, gambar ditulis **setelah** blok teks di dalam DOM
+    lalu digeser ke kanan oleh flexbox - sehingga isi pertama yang ditemukan
+    pengurai tetap nama pelamar, bukan gambar tanpa teks alternatif.
+
+### Fase 4 - pembanding dan pemindai CV
+
+13. **Halaman `/bandingkan`**, terbuka tanpa akun. Menerima 1-5 berkas PDF,
+    DOCX, atau TXT. Satu berkas berarti "pindai"; dua atau lebih berarti
+    "bandingkan".
+14. **Seluruh pembacaan berjalan di peramban.** PDF lewat pdf.js, DOCX dibuka
+    sebagai arsip zip lalu `word/document.xml` dibaca dan penandanya dibuang -
+    jauh lebih ringan daripada memuat pustaka konversi dokumen.
+15. **Deteksi tata letak dua kolom.** Seluruh potongan teks dipetakan ke posisi
+    horizontalnya, lalu dicari celah lebar yang membelah halaman dan tidak
+    pernah dilewati satu pun potongan teks. Ini penting karena kerusakan yang
+    ditimbulkan tata letak dua kolom tidak terlihat sama sekali dari teks hasil
+    ekstraksinya.
+16. **Penilai berkas dibuat terpisah** dari mesin penilai CV terstruktur. Yang
+    satu punya data terstruktur, yang lain harus menebak strukturnya dari teks;
+    menyatukannya akan memaksa salah satu berpura-pura. Yang dibagi hanya yang
+    memang sama: bobot kelima dimensi, daftar kata kerja aksi, daftar frasa
+    klise, dan mesin pencocokan kata kunci - sehingga skor dari kedua jalur
+    tetap dapat dibandingkan.
+17. Setiap aturan penilai berkas menyerahkan **dua kalimat sekaligus**: satu
+    untuk keadaan terpenuhi (kelebihan), satu untuk keadaan tidak (kekurangan
+    beserta cara memperbaikinya). Daftar kelebihan dan kekurangan karena itu
+    tumbuh dari sumber yang sama dan tidak mungkin bertentangan.
+
+### Fase 5 - diagram, dokumentasi, dan berkas uji
+
+18. **Halaman `/alur`** berisi empat diagram: alur menyusun CV, alur
+    membandingkan CV, arsitektur dan alur data, serta workflow pengembangan.
+19. **Diagram dibangkitkan dari data, bukan digambar.** `src/lib/diagrams.ts`
+    melayani halaman /alur sekaligus berkas SVG dan PNG di `docs/diagram/` dan
+    `public/diagram/` lewat `npm run diagram`. Diagram yang disimpan sebagai
+    gambar hasil gambar tangan selalu berakhir usang; bentuk ini menutup
+    kemungkinan itu.
+20. **Berkas uji otomatis masuk repositori** - salah satu kekurangan yang
+    tercatat sejak sesi 1. `npm test` menjalankan 99 pemeriksaan tanpa server
+    maupun basis data.
+
+### Penyesuaian setelah tinjauan pertama
+
+Empat perbaikan setelah tampilannya dilihat langsung:
+
+1. **Sakelar tema jadi satu tombol.** Pilihan "ikut sistem" dihapus sebagai
+   pilihan tersendiri - menu tiga pilihan menuntut dua tindakan untuk sesuatu
+   yang hanya punya dua keadaan. Setelan sistem tetap dihormati, tetapi
+   perannya bergeser: menentukan keadaan **awal** bagi pengunjung yang belum
+   pernah memilih. Skrip di `<head>` kini selalu menuliskan `data-theme`,
+   sehingga blok `prefers-color-scheme` di CSS menyusut menjadi sekadar jaring
+   pengaman bila JavaScript mati.
+2. **Cahaya kursor diperbaiki.** Diameternya dipangkas dari 34rem menjadi
+   15rem dan kepekatannya dinaikkan kira-kira tiga kali - sorot lebar yang
+   samar terbaca sebagai noda pada layar, bukan sebagai cahaya. Titik hitam
+   kecil di ujung kursor dihapus sepenuhnya: ia bersaing dengan kursor
+   peramban itu sendiri.
+
+   Pada putaran berikutnya ternyata yang paling menentukan bukan ukuran
+   maupun kepekatannya, melainkan **bentuk kurva peluruhannya**. Versi
+   sebelumnya baru kehilangan separuh kepekatan pada 42% jari-jari lalu
+   berhenti di 72%, sehingga bagian tengahnya nyaris rata dan tepinya
+   terpotong - terbaca sebagai cakram berwarna, bukan cahaya. Gantinya
+   mendekati kurva (1-r)^3 dengan delapan titik henti: separuh kepekatan
+   hilang sebelum 15% jari-jari, lalu menipis perlahan hingga tepat nol pada
+   100%. Titik hentinya banyak karena gradasi CSS menarik garis lurus
+   antar-titik henti; kurva melengkung hanya dapat didekati dengan
+   mencacahnya.
+3. **Komponen `<Interactive>`.** Kartu di seluruh halaman kini miring ke arah
+   kursor, terangkat, dan membesar sepersekian persen. Geraknya sengaja jauh
+   lebih halus daripada `TiltCard` yang dipakai kartu CV di halaman depan:
+   satu benda utama boleh bergerak tegas, tetapi puluhan kartu yang bergerak
+   setegas itu membuat halamannya terasa goyah, bukan hidup.
+4. **Tombol utama diarahkan ke `/login`, bukan ke `/dashboard` atau
+   `/register`.** Halaman login sendiri sudah mengalihkan pengguna yang sudah
+   masuk langsung ke dashboard, sehingga satu tautan melayani kedua keadaan -
+   dan tidak ada lagi tombol yang menjanjikan dashboard kepada orang yang
+   belum punya akun.
+
+### Hasil pengujian
+
+| Berkas uji | Pemeriksaan | Hasil |
+|---|---:|---|
+| Kamus dwibahasa | 3 | lulus |
+| Mesin penilaian CV terstruktur | 14 | lulus |
+| Template CV dan ukuran kertas | 55 | lulus |
+| Penilai berkas CV | 18 | lulus |
+| Pembacaan PDF dan penilaiannya | 9 | lulus |
+| **Total** | **99** | **99 lulus, 0 gagal** |
+
+Kalibrasi skor setelah perubahan:
+
+| Keadaan | Skor |
+|---|---:|
+| CV kosong | 4 |
+| CV contoh, satu halaman | 98 |
+| CV contoh, dua halaman | 96 |
+| CV contoh, empat halaman | 91 |
+| CV contoh berfoto | 95 |
+| Berkas PDF satu kolom yang tersusun baik | 98 |
+| Berkas PDF dua kolom | 53 |
+| Berkas CV lemah (tanpa email, tanpa poin berangka) | 45 |
+
+Skor CV contoh identik di kedua bahasa - dibuktikan berkas uji, karena kerangka
+data contohnya memang satu dan hanya prosanya yang diterjemahkan.
+
+### Cacat yang ditemukan dan diperbaiki
+
+1. Deteksi kolom tidak berjalan pada halaman berisi sedikit potongan teks -
+   ambangnya 40 potongan, terlalu tinggi. Diturunkan ke 12.
+2. `pdf.js` versi 6 memindahkan metode pembebasan worker dari objek dokumen ke
+   objek tugas pemuatannya. Tanpa memanggilnya, setiap PDF yang dibuka
+   meninggalkan satu worker yang terus hidup.
+3. Karakter NUL literal tidak sengaja tertulis di dalam pola regex pembersih
+   teks, membuat berkasnya terbaca sebagai berkas biner oleh grep. Diganti
+   dengan rentang karakter kendali yang ditulis sebagai escape.
+4. Daftar kata kerja aksi bahasa Inggris kehilangan bentuk lampau tak
+   beraturan yang justru lazim mengawali poin pencapaian - "rebuilt", "wrote",
+   "ran", "used". Akibatnya CV contoh berbahasa Inggris memperoleh skor satu
+   poin lebih rendah daripada versi Indonesianya. Daftarnya diperluas 40 kata.
+5. Label panah balik pada diagram tertutup kotak yang kebetulan berada di
+   jalurnya, karena kotak digambar setelah panah. Label panah balik kini
+   digambar paling akhir, dan jalurnya dihitung dari kotak paling kiri di
+   seluruh diagram - bukan hanya dari kedua ujung panahnya.
+6. `document.cookie` ditulis dari dalam badan komponen, ditolak aturan lint
+   React Compiler. Dipindahkan ke fungsi biasa di luar komponen - tempatnya
+   yang benar untuk efek samping semacam itu.
+7. Basis data lokal kehilangan tabel `_prisma_migrations` (akibat kejadian di
+   sesi sebelumnya), sehingga `migrate deploy` menolak berjalan. Diperbaiki
+   dengan `prisma migrate resolve --applied` untuk kedua migrasi lama, lalu
+   migrasi baru diterapkan normal.
+
 ---
 
 ## Rangkuman angka
 
+Angka di bawah ini per akhir sesi 4.
+
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma) | 68 |
-| Baris kode | ~12.000 |
-| Tabel basis data | 17 |
-| Route aplikasi | 29 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 98 |
+| Baris kode termasuk berkas uji dan skrip | ~22.700 |
+| Tabel basis data | 16 |
+| Berkas migrasi | 3 |
+| Route aplikasi | 31 |
 | Dimensi penilaian ATS | 5 |
 | Bagian CV yang dapat diisi | 11 |
+| Template CV | 10 |
+| Ukuran kertas | 4 |
 | Format unduhan | 4 |
-| Template | 3 |
-| Commit | 10 |
+| Bahasa antarmuka | 2 |
+| Diagram alur (dua bahasa, SVG dan PNG) | 4 |
+| Pemeriksaan otomatis | 99 |

@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import { AlertCircle, ArrowRight, CheckCircle2, Info } from "lucide-react";
+import { useI18n } from "@/components/i18n";
 import { Badge, Card } from "@/components/ui";
 import {
-  DIMENSION_DESCRIPTIONS,
+  dimensionDescriptions,
   type AtsFinding,
   type AtsResult,
   type Severity,
@@ -22,11 +23,11 @@ import { cn } from "@/lib/utils";
 
 const SEVERITY_META: Record<
   Severity,
-  { label: string; tone: "bad" | "warn" | "neutral"; icon: typeof AlertCircle }
+  { tone: "bad" | "warn" | "neutral"; icon: typeof AlertCircle }
 > = {
-  error: { label: "Harus diperbaiki", tone: "bad", icon: AlertCircle },
-  warning: { label: "Sebaiknya diperbaiki", tone: "warn", icon: AlertCircle },
-  info: { label: "Saran penyempurnaan", tone: "neutral", icon: Info },
+  error: { tone: "bad", icon: AlertCircle },
+  warning: { tone: "warn", icon: AlertCircle },
+  info: { tone: "neutral", icon: Info },
 };
 
 export function AtsPanel({
@@ -36,6 +37,14 @@ export function AtsPanel({
   result: AtsResult;
   onJumpTo?: (section: string) => void;
 }) {
+  const { locale, t } = useI18n();
+  const descriptions = dimensionDescriptions(locale);
+  const severityLabel: Record<Severity, string> = {
+    error: t.ats.severityError,
+    warning: t.ats.severityWarning,
+    info: t.ats.severityInfo,
+  };
+
   const grouped: Record<Severity, AtsFinding[]> = {
     error: [],
     warning: [],
@@ -50,31 +59,41 @@ export function AtsPanel({
       {/* ---------------------------------------------------------------- */}
       <Card className="p-5">
         <div className="flex items-center gap-5">
-          <ScoreDial score={result.score} grade={result.grade} />
+          <ScoreDial
+            score={result.score}
+            grade={result.grade}
+            gradeLabel={t.ats.gradePrefix}
+          />
           <div className="min-w-0">
             <p className="text-sm leading-relaxed font-medium text-ink-800">
               {result.verdict}
             </p>
             <p className="mt-1.5 text-xs text-ink-500">
               {grouped.error.length > 0
-                ? `${grouped.error.length} hal wajib diperbaiki`
-                : "Tidak ada masalah kritis"}
+                ? `${grouped.error.length} ${t.ats.mustFixCount}`
+                : t.ats.noCritical}
               {grouped.warning.length > 0 &&
-                `, ${grouped.warning.length} saran perbaikan`}
+                `, ${grouped.warning.length} ${t.ats.suggestionCount}`}
               .
             </p>
           </div>
         </div>
 
         <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-ink-100 pt-4 sm:grid-cols-4">
-          <Stat label="Halaman" value={String(result.stats.estimatedPages)} />
-          <Stat label="Jumlah kata" value={String(result.stats.wordCount)} />
           <Stat
-            label="Poin berkata kerja"
+            label={t.ats.statPages}
+            value={String(result.stats.estimatedPages)}
+          />
+          <Stat
+            label={t.ats.statWords}
+            value={String(result.stats.wordCount)}
+          />
+          <Stat
+            label={t.ats.statActionVerbs}
             value={`${Math.round(result.stats.actionVerbRatio * 100)}%`}
           />
           <Stat
-            label="Poin berangka"
+            label={t.ats.statQuantified}
             value={`${Math.round(result.stats.quantifiedRatio * 100)}%`}
           />
         </dl>
@@ -85,11 +104,9 @@ export function AtsPanel({
       {/* ---------------------------------------------------------------- */}
       <Card className="p-5">
         <h3 className="text-sm font-semibold text-ink-900">
-          Rincian penilaian
+          {t.ats.breakdownTitle}
         </h3>
-        <p className="mt-1 text-xs text-ink-500">
-          Skor akhir adalah rata-rata berbobot dari dimensi berikut.
-        </p>
+        <p className="mt-1 text-xs text-ink-500">{t.ats.breakdownHint}</p>
 
         <div className="mt-4 space-y-4">
           {result.dimensions.map((dimension) => (
@@ -98,7 +115,7 @@ export function AtsPanel({
                 <span className="text-xs font-semibold text-ink-800">
                   {dimension.label}
                   <span className="ml-1.5 font-normal text-ink-400">
-                    bobot {dimension.weight}%
+                    {t.ats.weight} {dimension.weight}%
                   </span>
                 </span>
                 <span
@@ -115,7 +132,7 @@ export function AtsPanel({
                 >
                   {dimension.applicable
                     ? `${dimension.percent}%`
-                    : "belum dinilai"}
+                    : t.ats.notScored}
                 </span>
               </div>
 
@@ -138,7 +155,7 @@ export function AtsPanel({
               </div>
 
               <p className="mt-1.5 text-[11px] leading-relaxed text-ink-500">
-                {DIMENSION_DESCRIPTIONS[dimension.key]}
+                {descriptions[dimension.key]}
               </p>
             </div>
           ))}
@@ -152,17 +169,18 @@ export function AtsPanel({
         <Card className="p-5">
           <div className="flex items-baseline justify-between">
             <h3 className="text-sm font-semibold text-ink-900">
-              Kata kunci dari lowongan
+              {t.ats.keywordsTitle}
             </h3>
             <span className="text-xs font-bold text-ink-700">
-              {Math.round(result.keywords.coverage * 100)}% cocok
+              {Math.round(result.keywords.coverage * 100)}%{" "}
+              {t.ats.keywordsMatchSuffix}
             </span>
           </div>
 
           {result.keywords.missing.length > 0 && (
             <div className="mt-4">
               <p className="text-xs font-medium text-bad">
-                Belum ada di CV Anda ({result.keywords.missing.length})
+                {t.ats.keywordsMissing} ({result.keywords.missing.length})
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {result.keywords.missing.map((k) => (
@@ -177,7 +195,7 @@ export function AtsPanel({
           {result.keywords.matched.length > 0 && (
             <div className="mt-4">
               <p className="text-xs font-medium text-good">
-                Sudah ada ({result.keywords.matched.length})
+                {t.ats.keywordsMatched} ({result.keywords.matched.length})
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {result.keywords.matched.map((k) => (
@@ -190,9 +208,7 @@ export function AtsPanel({
           )}
 
           <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-warn">
-            Masukkan hanya kata kunci yang benar-benar Anda kuasai. Menempelkan
-            keahlian yang tidak dimiliki memang menaikkan skor di sini, tetapi
-            akan terbongkar pada tahap wawancara.
+            {t.ats.keywordsWarning}
           </p>
         </Card>
       )}
@@ -203,10 +219,7 @@ export function AtsPanel({
       {result.suggestions.length === 0 ? (
         <Card className="flex items-center gap-3 p-5">
           <CheckCircle2 size={20} className="shrink-0 text-good" />
-          <p className="text-sm text-ink-700">
-            Tidak ada temuan. CV Anda sudah memenuhi seluruh aturan yang
-            diperiksa.
-          </p>
+          <p className="text-sm text-ink-700">{t.ats.noFindings}</p>
         </Card>
       ) : (
         (["error", "warning", "info"] as Severity[]).map((severity) => {
@@ -228,7 +241,7 @@ export function AtsPanel({
                   }
                 />
                 <h3 className="text-sm font-semibold text-ink-900">
-                  {meta.label}
+                  {severityLabel[severity]}
                 </h3>
                 <Badge tone={meta.tone}>{findings.length}</Badge>
               </div>
@@ -246,9 +259,9 @@ export function AtsPanel({
                       <button
                         type="button"
                         onClick={() => onJumpTo(finding.section!)}
-                        className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600 hover:underline"
+                        className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-semibold text-ink-800 underline"
                       >
-                        Buka field terkait
+                        {t.ats.openField}
                         <ArrowRight size={12} />
                       </button>
                     )}
@@ -267,7 +280,15 @@ export function AtsPanel({
 /* Bagian kecil                                                               */
 /* -------------------------------------------------------------------------- */
 
-function ScoreDial({ score, grade }: { score: number; grade: string }) {
+function ScoreDial({
+  score,
+  grade,
+  gradeLabel,
+}: {
+  score: number;
+  grade: string;
+  gradeLabel: string;
+}) {
   const radius = 34;
   const circumference = 2 * Math.PI * radius;
   const color =
@@ -309,7 +330,7 @@ function ScoreDial({ score, grade }: { score: number; grade: string }) {
           {score}
         </span>
         <span className="text-[10px] font-semibold text-ink-500">
-          Nilai {grade}
+          {gradeLabel} {grade}
         </span>
       </div>
     </div>

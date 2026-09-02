@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1250" viewBox="0 0 1000 1250" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<title>User flow: comparing and scanning CVs</title>
+<desc>Every step in this flow runs inside the user's browser. No file is sent to a server, so nothing is stored either.</desc>
+<defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
+<rect width="1000" height="1250" fill="#ffffff"/>
+<text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">User flow: comparing and scanning CVs</text>
+<line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
+<path d="M 500 196 V 234" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 302 V 325 H 716 V 340" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 302 V 446" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 552 V 590" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 680 V 718" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 716 408 V 567 H 500 V 718" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 786 V 824" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 892 V 915 H 284 V 930" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="906" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="919" text-anchor="middle" font-size="11.5" fill="#52525a">1 file</text>
+<path d="M 500 892 V 1036" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="972" font-size="11.5" fill="#52525a">2-5 files</text>
+<path d="M 284 998 V 1074 H 500 V 1142" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 1104 V 1142" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="82" rx="10" fill="#0a0a0b" stroke="#0a0a0b" stroke-width="2"/>
+<text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#c9c9cd">START</text>
+<text x="308" y="155" font-size="15" font-weight="600" fill="#ffffff">Open the Compare CVs page</text>
+<text x="308" y="178" font-size="12.5" fill="#c9c9cd">No account needed.</text>
+<rect x="290" y="242" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="266" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="283" font-size="15" font-weight="600" fill="#0a0a0b">Choose 1-5 PDF, DOCX or TXT files</text>
+<rect x="546" y="348" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="564" y="372" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="564" y="389" font-size="15" font-weight="600" fill="#0a0a0b">Paste a job ad (optional)</text>
+<rect x="290" y="454" width="420" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="478" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
+<text x="308" y="495" font-size="15" font-weight="600" fill="#0a0a0b">Extract the text in the browser</text>
+<text x="308" y="518" font-size="12.5" fill="#52525a">PDF via pdf.js; DOCX opened as a zip archive and its XML</text>
+<text x="308" y="534" font-size="12.5" fill="#52525a">read.</text>
+<rect x="290" y="598" width="420" height="82" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="622" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
+<text x="308" y="639" font-size="15" font-weight="600" fill="#0a0a0b">Detect page count and columns</text>
+<text x="308" y="662" font-size="12.5" fill="#52525a">A gap splitting the page indicates a two-column layout.</text>
+<rect x="290" y="726" width="420" height="60" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="750" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
+<text x="308" y="767" font-size="15" font-weight="600" fill="#0a0a0b">Score each CV - five dimensions</text>
+<rect x="290" y="832" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="856" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>
+<text x="308" y="873" font-size="15" font-weight="600" fill="#0a0a0b">How many files?</text>
+<rect x="114" y="938" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="962" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="132" y="979" font-size="15" font-weight="600" fill="#0a0a0b">One: scan result</text>
+<rect x="290" y="1044" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1068" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="1085" font-size="15" font-weight="600" fill="#0a0a0b">Two or more: ranking and winner</text>
+<rect x="290" y="1150" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="1174" font-size="10" letter-spacing="0.08em" fill="#52525a">END</text>
+<text x="308" y="1191" font-size="15" font-weight="600" fill="#0a0a0b">Strengths, weaknesses, and how to fix them</text>
+</svg>

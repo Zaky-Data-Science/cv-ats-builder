@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { analyzeResume } from "@/lib/ats/engine";
 import { prisma } from "@/lib/db";
 import { errorResponse, HttpError, requireOwnedResume } from "@/lib/guard";
+import { getLocale } from "@/lib/i18n/server";
 import { getResume } from "@/lib/resume/persist";
 import { atsRequestSchema } from "@/lib/resume/schema";
 
@@ -26,7 +27,14 @@ export async function POST(request: Request, { params }: Params) {
     const resume = await getResume(id, user.id);
     if (!resume) throw new HttpError(404, "CV tidak ditemukan.");
 
-    const result = analyzeResume(resume, jobDescription);
+    // Saran yang disimpan ke riwayat ikut bahasa antarmuka saat penilaian
+    // dilakukan. Skornya sendiri tidak terpengaruh - hanya kalimat sarannya.
+    const result = analyzeResume(
+      resume,
+      jobDescription,
+      undefined,
+      await getLocale(),
+    );
 
     if (persist) {
       await prisma.atsAnalysis.create({

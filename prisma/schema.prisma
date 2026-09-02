@@ -25,10 +25,32 @@ datasource db {
 // ENUM
 // ----------------------------------------------------------------------------
 
+/// Seluruh template bertata letak satu kolom. Yang membedakan hanya
+/// tipografi, jarak, garis, dan penempatan foto - bukan struktur bacaannya.
+/// Alasannya ada di komentar berkas ResumeDocument.tsx: tata letak dua kolom
+/// membuat pengurai ATS membaca teks berselang-seling antar-kolom.
 enum TemplateId {
   CLASSIC
   MODERN
   COMPACT
+  EXECUTIVE
+  MINIMAL
+  TIMELINE
+  ACADEMIC
+  GOVERNMENT
+  PORTRAIT
+  PROFILE
+}
+
+/// Ukuran kertas. A4 adalah bawaan sekaligus yang disarankan karena dipakai
+/// hampir seluruh dunia kecuali Amerika Utara; Letter disediakan untuk
+/// lamaran ke perusahaan Amerika, Legal dan F4 untuk instansi yang masih
+/// memintanya.
+enum PaperSize {
+  A4
+  LETTER
+  LEGAL
+  F4
 }
 
 enum ResumeLanguage {
@@ -106,6 +128,7 @@ model Resume {
   fontSize    Int            @default(10)
   lineHeight  Float          @default(1.35)
   language    ResumeLanguage @default(ID)
+  pageSize    PaperSize      @default(A4)
 
   /// Urutan tampil section pada CV, contoh:
   /// ["summary","experience","education","skill","project"]

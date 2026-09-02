@@ -1,6 +1,8 @@
 import * as React from "react";
+import { paperSpec } from "@/lib/resume/paper";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
+import { templateStyle, type TemplateStyle } from "@/lib/resume/templates";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import {
   ensureHttp,
@@ -43,81 +45,29 @@ export interface ResumeDocumentProps {
   className?: string;
 }
 
-interface TemplateStyle {
-  padding: string;
-  nameSize: string;
-  nameAlign: "left" | "center";
-  nameWeight: number;
-  headlineSize: string;
-  headingSize: string;
-  headingSpacing: string;
-  headingStyle: "underline" | "accent-bar" | "plain";
-  sectionGap: string;
-  entryGap: string;
-  useAccent: boolean;
-  letterSpacing: string;
-}
-
-const TEMPLATE_STYLES: Record<ResumeData["template"], TemplateStyle> = {
-  // Formal dan konservatif - pilihan teraman untuk instansi, BUMN, dan
-  // perusahaan besar yang masih memakai ATS generasi lama.
-  CLASSIC: {
-    padding: "15mm 16mm",
-    nameSize: "20pt",
-    nameAlign: "center",
-    nameWeight: 700,
-    headlineSize: "11pt",
-    headingSize: "10.5pt",
-    headingSpacing: "0 0 3pt 0",
-    headingStyle: "underline",
-    sectionGap: "11pt",
-    entryGap: "8pt",
-    useAccent: false,
-    letterSpacing: "0.06em",
-  },
-  // Lebih lapang dengan aksen warna pada judul section. Cocok untuk
-  // perusahaan teknologi dan startup.
-  MODERN: {
-    padding: "16mm 17mm",
-    nameSize: "22pt",
-    nameAlign: "left",
-    nameWeight: 700,
-    headlineSize: "11.5pt",
-    headingSize: "10pt",
-    headingSpacing: "0 0 4pt 0",
-    headingStyle: "accent-bar",
-    sectionGap: "13pt",
-    entryGap: "9pt",
-    useAccent: true,
-    letterSpacing: "0.09em",
-  },
-  // Paling padat - untuk pelamar dengan pengalaman panjang yang tetap ingin
-  // muat dalam satu sampai dua halaman.
-  COMPACT: {
-    padding: "12mm 13mm",
-    nameSize: "17pt",
-    nameAlign: "left",
-    nameWeight: 700,
-    headlineSize: "10pt",
-    headingSize: "9.5pt",
-    headingSpacing: "0 0 2pt 0",
-    headingStyle: "plain",
-    sectionGap: "8pt",
-    entryGap: "6pt",
-    useAccent: false,
-    letterSpacing: "0.05em",
-  },
-};
-
 export function ResumeDocument({
   data,
   highlight,
   printMode = false,
   className,
 }: ResumeDocumentProps) {
-  const style = TEMPLATE_STYLES[data.template] ?? TEMPLATE_STYLES.CLASSIC;
+  const style = templateStyle(data.template);
+  const paper = paperSpec(data.pageSize);
   const lang = data.language;
   const accent = style.useAccent ? data.accentColor : "#000000";
+
+  /*
+    Gaya kronologis: garis tipis di sisi kiri setiap entri. Dipakai sebagai
+    satu objek bersama, bukan ditulis ulang di tiap section, supaya tidak ada
+    entri yang tertinggal saat template ini dipilih.
+  */
+  const entryStyle: React.CSSProperties = style.entryMarker
+    ? {
+        marginBottom: style.entryGap,
+        borderLeft: "0.75pt solid #000",
+        paddingLeft: "7pt",
+      }
+    : { marginBottom: style.entryGap };
 
   const isOn = (key: string) => !printMode && highlight === key;
   const blockClass = (key: string) =>
@@ -143,81 +93,33 @@ export function ResumeDocument({
   return (
     <article
       className={`paper ${className ?? ""}`}
-      style={{
-        fontFamily: `${data.fontFamily}, Arial, Helvetica, sans-serif`,
-        fontSize: `${data.fontSize}pt`,
-        lineHeight: data.lineHeight,
-        padding: style.padding,
-      }}
+      style={
+        {
+          fontFamily: `${data.fontFamily}, Arial, Helvetica, sans-serif`,
+          fontSize: `${data.fontSize}pt`,
+          lineHeight: data.lineHeight,
+          padding: style.padding,
+          // Ukuran kertas dikirim sebagai custom property, bukan lebar/tinggi
+          // langsung, agar aturan cetak di globals.css dapat menimpanya
+          // dengan "width: auto" tanpa berbenturan dengan style sebaris.
+          "--paper-width": `${paper.widthMm}mm`,
+          "--paper-height": `${paper.heightMm}mm`,
+        } as React.CSSProperties
+      }
       data-resume-document
+      data-paper={paper.id}
     >
       {/* ------------------------------------------------------------------ */}
       {/* Kepala: nama, jabatan, kontak                                       */}
       {/* ------------------------------------------------------------------ */}
-      <header
-        data-field="personal"
+      <ResumeHeader
+        data={data}
+        style={style}
+        accent={accent}
+        contactLine={contactLine}
+        linkParts={linkParts}
         className={blockClass("personal")}
-        style={{ textAlign: style.nameAlign, marginBottom: style.sectionGap }}
-      >
-        {info.showPhoto && info.photoUrl && (
-          // Foto memang berisiko bagi parser ATS; peringatannya sudah
-          // disampaikan pada panel penilaian, keputusan akhir di tangan
-          // pengguna karena sebagian lowongan lokal masih memintanya.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={info.photoUrl}
-            alt=""
-            style={{
-              width: "26mm",
-              height: "34mm",
-              objectFit: "cover",
-              marginBottom: "6pt",
-              display: "block",
-              marginLeft: style.nameAlign === "center" ? "auto" : undefined,
-              marginRight: style.nameAlign === "center" ? "auto" : undefined,
-            }}
-          />
-        )}
-
-        <h1
-          style={{
-            fontSize: style.nameSize,
-            fontWeight: style.nameWeight,
-            lineHeight: 1.15,
-            color: style.useAccent ? accent : "#000",
-          }}
-        >
-          {info.fullName || "Nama Lengkap Anda"}
-        </h1>
-
-        {info.headline && (
-          <p style={{ fontSize: style.headlineSize, marginTop: "1pt" }}>
-            {info.headline}
-          </p>
-        )}
-
-        {contactLine && (
-          <p style={{ marginTop: "3pt", fontSize: `${data.fontSize - 0.5}pt` }}>
-            {contactLine}
-          </p>
-        )}
-
-        {linkParts.length > 0 && (
-          <p style={{ marginTop: "1pt", fontSize: `${data.fontSize - 0.5}pt` }}>
-            {linkParts.map((link, index) => (
-              <React.Fragment key={link}>
-                {index > 0 && <span>{"  •  "}</span>}
-                <a
-                  href={ensureHttp(link)}
-                  style={{ color: "inherit", textDecoration: "none" }}
-                >
-                  {prettyUrl(link)}
-                </a>
-              </React.Fragment>
-            ))}
-          </p>
-        )}
-      </header>
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Section, mengikuti urutan yang diatur pengguna                      */}
@@ -249,7 +151,7 @@ export function ResumeDocument({
                     key={e.id}
                     data-field={`experience:${e.id}`}
                     className={blockClass(`experience:${e.id}`)}
-                    style={{ marginBottom: style.entryGap }}
+                    style={entryStyle}
                   >
                     <EntryHeader
                       primary={e.jobTitle}
@@ -280,7 +182,7 @@ export function ResumeDocument({
                     key={e.id}
                     data-field={`education:${e.id}`}
                     className={blockClass(`education:${e.id}`)}
-                    style={{ marginBottom: style.entryGap }}
+                    style={entryStyle}
                   >
                     <EntryHeader
                       primary={joinNonEmpty([e.degree, e.fieldOfStudy], " - ")}
@@ -331,7 +233,7 @@ export function ResumeDocument({
                     key={p.id}
                     data-field={`project:${p.id}`}
                     className={blockClass(`project:${p.id}`)}
-                    style={{ marginBottom: style.entryGap }}
+                    style={entryStyle}
                   >
                     <EntryHeader
                       primary={p.name}
@@ -354,7 +256,7 @@ export function ResumeDocument({
                     key={o.id}
                     data-field={`organization:${o.id}`}
                     className={blockClass(`organization:${o.id}`)}
-                    style={{ marginBottom: style.entryGap }}
+                    style={entryStyle}
                   >
                     <EntryHeader
                       primary={o.role}
@@ -494,7 +396,7 @@ export function ResumeDocument({
                         key={item.id}
                         data-field={`custom:${section.id}`}
                         className={blockClass(`custom:${section.id}`)}
-                        style={{ marginBottom: style.entryGap }}
+                        style={entryStyle}
                       >
                         <EntryHeader
                           primary={item.title}
@@ -527,6 +429,156 @@ export function ResumeDocument({
 /* Bagian penyusun                                                            */
 /* -------------------------------------------------------------------------- */
 
+/** Mengubah "PENGALAMAN KERJA" menjadi "Pengalaman Kerja". */
+function toTitleCase(value: string): string {
+  return value
+    .toLocaleLowerCase("id-ID")
+    .replace(/(^|[\s(/-])(\p{L})/gu, (_, lead: string, letter: string) =>
+      lead + letter.toLocaleUpperCase("id-ID"),
+    );
+}
+
+/**
+ * Blok kepala CV: foto (bila templatenya memang menampilkan), nama, jabatan,
+ * kontak, dan tautan.
+ *
+ * Yang perlu diperhatikan pada varian berfoto berdampingan: gambar ditulis
+ * **setelah** blok teks di dalam DOM, lalu digeser ke kanan oleh flexbox.
+ * Pengurai ATS membaca urutan dokumen, bukan urutan tampilan, sehingga
+ * dengan susunan ini isi pertama yang ia temukan tetap nama pelamar - bukan
+ * sebuah gambar tanpa teks alternatif yang membuatnya kehilangan jejak.
+ */
+function ResumeHeader({
+  data,
+  style,
+  accent,
+  contactLine,
+  linkParts,
+  className,
+}: {
+  data: ResumeData;
+  style: TemplateStyle;
+  accent: string;
+  contactLine: string;
+  linkParts: string[];
+  className: string;
+}) {
+  const info = data.personalInfo;
+  const small = `${data.fontSize - 0.5}pt`;
+
+  // Foto hanya muncul bila tiga syarat terpenuhi sekaligus: templatenya
+  // memang menyediakan tempat, pengguna menyalakannya, dan alamat gambarnya
+  // terisi. Template tanpa tempat foto tidak diam-diam menyisipkannya di
+  // posisi seadanya - itu akan merusak tata letak yang justru jadi alasan
+  // pengguna memilih template tersebut.
+  const wantsPhoto =
+    style.photo !== "none" && info.showPhoto && info.photoUrl.trim().length > 0;
+
+  const centred = style.photo === "circle" || style.nameAlign === "center";
+
+  const photo = wantsPhoto ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={info.photoUrl}
+      alt=""
+      style={{
+        width: `${style.photoWidthMm}mm`,
+        height: `${style.photoHeightMm}mm`,
+        objectFit: "cover",
+        display: "block",
+        flexShrink: 0,
+        borderRadius: style.photo === "circle" ? "9999px" : "1pt",
+        marginBottom: style.photo === "beside" ? 0 : "5pt",
+        marginLeft: style.photo !== "beside" && centred ? "auto" : undefined,
+        marginRight: style.photo !== "beside" && centred ? "auto" : undefined,
+      }}
+    />
+  ) : null;
+
+  const identity = (
+    <>
+      <h1
+        style={{
+          fontSize: style.nameSize,
+          fontWeight: style.nameWeight,
+          lineHeight: 1.15,
+          textTransform: style.nameTransform,
+          letterSpacing: style.nameTransform === "uppercase" ? "0.04em" : undefined,
+          color: style.useAccent ? accent : "#000",
+        }}
+      >
+        {info.fullName || "Nama Lengkap Anda"}
+      </h1>
+
+      {info.headline && (
+        <p style={{ fontSize: style.headlineSize, marginTop: "1pt" }}>
+          {info.headline}
+        </p>
+      )}
+
+      {contactLine && (
+        <p style={{ marginTop: "3pt", fontSize: small }}>{contactLine}</p>
+      )}
+
+      {linkParts.length > 0 && (
+        <p style={{ marginTop: "1pt", fontSize: small }}>
+          {linkParts.map((link, index) => (
+            <React.Fragment key={link}>
+              {index > 0 && <span>{"  •  "}</span>}
+              <a
+                href={ensureHttp(link)}
+                style={{ color: "inherit", textDecoration: "none" }}
+              >
+                {prettyUrl(link)}
+              </a>
+            </React.Fragment>
+          ))}
+        </p>
+      )}
+    </>
+  );
+
+  const rule: React.CSSProperties =
+    style.headerRule === "thick"
+      ? { borderBottom: "2pt solid #000", paddingBottom: "6pt" }
+      : style.headerRule === "double"
+        ? { borderBottom: "3pt double #000", paddingBottom: "6pt" }
+        : style.headerRule === "thin"
+          ? { borderBottom: "0.5pt solid #000", paddingBottom: "5pt" }
+          : {};
+
+  return (
+    <header
+      data-field="personal"
+      className={className}
+      style={{
+        textAlign: style.nameAlign,
+        marginBottom: style.sectionGap,
+        ...rule,
+      }}
+    >
+      {style.photo === "beside" && photo ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: "6mm",
+            textAlign: "left",
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>{identity}</div>
+          {photo}
+        </div>
+      ) : (
+        <>
+          {photo}
+          {identity}
+        </>
+      )}
+    </header>
+  );
+}
+
 function SectionHeading({
   title,
   style,
@@ -544,13 +596,50 @@ function SectionHeading({
     color: style.useAccent ? accent : "#000",
   };
 
+  // Judul disimpan dalam huruf kapital karena itu bentuk yang paling lazim.
+  // Template yang menghendaki huruf normal mengubahnya di sini, bukan dengan
+  // menyimpan dua versi judul - agar teks yang terekstraksi ke PDF, DOCX, dan
+  // berkas teks selalu berasal dari satu sumber yang sama.
+  const label = style.headingUppercase ? title : toTitleCase(title);
+
+  if (style.headingStyle === "rule-above") {
+    return (
+      <h2
+        className="section-heading"
+        style={{
+          ...base,
+          borderTop: "1.5pt solid #000",
+          paddingTop: "3pt",
+          marginTop: "2pt",
+        }}
+      >
+        {label}
+      </h2>
+    );
+  }
+
+  if (style.headingStyle === "double-rule") {
+    return (
+      <h2
+        className="section-heading"
+        style={{
+          ...base,
+          borderBottom: "2.5pt double #000",
+          paddingBottom: "1.5pt",
+        }}
+      >
+        {label}
+      </h2>
+    );
+  }
+
   if (style.headingStyle === "underline") {
     return (
       <h2
         className="section-heading"
         style={{ ...base, borderBottom: "0.75pt solid #000", paddingBottom: "1.5pt" }}
       >
-        {title}
+        {label}
       </h2>
     );
   }
@@ -565,14 +654,14 @@ function SectionHeading({
           paddingLeft: "5pt",
         }}
       >
-        {title}
+        {label}
       </h2>
     );
   }
 
   return (
     <h2 className="section-heading" style={base}>
-      {title}
+      {label}
     </h2>
   );
 }

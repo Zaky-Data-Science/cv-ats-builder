@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useI18n } from "@/components/i18n";
 import { Field, Input, Select, Switch, Textarea, Callout } from "@/components/ui";
 import {
   emptyAward,
@@ -15,17 +16,91 @@ import {
   emptyPublication,
   emptySkill,
 } from "@/lib/resume/factory";
-import type { SectionKey } from "@/lib/resume/types";
+import { templateStyle } from "@/lib/resume/templates";
+import type { ResumeLanguage, SectionKey } from "@/lib/resume/types";
 import { moveItem, removeAt, replaceAt, useEditor } from "./context";
 import { AddButton, BulletEditor, EntryCard, MonthInput, Row } from "./parts";
 
 /**
  * Formulir untuk setiap section CV.
  *
- * Tiap field diberi teks petunjuk dan contoh pengisian nyata. Tujuannya
- * bukan sekadar validasi, tetapi mengajarkan cara menulis CV yang baik
- * sambil pengguna mengisinya.
+ * Tiap field diberi teks petunjuk dan contoh pengisian nyata. Tujuannya bukan
+ * sekadar validasi, tetapi mengajarkan cara menulis CV yang baik sambil
+ * pengguna mengisinya - contoh yang benar lebih cepat dipahami daripada
+ * penjelasan panjang, dan teks contoh yang tampil abu-abu itu tidak pernah
+ * ikut tersimpan sebagai isi CV.
+ *
+ * Seluruh teks di berkas ini berasal dari kamus dwibahasa, sehingga tidak ada
+ * kalimat yang tertinggal berbahasa Indonesia ketika antarmuka disetel ke
+ * bahasa Inggris.
  */
+
+/* -------------------------------------------------------------------------- */
+/* Daftar pilihan yang mengikuti bahasa CV, bukan bahasa antarmuka            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Kategori keahlian ikut tercetak di CV ("Bahasa Pemrograman: React, ..."),
+ * jadi bahasanya harus mengikuti bahasa CV - bukan bahasa antarmuka. Pengguna
+ * berbahasa Indonesia yang sedang menyusun CV berbahasa Inggris tetap
+ * memperoleh kategori berbahasa Inggris di dokumennya.
+ */
+const SKILL_CATEGORIES: Record<ResumeLanguage, string[]> = {
+  ID: [
+    "Bahasa Pemrograman",
+    "Framework & Library",
+    "Tools & Platform",
+    "Basis Data",
+    "Desain",
+    "Manajemen",
+    "Umum",
+  ],
+  EN: [
+    "Programming Languages",
+    "Frameworks & Libraries",
+    "Tools & Platforms",
+    "Databases",
+    "Design",
+    "Management",
+    "General",
+  ],
+};
+
+const EMPLOYMENT_LABELS: Record<"id" | "en", Record<string, string>> = {
+  id: {
+    FULL_TIME: "Penuh Waktu",
+    PART_TIME: "Paruh Waktu",
+    CONTRACT: "Kontrak",
+    INTERNSHIP: "Magang",
+    FREELANCE: "Lepas",
+    VOLUNTEER: "Sukarela",
+  },
+  en: {
+    FULL_TIME: "Full time",
+    PART_TIME: "Part time",
+    CONTRACT: "Contract",
+    INTERNSHIP: "Internship",
+    FREELANCE: "Freelance",
+    VOLUNTEER: "Volunteer",
+  },
+};
+
+const PROFICIENCY_LABELS: Record<"id" | "en", Record<string, string>> = {
+  id: {
+    NATIVE: "Bahasa Ibu",
+    FLUENT: "Sangat Lancar",
+    ADVANCED: "Mahir",
+    INTERMEDIATE: "Menengah",
+    BASIC: "Dasar",
+  },
+  en: {
+    NATIVE: "Native",
+    FLUENT: "Fluent",
+    ADVANCED: "Advanced",
+    INTERMEDIATE: "Intermediate",
+    BASIC: "Basic",
+  },
+};
 
 /* ========================================================================== */
 /* Data pribadi                                                               */
@@ -33,128 +108,120 @@ import { AddButton, BulletEditor, EntryCard, MonthInput, Row } from "./parts";
 
 export function PersonalSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const info = data.personalInfo;
 
   const set = (patch: Partial<typeof info>) =>
     update({ personalInfo: { ...info, ...patch } });
 
+  // Templat tanpa tempat foto tidak diam-diam mengabaikan sakelar ini -
+  // pengguna diberi tahu mengapa fotonya tidak muncul, dan apa yang harus ia
+  // lakukan bila memang membutuhkannya.
+  const photoSupported = templateStyle(data.template).photo !== "none";
+
   return (
     <div className="space-y-4" onFocusCapture={() => setHighlight("personal")}>
       <Row>
         <Field
-          label="Nama Lengkap"
+          label={t.form.fullName}
           required
-          hint="Tanpa gelar akademik di depan. Gelar boleh ditulis di belakang."
+          hint={t.form.fullNameHint}
           htmlFor="fullName"
         >
           <Input
             id="fullName"
             value={info.fullName}
             onChange={(e) => set({ fullName: e.target.value })}
-            placeholder="Budi Santoso"
+            placeholder={t.form.fullNamePh}
           />
         </Field>
 
-        <Field
-          label="Jabatan / Posisi yang Dituju"
-          hint="Samakan dengan judul lowongan yang Anda lamar."
-          htmlFor="headline"
-        >
+        <Field label={t.form.headline} hint={t.form.headlineHint} htmlFor="headline">
           <Input
             id="headline"
             value={info.headline}
             onChange={(e) => set({ headline: e.target.value })}
-            placeholder="Frontend Developer"
+            placeholder={t.form.headlinePh}
           />
         </Field>
       </Row>
 
       <Row>
-        <Field
-          label="Email"
-          required
-          hint="Gunakan email profesional yang aktif."
-          htmlFor="email"
-        >
+        <Field label={t.form.email} required hint={t.form.emailHint} htmlFor="email">
           <Input
             id="email"
             type="email"
             value={info.email}
             onChange={(e) => set({ email: e.target.value })}
-            placeholder="budi.santoso@email.com"
+            placeholder={t.form.emailPh}
           />
         </Field>
 
-        <Field
-          label="Nomor Telepon"
-          required
-          hint="Sertakan kode negara agar terbaca sebagai nomor internasional."
-          htmlFor="phone"
-        >
+        <Field label={t.form.phone} required hint={t.form.phoneHint} htmlFor="phone">
           <Input
             id="phone"
             value={info.phone}
             onChange={(e) => set({ phone: e.target.value })}
-            placeholder="+62 812-3456-7890"
+            placeholder={t.form.phonePh}
           />
         </Field>
       </Row>
 
       <Row>
-        <Field label="Kota" htmlFor="city">
+        <Field label={t.form.city} htmlFor="city">
           <Input
             id="city"
             value={info.city}
             onChange={(e) => set({ city: e.target.value })}
-            placeholder="Bontang"
+            placeholder={t.form.cityPh}
           />
         </Field>
 
-        <Field label="Provinsi" htmlFor="province">
+        <Field label={t.form.province} htmlFor="province">
           <Input
             id="province"
             value={info.province}
             onChange={(e) => set({ province: e.target.value })}
-            placeholder="Kalimantan Timur"
+            placeholder={t.form.provincePh}
           />
         </Field>
       </Row>
 
-      <Field label="Negara" htmlFor="country">
+      <Field label={t.form.country} htmlFor="country">
         <Input
           id="country"
           value={info.country}
           onChange={(e) => set({ country: e.target.value })}
-          placeholder="Indonesia"
+          placeholder={t.form.countryPh}
         />
       </Field>
 
       <Row>
-        <Field label="LinkedIn" htmlFor="linkedinUrl">
+        <Field label={t.form.linkedin} htmlFor="linkedinUrl">
           <Input
             id="linkedinUrl"
             value={info.linkedinUrl}
             onChange={(e) => set({ linkedinUrl: e.target.value })}
-            placeholder="linkedin.com/in/budisantoso"
+            placeholder={t.form.linkedinPh}
           />
         </Field>
 
-        <Field label="Portofolio / Website" htmlFor="portfolioUrl">
+        <Field label={t.form.portfolio} htmlFor="portfolioUrl">
           <Input
             id="portfolioUrl"
             value={info.portfolioUrl}
             onChange={(e) => set({ portfolioUrl: e.target.value })}
-            placeholder="budisantoso.dev"
+            placeholder={t.form.portfolioPh}
           />
         </Field>
       </Row>
 
-      <Field label="GitHub" htmlFor="githubUrl">
+      <Field label={t.form.github} htmlFor="githubUrl">
         <Input
           id="githubUrl"
           value={info.githubUrl}
           onChange={(e) => set({ githubUrl: e.target.value })}
-          placeholder="github.com/budisantoso"
+          placeholder={t.form.githubPh}
         />
       </Field>
 
@@ -163,22 +230,28 @@ export function PersonalSection() {
           id="showPhoto"
           checked={info.showPhoto}
           onChange={(value) => set({ showPhoto: value })}
-          label="Tampilkan pas foto"
-          hint="Sebaiknya dimatikan. Sebagian besar pengurai ATS tidak membaca gambar, dan tata letak di sekitar foto sering membuat teks terbaca berantakan. Aktifkan hanya bila lowongan memintanya."
+          label={t.form.showPhoto}
+          hint={t.form.showPhotoHint}
         />
+
+        {info.showPhoto && !photoSupported && (
+          <div className="mt-3">
+            <Callout tone="warn">{t.appearance.photoUnsupported}</Callout>
+          </div>
+        )}
 
         {info.showPhoto && (
           <div className="mt-3">
             <Field
-              label="URL Foto"
-              hint="Tempelkan tautan gambar. Ukuran ideal 3x4 dengan latar polos."
+              label={t.form.photoUrl}
+              hint={t.form.photoUrlHint}
               htmlFor="photoUrl"
             >
               <Input
                 id="photoUrl"
                 value={info.photoUrl}
                 onChange={(e) => set({ photoUrl: e.target.value })}
-                placeholder="https://..."
+                placeholder={t.form.photoUrlPh}
               />
             </Field>
           </div>
@@ -194,16 +267,13 @@ export function PersonalSection() {
 
 export function SummarySection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const info = data.personalInfo;
   const words = info.summary.trim() ? info.summary.trim().split(/\s+/).length : 0;
 
   return (
     <div onFocusCapture={() => setHighlight("summary")}>
-      <Field
-        label="Ringkasan Profil"
-        hint="Rumus singkat: peran + lama pengalaman + keahlian utama + satu pencapaian berangka. Hindari kata 'saya'."
-        htmlFor="summary"
-      >
+      <Field label={t.form.summary} hint={t.form.summaryHint} htmlFor="summary">
         <Textarea
           id="summary"
           rows={6}
@@ -211,7 +281,7 @@ export function SummarySection() {
           onChange={(e) =>
             update({ personalInfo: { ...info, summary: e.target.value } })
           }
-          placeholder="Frontend Developer dengan pengalaman 4 tahun membangun aplikasi web berskala produksi menggunakan React dan TypeScript. Berhasil menurunkan waktu muat halaman utama sebesar 45% dan memimpin tim beranggotakan 4 orang dalam migrasi ke arsitektur komponen bersama."
+          placeholder={t.form.summaryPh}
         />
       </Field>
 
@@ -224,7 +294,10 @@ export function SummarySection() {
               : "text-good"
         }`}
       >
-        {words} kata {words >= 30 && words <= 120 ? "(ideal)" : "(ideal: 30-120 kata)"}
+        {words} {t.form.summaryWords}{" "}
+        {words >= 30 && words <= 120
+          ? t.form.summaryIdeal
+          : t.form.summaryIdealRange}
       </p>
     </div>
   );
@@ -234,17 +307,9 @@ export function SummarySection() {
 /* Pengalaman kerja                                                           */
 /* ========================================================================== */
 
-const EMPLOYMENT_LABELS: Record<string, string> = {
-  FULL_TIME: "Penuh Waktu",
-  PART_TIME: "Paruh Waktu",
-  CONTRACT: "Kontrak",
-  INTERNSHIP: "Magang",
-  FREELANCE: "Lepas",
-  VOLUNTEER: "Sukarela",
-};
-
 export function ExperienceSection() {
   const { data, update, setHighlight } = useEditor();
+  const { locale, t } = useI18n();
   const items = data.experiences;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -255,11 +320,7 @@ export function ExperienceSection() {
   return (
     <div className="space-y-3">
       {items.length === 0 && (
-        <Callout tone="info">
-          Belum ada pengalaman kerja. Jika Anda fresh graduate, isi section
-          Proyek dan Organisasi sebagai gantinya - keduanya sama-sama dihitung
-          sebagai bukti kemampuan.
-        </Callout>
+        <Callout tone="info">{t.form.experienceEmpty}</Callout>
       )}
 
       {items.map((item, index) => (
@@ -267,38 +328,38 @@ export function ExperienceSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Pengalaman"
+          label={t.form.experienceLabel}
           onFocusCapture={() => setHighlight(`experience:${item.id}`)}
           onMoveUp={() => update({ experiences: moveItem(items, index, index - 1) })}
           onMoveDown={() => update({ experiences: moveItem(items, index, index + 1) })}
           onRemove={() => update({ experiences: removeAt(items, index) })}
         >
           <Row>
-            <Field label="Jabatan" required hint="Sesuai surat pengangkatan.">
+            <Field label={t.form.jobTitle} required hint={t.form.jobTitleHint}>
               <Input
                 value={item.jobTitle}
                 onChange={(e) => set(index, { jobTitle: e.target.value })}
-                placeholder="Frontend Developer"
+                placeholder={t.form.jobTitlePh}
               />
             </Field>
-            <Field label="Nama Perusahaan" required>
+            <Field label={t.form.company} required>
               <Input
                 value={item.company}
                 onChange={(e) => set(index, { company: e.target.value })}
-                placeholder="PT Digital Nusantara"
+                placeholder={t.form.companyPh}
               />
             </Field>
           </Row>
 
           <Row>
-            <Field label="Kota">
+            <Field label={t.form.city}>
               <Input
                 value={item.city}
                 onChange={(e) => set(index, { city: e.target.value })}
-                placeholder="Jakarta Selatan"
+                placeholder={t.form.workCityPh}
               />
             </Field>
-            <Field label="Status Kerja">
+            <Field label={t.form.employmentType}>
               <Select
                 value={item.employmentType ?? ""}
                 onChange={(e) =>
@@ -308,24 +369,26 @@ export function ExperienceSection() {
                   })
                 }
               >
-                <option value="">Tidak disebutkan</option>
-                {Object.entries(EMPLOYMENT_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <option value="">{t.form.employmentUnset}</option>
+                {Object.entries(EMPLOYMENT_LABELS[locale]).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ),
+                )}
               </Select>
             </Field>
           </Row>
 
           <Row>
             <MonthInput
-              label="Mulai"
+              label={t.form.startDate}
               value={item.startDate}
               onChange={(value) => set(index, { startDate: value })}
             />
             <MonthInput
-              label="Selesai"
+              label={t.form.endDate}
               value={item.endDate}
               disabled={item.isCurrent}
               onChange={(value) => set(index, { endDate: value })}
@@ -337,7 +400,7 @@ export function ExperienceSection() {
             onChange={(value) =>
               set(index, { isCurrent: value, endDate: value ? "" : item.endDate })
             }
-            label="Masih bekerja di sini"
+            label={t.form.stillWorking}
           />
 
           <BulletEditor
@@ -348,7 +411,7 @@ export function ExperienceSection() {
       ))}
 
       <AddButton
-        label="Tambah Pengalaman Kerja"
+        label={t.form.experienceAdd}
         onClick={() => update({ experiences: [...items, emptyExperience()] })}
       />
     </div>
@@ -361,6 +424,7 @@ export function ExperienceSection() {
 
 export function EducationSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.educations;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -375,54 +439,54 @@ export function EducationSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Pendidikan"
+          label={t.form.educationLabel}
           onFocusCapture={() => setHighlight(`education:${item.id}`)}
           onMoveUp={() => update({ educations: moveItem(items, index, index - 1) })}
           onMoveDown={() => update({ educations: moveItem(items, index, index + 1) })}
           onRemove={() => update({ educations: removeAt(items, index) })}
         >
           <Row>
-            <Field label="Jenjang / Gelar" required hint="Contoh: S1, D3, SMA.">
+            <Field label={t.form.degree} required hint={t.form.degreeHint}>
               <Input
                 value={item.degree}
                 onChange={(e) => set(index, { degree: e.target.value })}
-                placeholder="Sarjana Komputer (S.Kom)"
+                placeholder={t.form.degreePh}
               />
             </Field>
-            <Field label="Program Studi">
+            <Field label={t.form.fieldOfStudy}>
               <Input
                 value={item.fieldOfStudy}
                 onChange={(e) => set(index, { fieldOfStudy: e.target.value })}
-                placeholder="Teknik Informatika"
+                placeholder={t.form.fieldOfStudyPh}
               />
             </Field>
           </Row>
 
           <Row>
-            <Field label="Institusi" required>
+            <Field label={t.form.institution} required>
               <Input
                 value={item.institution}
                 onChange={(e) => set(index, { institution: e.target.value })}
-                placeholder="Universitas Mulawarman"
+                placeholder={t.form.institutionPh}
               />
             </Field>
-            <Field label="Kota">
+            <Field label={t.form.city}>
               <Input
                 value={item.city}
                 onChange={(e) => set(index, { city: e.target.value })}
-                placeholder="Samarinda"
+                placeholder={t.form.eduCityPh}
               />
             </Field>
           </Row>
 
           <Row>
             <MonthInput
-              label="Mulai"
+              label={t.form.startDate}
               value={item.startDate}
               onChange={(value) => set(index, { startDate: value })}
             />
             <MonthInput
-              label="Lulus"
+              label={t.form.graduated}
               value={item.endDate}
               disabled={item.isCurrent}
               onChange={(value) => set(index, { endDate: value })}
@@ -434,25 +498,22 @@ export function EducationSection() {
             onChange={(value) =>
               set(index, { isCurrent: value, endDate: value ? "" : item.endDate })
             }
-            label="Masih menempuh pendidikan"
+            label={t.form.stillStudying}
           />
 
           <Row>
-            <Field
-              label="IPK"
-              hint="Cantumkan bila 3.00 ke atas. Kosongkan bila di bawah itu."
-            >
+            <Field label={t.form.gpa} hint={t.form.gpaHint}>
               <Input
                 value={item.gpa}
                 onChange={(e) => set(index, { gpa: e.target.value })}
-                placeholder="3.62"
+                placeholder={t.form.gpaPh}
               />
             </Field>
-            <Field label="Skala IPK">
+            <Field label={t.form.maxGpa}>
               <Input
                 value={item.maxGpa}
                 onChange={(e) => set(index, { maxGpa: e.target.value })}
-                placeholder="4.00"
+                placeholder={t.form.maxGpaPh}
               />
             </Field>
           </Row>
@@ -465,7 +526,7 @@ export function EducationSection() {
       ))}
 
       <AddButton
-        label="Tambah Pendidikan"
+        label={t.form.educationAdd}
         onClick={() => update({ educations: [...items, emptyEducation()] })}
       />
     </div>
@@ -476,19 +537,11 @@ export function EducationSection() {
 /* Keahlian                                                                   */
 /* ========================================================================== */
 
-const SKILL_CATEGORIES = [
-  "Bahasa Pemrograman",
-  "Framework & Library",
-  "Tools & Platform",
-  "Basis Data",
-  "Desain",
-  "Manajemen",
-  "Umum",
-];
-
 export function SkillSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.skills;
+  const categories = SKILL_CATEGORIES[data.language];
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
     update({ skills: replaceAt(items, index, { ...items[index], ...patch }) });
@@ -496,10 +549,9 @@ export function SkillSection() {
   return (
     <div className="space-y-3" onFocusCapture={() => setHighlight("skill")}>
       <Callout tone="info">
-        Tulis nama keahlian apa adanya - <strong>JavaScript</strong>, bukan
-        <strong> JavaScript (mahir)</strong>. Sistem ATS mencocokkan kata kunci
-        secara harfiah, sehingga tambahan dalam kurung justru menurunkan
-        kecocokan.
+        {t.form.skillCalloutLead} <strong>{t.form.skillCalloutGood}</strong>
+        {t.form.skillCalloutMid} <strong>{t.form.skillCalloutBad}</strong>
+        {t.form.skillCalloutTail}
       </Callout>
 
       <div className="space-y-2">
@@ -509,25 +561,28 @@ export function SkillSection() {
               className="flex-1"
               value={item.name}
               onChange={(e) => set(index, { name: e.target.value })}
-              placeholder="React"
+              placeholder={t.form.skillNamePh}
+              aria-label={t.form.skillNamePh}
             />
             <Select
               className="w-44"
               value={item.category}
+              aria-label={t.form.skillCategory}
               onChange={(e) => set(index, { category: e.target.value })}
             >
-              {SKILL_CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>
               ))}
-              {!SKILL_CATEGORIES.includes(item.category) && (
+              {!categories.includes(item.category) && (
                 <option value={item.category}>{item.category}</option>
               )}
             </Select>
             <button
               type="button"
-              title="Hapus keahlian"
+              title={t.form.skillRemove}
+              aria-label={t.form.skillRemove}
               onClick={() => update({ skills: removeAt(items, index) })}
               className="shrink-0 rounded-lg px-2 text-bad hover:bg-red-50"
             >
@@ -538,13 +593,10 @@ export function SkillSection() {
       </div>
 
       <AddButton
-        label="Tambah Keahlian"
+        label={t.form.skillAdd}
         onClick={() =>
           update({
-            skills: [
-              ...items,
-              emptySkill(items.at(-1)?.category ?? "Bahasa Pemrograman"),
-            ],
+            skills: [...items, emptySkill(items.at(-1)?.category ?? categories[0])],
           })
         }
       />
@@ -558,6 +610,7 @@ export function SkillSection() {
 
 export function ProjectSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.projects;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -570,45 +623,45 @@ export function ProjectSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Proyek"
+          label={t.form.projectLabel}
           onFocusCapture={() => setHighlight(`project:${item.id}`)}
           onMoveUp={() => update({ projects: moveItem(items, index, index - 1) })}
           onMoveDown={() => update({ projects: moveItem(items, index, index + 1) })}
           onRemove={() => update({ projects: removeAt(items, index) })}
         >
           <Row>
-            <Field label="Nama Proyek" required>
+            <Field label={t.form.projectName} required>
               <Input
                 value={item.name}
                 onChange={(e) => set(index, { name: e.target.value })}
-                placeholder="SIMAK PWA"
+                placeholder={t.form.projectNamePh}
               />
             </Field>
-            <Field label="Peran Anda">
+            <Field label={t.form.projectRole}>
               <Input
                 value={item.role}
                 onChange={(e) => set(index, { role: e.target.value })}
-                placeholder="Pengembang Utama"
+                placeholder={t.form.projectRolePh}
               />
             </Field>
           </Row>
 
-          <Field label="Tautan" hint="Repositori, demo, atau publikasi proyek.">
+          <Field label={t.form.projectUrl} hint={t.form.projectUrlHint}>
             <Input
               value={item.url}
               onChange={(e) => set(index, { url: e.target.value })}
-              placeholder="github.com/budisantoso/simak-pwa"
+              placeholder={t.form.projectUrlPh}
             />
           </Field>
 
           <Row>
             <MonthInput
-              label="Mulai"
+              label={t.form.startDate}
               value={item.startDate}
               onChange={(value) => set(index, { startDate: value })}
             />
             <MonthInput
-              label="Selesai"
+              label={t.form.endDate}
               value={item.endDate}
               onChange={(value) => set(index, { endDate: value })}
             />
@@ -622,7 +675,7 @@ export function ProjectSection() {
       ))}
 
       <AddButton
-        label="Tambah Proyek"
+        label={t.form.projectAdd}
         onClick={() => update({ projects: [...items, emptyProject()] })}
       />
     </div>
@@ -635,6 +688,7 @@ export function ProjectSection() {
 
 export function CertificationSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.certifications;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -649,7 +703,7 @@ export function CertificationSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Sertifikat"
+          label={t.form.certificationLabel}
           onFocusCapture={() => setHighlight(`certification:${item.id}`)}
           onMoveUp={() =>
             update({ certifications: moveItem(items, index, index - 1) })
@@ -659,52 +713,49 @@ export function CertificationSection() {
           }
           onRemove={() => update({ certifications: removeAt(items, index) })}
         >
-          <Field label="Nama Sertifikat" required>
+          <Field label={t.form.certName} required>
             <Input
               value={item.name}
               onChange={(e) => set(index, { name: e.target.value })}
-              placeholder="Meta Front-End Developer Professional Certificate"
+              placeholder={t.form.certNamePh}
             />
           </Field>
 
-          <Field label="Penerbit" required>
+          <Field label={t.form.certIssuer} required>
             <Input
               value={item.issuer}
               onChange={(e) => set(index, { issuer: e.target.value })}
-              placeholder="Meta / Coursera"
+              placeholder={t.form.certIssuerPh}
             />
           </Field>
 
           <Row>
             <MonthInput
-              label="Tanggal Terbit"
+              label={t.form.certIssueDate}
               value={item.issueDate}
               onChange={(value) => set(index, { issueDate: value })}
             />
             <MonthInput
-              label="Berlaku Sampai"
+              label={t.form.certExpiry}
               value={item.expiryDate}
-              hint="Kosongkan bila berlaku selamanya."
+              hint={t.form.certExpiryHint}
               onChange={(value) => set(index, { expiryDate: value })}
             />
           </Row>
 
           <Row>
-            <Field
-              label="ID Kredensial"
-              hint="Memudahkan perekrut memverifikasi."
-            >
+            <Field label={t.form.certCredentialId} hint={t.form.certCredentialHint}>
               <Input
                 value={item.credentialId}
                 onChange={(e) => set(index, { credentialId: e.target.value })}
-                placeholder="ABCD1234EFGH"
+                placeholder={t.form.certCredentialPh}
               />
             </Field>
-            <Field label="Tautan Verifikasi">
+            <Field label={t.form.certVerifyUrl}>
               <Input
                 value={item.url}
                 onChange={(e) => set(index, { url: e.target.value })}
-                placeholder="coursera.org/verify/..."
+                placeholder={t.form.certVerifyPh}
               />
             </Field>
           </Row>
@@ -712,7 +763,7 @@ export function CertificationSection() {
       ))}
 
       <AddButton
-        label="Tambah Sertifikat"
+        label={t.form.certificationAdd}
         onClick={() =>
           update({ certifications: [...items, emptyCertification()] })
         }
@@ -727,6 +778,7 @@ export function CertificationSection() {
 
 export function OrganizationSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.organizations;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -741,7 +793,7 @@ export function OrganizationSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Organisasi"
+          label={t.form.organizationLabel}
           onFocusCapture={() => setHighlight(`organization:${item.id}`)}
           onMoveUp={() =>
             update({ organizations: moveItem(items, index, index - 1) })
@@ -752,30 +804,30 @@ export function OrganizationSection() {
           onRemove={() => update({ organizations: removeAt(items, index) })}
         >
           <Row>
-            <Field label="Nama Organisasi" required>
+            <Field label={t.form.orgName} required>
               <Input
                 value={item.name}
                 onChange={(e) => set(index, { name: e.target.value })}
-                placeholder="Himpunan Mahasiswa Teknik Informatika"
+                placeholder={t.form.orgNamePh}
               />
             </Field>
-            <Field label="Jabatan" required>
+            <Field label={t.form.orgRole} required>
               <Input
                 value={item.role}
                 onChange={(e) => set(index, { role: e.target.value })}
-                placeholder="Ketua Divisi Riset dan Teknologi"
+                placeholder={t.form.orgRolePh}
               />
             </Field>
           </Row>
 
           <Row>
             <MonthInput
-              label="Mulai"
+              label={t.form.startDate}
               value={item.startDate}
               onChange={(value) => set(index, { startDate: value })}
             />
             <MonthInput
-              label="Selesai"
+              label={t.form.endDate}
               value={item.endDate}
               disabled={item.isCurrent}
               onChange={(value) => set(index, { endDate: value })}
@@ -787,7 +839,7 @@ export function OrganizationSection() {
             onChange={(value) =>
               set(index, { isCurrent: value, endDate: value ? "" : item.endDate })
             }
-            label="Masih aktif"
+            label={t.form.stillActive}
           />
 
           <BulletEditor
@@ -798,7 +850,7 @@ export function OrganizationSection() {
       ))}
 
       <AddButton
-        label="Tambah Organisasi"
+        label={t.form.organizationAdd}
         onClick={() => update({ organizations: [...items, emptyOrganization()] })}
       />
     </div>
@@ -811,6 +863,7 @@ export function OrganizationSection() {
 
 export function AwardSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.awards;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -823,52 +876,48 @@ export function AwardSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Penghargaan"
+          label={t.form.awardLabel}
           onFocusCapture={() => setHighlight(`award:${item.id}`)}
           onMoveUp={() => update({ awards: moveItem(items, index, index - 1) })}
           onMoveDown={() => update({ awards: moveItem(items, index, index + 1) })}
           onRemove={() => update({ awards: removeAt(items, index) })}
         >
-          <Field
-            label="Nama Penghargaan"
-            required
-            hint="Sebutkan peringkat dan tingkat kompetisinya."
-          >
+          <Field label={t.form.awardTitle} required hint={t.form.awardTitleHint}>
             <Input
               value={item.title}
               onChange={(e) => set(index, { title: e.target.value })}
-              placeholder="Juara 2 Hackathon Kaltim Digital"
+              placeholder={t.form.awardTitlePh}
             />
           </Field>
 
           <Row>
-            <Field label="Pemberi Penghargaan">
+            <Field label={t.form.awardIssuer}>
               <Input
                 value={item.issuer}
                 onChange={(e) => set(index, { issuer: e.target.value })}
-                placeholder="Dinas Kominfo Provinsi Kalimantan Timur"
+                placeholder={t.form.awardIssuerPh}
               />
             </Field>
             <MonthInput
-              label="Tanggal"
+              label={t.form.awardDate}
               value={item.date}
               onChange={(value) => set(index, { date: value })}
             />
           </Row>
 
-          <Field label="Keterangan Singkat">
+          <Field label={t.form.awardDescription}>
             <Textarea
               rows={2}
               value={item.description}
               onChange={(e) => set(index, { description: e.target.value })}
-              placeholder="Membangun purwarupa aplikasi pelaporan infrastruktur dalam 48 jam bersama tim beranggotakan 3 orang."
+              placeholder={t.form.awardDescriptionPh}
             />
           </Field>
         </EntryCard>
       ))}
 
       <AddButton
-        label="Tambah Penghargaan"
+        label={t.form.awardAdd}
         onClick={() => update({ awards: [...items, emptyAward()] })}
       />
     </div>
@@ -879,16 +928,9 @@ export function AwardSection() {
 /* Bahasa                                                                     */
 /* ========================================================================== */
 
-const PROFICIENCY_LABELS: Record<string, string> = {
-  NATIVE: "Bahasa Ibu",
-  FLUENT: "Sangat Lancar",
-  ADVANCED: "Mahir",
-  INTERMEDIATE: "Menengah",
-  BASIC: "Dasar",
-};
-
 export function LanguageSection() {
   const { data, update, setHighlight } = useEditor();
+  const { locale, t } = useI18n();
   const items = data.languages;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -903,11 +945,13 @@ export function LanguageSection() {
               className="flex-1"
               value={item.name}
               onChange={(e) => set(index, { name: e.target.value })}
-              placeholder="Bahasa Inggris"
+              placeholder={t.form.languageNamePh}
+              aria-label={t.form.languageNamePh}
             />
             <Select
               className="w-40"
               value={item.proficiency}
+              aria-label={t.form.languageLevel}
               onChange={(e) =>
                 set(index, {
                   proficiency: e.target
@@ -915,15 +959,18 @@ export function LanguageSection() {
                 })
               }
             >
-              {Object.entries(PROFICIENCY_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
+              {Object.entries(PROFICIENCY_LABELS[locale]).map(
+                ([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ),
+              )}
             </Select>
             <button
               type="button"
-              title="Hapus bahasa"
+              title={t.form.languageRemove}
+              aria-label={t.form.languageRemove}
               onClick={() => update({ languages: removeAt(items, index) })}
               className="shrink-0 rounded-lg px-2 text-bad hover:bg-red-50"
             >
@@ -934,7 +981,7 @@ export function LanguageSection() {
       </div>
 
       <AddButton
-        label="Tambah Bahasa"
+        label={t.form.languageAdd}
         onClick={() => update({ languages: [...items, emptyLanguage()] })}
       />
     </div>
@@ -947,6 +994,7 @@ export function LanguageSection() {
 
 export function PublicationSection() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const items = data.publications;
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
@@ -961,7 +1009,7 @@ export function PublicationSection() {
           key={item.id}
           index={index}
           total={items.length}
-          label="Publikasi"
+          label={t.form.publicationLabel}
           onFocusCapture={() => setHighlight(`publication:${item.id}`)}
           onMoveUp={() =>
             update({ publications: moveItem(items, index, index - 1) })
@@ -971,26 +1019,26 @@ export function PublicationSection() {
           }
           onRemove={() => update({ publications: removeAt(items, index) })}
         >
-          <Field label="Judul" required>
+          <Field label={t.form.pubTitle} required>
             <Textarea
               rows={2}
               value={item.title}
               onChange={(e) => set(index, { title: e.target.value })}
-              placeholder="Penerapan Progressive Web App pada Sistem Informasi Akademik"
+              placeholder={t.form.pubTitlePh}
             />
           </Field>
 
-          <Field label="Penerbit / Jurnal">
+          <Field label={t.form.pubPublisher}>
             <Input
               value={item.publisher}
               onChange={(e) => set(index, { publisher: e.target.value })}
-              placeholder="Jurnal Informatika Mulawarman, Vol. 16 No. 2"
+              placeholder={t.form.pubPublisherPh}
             />
           </Field>
 
           <Row>
             <MonthInput
-              label="Tanggal Terbit"
+              label={t.form.pubDate}
               value={item.date}
               onChange={(value) => set(index, { date: value })}
             />
@@ -998,23 +1046,23 @@ export function PublicationSection() {
               <Input
                 value={item.doi}
                 onChange={(e) => set(index, { doi: e.target.value })}
-                placeholder="10.30872/jim.v16i2.1234"
+                placeholder={t.form.pubDoiPh}
               />
             </Field>
           </Row>
 
-          <Field label="Tautan">
+          <Field label={t.form.pubUrl}>
             <Input
               value={item.url}
               onChange={(e) => set(index, { url: e.target.value })}
-              placeholder="https://..."
+              placeholder={t.form.pubUrlPh}
             />
           </Field>
         </EntryCard>
       ))}
 
       <AddButton
-        label="Tambah Publikasi"
+        label={t.form.publicationAdd}
         onClick={() => update({ publications: [...items, emptyPublication()] })}
       />
     </div>
@@ -1027,6 +1075,7 @@ export function PublicationSection() {
 
 export function CustomSectionForm() {
   const { data, update, setHighlight } = useEditor();
+  const { t } = useI18n();
   const sections = data.customSections;
 
   return (
@@ -1036,7 +1085,7 @@ export function CustomSectionForm() {
           key={section.id}
           index={sectionIndex}
           total={sections.length}
-          label="Section"
+          label={t.form.customLabel}
           onFocusCapture={() => setHighlight(`custom:${section.id}`)}
           onMoveUp={() =>
             update({
@@ -1053,9 +1102,9 @@ export function CustomSectionForm() {
           }
         >
           <Field
-            label="Judul Section"
+            label={t.form.customSectionTitle}
             required
-            hint="Gunakan teks biasa tanpa emoji agar tetap terbaca pengurai."
+            hint={t.form.customSectionTitleHint}
           >
             <Input
               value={section.title}
@@ -1067,7 +1116,7 @@ export function CustomSectionForm() {
                   }),
                 })
               }
-              placeholder="Pelatihan dan Workshop"
+              placeholder={t.form.customSectionTitlePh}
             />
           </Field>
 
@@ -1077,9 +1126,10 @@ export function CustomSectionForm() {
               className="space-y-3 rounded-lg border border-ink-200 bg-white p-3"
             >
               <Row>
-                <Field label="Judul">
+                <Field label={t.form.customEntryTitle}>
                   <Input
                     value={item.title}
+                    placeholder={t.form.customEntryTitlePh}
                     onChange={(e) =>
                       update({
                         customSections: replaceAt(sections, sectionIndex, {
@@ -1093,9 +1143,10 @@ export function CustomSectionForm() {
                     }
                   />
                 </Field>
-                <Field label="Keterangan">
+                <Field label={t.form.customEntrySubtitle}>
                   <Input
                     value={item.subtitle}
+                    placeholder={t.form.customEntrySubtitlePh}
                     onChange={(e) =>
                       update({
                         customSections: replaceAt(sections, sectionIndex, {
@@ -1109,6 +1160,39 @@ export function CustomSectionForm() {
                     }
                   />
                 </Field>
+              </Row>
+
+              <Row>
+                <MonthInput
+                  label={t.form.startDate}
+                  value={item.startDate}
+                  onChange={(value) =>
+                    update({
+                      customSections: replaceAt(sections, sectionIndex, {
+                        ...section,
+                        items: replaceAt(section.items, itemIndex, {
+                          ...item,
+                          startDate: value,
+                        }),
+                      }),
+                    })
+                  }
+                />
+                <MonthInput
+                  label={t.form.endDate}
+                  value={item.endDate}
+                  onChange={(value) =>
+                    update({
+                      customSections: replaceAt(sections, sectionIndex, {
+                        ...section,
+                        items: replaceAt(section.items, itemIndex, {
+                          ...item,
+                          endDate: value,
+                        }),
+                      }),
+                    })
+                  }
+                />
               </Row>
 
               <BulletEditor
@@ -1138,13 +1222,13 @@ export function CustomSectionForm() {
                 }
                 className="text-xs font-medium text-bad"
               >
-                Hapus entri ini
+                {t.form.customRemoveEntry}
               </button>
             </div>
           ))}
 
           <AddButton
-            label="Tambah Entri"
+            label={t.form.customAddEntry}
             onClick={() =>
               update({
                 customSections: replaceAt(sections, sectionIndex, {
@@ -1158,7 +1242,7 @@ export function CustomSectionForm() {
       ))}
 
       <AddButton
-        label="Tambah Section Baru"
+        label={t.form.customAddSection}
         onClick={() =>
           update({ customSections: [...sections, emptyCustomSection()] })
         }

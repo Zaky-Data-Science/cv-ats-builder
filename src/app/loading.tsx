@@ -1,3 +1,7 @@
+"use client";
+
+import { useI18n } from "@/components/i18n";
+
 /**
  * Tampilan sementara saat halaman sedang disiapkan server.
  *
@@ -6,9 +10,11 @@
  * tidak menimbulkan lompatan tata letak saat isinya muncul.
  */
 export default function Loading() {
+  const { t } = useI18n();
+
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-8" aria-busy="true">
-      <span className="sr-only">Memuat halaman...</span>
+      <span className="sr-only">{t.errors.loading}</span>
 
       <div className="h-8 w-48 animate-pulse rounded-lg bg-ink-200" />
       <div className="mt-3 h-4 w-72 animate-pulse rounded bg-ink-200" />

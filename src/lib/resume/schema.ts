@@ -18,7 +18,19 @@ const monthStr = z
 const bullets = z.array(z.string().max(2000)).max(30).default([]);
 const id = z.string().min(1).max(64);
 
-export const templateIdSchema = z.enum(["CLASSIC", "MODERN", "COMPACT"]);
+export const templateIdSchema = z.enum([
+  "CLASSIC",
+  "MODERN",
+  "COMPACT",
+  "EXECUTIVE",
+  "MINIMAL",
+  "TIMELINE",
+  "ACADEMIC",
+  "GOVERNMENT",
+  "PORTRAIT",
+  "PROFILE",
+]);
+export const paperSizeSchema = z.enum(["A4", "LETTER", "LEGAL", "F4"]);
 export const resumeLanguageSchema = z.enum(["ID", "EN"]);
 export const employmentTypeSchema = z.enum([
   "FULL_TIME",
@@ -169,6 +181,9 @@ export const resumeDataSchema = z.object({
   fontSize: z.number().int().min(8).max(14).default(10),
   lineHeight: z.number().min(1).max(2).default(1.35),
   language: resumeLanguageSchema.default("ID"),
+  // Berkas JSON hasil ekspor versi lama belum memuat pageSize. Nilai bawaan
+  // A4 membuatnya tetap dapat diimpor dan menghasilkan CV yang identik.
+  pageSize: paperSizeSchema.default("A4"),
   sectionOrder: z.array(sectionKeySchema).max(20).default([]),
   personalInfo: personalInfoSchema,
   experiences: z.array(experienceSchema).max(40).default([]),

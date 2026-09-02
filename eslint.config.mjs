@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Kode pihak ketiga yang disalin apa adanya. Worker pdf.js sudah
+    // diperkecil dan bukan tulisan sendiri, jadi tidak ada yang dapat
+    // diperbaiki dari peringatan lint atasnya.
+    "public/pdfjs/**",
+    // Klien Prisma yang dibangkitkan ulang setiap kali skema berubah.
+    "src/generated/**",
   ]),
 ]);
 

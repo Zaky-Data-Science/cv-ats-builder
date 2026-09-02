@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1032" viewBox="0 0 1000 1032" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<title>Workflow pengembangan dan rilis</title>
+<desc>Gerbang kualitas dijalankan di komputer sendiri sebelum kode dikirim, bukan hanya mengandalkan hasil build di server - kegagalan yang tertangkap lebih awal jauh lebih murah diperbaiki.</desc>
+<defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
+<rect width="1000" height="1032" fill="#ffffff"/>
+<text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">Workflow pengembangan dan rilis</text>
+<line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
+<path d="M 500 174 V 212" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 280 V 303 H 284 V 318" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="294" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="307" text-anchor="middle" font-size="11.5" fill="#52525a">ya</text>
+<path d="M 284 440 V 463 H 500 V 478" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 280 V 478" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="387" font-size="11.5" fill="#52525a">tidak</text>
+<path d="M 500 546 V 584" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 290 622 H 88 V 144 H 290" fill="none" stroke="#74747a" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#panah)"/>
+<path d="M 500 652 V 690" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="679" font-size="11.5" fill="#52525a">ya</text>
+<path d="M 500 758 V 796" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 886 V 924" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="60" rx="10" fill="#0a0a0b" stroke="#0a0a0b" stroke-width="2"/>
+<text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#c9c9cd">MULAI</text>
+<text x="308" y="155" font-size="15" font-weight="600" fill="#ffffff">Mengubah kode</text>
+<rect x="290" y="220" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="244" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
+<text x="308" y="261" font-size="15" font-weight="600" fill="#0a0a0b">Skema basis data ikut berubah?</text>
+<rect x="114" y="326" width="340" height="114" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="350" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="132" y="367" font-size="15" font-weight="600" fill="#0a0a0b">Tulis berkas migrasi secara manual</text>
+<text x="132" y="390" font-size="12.5" fill="#52525a">prisma migrate dev tidak dipakai di basis</text>
+<text x="132" y="406" font-size="12.5" fill="#52525a">data lokal - perintah itu mengosongkan</text>
+<text x="132" y="422" font-size="12.5" fill="#52525a">isinya.</text>
+<rect x="290" y="486" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="510" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="527" font-size="15" font-weight="600" fill="#0a0a0b">typecheck, lint, build</text>
+<rect x="290" y="592" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="616" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
+<text x="308" y="633" font-size="15" font-weight="600" fill="#0a0a0b">Ketiganya lulus?</text>
+<rect x="290" y="698" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="722" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="739" font-size="15" font-weight="600" fill="#0a0a0b">Commit dan push ke branch main</text>
+<rect x="290" y="804" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="828" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="845" font-size="15" font-weight="600" fill="#0a0a0b">Vercel membangun ulang</text>
+<text x="308" y="868" font-size="12.5" fill="#52525a">prisma generate, prisma migrate deploy, lalu next build.</text>
+<rect x="290" y="932" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="956" font-size="10" letter-spacing="0.08em" fill="#52525a">SELESAI</text>
+<text x="308" y="973" font-size="15" font-weight="600" fill="#0a0a0b">Tayang di production</text>
+<rect x="32.4" y="373" width="111.2" height="20" rx="10" fill="#ffffff" stroke="#e6e6e8"/>
+<text x="88" y="387" text-anchor="middle" font-size="11.5" fill="#52525a">tidak - perbaiki</text>
+</svg>

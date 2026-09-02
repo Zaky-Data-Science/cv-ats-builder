@@ -13,7 +13,9 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && node scripts/copy-pdf-worker.mjs",
+    "diagram": "tsx scripts/render-diagrams.ts",
+    "test": "tsx tests/run.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
@@ -21,9 +23,11 @@
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "docx": "^9.7.1",
+    "fflate": "^0.8.3",
     "lucide-react": "^1.39.0",
     "next": "16.3.4",
     "next-auth": "^5.0.0-beta.32",
+    "pdfjs-dist": "^6.3.289",
     "pg": "^8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -43,7 +47,8 @@
     "prisma": "^7.10.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
-    "typescript": "^5"
+    "typescript": "^5",
+    "sharp": "^0.35.4"
   },
   "allowScripts": {
     "prisma@7.10.0": true,

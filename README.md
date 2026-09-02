@@ -1,17 +1,22 @@
 # CV ATS Builder
 
 Aplikasi web untuk menyusun CV yang terbaca sistem *Applicant Tracking System* (ATS)
-melalui field terstruktur, dengan pratinjau langsung, penilaian ATS beserta saran
-perbaikan, ekspor PDF/Word/teks/JSON, dan penyimpanan permanen di basis data
-sehingga CV dapat diedit kembali kapan saja.
+melalui field terstruktur, dengan pratinjau seukuran kertas sebenarnya, penilaian ATS
+beserta saran perbaikan, ekspor PDF/Word/teks/JSON, dan penyimpanan permanen di basis
+data sehingga CV dapat diedit kembali kapan saja.
 
-> **Tugas Akhir** - Muhammad Agus Riyadh Zaky
+Aplikasi ini juga dapat **memindai dan membandingkan CV yang sudah ada** - berkas PDF
+atau Word dari mana pun dibaca dan dinilai langsung di dalam peramban, tanpa pernah
+dikirim ke server.
+
+> Muhammad Agus Riyadh Zaky
 > Mahasiswa D3 Teknik Komputer, Politeknik Negeri Samarinda
 
 **Dokumentasi lain:**
 - [Panduan Pengguna](docs/panduan-pengguna.md) - cara memakai aplikasi, lengkap dengan diagram alur
 - [Dokumentasi Teknis](docs/dokumentasi-teknis.md) - ERD, use case, arsitektur, aturan penilaian, hasil verifikasi
 - [Panduan Deploy](docs/deploy.md) - menaikkan aplikasi ke internet lewat Vercel dan Neon
+- [Diagram alur](docs/diagram/) - flowchart dan workflow dalam bentuk SVG dan PNG, dibangkitkan dari kode
 
 ---
 
@@ -26,6 +31,7 @@ sehingga CV dapat diedit kembali kapan saja.
 - [Mesin Penilaian ATS](#mesin-penilaian-ats)
 - [Menyalakan Login Google](#menyalakan-login-google)
 - [Deploy ke Internet (Gratis)](#deploy-ke-internet-gratis)
+- [Pengujian](#pengujian)
 - [Perintah yang Tersedia](#perintah-yang-tersedia)
 
 ---
@@ -43,7 +49,12 @@ sehingga CV dapat diedit kembali kapan saja.
 | Multi-pengguna | Login email+kata sandi dan/atau Google; data tiap akun terpisah penuh |
 | Skor ATS | 5 dimensi berbobot, disertai saran perbaikan yang dapat diklik |
 | Pencocokan lowongan | Tempel iklan lowongan untuk melihat kata kunci yang belum ada di CV |
-| 3 template | Classic, Modern, Compact - seluruhnya satu kolom dan aman untuk ATS |
+| 10 template | Delapan tanpa foto, dua berfoto - seluruhnya satu kolom dan aman untuk ATS |
+| 4 ukuran kertas | A4 (bawaan dan disarankan), Letter, Legal, dan F4 |
+| Pratinjau per halaman | Dokumen dapat dilihat tersambung panjang atau terpotong per halaman seperti di Word |
+| Bandingkan & pindai CV | Unggah 1-5 berkas PDF/DOCX/TXT, lihat kelebihan-kekurangan tiap CV dan mana yang paling siap dikirim - diproses di peramban, tanpa akun |
+| Dwibahasa | Antarmuka Indonesia dan Inggris; bahasa judul bagian CV diatur terpisah |
+| Mode terang dan gelap | Palet monokrom, mengikuti setelan sistem atau pilihan pengguna |
 | 4 format unduhan | PDF, Word (.docx), teks polos (.txt), dan JSON untuk cadangan data |
 
 ---
@@ -60,6 +71,9 @@ sehingga CV dapat diedit kembali kapan saja.
 | Kata sandi | bcryptjs, 12 putaran | Kata sandi tidak pernah disimpan dalam bentuk asli |
 | Word | pustaka `docx` | Menghasilkan .docx asli tanpa tabel maupun kotak teks |
 | Validasi | Zod | Server tidak pernah mempercayai bentuk data dari peramban |
+| Baca PDF | `pdfjs-dist` di peramban | Isi CV yang dibandingkan tidak perlu meninggalkan perangkat pengguna |
+| Baca DOCX | `fflate` + pembacaan XML | Jauh lebih ringan daripada pustaka konversi dokumen, untuk hasil yang sama |
+| Gambar diagram | `sharp` (skrip, bukan runtime) | SVG hasil bangkitan diubah menjadi PNG untuk lampiran laporan |
 
 ---
 
@@ -324,6 +338,28 @@ DATABASE_URL="connection-string-neon" npm run db:deploy
 
 ---
 
+## Pengujian
+
+```bash
+npm test
+```
+
+Berkas uji berada di folder `tests/` dan berjalan tanpa server maupun basis data -
+seluruh yang diuji berupa fungsi murni. Isinya:
+
+| Berkas | Yang diuji |
+|---|---|
+| `tests/i18n.test.ts` | Kelengkapan kamus dwibahasa; menangkap kalimat yang belum diterjemahkan |
+| `tests/ats-engine.test.ts` | Kalibrasi skor: CV kosong, CV contoh, saran satu halaman, pengaruh iklan lowongan |
+| `tests/templates.test.ts` | Kesepuluh template dirender, menghasilkan teks yang identik; keempat ukuran kertas |
+| `tests/document.test.ts` | Penilai berkas unggahan: kelebihan, kekurangan, dan pemilihan CV terbaik |
+| `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom |
+
+Berkas PDF ujinya dibangkitkan sendiri oleh `tests/fixtures/make-pdf.ts`, bukan
+disimpan sebagai berkas biner - sehingga isi berkas ujinya terbaca sebagai kode.
+
+---
+
 ## Perintah yang Tersedia
 
 | Perintah | Kegunaan |
@@ -338,3 +374,9 @@ DATABASE_URL="connection-string-neon" npm run db:deploy
 | `npm run db:deploy` | Menerapkan migrasi di production |
 | `npm run db:seed` | Mengisi akun demo dan CV contoh |
 | `npm run db:studio` | Membuka penjelajah basis data |
+| `npm test` | Menjalankan berkas uji (99 pemeriksaan, tanpa server maupun basis data) |
+| `npm run diagram` | Membangkitkan ulang gambar diagram SVG dan PNG dari `src/lib/diagrams.ts` |
+
+> `npm run db:migrate` sengaja tidak dipakai pada basis data lokal `prisma dev` -
+> perintah itu terbukti mengosongkan seluruh tabelnya. Migrasi ditulis manual;
+> lihat bagian yang sama pada `memori claude/MULAI-DI-SINI.md`.

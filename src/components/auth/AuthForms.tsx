@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useI18n } from "@/components/i18n";
 import { Button, Callout, Field, Input, Spinner } from "@/components/ui";
 
 /**
@@ -15,6 +16,8 @@ import { Button, Callout, Field, Input, Spinner } from "@/components/ui";
  */
 
 function GoogleButton({ disabled }: { disabled?: boolean }) {
+  const { t } = useI18n();
+
   return (
     <Button
       variant="outline"
@@ -40,16 +43,20 @@ function GoogleButton({ disabled }: { disabled?: boolean }) {
           d="M24 10.4c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 4.2 29.9 2 24 2 15.4 2 8.1 7 4.4 14.1l7.1 5.5C13.3 14.2 18.2 10.4 24 10.4z"
         />
       </svg>
-      Masuk dengan Google
+      {t.auth.google}
     </Button>
   );
 }
 
 function Divider() {
+  const { t } = useI18n();
+
   return (
     <div className="my-5 flex items-center gap-3">
       <span className="h-px flex-1 bg-ink-200" />
-      <span className="text-[11px] font-medium text-ink-400">ATAU</span>
+      <span className="text-[11px] font-medium text-ink-400">
+        {t.auth.divider}
+      </span>
       <span className="h-px flex-1 bg-ink-200" />
     </div>
   );
@@ -60,12 +67,13 @@ function Divider() {
 /* -------------------------------------------------------------------------- */
 
 export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
+  const { t } = useI18n();
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(
-    params.get("error") ? "Gagal masuk. Silakan coba lagi." : null,
+    params.get("error") ? t.auth.signInFailed : null,
   );
   const [busy, setBusy] = React.useState(false);
 
@@ -85,7 +93,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
     if (result?.error) {
       // Pesan sengaja tidak membedakan "email tidak ada" dan "sandi salah",
       // agar tidak dapat dipakai untuk menebak email mana yang terdaftar.
-      setError("Email atau kata sandi salah.");
+      setError(t.auth.invalidCredentials);
       setBusy(false);
       return;
     }
@@ -96,17 +104,12 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div className="rounded-xl border border-ink-200 bg-white p-6 shadow-sm">
-      <h1 className="text-lg font-bold text-ink-900">Masuk</h1>
-      <p className="mt-1 text-sm text-ink-600">
-        Lanjutkan mengerjakan CV yang sudah tersimpan.
-      </p>
+      <h1 className="text-lg font-bold text-ink-900">{t.auth.loginTitle}</h1>
+      <p className="mt-1 text-sm text-ink-600">{t.auth.loginSubtitle}</p>
 
       {justRegistered && (
         <div className="mt-4">
-          <Callout tone="good">
-            Akun berhasil dibuat. Silakan masuk dengan email dan kata sandi
-            Anda.
-          </Callout>
+          <Callout tone="good">{t.auth.registeredNotice}</Callout>
         </div>
       )}
 
@@ -123,7 +126,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
         onSubmit={handleSubmit}
         className={googleEnabled ? "space-y-4" : "mt-5 space-y-4"}
       >
-        <Field label="Email" htmlFor="email" required>
+        <Field label={t.auth.emailLabel} htmlFor="email" required>
           <Input
             id="email"
             name="email"
@@ -132,11 +135,11 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="nama@email.com"
+            placeholder={t.auth.emailPh}
           />
         </Field>
 
-        <Field label="Kata Sandi" htmlFor="password" required>
+        <Field label={t.auth.passwordLabel} htmlFor="password" required>
           <Input
             id="password"
             name="password"
@@ -153,14 +156,14 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
 
         <Button type="submit" className="w-full" disabled={busy}>
           {busy && <Spinner />}
-          Masuk
+          {t.auth.submitLogin}
         </Button>
       </form>
 
       <p className="mt-5 text-center text-xs text-ink-600">
-        Belum punya akun?{" "}
-        <Link href="/register" className="font-semibold text-brand-600">
-          Daftar gratis
+        {t.auth.toRegister}{" "}
+        <Link href="/register" className="font-semibold text-ink-900 underline">
+          {t.auth.toRegisterLink}
         </Link>
       </p>
     </div>
@@ -172,6 +175,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
 /* -------------------------------------------------------------------------- */
 
 export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
+  const { t } = useI18n();
   const router = useRouter();
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -192,7 +196,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
 
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}));
-      setError(payload.error ?? "Pendaftaran gagal. Silakan coba lagi.");
+      setError(payload.error ?? t.auth.registerFailed);
       setBusy(false);
       return;
     }
@@ -216,10 +220,10 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div className="rounded-xl border border-ink-200 bg-white p-6 shadow-sm">
-      <h1 className="text-lg font-bold text-ink-900">Daftar</h1>
-      <p className="mt-1 text-sm text-ink-600">
-        Gratis. Data CV Anda tersimpan dan bisa diedit kapan saja.
-      </p>
+      <h1 className="text-lg font-bold text-ink-900">
+        {t.auth.registerTitle}
+      </h1>
+      <p className="mt-1 text-sm text-ink-600">{t.auth.registerSubtitle}</p>
 
       {googleEnabled && (
         <>
@@ -234,7 +238,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
         onSubmit={handleSubmit}
         className={googleEnabled ? "space-y-4" : "mt-5 space-y-4"}
       >
-        <Field label="Nama Lengkap" htmlFor="name" required>
+        <Field label={t.auth.nameLabel} htmlFor="name" required>
           <Input
             id="name"
             name="name"
@@ -242,11 +246,11 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Budi Santoso"
+            placeholder={t.auth.namePh}
           />
         </Field>
 
-        <Field label="Email" htmlFor="email" required>
+        <Field label={t.auth.emailLabel} htmlFor="email" required>
           <Input
             id="email"
             type="email"
@@ -254,15 +258,15 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="nama@email.com"
+            placeholder={t.auth.emailPh}
           />
         </Field>
 
         <Field
-          label="Kata Sandi"
+          label={t.auth.passwordLabel}
           htmlFor="password"
           required
-          hint="Minimal 8 karakter."
+          hint={t.auth.passwordHint}
         >
           <Input
             id="password"
@@ -281,14 +285,14 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
 
         <Button type="submit" className="w-full" disabled={busy}>
           {busy && <Spinner />}
-          Buat Akun
+          {t.auth.submitRegister}
         </Button>
       </form>
 
       <p className="mt-5 text-center text-xs text-ink-600">
-        Sudah punya akun?{" "}
-        <Link href="/login" className="font-semibold text-brand-600">
-          Masuk di sini
+        {t.auth.toLogin}{" "}
+        <Link href="/login" className="font-semibold text-ink-900 underline">
+          {t.auth.toLoginLink}
         </Link>
       </p>
     </div>

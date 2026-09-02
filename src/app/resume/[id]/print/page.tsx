@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
+import { paperSpec } from "@/lib/resume/paper";
 import { getResume } from "@/lib/resume/persist";
 
 export const metadata: Metadata = {
@@ -32,8 +33,18 @@ export default async function PrintResumePage({
   const resume = await getResume(id, session.user.id);
   if (!resume) notFound();
 
+  const paper = paperSpec(resume.pageSize);
+
   return (
     <div className="flex min-h-full justify-center bg-ink-200 print:block print:bg-white">
+      {/*
+        Ukuran kertas harus disampaikan lewat aturan @page, dan at-rule tidak
+        dapat membaca custom property CSS. Karena itu satu aturan kecil
+        disisipkan di sini dengan ukuran yang dipilih pengguna - tanpa ini,
+        CV berukuran Letter atau F4 tetap akan dicetak pada bidang A4 dan
+        terpotong di tepinya.
+      */}
+      <style>{`@page { size: ${paper.cssSize}; margin: 0; }`}</style>
       <ResumeDocument
         data={resume}
         printMode

@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { RotateCcw, TriangleAlert } from "lucide-react";
+import { useI18n } from "@/components/i18n";
 import { Button } from "@/components/ui";
 
 /**
@@ -20,6 +21,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useI18n();
+
   React.useEffect(() => {
     console.error("[app] galat tidak tertangani:", error);
   }, [error]);
@@ -32,28 +35,27 @@ export default function Error({
         </span>
 
         <h1 className="mt-5 text-lg font-bold text-ink-900">
-          Ada yang tidak beres
+          {t.errors.errorTitle}
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-600">
-          Halaman ini gagal ditampilkan. CV yang sudah Anda simpan tetap aman -
-          seluruh perubahan disimpan ke database begitu Anda berhenti mengetik.
+          {t.errors.errorBody}
         </p>
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
           <Button onClick={reset} className="press w-full sm:w-auto">
             <RotateCcw size={15} />
-            Coba lagi
+            {t.errors.retry}
           </Button>
           <Link href="/dashboard">
             <Button variant="outline" className="press w-full sm:w-auto">
-              Buka Dashboard
+              {t.errors.openDashboard}
             </Button>
           </Link>
         </div>
 
         {error.digest && (
           <p className="mt-5 border-t border-ink-100 pt-4 text-[11px] text-ink-400">
-            Kode galat: {error.digest}
+            {t.errors.errorCode} {error.digest}
           </p>
         )}
       </div>

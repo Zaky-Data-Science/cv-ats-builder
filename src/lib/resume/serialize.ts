@@ -39,6 +39,7 @@ export function toResumeData(row: any): ResumeData {
     fontSize: row.fontSize,
     lineHeight: row.lineHeight,
     language: row.language,
+    pageSize: row.pageSize,
     sectionOrder: normalizeSectionOrder(row.sectionOrder),
     personalInfo: info
       ? {

@@ -7,8 +7,24 @@
  * di form persis sama dengan yang muncul di CV dan yang dinilai oleh ATS.
  */
 
-export type TemplateId = "CLASSIC" | "MODERN" | "COMPACT";
+export type TemplateId =
+  | "CLASSIC"
+  | "MODERN"
+  | "COMPACT"
+  | "EXECUTIVE"
+  | "MINIMAL"
+  | "TIMELINE"
+  | "ACADEMIC"
+  | "GOVERNMENT"
+  | "PORTRAIT"
+  | "PROFILE";
 export type ResumeLanguage = "ID" | "EN";
+
+/* Ukuran kertas didefinisikan di paper.ts bersama dimensi milimeternya, lalu
+   diteruskan dari sini supaya berkas lain cukup mengimpor satu tempat untuk
+   memperoleh seluruh bentuk data CV. */
+import type { PaperSize } from "./paper";
+export type { PaperSize };
 
 export type EmploymentType =
   | "FULL_TIME"
@@ -166,6 +182,8 @@ export interface ResumeData {
   fontSize: number;
   lineHeight: number;
   language: ResumeLanguage;
+  /** Ukuran kertas. Menentukan lebar pratinjau sekaligus aturan @page cetak. */
+  pageSize: PaperSize;
   sectionOrder: SectionKey[];
   personalInfo: PersonalInfoData;
   experiences: ExperienceItem[];

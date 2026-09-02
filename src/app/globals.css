@@ -1,32 +1,52 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Token desain
+   TOKEN DESAIN
+   --------------------------------------------------------------------------
+   Palet aplikasi sengaja monokrom: hitam, putih, dan tangga abu netral.
+   Alasannya dua.
+
+   1. Aplikasi ini menghasilkan dokumen yang dicetak hitam-putih. Antarmuka
+      yang memakai bahasa rupa yang sama membuat pengguna melihat wujud akhir
+      CV-nya tanpa terganggu warna antarmuka.
+   2. Abu netral (tanpa condong biru seperti "slate") tetap terbaca saat
+      seluruh tangganya dibalik untuk mode gelap - lihat blok
+      [data-theme="dark"] di bawah.
+
+   Warna semantik (baik/waspada/buruk) tetap dipertahankan karena skor ATS
+   memerlukan isyarat yang dapat dibedakan sekilas, tetapi kejenuhannya
+   ditahan supaya tidak merusak kesan monokrom.
    ========================================================================== */
 
 @theme {
-  --color-ink-50: #f8fafc;
-  --color-ink-100: #f1f5f9;
-  --color-ink-200: #e2e8f0;
-  --color-ink-300: #cbd5e1;
-  --color-ink-400: #94a3b8;
-  --color-ink-500: #64748b;
-  --color-ink-600: #475569;
-  --color-ink-700: #334155;
-  --color-ink-800: #1e293b;
-  --color-ink-900: #0f172a;
+  /* Tangga abu netral. ink-50 paling terang, ink-900 paling gelap. */
+  --color-ink-50: #fafafa;
+  --color-ink-100: #f4f4f5;
+  --color-ink-200: #e6e6e8;
+  --color-ink-300: #d2d2d6;
+  --color-ink-400: #a1a1a8;
+  --color-ink-500: #74747a;
+  --color-ink-600: #52525a;
+  --color-ink-700: #3f3f45;
+  --color-ink-800: #26262b;
+  --color-ink-900: #0a0a0b;
 
-  --color-brand-50: #eef4ff;
-  --color-brand-100: #dae4ff;
-  --color-brand-200: #bdcfff;
-  --color-brand-400: #7b9bff;
-  --color-brand-500: #4f6ef7;
-  --color-brand-600: #3b53d9;
-  --color-brand-700: #2f42ad;
+  /*
+    "brand" tetap dipakai namanya supaya seluruh kelas yang sudah tertulis di
+    komponen tidak perlu diubah, tetapi isinya kini monokrom: tombol utama
+    berwarna hitam, bukan biru.
+  */
+  --color-brand-50: #f4f4f5;
+  --color-brand-100: #e6e6e8;
+  --color-brand-200: #d2d2d6;
+  --color-brand-400: #52525a;
+  --color-brand-500: #26262b;
+  --color-brand-600: #131316;
+  --color-brand-700: #000000;
 
   --color-good: #15803d;
-  --color-warn: #b45309;
-  --color-bad: #b91c1c;
+  --color-warn: #a1560a;
+  --color-bad: #b3261e;
 
   /* Titik henti tambahan untuk ponsel besar (iPhone Plus, sebagian Android).
      Bawaan Tailwind melompat dari 0 langsung ke 40rem, padahal di rentang
@@ -34,8 +54,119 @@
   --breakpoint-xs: 26rem;
 }
 
+/* ==========================================================================
+   MODE GELAP
+   --------------------------------------------------------------------------
+   Diterapkan dengan membalik nilai token, bukan dengan menulis varian
+   "dark:" pada setiap elemen. Konsekuensinya: seluruh komponen yang sudah
+   ada ikut bermode gelap tanpa satu pun className diubah, dan tidak ada
+   elemen yang "lupa" dibuatkan varian gelapnya.
+
+   Pembalikan ini konsisten: kelas seperti `bg-ink-900 text-white` yang di
+   mode terang berarti "latar gelap, teks terang" tetap berarti hal yang sama
+   di mode gelap, karena keduanya ikut terbalik.
+
+   Kertas CV (.paper) dikecualikan - nilainya ditulis literal #ffffff karena
+   hasil cetak harus tetap putih apa pun mode layarnya.
+   ========================================================================== */
+
+/* Ditulis sebagai :root[data-theme="dark"], bukan [data-theme="dark"] saja.
+   Tailwind menempatkan nilai bawaan tokennya pada selektor :root, yang
+   berkekuatan sama dengan selektor atribut tunggal - sehingga yang menang
+   akan bergantung pada urutan penulisan. Menambahkan :root di depan membuat
+   blok ini selalu lebih kuat, tanpa perlu mengandalkan urutan. */
+:root[data-theme="dark"] {
+  --color-ink-50: #121214;
+  --color-ink-100: #09090b;
+  --color-ink-200: #232327;
+  --color-ink-300: #34343a;
+  --color-ink-400: #6e6e76;
+  --color-ink-500: #9a9aa2;
+  --color-ink-600: #b9b9c0;
+  --color-ink-700: #d2d2d7;
+  --color-ink-800: #e8e8ea;
+  --color-ink-900: #fafafa;
+
+  --color-brand-50: #1a1a1e;
+  --color-brand-100: #232327;
+  --color-brand-200: #34343a;
+  --color-brand-400: #a1a1aa;
+  --color-brand-500: #d4d4d8;
+  --color-brand-600: #fafafa;
+  --color-brand-700: #ffffff;
+
+  /* Permukaan kartu. Dibuat sedikit lebih terang dari latar halaman agar
+     kartu tetap terbaca sebagai bidang tersendiri tanpa perlu bayangan
+     tebal - bayangan hampir tidak terlihat di atas latar gelap. */
+  --color-white: #101013;
+  --color-black: #ffffff;
+
+  --color-good: #4ade80;
+  --color-warn: #fbbf24;
+  --color-bad: #f87171;
+
+  /* Latar lembut untuk kotak informasi. Nilai mode terang (mis. red-50)
+     akan menyilaukan bila dibiarkan di atas latar gelap. */
+  --color-red-50: #2a1113;
+  --color-red-200: #5c2124;
+  --color-green-50: #0e2417;
+  --color-green-200: #1e4a2e;
+  --color-green-300: #276b3d;
+  --color-amber-50: #2a1e08;
+  --color-amber-200: #5c4011;
+  --color-amber-300: #7c5615;
+
+  color-scheme: dark;
+}
+
 :root {
   color-scheme: light;
+}
+
+/* Jaring pengaman bila JavaScript mati.
+   Dalam keadaan normal, skrip di <head> selalu menuliskan data-theme sebelum
+   halaman digambar, sehingga blok ini tidak pernah terpakai. Yang dijaganya
+   adalah keadaan langka: JavaScript diblokir, atribut tidak pernah tertulis,
+   dan pengguna bermode gelap akan menerima halaman putih menyilaukan. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-ink-50: #121214;
+    --color-ink-100: #09090b;
+    --color-ink-200: #232327;
+    --color-ink-300: #34343a;
+    --color-ink-400: #6e6e76;
+    --color-ink-500: #9a9aa2;
+    --color-ink-600: #b9b9c0;
+    --color-ink-700: #d2d2d7;
+    --color-ink-800: #e8e8ea;
+    --color-ink-900: #fafafa;
+
+    --color-brand-50: #1a1a1e;
+    --color-brand-100: #232327;
+    --color-brand-200: #34343a;
+    --color-brand-400: #a1a1aa;
+    --color-brand-500: #d4d4d8;
+    --color-brand-600: #fafafa;
+    --color-brand-700: #ffffff;
+
+    --color-white: #101013;
+    --color-black: #ffffff;
+
+    --color-good: #4ade80;
+    --color-warn: #fbbf24;
+    --color-bad: #f87171;
+
+    --color-red-50: #2a1113;
+    --color-red-200: #5c2124;
+    --color-green-50: #0e2417;
+    --color-green-200: #1e4a2e;
+    --color-green-300: #276b3d;
+    --color-amber-50: #2a1e08;
+    --color-amber-200: #5c4011;
+    --color-amber-300: #7c5615;
+
+    color-scheme: dark;
+  }
 }
 
 html,
@@ -47,6 +178,11 @@ body {
   background: var(--color-ink-100);
   color: var(--color-ink-900);
   -webkit-font-smoothing: antialiased;
+  /* Perpindahan mode terang-gelap tidak boleh terasa seperti lampu dinyalakan
+     tiba-tiba, tetapi juga tidak boleh membuat pengguna menunggu. */
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
 }
 
 /* Cincin fokus yang selalu terlihat - penting untuk aksesibilitas keyboard. */
@@ -56,15 +192,208 @@ body {
 }
 
 /* ==========================================================================
-   Kertas CV
+   CAHAYA MENGIKUTI KURSOR
+   --------------------------------------------------------------------------
+   Satu lapisan tetap seukuran layar. Posisinya digerakkan lewat custom
+   property --gx/--gy yang diperbarui di dalam requestAnimationFrame, sehingga
+   tidak ada satu pun perubahan tata letak yang dipicu - hanya transform.
+
+   Tiga hal yang menentukan bentuknya sekarang:
+
+   1. **Ukurannya kecil dan pekat.** Sorot lebar yang samar terbaca sebagai
+      noda pada layar, bukan sebagai cahaya. Diameter 15rem dengan inti yang
+      cukup pekat membuatnya terbaca sebagai satu titik cahaya yang mengikuti
+      tangan pengguna.
+   2. **Di latar terang yang dipakai bayangan, bukan sorot putih.** Cahaya
+      putih di atas kertas putih tidak menghasilkan apa pun; yang terlihat
+      justru kebalikannya - halo gelap lembut, seperti bayangan yang mengikuti
+      kursor.
+   3. **Peluruhannya tajam di awal dan berekor panjang, sampai benar-benar
+      nol di tepi.** Ini yang paling menentukan apakah sesuatu terbaca sebagai
+      cahaya atau sebagai cakram berwarna, dan alasannya fisik: intensitas
+      cahaya meluruh terhadap jarak, tidak turun rata.
+
+      Versi sebelumnya kehilangan setengah kepekatannya baru pada 42% jari-jari
+      lalu berhenti di 72% - sehingga bagian tengahnya nyaris rata dan tepinya
+      terpotong. Yang dipakai sekarang mendekati kurva (1-r)^3: separuh
+      kepekatan hilang sebelum 15% jari-jari, dan sisanya menipis perlahan
+      hingga tepat 0 pada 100%. Titik hentinya sengaja banyak - gradasi CSS
+      menarik garis lurus antar-titik henti, jadi kurva melengkung hanya dapat
+      didekati dengan mencacahnya.
+
+   Titik inti hitam kecil yang dulu ada sengaja dihapus: ia menempel persis di
+   ujung kursor dan justru bersaing dengan kursor peramban itu sendiri.
+   ========================================================================== */
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: 15rem;
+  height: 15rem;
+  margin: -7.5rem 0 0 -7.5rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(var(--gx, 50vw), var(--gy, 50vh), 0);
+  background: radial-gradient(
+    circle closest-side,
+    rgba(0, 0, 0, 0.24) 0%,
+    rgba(0, 0, 0, 0.155) 10%,
+    rgba(0, 0, 0, 0.092) 22%,
+    rgba(0, 0, 0, 0.048) 38%,
+    rgba(0, 0, 0, 0.021) 56%,
+    rgba(0, 0, 0, 0.007) 74%,
+    rgba(0, 0, 0, 0.002) 88%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  transition: opacity 260ms ease;
+}
+
+.cursor-glow[data-visible="true"] {
+  opacity: 1;
+}
+
+[data-theme="dark"] .cursor-glow {
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.22) 10%,
+    rgba(255, 255, 255, 0.13) 22%,
+    rgba(255, 255, 255, 0.068) 38%,
+    rgba(255, 255, 255, 0.03) 56%,
+    rgba(255, 255, 255, 0.01) 74%,
+    rgba(255, 255, 255, 0.003) 88%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .cursor-glow {
+    background: radial-gradient(
+      circle closest-side,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.22) 10%,
+      rgba(255, 255, 255, 0.13) 22%,
+      rgba(255, 255, 255, 0.068) 38%,
+      rgba(255, 255, 255, 0.03) 56%,
+      rgba(255, 255, 255, 0.01) 74%,
+      rgba(255, 255, 255, 0.003) 88%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}
+
+/* Jejak sapuan pada layar sentuh. Setiap sentuhan melahirkan satu percikan
+   yang memudar sendiri, lalu elemennya dibuang - tidak ada yang menumpuk. */
+.touch-spark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: 9rem;
+  height: 9rem;
+  margin: -4.5rem 0 0 -4.5rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle closest-side,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.14) 12%,
+    rgba(0, 0, 0, 0.075) 28%,
+    rgba(0, 0, 0, 0.03) 48%,
+    rgba(0, 0, 0, 0.008) 72%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  animation: touch-spark 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+[data-theme="dark"] .touch-spark {
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.21) 12%,
+    rgba(255, 255, 255, 0.11) 28%,
+    rgba(255, 255, 255, 0.045) 48%,
+    rgba(255, 255, 255, 0.012) 72%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .touch-spark {
+    background: radial-gradient(
+      circle closest-side,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.21) 12%,
+      rgba(255, 255, 255, 0.11) 28%,
+      rgba(255, 255, 255, 0.045) 48%,
+      rgba(255, 255, 255, 0.012) 72%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}
+
+@keyframes touch-spark {
+  from {
+    opacity: 0.9;
+    transform: translate3d(var(--sx), var(--sy), 0) scale(0.45);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--sx), var(--sy), 0) scale(1.2);
+  }
+}
+
+/* ==========================================================================
+   ELEMEN YANG BEREAKSI TERHADAP KURSOR
+   --------------------------------------------------------------------------
+   Dipakai oleh komponen <Interactive>. Kartu miring sedikit ke arah kursor
+   dan terangkat, sehingga terasa seperti benda nyata di atas bidang - bukan
+   gambar datar yang menunggu diklik.
+
+   Perspektifnya dipasang pada pembungkus, bukan pada elemen yang berputar.
+   Perspektif yang dipasang di elemen yang sama dengan rotasinya menghasilkan
+   titik hilang yang ikut berpindah bersama kartu, dan kemiringannya terlihat
+   melengkung, bukan seperti benda yang dimiringkan.
+   ========================================================================== */
+
+.interactive {
+  perspective: 900px;
+  height: 100%;
+}
+
+.interactive-inner {
+  height: 100%;
+  transform: rotateX(var(--ix, 0deg)) rotateY(var(--iy, 0deg))
+    translate3d(0, var(--iy-lift, 0px), 0) scale(var(--iscale, 1));
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* Saat kursor sedang berada di atasnya, gerakan harus mengikuti tangan nyaris
+   seketika. Transisi panjang hanya dipakai saat kursornya pergi, supaya
+   kembalinya terasa mengendur - bukan patah. */
+.interactive[data-active="true"] .interactive-inner {
+  transition-duration: 90ms;
+}
+
+/* ==========================================================================
+   KERTAS CV
    --------------------------------------------------------------------------
    Ukuran memakai satuan milimeter agar tampilan di layar identik dengan
-   hasil cetak. A4 = 210 x 297 mm.
+   hasil cetak. Lebar dan tinggi dikirim dari komponen lewat custom property
+   supaya satu aturan ini melayani semua ukuran kertas (A4, Letter, Legal,
+   F4) tanpa kelas tambahan.
    ========================================================================== */
 
 .paper {
-  width: 210mm;
-  min-height: 297mm;
+  width: var(--paper-width, 210mm);
+  min-height: var(--paper-height, 297mm);
+  /* Nilai literal, bukan token: kertas harus tetap putih bertinta hitam
+     meskipun antarmuka sedang bermode gelap, karena inilah yang akan
+     tercetak dan dibaca perekrut. */
   background: #ffffff;
   color: #000000;
   box-sizing: border-box;
@@ -75,7 +404,7 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  border-top: 1px dashed var(--color-ink-300);
+  border-top: 1px dashed #cbd5e1;
   pointer-events: none;
 }
 
@@ -84,8 +413,8 @@ body {
   right: 0;
   top: 2px;
   font-size: 9px;
-  color: var(--color-ink-400);
-  background: #fff;
+  color: #94a3b8;
+  background: #ffffff;
   padding: 0 4px;
 }
 
@@ -105,6 +434,10 @@ body {
    aplikasi. Dengan begitu hasil PDF tidak perlu mengandalkan trik
    menyembunyikan elemen, dan teksnya tetap berupa teks asli yang dapat
    diseleksi - syarat mutlak agar terbaca ATS.
+
+   Ukuran @page ditentukan lewat elemen <style> yang disisipkan halaman
+   cetak, karena at-rule tidak dapat membaca custom property. Nilai di bawah
+   ini adalah bawaannya bila halaman tidak menyisipkan apa-apa.
    ========================================================================== */
 
 @page {
@@ -119,7 +452,9 @@ body {
     height: auto;
   }
 
-  .no-print {
+  .no-print,
+  .cursor-glow,
+  .touch-spark {
     display: none !important;
   }
 
@@ -212,6 +547,18 @@ body {
   mix-blend-mode: overlay;
 }
 
+/* Di latar gelap, mode campur "overlay" hampir tidak menghasilkan apa pun.
+   "soft-light" dengan kilau yang lebih tegas memberi hasil setara. */
+[data-theme="dark"] .tilt-sheen {
+  mix-blend-mode: soft-light;
+  background: linear-gradient(
+    var(--sheen-angle, 120deg),
+    rgba(255, 255, 255, 0) 32%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0) 68%
+  );
+}
+
 /* Muncul perlahan saat tergulir ke dalam layar. */
 .reveal {
   opacity: 0;
@@ -256,13 +603,36 @@ body {
   animation: pulse-glow 6s ease-in-out infinite;
 }
 
+/* Garis tipis berkilau untuk pemisah antarbagian - satu-satunya "hiasan"
+   yang dipakai di tema monokrom, menggantikan blok warna. */
+.hairline {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-ink-300),
+    transparent
+  );
+}
+
 /* Umpan balik sentuh pada tombol - penting di layar sentuh, karena di sana
    tidak ada keadaan hover yang bisa dirasakan pengguna. */
 .press {
   transition:
-    transform 130ms ease,
-    box-shadow 130ms ease;
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 160ms ease;
 }
+
+/* Terangkat sedikit saat dihampiri kursor. Hanya pada perangkat berkursor:
+   di layar sentuh keadaan hover menempel setelah ditekan dan tombolnya
+   terlihat seperti macet dalam keadaan terangkat. */
+@media (hover: hover) and (pointer: fine) {
+  .press:hover {
+    transform: translateY(-1.5px);
+  }
+}
+
 .press:active {
   transform: scale(0.975);
 }
@@ -299,6 +669,17 @@ body {
 
   .tilt-sheen {
     display: none !important;
+  }
+
+  /* Cahaya kursor termasuk gerak dekoratif: pengguna yang memintanya
+     dikurangi tidak akan melihatnya sama sekali. */
+  .cursor-glow,
+  .touch-spark {
+    display: none !important;
+  }
+
+  .interactive-inner {
+    transform: none !important;
   }
 }
 

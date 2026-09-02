@@ -11,7 +11,11 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { useI18n } from "@/components/i18n";
+import { Interactive } from "@/components/motion";
 import { Badge, Button, Callout, Card, Input, Spinner } from "@/components/ui";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { TEMPLATE_INFO } from "@/lib/resume/templates";
 import type { ResumeSummary } from "@/lib/resume/types";
 
 /**
@@ -22,17 +26,12 @@ import type { ResumeSummary } from "@/lib/resume/types";
  * membekukan seluruh halaman selama ditampilkan.
  */
 
-const TEMPLATE_LABEL: Record<string, string> = {
-  CLASSIC: "Classic",
-  MODERN: "Modern",
-  COMPACT: "Compact",
-};
-
 export function DashboardClient({
   initialResumes,
 }: {
   initialResumes: ResumeSummary[];
 }) {
+  const { locale, t } = useI18n();
   const router = useRouter();
   const [resumes, setResumes] = React.useState(initialResumes);
   const [busy, setBusy] = React.useState<string | null>(null);
@@ -62,12 +61,12 @@ export function DashboardClient({
       const response = await fetch(url, init);
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        setError(payload.error ?? "Terjadi kesalahan. Silakan coba lagi.");
+        setError(payload.error ?? t.dashboard.errorGeneric);
         return null;
       }
       return payload;
     } catch {
-      setError("Tidak dapat terhubung ke server.");
+      setError(t.dashboard.errorOffline);
       return null;
     } finally {
       setBusy(null);
@@ -137,11 +136,13 @@ export function DashboardClient({
       {/* ---------------------------------------------------------------- */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">CV Saya</h1>
+          <h1 className="text-2xl font-bold text-ink-900">
+            {t.dashboard.title}
+          </h1>
           <p className="mt-1 text-sm text-ink-600">
             {resumes.length === 0
-              ? "Belum ada CV. Mulai dari contoh agar Anda langsung melihat bentuk jadinya."
-              : `${resumes.length} CV tersimpan. Semua perubahan tersimpan otomatis.`}
+              ? t.dashboard.subtitleEmpty
+              : `${resumes.length} ${t.dashboard.subtitleCount}`}
           </p>
         </div>
 
@@ -163,7 +164,7 @@ export function DashboardClient({
             disabled={busy === "import"}
           >
             {busy === "import" ? <Spinner /> : <Upload size={15} />}
-            Impor JSON
+            {t.dashboard.importJson}
           </Button>
           <Button
             variant="outline"
@@ -171,14 +172,14 @@ export function DashboardClient({
             disabled={busy === "create-sample"}
           >
             {busy === "create-sample" ? <Spinner /> : <Sparkles size={15} />}
-            Mulai dari Contoh
+            {t.dashboard.startFromSample}
           </Button>
           <Button
             onClick={() => createResume("blank")}
             disabled={busy === "create-blank"}
           >
             {busy === "create-blank" ? <Spinner /> : <FilePlus2 size={15} />}
-            Buat CV Baru
+            {t.dashboard.createNew}
           </Button>
         </div>
       </div>
@@ -195,22 +196,22 @@ export function DashboardClient({
       {resumes.length === 0 ? (
         <Card className="mt-8 p-10 text-center">
           <h2 className="text-base font-semibold text-ink-900">
-            Belum ada CV di akun ini
+            {t.dashboard.emptyTitle}
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink-600">
-            Saran: pilih{" "}
-            <strong className="text-ink-800">Mulai dari Contoh</strong>. CV akan
-            terisi data contoh lengkap sehingga Anda bisa melihat setiap field
-            muncul di bagian mana, lalu tinggal menimpanya dengan data Anda
-            sendiri.
+            {t.dashboard.emptyBodyLead}{" "}
+            <strong className="text-ink-800">
+              {t.dashboard.startFromSample}
+            </strong>
+            {t.dashboard.emptyBodyTail}
           </p>
           <div className="mt-6 flex justify-center gap-2">
             <Button onClick={() => createResume("sample")}>
               <Sparkles size={15} />
-              Mulai dari Contoh
+              {t.dashboard.startFromSample}
             </Button>
             <Button variant="outline" onClick={() => createResume("blank")}>
-              Mulai dari kosong
+              {t.dashboard.startBlank}
             </Button>
           </div>
         </Card>
@@ -220,7 +221,8 @@ export function DashboardClient({
         /* ---------------------------------------------------------------- */
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {resumes.map((resume) => (
-            <Card key={resume.id} className="flex flex-col p-5">
+            <Interactive key={resume.id} tilt={3}>
+              <Card className="flex h-full flex-col p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   {renaming === resume.id ? (
@@ -235,7 +237,7 @@ export function DashboardClient({
                         }}
                       />
                       <Button size="sm" onClick={() => rename(resume.id)}>
-                        Simpan
+                        {t.common.save}
                       </Button>
                     </div>
                   ) : (
@@ -244,7 +246,7 @@ export function DashboardClient({
                         {resume.title}
                       </h2>
                       <p className="mt-0.5 truncate text-xs text-ink-500">
-                        {resume.fullName || "Nama belum diisi"}
+                        {resume.fullName || t.dashboard.nameEmpty}
                         {resume.headline ? ` - ${resume.headline}` : ""}
                       </p>
                     </>
@@ -267,8 +269,14 @@ export function DashboardClient({
               </div>
 
               <div className="mt-3 flex items-center gap-2 text-[11px] text-ink-500">
-                <Badge>{TEMPLATE_LABEL[resume.template] ?? resume.template}</Badge>
-                <span>Diubah {formatRelative(resume.updatedAt)}</span>
+                <Badge>
+                  {TEMPLATE_INFO[locale][resume.template]?.name ??
+                    resume.template}
+                </Badge>
+                <span>
+                  {t.dashboard.changedAt}{" "}
+                  {formatRelative(resume.updatedAt, locale, t)}
+                </span>
               </div>
 
               <div className="mt-4 flex-1" />
@@ -276,8 +284,9 @@ export function DashboardClient({
               {confirmDelete === resume.id ? (
                 <div className="rounded-lg border border-red-200 bg-red-50 p-3">
                   <p className="text-xs leading-relaxed text-bad">
-                    Hapus <strong>{resume.title}</strong>? Seluruh isinya ikut
-                    terhapus dan tidak bisa dikembalikan.
+                    {t.dashboard.deleteConfirmLead}{" "}
+                    <strong>{resume.title}</strong>
+                    {t.dashboard.deleteConfirmTail}
                   </p>
                   <div className="mt-2.5 flex gap-2">
                     <Button
@@ -287,14 +296,14 @@ export function DashboardClient({
                       disabled={busy === `del-${resume.id}`}
                     >
                       {busy === `del-${resume.id}` && <Spinner />}
-                      Ya, hapus
+                      {t.dashboard.deleteYes}
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setConfirmDelete(null)}
                     >
-                      Batal
+                      {t.common.cancel}
                     </Button>
                   </div>
                 </div>
@@ -302,13 +311,13 @@ export function DashboardClient({
                 <div className="flex items-center gap-1.5">
                   <Link href={`/resume/${resume.id}/edit`} className="flex-1">
                     <Button size="sm" className="w-full">
-                      Edit CV
+                      {t.dashboard.edit}
                     </Button>
                   </Link>
                   <Button
                     size="icon"
                     variant="outline"
-                    title="Ganti nama"
+                    title={t.dashboard.renameTitle}
                     onClick={() => {
                       setRenaming(resume.id);
                       setRenameValue(resume.title);
@@ -319,7 +328,7 @@ export function DashboardClient({
                   <Button
                     size="icon"
                     variant="outline"
-                    title="Duplikat"
+                    title={t.dashboard.duplicateTitle}
                     onClick={() => duplicate(resume.id)}
                     disabled={busy === `dup-${resume.id}`}
                   >
@@ -332,14 +341,15 @@ export function DashboardClient({
                   <Button
                     size="icon"
                     variant="outline"
-                    title="Hapus"
+                    title={t.dashboard.deleteTitle}
                     onClick={() => setConfirmDelete(resume.id)}
                   >
                     <Trash2 size={13} className="text-bad" />
                   </Button>
-                </div>
-              )}
-            </Card>
+                  </div>
+                )}
+              </Card>
+            </Interactive>
           ))}
         </div>
       )}
@@ -347,10 +357,7 @@ export function DashboardClient({
       {resumes.length > 0 && (
         <div className="mt-6">
           <Callout tone="info">
-            <strong>Tips:</strong> untuk melamar posisi berbeda, tekan tombol
-            duplikat lalu sesuaikan ringkasan dan urutan keahliannya. CV yang
-            disesuaikan per lowongan mendapat skor kecocokan kata kunci yang
-            jauh lebih tinggi.
+            <strong>{t.dashboard.tipsLabel}</strong> {t.dashboard.tips}
           </Callout>
         </div>
       )}
@@ -358,18 +365,23 @@ export function DashboardClient({
   );
 }
 
-/** Format waktu relatif sederhana dalam bahasa Indonesia. */
-function formatRelative(iso: string): string {
+/**
+ * Waktu relatif sederhana.
+ *
+ * Lewat 30 hari, waktu relatif berhenti menolong - orang tidak dapat
+ * membayangkan "47 hari lalu". Di titik itu yang ditampilkan tanggalnya.
+ */
+function formatRelative(iso: string, locale: Locale, t: Dictionary): string {
   const then = new Date(iso).getTime();
   const diffMinutes = Math.round((Date.now() - then) / 60000);
 
-  if (diffMinutes < 1) return "baru saja";
-  if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
+  if (diffMinutes < 1) return t.dashboard.justNow;
+  if (diffMinutes < 60) return `${diffMinutes} ${t.dashboard.minutesAgo}`;
   const hours = Math.round(diffMinutes / 60);
-  if (hours < 24) return `${hours} jam lalu`;
+  if (hours < 24) return `${hours} ${t.dashboard.hoursAgo}`;
   const days = Math.round(hours / 24);
-  if (days < 30) return `${days} hari lalu`;
-  return new Date(iso).toLocaleDateString("id-ID", {
+  if (days < 30) return `${days} ${t.dashboard.daysAgo}`;
+  return new Date(iso).toLocaleDateString(locale === "en" ? "en-GB" : "id-ID", {
     day: "numeric",
     month: "short",
     year: "numeric",

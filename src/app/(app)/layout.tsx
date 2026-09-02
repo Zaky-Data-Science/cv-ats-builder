@@ -2,7 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { auth, signOut } from "@/auth";
+import { LanguageToggle } from "@/components/i18n";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui";
+import { getT } from "@/lib/i18n/server";
 import { SITE } from "@/lib/site";
 
 /**
@@ -20,9 +23,10 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const { t } = await getT();
   if (!session?.user?.id) redirect("/login");
 
-  const displayName = session.user.name || session.user.email || "Pengguna";
+  const displayName = session.user.name || session.user.email || t.app.user;
 
   return (
     <div className="flex min-h-full flex-col">
@@ -37,13 +41,15 @@ export default async function AppLayout({
             </span>
           </Link>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden max-w-40 truncate text-xs text-ink-500 sm:inline">
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            <span className="hidden max-w-40 truncate text-xs text-ink-500 lg:inline">
               {displayName}
             </span>
+            <LanguageToggle />
+            <ThemeToggle />
             <Link href="/settings">
               <Button variant="ghost" size="sm">
-                Pengaturan
+                {t.app.settings}
               </Button>
             </Link>
             <form
@@ -54,7 +60,7 @@ export default async function AppLayout({
             >
               <Button type="submit" variant="outline" size="sm">
                 <LogOut size={14} />
-                Keluar
+                <span className="hidden sm:inline">{t.app.signOut}</span>
               </Button>
             </form>
           </div>

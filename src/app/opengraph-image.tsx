@@ -25,7 +25,7 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0f172a",
+          background: "#0a0a0b",
           padding: "64px 72px",
           fontFamily: "sans-serif",
         }}
@@ -38,7 +38,7 @@ export default function OpengraphImage() {
               height: 56,
               borderRadius: 14,
               background: "#ffffff",
-              color: "#0f172a",
+              color: "#0a0a0b",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -49,7 +49,7 @@ export default function OpengraphImage() {
           >
             CV
           </div>
-          <div style={{ display: "flex", color: "#94a3b8", fontSize: 26 }}>
+          <div style={{ display: "flex", color: "#9a9aa2", fontSize: 26 }}>
             {SITE.name}
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function OpengraphImage() {
           <div
             style={{
               display: "flex",
-              color: "#cbd5e1",
+              color: "#b9b9c0",
               fontSize: 27,
               marginTop: 24,
             }}
@@ -97,11 +97,11 @@ export default function OpengraphImage() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderTop: "1px solid #1e293b",
+            borderTop: "1px solid #26262b",
             paddingTop: 24,
           }}
         >
-          <div style={{ display: "flex", color: "#64748b", fontSize: 22 }}>
+          <div style={{ display: "flex", color: "#74747a", fontSize: 22 }}>
             {AUTHOR.name} - {AUTHOR.institution}
           </div>
           <div

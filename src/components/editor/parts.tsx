@@ -8,6 +8,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import { useI18n } from "@/components/i18n";
 import { Badge, Button, Field, Input, Textarea } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,8 @@ export function SectionCard({
   onMoveDown?: () => void;
   children: React.ReactNode;
 }) {
+  const { t } = useI18n();
+
   return (
     <section
       id={id}
@@ -74,7 +77,7 @@ export function SectionCard({
             <Button
               size="icon"
               variant="ghost"
-              title="Naikkan urutan section"
+              title={t.form.sectionMoveUp}
               onClick={onMoveUp}
               disabled={!onMoveUp}
             >
@@ -83,7 +86,7 @@ export function SectionCard({
             <Button
               size="icon"
               variant="ghost"
-              title="Turunkan urutan section"
+              title={t.form.sectionMoveDown}
               onClick={onMoveDown}
               disabled={!onMoveDown}
             >
@@ -130,6 +133,7 @@ export function EntryCard({
   onFocusCapture?: () => void;
   children: React.ReactNode;
 }) {
+  const { t } = useI18n();
   const [confirming, setConfirming] = React.useState(false);
 
   return (
@@ -146,7 +150,7 @@ export function EntryCard({
           <Button
             size="icon"
             variant="ghost"
-            title="Pindah ke atas"
+            title={t.form.entryMoveUp}
             onClick={onMoveUp}
             disabled={index === 0}
           >
@@ -155,7 +159,7 @@ export function EntryCard({
           <Button
             size="icon"
             variant="ghost"
-            title="Pindah ke bawah"
+            title={t.form.entryMoveDown}
             onClick={onMoveDown}
             disabled={index === total - 1}
           >
@@ -164,7 +168,7 @@ export function EntryCard({
           <Button
             size="icon"
             variant="ghost"
-            title="Hapus entri"
+            title={t.form.entryRemove}
             onClick={() => setConfirming(true)}
           >
             <Trash2 size={13} className="text-bad" />
@@ -174,17 +178,17 @@ export function EntryCard({
 
       {confirming ? (
         <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-          <p className="text-xs text-bad">Hapus entri ini?</p>
+          <p className="text-xs text-bad">{t.form.entryRemoveConfirm}</p>
           <div className="mt-2 flex gap-2">
             <Button size="sm" variant="danger" onClick={onRemove}>
-              Ya, hapus
+              {t.form.entryRemoveYes}
             </Button>
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setConfirming(false)}
             >
-              Batal
+              {t.common.cancel}
             </Button>
           </div>
         </div>
@@ -252,12 +256,6 @@ export function MonthInput({
 /* Penyunting poin pencapaian                                                 */
 /* -------------------------------------------------------------------------- */
 
-const BULLET_PLACEHOLDERS = [
-  "Contoh: Mengembangkan ulang halaman checkout sehingga konversi naik dari 2,1% ke 3,4% dalam 6 bulan.",
-  "Contoh: Memimpin tim 4 orang dalam migrasi 60 komponen, memangkas waktu pengembangan fitur 30%.",
-  "Contoh: Mengotomasi proses deployment sehingga waktu rilis turun dari 40 menit menjadi 6 menit.",
-];
-
 export function BulletEditor({
   bullets,
   onChange,
@@ -265,11 +263,16 @@ export function BulletEditor({
   bullets: string[];
   onChange: (bullets: string[]) => void;
 }) {
+  const { t } = useI18n();
+
+  // Contoh pengisian berganti-ganti antar-poin. Menampilkan contoh yang sama
+  // tiga kali membuat pengguna menyalinnya mentah-mentah; tiga contoh berbeda
+  // justru memperlihatkan bahwa yang dituntut adalah polanya - kata kerja
+  // aksi di depan, angka di dalamnya - bukan kalimatnya.
+  const placeholders = [t.form.bulletPh1, t.form.bulletPh2, t.form.bulletPh3];
+
   return (
-    <Field
-      label="Poin Pencapaian"
-      hint="Awali dengan kata kerja aksi dan sertakan angka. Ini bagian yang paling menentukan skor kualitas konten."
-    >
+    <Field label={t.form.bulletsLabel} hint={t.form.bulletsHint}>
       <div className="space-y-2">
         {bullets.map((bullet, index) => (
           <div key={index} className="flex items-start gap-2">
@@ -277,19 +280,18 @@ export function BulletEditor({
             <Textarea
               rows={2}
               value={bullet}
+              aria-label={t.form.bulletsLabel}
               onChange={(e) =>
                 onChange(
                   bullets.map((b, i) => (i === index ? e.target.value : b)),
                 )
               }
-              placeholder={
-                BULLET_PLACEHOLDERS[index % BULLET_PLACEHOLDERS.length]
-              }
+              placeholder={placeholders[index % placeholders.length]}
             />
             <Button
               size="icon"
               variant="ghost"
-              title="Hapus poin"
+              title={t.form.bulletsRemove}
               className="mt-1"
               onClick={() => onChange(bullets.filter((_, i) => i !== index))}
             >
@@ -304,7 +306,7 @@ export function BulletEditor({
           onClick={() => onChange([...bullets, ""])}
         >
           <Plus size={13} />
-          Tambah poin
+          {t.form.bulletsAdd}
         </Button>
       </div>
     </Field>

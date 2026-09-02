@@ -107,6 +107,17 @@ export const ACTION_VERBS_EN = new Set<string>([
   "architected", "authored", "consolidated", "engineered", "facilitated",
   "forecasted", "modernized", "orchestrated", "prototyped", "restructured",
   "revamped", "secured", "transformed", "validated",
+  // Kata kerja lampau tak beraturan dan bentuk sehari-hari yang sama-sama
+  // sah membuka sebuah poin pencapaian. Sebelumnya terlewat, sehingga poin
+  // yang diawali "Rebuilt" atau "Wrote" dihitung sebagai poin pasif -
+  // padahal keduanya justru bentuk yang dianjurkan.
+  "rebuilt", "wrote", "ran", "used", "made", "set", "won", "taught",
+  "rewrote", "redesigned", "reengineered", "reorganized", "reorganised",
+  "oversaw", "handled", "planned", "researched", "reviewed", "selected",
+  "supported", "translated", "upgraded", "verified", "wrangled", "boosted",
+  "converted", "deployed", "eliminated", "enabled", "enhanced", "ensured",
+  "identified", "introduced", "monitored", "produced", "programmed",
+  "reconciled", "recruited", "reported", "restored", "revised", "unified",
 ]);
 
 export const ACTION_VERBS = new Set<string>([

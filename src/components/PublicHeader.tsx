@@ -4,15 +4,11 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { useI18n, LanguageToggle } from "@/components/i18n";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui";
 import { SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
-
-const NAV = [
-  { href: "/", label: "Beranda" },
-  { href: "/panduan", label: "Panduan" },
-  { href: "/tentang", label: "Tentang" },
-];
 
 /**
  * Bilah navigasi untuk halaman publik.
@@ -22,6 +18,15 @@ const NAV = [
  */
 export function PublicHeader({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const nav = [
+    { href: "/", label: t.nav.home },
+    { href: "/bandingkan", label: t.nav.compare },
+    { href: "/panduan", label: t.nav.guide },
+    { href: "/tentang", label: t.nav.about },
+    { href: "/alur", label: t.nav.flowNav },
+  ];
 
   // Yang disimpan bukan "menu terbuka", melainkan "menu dibuka di halaman
   // mana". Dengan begitu berpindah halaman otomatis menutup menu tanpa
@@ -37,7 +42,7 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
         <Link
           href="/"
           className="flex shrink-0 items-center gap-2"
-          aria-label={`${SITE.name} - beranda`}
+          aria-label={`${SITE.name} - ${t.nav.homeAria}`}
         >
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
             CV
@@ -48,8 +53,11 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
         </Link>
 
         {/* Navigasi layar lebar */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Utama">
-          {NAV.map((item) => (
+        <nav
+          className="hidden items-center gap-1 md:flex"
+          aria-label={t.nav.mainNav}
+        >
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -65,23 +73,26 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+
           {signedIn ? (
             <Link href="/dashboard">
               <Button size="sm" className="press">
-                Dashboard
+                {t.nav.dashboard}
               </Button>
             </Link>
           ) : (
             <>
               <Link href="/login" className="hidden sm:block">
                 <Button variant="ghost" size="sm">
-                  Masuk
+                  {t.nav.login}
                 </Button>
               </Link>
               <Link href="/register">
                 <Button size="sm" className="press">
-                  Daftar Gratis
+                  {t.nav.register}
                 </Button>
               </Link>
             </>
@@ -92,7 +103,7 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-controls="menu-ponsel"
-            aria-label={open ? "Tutup menu" : "Buka menu"}
+            aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
             className="grid h-9 w-9 place-items-center rounded-lg text-ink-600 hover:bg-ink-100 md:hidden"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
@@ -104,11 +115,11 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
       {open && (
         <nav
           id="menu-ponsel"
-          aria-label="Utama (ponsel)"
+          aria-label={t.nav.mobileNav}
           className="border-t border-ink-200 bg-white md:hidden"
         >
           <ul className="mx-auto max-w-6xl px-4 py-2">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -129,7 +140,7 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
                   href="/login"
                   className="block rounded-lg px-3 py-2.5 text-sm text-ink-700"
                 >
-                  Masuk
+                  {t.nav.login}
                 </Link>
               </li>
             )}

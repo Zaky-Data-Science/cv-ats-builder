@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1612" viewBox="0 0 1000 1612" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<title>User flow: building a CV</title>
+<desc>From opening the app to a downloaded file. Note that saving runs by itself in the background, and improving on the score is a loop rather than a one-off step.</desc>
+<defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
+<rect width="1000" height="1612" fill="#ffffff"/>
+<text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">User flow: building a CV</text>
+<line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
+<path d="M 500 174 V 212" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 280 V 303 H 284 V 318" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="294" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="307" text-anchor="middle" font-size="11.5" fill="#52525a">no</text>
+<path d="M 284 386 V 409 H 500 V 424" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 280 V 424" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="360" font-size="11.5" fill="#52525a">yes</text>
+<path d="M 500 492 V 530" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 598 V 636" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 726 V 764" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 854 V 877 H 716 V 892" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 854 V 1020" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 1110 V 1148" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 1254 V 1292" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 290 1330 H 88 V 813 H 290" fill="none" stroke="#74747a" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#panah)"/>
+<path d="M 500 1360 V 1398" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="1387" font-size="11.5" fill="#52525a">yes</text>
+<path d="M 500 1466 V 1504" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="60" rx="10" fill="#0a0a0b" stroke="#0a0a0b" stroke-width="2"/>
+<text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#c9c9cd">START</text>
+<text x="308" y="155" font-size="15" font-weight="600" fill="#ffffff">Open the app</text>
+<rect x="290" y="220" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="244" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>
+<text x="308" y="261" font-size="15" font-weight="600" fill="#0a0a0b">Have an account?</text>
+<rect x="114" y="326" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="350" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="132" y="367" font-size="15" font-weight="600" fill="#0a0a0b">Sign up - email or Google</text>
+<rect x="290" y="432" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="456" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="473" font-size="15" font-weight="600" fill="#0a0a0b">Sign in</text>
+<rect x="290" y="538" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="562" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="579" font-size="15" font-weight="600" fill="#0a0a0b">Dashboard - list of CVs</text>
+<rect x="290" y="644" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="668" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="685" font-size="15" font-weight="600" fill="#0a0a0b">Create or duplicate a CV</text>
+<text x="308" y="708" font-size="12.5" fill="#52525a">Start blank, or from a complete worked example.</text>
+<rect x="290" y="772" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="796" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="813" font-size="15" font-weight="600" fill="#0a0a0b">Fill the structured fields</text>
+<text x="308" y="836" font-size="12.5" fill="#52525a">11 sections. Every box carries a grey worked example.</text>
+<rect x="546" y="900" width="340" height="82" rx="10" fill="#fafafa" stroke="#a1a1a8" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="564" y="924" font-size="10" letter-spacing="0.08em" fill="#52525a">DATA</text>
+<text x="564" y="941" font-size="15" font-weight="600" fill="#0a0a0b">Auto-save to the database</text>
+<text x="564" y="964" font-size="12.5" fill="#52525a">0.8 seconds after the user stops typing.</text>
+<rect x="290" y="1028" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1052" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="1069" font-size="15" font-weight="600" fill="#0a0a0b">True-to-size paper preview</text>
+<text x="308" y="1092" font-size="12.5" fill="#52525a">A4, Letter, Legal or F4 - continuous, or cut into pages.</text>
+<rect x="290" y="1156" width="420" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1180" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="1197" font-size="15" font-weight="600" fill="#0a0a0b">Compute the ATS score</text>
+<text x="308" y="1220" font-size="12.5" fill="#52525a">Five weighted dimensions, computed in the browser with no</text>
+<text x="308" y="1236" font-size="12.5" fill="#52525a">network request.</text>
+<rect x="290" y="1300" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="1324" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>
+<text x="308" y="1341" font-size="15" font-weight="600" fill="#0a0a0b">Score good enough?</text>
+<rect x="290" y="1406" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="1430" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="1447" font-size="15" font-weight="600" fill="#0a0a0b">Download PDF, Word, text, or JSON</text>
+<rect x="290" y="1512" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="1536" font-size="10" letter-spacing="0.08em" fill="#52525a">END</text>
+<text x="308" y="1553" font-size="15" font-weight="600" fill="#0a0a0b">Send the application</text>
+<rect x="32.4" y="1061.5" width="111.2" height="20" rx="10" fill="#ffffff" stroke="#e6e6e8"/>
+<text x="88" y="1075.5" text-anchor="middle" font-size="11.5" fill="#52525a">not yet - fix it</text>
+</svg>

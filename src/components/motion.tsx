@@ -133,6 +133,107 @@ export function TiltCard({
 }
 
 /* -------------------------------------------------------------------------- */
+/* Elemen yang bereaksi terhadap kursor                                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Membuat sebuah kartu bergerak mengikuti kursor: miring ke arah kursor,
+ * terangkat sedikit, dan membesar sepersekian persen.
+ *
+ * Bedanya dengan TiltCard di atas bukan sekadar sudutnya. TiltCard dipakai
+ * untuk satu benda utama yang memang ingin ditonjolkan - kartu CV di halaman
+ * depan - sehingga kemiringannya tegas dan disertai pantulan cahaya.
+ * Komponen ini dipakai berpuluh-puluh kali dalam satu halaman: pada kartu
+ * langkah, kartu fitur, kartu penilaian, dan seterusnya. Karena itu geraknya
+ * ditahan jauh lebih halus. Puluhan kartu yang miring setegas kartu utama
+ * akan membuat halamannya terasa goyah, bukan hidup.
+ *
+ * Seluruh nilainya ditulis sebagai custom property langsung ke elemen DOM,
+ * bukan disimpan sebagai state - lihat alasan yang sama di CursorGlow.
+ */
+export function Interactive({
+  children,
+  className,
+  /** Sudut kemiringan maksimum dalam derajat. */
+  tilt = 5,
+  /** Seberapa jauh kartu terangkat saat dihampiri kursor, dalam piksel. */
+  lift = 4,
+  /** Perbesaran saat dihampiri kursor. 1 berarti tidak membesar. */
+  scale = 1.015,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  tilt?: number;
+  lift?: number;
+  scale?: number;
+}) {
+  const reduced = useReducedMotion();
+
+  const attach = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node || reduced) return;
+
+      // Perangkat tanpa penunjuk presisi (ponsel, tablet) dilewati: tidak ada
+      // kursor untuk diikuti, dan keadaan hover di sana menempel setelah
+      // ditekan sehingga kartunya terlihat macet dalam keadaan terangkat.
+      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        return;
+      }
+
+      const inner = node.firstElementChild as HTMLElement | null;
+      if (!inner) return;
+
+      let frame = 0;
+
+      const onMove = (event: PointerEvent) => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const rect = node.getBoundingClientRect();
+          // Posisi kursor dinormalisasi ke rentang -0,5 sampai 0,5.
+          const px = (event.clientX - rect.left) / rect.width - 0.5;
+          const py = (event.clientY - rect.top) / rect.height - 0.5;
+          inner.style.setProperty("--iy", `${px * tilt * 2}deg`);
+          inner.style.setProperty("--ix", `${-py * tilt * 2}deg`);
+        });
+      };
+
+      const onEnter = () => {
+        node.dataset.active = "true";
+        inner.style.setProperty("--iy-lift", `${-lift}px`);
+        inner.style.setProperty("--iscale", String(scale));
+      };
+
+      const onLeave = () => {
+        cancelAnimationFrame(frame);
+        node.dataset.active = "false";
+        inner.style.setProperty("--ix", "0deg");
+        inner.style.setProperty("--iy", "0deg");
+        inner.style.setProperty("--iy-lift", "0px");
+        inner.style.setProperty("--iscale", "1");
+      };
+
+      node.addEventListener("pointermove", onMove);
+      node.addEventListener("pointerenter", onEnter);
+      node.addEventListener("pointerleave", onLeave);
+
+      return () => {
+        cancelAnimationFrame(frame);
+        node.removeEventListener("pointermove", onMove);
+        node.removeEventListener("pointerenter", onEnter);
+        node.removeEventListener("pointerleave", onLeave);
+      };
+    },
+    [tilt, lift, scale, reduced],
+  );
+
+  return (
+    <div ref={attach} className={cn("interactive", className)}>
+      <div className="interactive-inner">{children}</div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* Muncul saat tergulir masuk layar                                           */
 /* -------------------------------------------------------------------------- */
 
