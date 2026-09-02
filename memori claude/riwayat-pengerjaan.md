@@ -363,6 +363,25 @@ termasuk bahwa mode per halaman benar-benar melepas margin atas-bawah dari
 dokumennya, dan bahwa margin bawaan ikut berubah saat template diganti.
 Totalnya kini **107 pemeriksaan, 107 lulus**.
 
+### Navigasi kembali di dalam situs
+
+Sebelumnya satu-satunya jalan pulang dari halaman dalam adalah tombol kembali
+peramban. Itu bermasalah bukan hanya karena merepotkan: halaman seperti
+/panduan atau /login kerap dibuka **langsung** dari hasil pencarian atau dari
+tautan yang dibagikan, dan pada keadaan itu tidak ada riwayat untuk dimundurkan
+sama sekali.
+
+- Komponen `Breadcrumb` baru, dipasang di /panduan, /tentang, /alur,
+  /bandingkan, /privasi, dan /ketentuan. Pada halaman yang sebelumnya memakai
+  lencana judul, lencana itu diganti jejak navigasi - keduanya menyampaikan hal
+  yang sama, dan jejak navigasi sekaligus menjadi jalan pulang.
+- Halaman Pengaturan memperoleh tautan "Kembali ke dashboard". Kedalamannya
+  hanya satu, jadi jejak bertingkat akan berlebihan di sana.
+- Kerangka halaman masuk dan daftar memperoleh tautan "Kembali ke beranda" di
+  bilah atas.
+- Butir terakhir jejak navigasi sengaja bukan tautan dan diberi
+  `aria-current="page"`.
+
 ### Hasil pengujian
 
 | Berkas uji | Pemeriksaan | Hasil |

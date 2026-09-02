@@ -464,6 +464,18 @@ akan tercetak.
 
 ---
 
+### Berpindah dan kembali antarhalaman
+
+Setiap halaman dalam memiliki **jejak navigasi** di bagian atas, misalnya
+*Beranda › Panduan*. Tekan bagian "Beranda" untuk kembali - tidak perlu memakai
+tombol kembali peramban, yang tidak berfungsi bila halaman itu Anda buka
+langsung dari tautan yang dibagikan orang.
+
+Halaman Pengaturan punya tautan **Kembali ke dashboard**, dan halaman masuk
+punya **Kembali ke beranda** di pojok kanan atas.
+
+---
+
 ## 14. Memakai dari ponsel
 
 Aplikasi ini dapat dipakai penuh dari ponsel. Layar dibagi menjadi tiga panel

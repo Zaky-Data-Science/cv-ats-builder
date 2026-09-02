@@ -597,6 +597,9 @@ export const en: Dictionary = {
     closeMenu: "Close menu",
     mainNav: "Main",
     mobileNav: "Main (mobile)",
+    breadcrumb: "Breadcrumb",
+    backHome: "Back to home",
+    backDashboard: "Back to dashboard",
     homeAria: "home",
   },
 

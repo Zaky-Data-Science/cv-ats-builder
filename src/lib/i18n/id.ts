@@ -626,6 +626,9 @@ export const id = {
     closeMenu: "Tutup menu",
     mainNav: "Utama",
     mobileNav: "Utama (ponsel)",
+    breadcrumb: "Jejak navigasi",
+    backHome: "Kembali ke beranda",
+    backDashboard: "Kembali ke dashboard",
     homeAria: "beranda",
   },
 

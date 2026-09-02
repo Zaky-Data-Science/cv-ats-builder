@@ -3,6 +3,8 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useI18n } from "@/components/i18n";
 import { Button, Callout, Card, Field, Input, Spinner } from "@/components/ui";
 
@@ -74,7 +76,17 @@ export function SettingsClient({
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5 px-5 py-8">
       <div>
-        <h1 className="text-2xl font-bold text-ink-900">
+        {/* Halaman ini hanya dapat dicapai dari dashboard, jadi satu tautan
+            kembali sudah cukup - jejak navigasi bertingkat justru berlebihan
+            untuk kedalaman satu. */}
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-600 transition-colors hover:text-ink-900"
+        >
+          <ArrowLeft size={13} aria-hidden />
+          {t.nav.backDashboard}
+        </Link>
+        <h1 className="mt-2 text-2xl font-bold text-ink-900">
           {t.settings.title}
         </h1>
         <p className="mt-1 text-sm text-ink-600">

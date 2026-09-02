@@ -14,6 +14,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { useI18n } from "@/components/i18n";
 import { Interactive } from "@/components/motion";
 import { Badge, Button, Callout, Card, Textarea } from "@/components/ui";
@@ -179,6 +180,14 @@ export function CompareClient() {
       {/* ---------------------------------------------------------------- */}
       {/* Judul                                                             */}
       {/* ---------------------------------------------------------------- */}
+      <Breadcrumb
+        label={t.nav.breadcrumb}
+        items={[
+          { href: "/", label: t.nav.home },
+          { label: t.nav.compare },
+        ]}
+        className="mb-3"
+      />
       <h1 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
         {t.compare.title}
       </h1>

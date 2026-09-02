@@ -12,10 +12,11 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { auth } from "@/auth";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Interactive, Reveal } from "@/components/motion";
-import { Badge, Button, Card } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
 import { getT } from "@/lib/i18n/server";
 import { AUTHOR, SITE } from "@/lib/site";
 import { ABOUT } from "./content";
@@ -56,7 +57,13 @@ export default async function TentangPage() {
       <main id="konten" className="flex-1">
         <section className="border-b border-ink-200 bg-ink-50">
           <div className="mx-auto max-w-4xl px-4 py-12 sm:px-5 sm:py-16">
-            <Badge>{content.badge}</Badge>
+            <Breadcrumb
+              label={t.nav.breadcrumb}
+              items={[
+                { href: "/", label: t.nav.home },
+                { label: content.badge },
+              ]}
+            />
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
               {content.title}
             </h1>

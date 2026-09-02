@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge } from "@/components/ui";
 import { getT } from "@/lib/i18n/server";
 
 /**
@@ -41,7 +41,10 @@ export async function LegalPage({
       <main id="konten" className="flex-1">
         <section className="border-b border-ink-200 bg-ink-50">
           <div className="mx-auto max-w-3xl px-4 py-12 sm:px-5 sm:py-16">
-            <Badge>{badge}</Badge>
+            <Breadcrumb
+              label={t.nav.breadcrumb}
+              items={[{ href: "/", label: t.nav.home }, { label: badge }]}
+            />
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
               {title}
             </h1>

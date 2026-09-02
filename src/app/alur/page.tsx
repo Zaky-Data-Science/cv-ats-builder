@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Download, FileImage, FileType2 } from "lucide-react";
 import { auth } from "@/auth";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { DiagramView } from "@/components/Diagram";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -53,6 +54,14 @@ export default async function FlowPage() {
       <main className="flex-1">
         <div className="mx-auto w-full max-w-4xl px-5 py-12 sm:py-16">
           <Reveal>
+            <Breadcrumb
+              label={t.nav.breadcrumb}
+              items={[
+                { href: "/", label: t.nav.home },
+                { label: t.flow.title },
+              ]}
+              className="mb-3"
+            />
             <h1 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
               {t.flow.title}
             </h1>
