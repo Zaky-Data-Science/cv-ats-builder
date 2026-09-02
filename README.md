@@ -11,6 +11,7 @@ sehingga CV dapat diedit kembali kapan saja.
 **Dokumentasi lain:**
 - [Panduan Pengguna](docs/panduan-pengguna.md) - cara memakai aplikasi, lengkap dengan diagram alur
 - [Dokumentasi Teknis](docs/dokumentasi-teknis.md) - ERD, use case, arsitektur, aturan penilaian, hasil verifikasi
+- [Panduan Deploy](docs/deploy.md) - menaikkan aplikasi ke internet lewat Vercel dan Neon
 
 ---
 
