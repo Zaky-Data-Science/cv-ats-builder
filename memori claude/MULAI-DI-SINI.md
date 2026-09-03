@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **3 September 2026** (sesi 6)
+Terakhir diperbarui: **3 September 2026** (sesi 8)
 
 ---
 
@@ -28,6 +28,17 @@ Sejak sesi 6, CV dapat disunting lewat **dua jalur yang menyentuh data yang
 sama**: formulir di panel kiri, dan kertas di panel kanan yang dapat diketik
 langsung seperti di pengolah kata. Pas foto juga diunggah sebagai berkas,
 bukan lagi lewat tautan gambar.
+
+Sesi 7 melengkapi jalur kertas itu: tanggal dipilih lewat pemilih bulan yang
+muncul saat periodenya diklik, tiap sub-field pada baris gabungan punya
+tempatnya sendiri, entri dan poin dapat ditambah dari kertas, dan field yang
+masih kosong tampil sebagai penampung samar supaya ada yang dapat diklik.
+
+Sesi 8 memperbaiki tampilan di ponsel - yang ternyata rusak oleh satu barisan
+kendali di bilah atas yang tidak dapat menyusut - dan menambahkan tanda
+pengenal rupa berupa **tinta hitam-putih**: intro pembuka sekali per perangkat,
+latar berpartikel yang nyaris tak terlihat, dan bercak tinta di setiap
+sentuhan.
 
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
@@ -68,7 +79,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 222 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 284 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -136,7 +147,15 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/ats/vocabulary.ts` | Kata henti, kata kerja aksi, frasa klise |
 | `src/lib/ats/aliases.ts` | Kelompok padanan kata kunci - singkatan lawan kepanjangannya. Murni data; alasan apa yang sengaja tidak dimasukkan ada di kepala berkasnya |
 | `src/lib/resume/photo.ts` | Kompresi pas foto di peramban dan pembacaan data URI-nya |
-| `src/lib/resume/edit-path.ts` | Menulis balik teks yang diketik langsung di atas kertas. Hanya jalur terdaftar yang boleh ditulis |
+| `src/lib/resume/edit-path.ts` | Menulis balik teks yang diketik di atas kertas, **dan** tanggal yang dipilih lewat pemilih bulan (`applyDateEdit`). Hanya jalur terdaftar yang boleh ditulis |
+| `src/lib/resume/structure.ts` | Menambah/menghapus entri dan poin dari kertas. Terpisah dari edit-path.ts karena mengubah panjang larik, bukan isi untaian |
+| `src/components/editor/DatePopover.tsx` | Pemilih bulan yang muncul di atas periode. Digambar lewat portal ke `<body>` agar tidak ikut mengecil bersama kertas |
+| `src/components/PublicHeader.tsx` | Bilah atas semua halaman publik **dan** laci navigasi ponsel. Satu-satunya penyebab luberan mendatar sebelum sesi 8 |
+| `src/styles/ink.css` | Seluruh gerak efek tinta - intro, bercak, jejak, latar. Warnanya satu: `var(--ink)` di globals.css |
+| `src/components/ink/SamuraiIntro.tsx` | Intro pembuka. Siluetnya SVG sebaris, bukan berkas gambar |
+| `src/components/ink/InkBackground.tsx` | Latar berpartikel di kanvas; berhenti saat tab tidak terlihat |
+| `src/components/ink/InkTouch.tsx` | Bercak tinta untuk ketukan, sapuan, dan tekanan lama |
+| `src/lib/intro.ts` | Store "intro perlu diputar atau tidak", pola yang sama dengan `theme.ts` |
 | `src/components/home/TemplatePreview.tsx` | Pratinjau template di halaman depan. Komponen klien **demi berat halaman**, bukan demi interaktivitas - alasannya di kepala berkasnya |
 | `src/lib/i18n/id.ts`, `en.ts` | Kamus antarmuka. `en.ts` diketik sebagai `Dictionary`, jadi kunci yang lupa diterjemahkan menggagalkan build |
 | `src/lib/resume/templates.ts` | Katalog 10 template beserta ciri rupanya |
@@ -144,7 +163,8 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `resumeMargins()` di `templates.ts` | Margin yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template |
 | `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
-| `tests/` | 222 pemeriksaan; `npm test` |
+| `tests/` | 284 pemeriksaan; `npm test` |
+| `tests/kertas.test.ts` + `tests/fixtures/kertas-acuan.html` | Mengunci markup dokumen CV pada jalur cetak, 10 template x 2 bahasa. Rekam ulang acuannya **hanya** bila tampilannya memang sengaja diubah |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
 | `src/components/HeaderBack.tsx` | Panah kembali di bilah atas; menuju halaman induk tetap, bukan riwayat peramban |
@@ -205,6 +225,21 @@ supaya tidak perlu diingat-ingat lagi.
 | **Foto pada DOCX diletakkan setelah blok identitas, bukan berdampingan** | Satu-satunya cara meletakkan gambar berdampingan teks di Word adalah tabel atau kotak teks - dua penyebab tersering kegagalan pengurai ATS yang sejak awal dihindari berkas itu. |
 | **Menyunting di kertas disimpan saat lepas fokus, bukan tiap ketukan tombol** | Elemen contentEditable menyimpan teksnya sendiri di DOM; menulis ke state React tiap huruf membuat React menggambar ulang elemennya di tengah pengguna mengetik, dan kursor melompat ke awal paragraf. |
 | **Hanya jalur terdaftar yang boleh ditulis dari kertas** | Nilai `data-edit` berasal dari DOM, dan DOM dapat disunting siapa pun lewat konsol. Penyetel jalur bebas akan mengizinkan penulisan ke `id`, yang memutus hubungan entri dengan barisnya di basis data. |
+| **Tampilan ponsel diperbaiki dengan mengukur lebih dulu, bukan dengan menulis ulang tata letak** | Gejalanya - halaman hanya memakai sebagian lebar layar - menyerupai kesalahan tata letak besar. Yang terukur ternyata satu elemen: barisan kendali di bilah atas berlebar tetap 224 piksel (300+ saat belum masuk) yang tidak pernah menyusut, membuat dokumen 398 piksel di layar 320. Sisa halaman depan sudah mobile-first sejak awal. Menulis ulang tata letaknya akan menghabiskan satu sesi untuk memperbaiki yang tidak rusak. |
+| **`body { overflow-x: clip }`, bukan `hidden`** | Keduanya memangkas isi yang meluber, tetapi `hidden` menjadikan elemennya wadah gulir - dan wadah gulir baru membuat `position: sticky` pada bilah atas berhenti bekerja. |
+| **Laci navigasi ponsel digambar lewat portal ke `<body>`** | Bilah atas memakai `backdrop-blur`, dan penyaring latar menjadikan elemennya blok penampung bagi keturunan `position: fixed`. Laci di dalamnya terpotong setinggi bilahnya sendiri; `inset-0` terlihat benar di kode, tetapi "nol" yang dimaksud peramban adalah nol terhadap bilah. |
+| **Sasaran sentuh 44 piksel lewat elemen bangkitan, bukan dengan meninggikan tombol** | Yang kurang bukan ukuran yang terlihat melainkan ketepatan jari. Meninggikan tombol menjadi 44 piksel akan menggeser setiap baris yang memuatnya di seluruh aplikasi; elemen bangkitan memperbesar area sentuh tanpa mengubah satu piksel pun tata letaknya, dan hanya pada `pointer: coarse`. |
+| **Siluet samurai berdiri di belakang kertas** | Tintanya berlawanan dengan kertas: di mode gelap siluetnya putih dan kertasnya juga putih, sehingga siluet yang digambar di atasnya lenyap di bagian yang bertumpang tindih - yang tersisa hanya sepasang kaki di bawah selembar kertas. Ditemukan dengan melihat hasilnya, bukan dengan membaca kodenya. |
+| **Intro pembuka berupa lapisan di atas halaman, bukan gerbang yang menahannya** | Halaman depan sudah utuh di belakangnya sejak byte pertama. Bila JavaScript gagal, yang hilang hanya hiasannya - tidak ada keadaan "layar tersangkut di pembuka". |
+| **Panjang sapuan tebasan diikat ke ukuran kertas, bukan ukuran layar** | Sapuan selebar layar melintasi seluruh halaman dan menjadi kejadian yang berdiri sendiri; yang dituju adalah tebasan terhadap kertas itu. |
+| **Warna tinta satu variabel `--ink` berisi tiga bilangan RGB** | Setiap efek menentukan kepekatannya sendiri lewat `rgb(var(--ink) / <alpha>)` tanpa menulis ulang warnanya. Cukup dua blok tanpa cabang `prefers-color-scheme`, sebab skrip di `<head>` selalu menuliskan `data-theme` lebih dulu. |
+| **Percikan cahaya lama di CursorGlow dilepas saat tinta masuk** | Keduanya berjalan bersamaan akan meninggalkan dua bekas berbeda di titik sentuh yang sama - yang terlihat bukan dua efek, melainkan satu efek yang keliru. |
+| **Tanggal disunting lewat pemilih bulan yang dipanggil dari kertas, bukan diketik** | Alasan lama menolak tanggal sebagai **teks bebas** - "Feb 2023" bukan tanggal bagi aplikasi ini - bukan menolak penyuntingannya dari kertas. Nilainya karena itu tetap datang dari `<input type="month">`; yang berubah hanya dari mana pemilih itu dipanggil. Jalur tulisnya pun terpisah (`applyDateEdit`), sebab `applyEdit` menyimpan apa pun yang masuk sebagai teks. |
+| **Baris gabungan tidak lagi digabung sebelum dirender** | Alasan lama menolak **pembelahan** untaian kembali menjadi tiga field, bukan penyuntingan sub-fieldnya. Dengan tiap sub-field membawa elemennya sendiri sejak dirender, tidak ada yang perlu dibelah - tebakannya hilang, bukan diperbaiki. |
+| **Struktur berubah lewat tombol, bukan lewat ketikan** | Kaidah "mengetik mengubah kata, bukan struktur" tetap utuh: yang menambah entri adalah tombol yang ditekan sengaja, dan Enter di poin adalah kebiasaan pengolah kata yang sudah dikenal. Jalur tulisnya di `structure.ts` dengan daftar terdaftarnya sendiri, sebab mengubah panjang larik jauh lebih berbahaya daripada mengubah untaian: salah bagian atau salah nomor berarti entri lain ikut terhapus tanpa satu pun tanda di layar. |
+| **Label penampung digambar lewat `::before`, bukan ditulis sebagai isi elemen** | Yang disimpan saat kursor meninggalkan sebuah teks adalah `innerText`-nya, dan isi bangkitan `::before` tidak ikut terbaca di sana. Ditulis sebagai isi sungguhan, mengklik "Kota" lalu keluar tanpa mengetik akan menyimpan kata "Kota" sebagai nama kota. |
+| **Popover tanggal digambar lewat portal ke `<body>`** | Kertas berada di dalam pembungkus ber-`transform: scale(zoom)`. Popover yang menjadi anaknya ikut mengecil, dan pada perbesaran 40% pemilih bulannya tidak lagi dapat dipakai. `getBoundingClientRect()` sudah memperhitungkan skala itu, jadi letaknya tetap tepat. |
+| **Markup dokumen CV dikunci berkas uji, bukan dijaga dengan kehati-hatian** | Membongkar cara baris entri dirender dapat menggeser pemenggalan barisnya tanpa satu pun pemeriksaan lain berteriak - PDF tetap terbentuk, isinya tetap ada, hanya jumlah halamannya berubah. `tests/kertas.test.ts` membandingkan markup mentah seluruh template di kedua bahasa terhadap acuan yang direkam sebelum perubahan dimulai. |
 | **Pratinjau template di halaman depan jadi komponen klien** | Sebagai komponen server, seluruh pohon elemen dokumen ikut ditulis dua kali ke halaman - sekali sebagai HTML, sekali lagi sebagai muatan React. Untuk sebelas dokumen, salinan kedua itu saja lebih dari 200 KB. |
 
 ---
@@ -239,6 +274,8 @@ Berguna bila gejala serupa muncul lagi.
 | Ketikan di kertas bisa menimpa poin yang salah | `Bullets` menyaring poin kosong lebih dulu, sehingga nomor di layar berbeda dari nomor di dalam data | Nomor aslinya dibawa serta |
 | PDF hasil unduhan berisi satu halaman kosong | Tombol PDF mencetak lewat bingkai tersembunyi, dan dokumen mana yang tercetak adalah perilaku peramban - yang keluar halaman editor. Cacat yang sama sudah "diperbaiki" di sesi 5 | Bingkainya dibuang; tombol menuju halaman cetak dengan `?cetak=1` yang mencetak dirinya sendiri |
 | Kop dan kaki Chrome ikut tercetak di CV | `@page` bermargin lebih dari nol menyediakan ruang bagi peramban untuk menggambarnya. Diuji: 2mm pun masih muncul | `@page { margin: 0 }`, margin dipindah ke padding kertas + `box-decoration-break: clone` agar berlaku di setiap halaman |
+| Sembilan field diizinkan mesin tetapi tidak pernah dapat diklik | Allowlist `edit-path.ts` memuat `educations.degree`, `certifications.issuer`, `skills.name`, dan enam lainnya, tetapi dokumen tidak pernah memasang `data-edit` di sana | Ditandai seluruhnya; `tests/kertas.test.ts` kini memeriksa kedua arah - setiap jalur yang ditandai harus diterima allowlist, dan sembilan field itu harus tetap ada |
+| Entri pendidikan baru tidak punya satu pun poin untuk diklik | `emptyEducation()` membuat `bullets: []`, sedangkan tiga pembuat entri lain membuat `[""]` | Disamakan menjadi `[""]` |
 | Halaman cetak terlihat sempit di layar | Kertas dirender `padding="none"` karena marginnya diserahkan ke `@page`, yang hanya berlaku saat mencetak | Ikut selesai oleh perbaikan di atas - paddingnya kini nyata |
 
 ---
@@ -293,16 +330,33 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
    alasan mode ini dibuat tanpa server. Tombol Unduh/Muat JSON menjawab
    kebutuhan menyimpan beberapa versi tanpa menambah tumpukan itu.
 
-7. **Menyunting di atas kertas belum mencakup semuanya.** Tanggal, baris
-   gabungan (perusahaan + kota + negara), dan penambahan entri tetap lewat
-   formulir. Ketiganya disengaja, alasannya di `docs/dokumentasi-teknis.md`
-   bagian 8.1b.
+7. **Menyunting di atas kertas kini hampir menyeluruh.** Ketiga batasan sesi 6
+   - tanggal, baris gabungan, penambahan entri - ditutup di sesi 7 tanpa
+   membatalkan alasan aslinya; lihat tabel keputusan di bagian 6. Yang masih
+   lewat formulir dan sengaja dibiarkan:
+
+   - **Alamat proyek dan sertifikat.** Yang tampil sudah dirapikan
+     `prettyUrl()` tanpa skema; menulis balik apa yang terlihat akan membuang
+     bagian yang sengaja disembunyikan.
+   - **Kategori keahlian dan urutan bagian.** Keduanya mengatur susunan, bukan
+     isi.
+   - **Memulai bagian yang belum punya satu pun entri.** Bagian kosong tidak
+     dicetak, jadi tidak ada tempat meletakkan tombolnya di kertas.
+   - **Section tambahan (`customSections`).** Entrinya bersarang dua tingkat,
+     sehingga jalurnya lima segmen sedangkan `isEditablePath` berhenti di
+     empat. Menambah bentuk jalur kelima memperluas permukaan validasi demi
+     bagian yang paling jarang dipakai.
+
+   Satu efek samping yang perlu diketahui: selama mode ketik menyala, field
+   kosong dan poin kosong ikut tampil, sehingga **jumlah halaman di pratinjau
+   dapat terbaca lebih banyak** dari yang sebenarnya. Angkanya kembali tepat
+   begitu mode itu dimatikan, dan pada saat yang sama poin kosong dibersihkan.
 
 8. **Penyimpanan akun memakai basis data aplikasi sendiri.** Masuk lewat Google
    hanya dipakai untuk membuktikan identitas; datanya tidak disimpan di dalam
    akun Google pengguna.
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 197
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 284
 pemeriksaan). Sejak sesi 5, jalur peramban diuji dengan menjalankan Chrome
 sungguhan lewat DevTools Protocol - termasuk memeriksa isi berkas PDF yang
 benar-benar dihasilkan, bukan sekadar keberadaannya.

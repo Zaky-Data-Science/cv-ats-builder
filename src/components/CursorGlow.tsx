@@ -54,60 +54,30 @@ export function CursorGlow() {
     };
 
     /* ------------------------------------------------------------------ */
-    /* Percikan pada layar sentuh                                          */
-    /* ------------------------------------------------------------------ */
-
-    let lastSparkAt = 0;
-    let lastSparkX = 0;
-    let lastSparkY = 0;
-
-    const spark = (x: number, y: number) => {
-      const now = performance.now();
-      const moved = Math.hypot(x - lastSparkX, y - lastSparkY);
-      // Dua pembatas sekaligus: jarak dan waktu. Tanpa keduanya, satu sapuan
-      // panjang dapat melahirkan ratusan elemen sekaligus dan justru membuat
-      // gerakannya tersendat - kebalikan dari tujuannya.
-      if (now - lastSparkAt < 55 || moved < 18) return;
-      lastSparkAt = now;
-      lastSparkX = x;
-      lastSparkY = y;
-
-      const node = document.createElement("div");
-      node.className = "touch-spark";
-      node.setAttribute("aria-hidden", "true");
-      node.style.setProperty("--sx", `${x}px`);
-      node.style.setProperty("--sy", `${y}px`);
-      document.body.appendChild(node);
-      node.addEventListener("animationend", () => node.remove(), {
-        once: true,
-      });
-    };
-
-    /* ------------------------------------------------------------------ */
     /* Pemasangan listener                                                 */
     /* ------------------------------------------------------------------ */
+
+    /*
+      Percikan cahaya pada layar sentuh sudah dipindahkan ke InkTouch, yang
+      menggantikannya dengan bercak tinta. Keduanya tidak boleh berjalan
+      bersamaan: satu sentuhan akan menghasilkan dua bekas berbeda di titik
+      yang sama, dan yang terlihat bukan dua efek melainkan satu efek yang
+      keliru. Yang tersisa di berkas ini hanya cahaya pengikut kursor.
+    */
 
     const onMove = (event: PointerEvent) => {
       pointerX = event.clientX;
       pointerY = event.clientY;
       schedule();
       glow.dataset.visible = "true";
-
-      if (event.pointerType === "touch") spark(event.clientX, event.clientY);
     };
 
     const onDown = (event: PointerEvent) => {
       if (event.pointerType !== "touch") return;
       pointerX = event.clientX;
       pointerY = event.clientY;
-      lastSparkX = event.clientX;
-      lastSparkY = event.clientY;
       schedule();
       glow.dataset.visible = "true";
-      // Percikan pertama dipaksa muncul supaya ketukan tunggal - yang tidak
-      // menghasilkan gerakan sama sekali - tetap memberi umpan balik.
-      lastSparkAt = 0;
-      spark(event.clientX, event.clientY);
     };
 
     const onUp = (event: PointerEvent) => {

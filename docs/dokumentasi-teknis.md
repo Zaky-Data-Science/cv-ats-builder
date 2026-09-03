@@ -694,15 +694,53 @@ Rancangannya memegang tiga hal:
    dirender di server untuk halaman cetak dan halaman depan, tempat tidak ada
    penangan peristiwa sama sekali.
 
-3. **Yang dapat diketik dibatasi dengan sengaja.** Hanya field bertipe teks
-   yang berpadanan satu-ke-satu: nama, jabatan, ringkasan, judul entri, dan
-   poin pencapaian. Tanggal tidak, karena disimpan sebagai `"YYYY-MM"` dan
-   diisi lewat pemilih bulan - menerimanya sebagai teks bebas berarti menerima
-   `"Feb 2023"` sebagai tanggal. Baris yang di kertas merupakan gabungan
-   beberapa field juga tidak, karena membelahnya kembali hanyalah tebakan, dan
-   tebakan yang salah memindahkan isi ke field keliru tanpa pengguna sadari.
-   Menambah dan menghapus entri tetap lewat formulir: mengetik mengubah kata,
-   bukan struktur.
+3. **Setiap field disunting lewat alat yang sesuai tipenya.** Ini rumusan
+   sesi 7, dan menggantikan rumusan sesi 6 - "hanya field bertipe teks yang
+   berpadanan satu-ke-satu". Yang berubah bukan penilaian di balik rumusan
+   lama, melainkan cara memenuhinya:
+
+   - **Teks** diketik langsung: `contentEditable` beserta `data-edit`.
+   - **Tanggal** dipilih lewat `<input type="month">` yang muncul saat
+     periodenya diklik. Alasan lamanya tetap berlaku - `"Feb 2023"` bukan
+     tanggal bagi aplikasi ini - dan justru itulah sebabnya nilainya tetap
+     harus datang dari pemilih bulan. Yang berubah hanya dari mana pemilih itu
+     dipanggil. Jalur tulisnya pun terpisah, `applyDateEdit()`, yang tidak
+     pernah menerima `innerText`.
+   - **Baris gabungan** tidak lagi digabung sebelum dirender. Setiap
+     sub-field - perusahaan, kota, negara - punya elemennya sendiri beserta
+     jalurnya, sehingga tidak ada untaian yang perlu dibelah kembali. Alasan
+     lamanya menolak pembelahan, bukan penyuntingannya, dan kini tidak ada
+     yang dibelah.
+   - **Struktur** berubah lewat tombol yang ditekan sengaja - "+ Tambah
+     entri" di ujung tiap bagian, dan Enter di akhir sebuah poin - bukan
+     sebagai akibat sampingan mengetik. Kaidah "mengetik mengubah kata, bukan
+     struktur" karena itu tetap utuh; yang bertambah adalah tombolnya. Jalur
+     tulisnya terpisah di `structure.ts` dengan daftar terdaftarnya sendiri,
+     sebab kemampuan mengubah panjang larik jauh lebih berbahaya daripada
+     kemampuan mengubah sebuah untaian.
+
+   Yang tetap lewat formulir: alamat proyek dan alamat sertifikat, karena yang
+   tampil di kertas sudah dirapikan `prettyUrl()` tanpa skema dan menulis balik
+   apa yang terlihat akan membuang bagian yang sengaja disembunyikan; kategori
+   keahlian; urutan bagian; dan memulai bagian yang belum punya satu pun entri,
+   sebab bagian kosong memang tidak dicetak sehingga tidak ada tempat untuk
+   meletakkan tombolnya.
+
+   Selama mode ketik menyala, field kosong tampil sebagai penampung samar
+   ("Kota", "Negara") supaya ada yang dapat diklik - justru field kosong itulah
+   yang paling perlu diisi. Labelnya digambar lewat `::before`, bukan ditulis
+   sebagai isi elemen: yang disimpan saat kursor meninggalkan sebuah teks
+   adalah `innerText`-nya, dan isi bangkitan `::before` tidak ikut terbaca di
+   sana. Tanpa itu, mengklik lalu keluar tanpa mengetik akan menyimpan kata
+   "Kota" sebagai nama kota.
+
+   Konsekuensi yang perlu diketahui: penampung dan poin kosong menambah baris
+   yang tidak pernah tercetak, sehingga jumlah halaman di pratinjau dapat
+   berbeda selama mode ketik menyala. Angkanya kembali benar begitu mode itu
+   dimatikan - dan pada saat yang sama poin yang ditinggalkan kosong dibersihkan.
+   Dibersihkan di situ, bukan saat kursor meninggalkan sebuah poin, sebab
+   membersihkan pada saat lepas fokus akan menghapus poin yang baru saja dibuat
+   pengguna tepat ketika ia mengkliknya untuk mengetik.
 
 Suntingan disimpan saat kursor meninggalkan teksnya, bukan pada setiap ketukan
 tombol. Elemen `contentEditable` menyimpan teksnya sendiri di dalam DOM; bila
@@ -713,6 +751,166 @@ Selama mengetik, tampilan berpindah ke mode bersambung. Pada mode per halaman
 dokumen yang sama dirender sekali untuk setiap lembar lalu digeser dan
 dipangkas, sehingga satu paragraf punya beberapa salinan di dalam DOM dan
 salinan yang terpotong di batas halaman mustahil diketik dengan benar.
+
+### 8.1c Tata Letak Adaptif
+
+Aplikasi ini memakai satu basis kode untuk seluruh ukuran layar, dengan skala
+breakpoint bawaan Tailwind: tanpa prefiks untuk ponsel, `sm:` 640, `md:` 768,
+`lg:` 1024, `xl:` 1280. Tidak ada breakpoint buatan sendiri - skala tambahan
+akan berbenturan dengan yang sudah tersebar di puluhan berkas, dan yang
+diperoleh cuma satu titik henti yang lebih pas di satu halaman.
+
+#### Sebab tampilan ponsel dulu keliru
+
+Gejalanya: di ponsel, halaman hanya memakai sebagian lebar layar dan
+menyisakan pita kosong di sisi kanan - seperti tata letak desktop yang
+diperkecil.
+
+Sebabnya bukan itu. Diukur pada halaman depan sebelum perbaikan:
+
+| Lebar viewport | Lebar dokumen | Kelebihan |
+|---:|---:|---:|
+| 320 | 398 | +80 |
+| 360 | 398 | +40 |
+| 375 | 398 | +24 |
+| 390 | 398 | +9 |
+| 768 ke atas | - | 0 |
+
+Dokumennya memang **lebih lebar daripada layarnya**, dan pita kosong itu ruang
+di luar `body`. Yang membuatnya lebar hanya satu elemen: barisan kendali di
+`PublicHeader` - bahasa, tema, tombol akun, dan tombol menu berdampingan dalam
+satu baris berlebar tetap 224 piksel saat pengguna sudah masuk dan lebih dari
+300 saat belum. Sisa halaman depan sebenarnya sudah mobile-first sejak awal.
+
+Pelajarannya bukan "perbaiki header", melainkan bahwa satu elemen yang tidak
+dapat menyusut sudah cukup untuk merusak seluruh halaman di ponsel - dan
+kerusakannya menyerupai kesalahan tata letak yang jauh lebih besar. Itu
+sebabnya yang pertama dikerjakan pengukuran, bukan penulisan ulang.
+
+#### Yang berlaku sekarang
+
+| Ukuran | Bilah atas | Isi |
+|---|---|---|
+| < 768 | Identitas + tombol menu. Sisanya di dalam laci | Satu kolom, statistik 2x2, tombol selebar layar |
+| 768-1023 | Navigasi lengkap, padding 32 piksel | Dua kolom pada kartu, empat pada statistik |
+| >= 1024 | Sama seperti sebelumnya, tidak diubah | Hero dua kolom |
+| >= 1152 | Wadah berhenti melebar (`max-w-6xl`) | - |
+
+Tiga hal yang menopangnya:
+
+1. **`body { overflow-x: clip }`** sebagai jaring pengaman - `clip`, bukan
+   `hidden`. Keduanya memangkas isi yang meluber, tetapi `hidden` menjadikan
+   elemennya wadah gulir, dan wadah gulir baru membuat `position: sticky` pada
+   bilah atas berhenti bekerja. Ini pengaman, bukan perbaikan: penyebabnya
+   sudah dihilangkan.
+2. **Laci navigasi digambar lewat portal ke `<body>`.** Bilah atas memakai
+   `backdrop-blur`, dan penyaring latar menjadikan elemennya blok penampung
+   bagi keturunan `position: fixed` - laci di dalamnya terpotong setinggi
+   bilahnya sendiri, bukan setinggi layar. Gejalanya menipu: `inset-0` terlihat
+   benar di kode, tetapi "nol" yang dimaksud peramban adalah nol terhadap
+   bilah.
+3. **Sasaran sentuh 44 piksel lewat elemen bangkitan.** Yang diperbesar hanya
+   area sentuhnya; ukuran dan jarak tombolnya tidak berubah sedikit pun, dan
+   hanya berlaku pada `pointer: coarse`. Menaikkan tinggi tombol yang terlihat
+   akan menggeser setiap baris yang memuatnya, sedangkan yang kurang bukan
+   ukuran melainkan ketepatan jari.
+
+Judul hero memakai `clamp(1.7rem, 7.4vw, 2.1rem)`. Di bawah 640 piksel
+ukurannya ikut lebar layar; di atasnya diambil alih `sm:` seperti sebelumnya,
+sehingga tampilan lebar tidak bergeser.
+
+### 8.1d Tinta: Intro Pembuka dan Umpan Balik Sentuhan
+
+Aplikasi ini punya satu tanda pengenal rupa: tinta hitam-putih. Kertas dan
+tinta selalu berlawanan - tinta gelap di atas kertas terang, tinta terang di
+atas kertas gelap. Itu seluruh gagasannya; tidak ada lambang, dan tidak ada
+warna lain.
+
+Seluruhnya bersandar pada satu variabel:
+
+```css
+:root            { --ink: 10 10 11; }
+:root[data-theme="dark"] { --ink: 255 255 255; }
+```
+
+Ditulis sebagai tiga bilangan RGB, bukan warna jadi, supaya setiap efek
+menentukan kepekatannya sendiri lewat `rgb(var(--ink) / <alpha>)`. Cukup dua
+blok tanpa cabang `prefers-color-scheme`, sebab skrip di `<head>` selalu
+menuliskan `data-theme` sebelum halaman digambar.
+
+#### Intro pembuka
+
+Selembar CV muncul, siluet melintas, satu tebasan membelahnya, tintanya
+menyebar, dan halaman depan tersingkap. 2,1 detik, sekali per perangkat.
+
+Empat keputusan yang menentukan bentuknya:
+
+1. **Bukan gerbang.** Intro adalah lapisan **di atas** halaman yang sudah utuh
+   di belakangnya, bukan penahan isinya. Bila JavaScript gagal, yang hilang
+   hanya hiasannya - tidak ada keadaan "layar tersangkut di pembuka".
+2. **Tanpa gambar dan tanpa pustaka.** Siluetnya SVG sebaris yang mewarisi
+   `currentColor`, sehingga otomatis berlawanan dengan tema tanpa satu pun
+   cabang kode. Berkas gambar akan mengembalikan beban yang baru saja dipangkas
+   dari halaman depan.
+3. **Siluet berdiri di belakang kertas.** Urutan lapisan itu bukan selera: di
+   mode gelap siluetnya putih dan kertasnya juga putih, sehingga siluet yang
+   digambar di atas kertas lenyap di bagian yang bertumpang tindih - yang
+   tersisa di layar hanya sepasang kaki di bawah selembar kertas. Ini ditemukan
+   dengan melihat hasilnya, bukan dengan membaca kodenya.
+4. **Keputusan "perlu diputar atau tidak" dibaca lewat store di luar React**
+   (`src/lib/intro.ts`), sama seperti store tema. Membacanya lewat effect lalu
+   menyimpannya dengan `setState` memicu peringatan lint proyek ini sekaligus
+   satu render tambahan.
+
+Panjang sapuan tebasan diikat ke ukuran kertas, bukan ke ukuran layar. Sapuan
+selebar layar melintasi seluruh halaman dan menjadi kejadian yang berdiri
+sendiri; yang dituju adalah tebasan **terhadap kertas itu**. Bentuknya pun
+lensa bermata runcing, bukan pita lurus - pita setebal sama di sepanjang
+jalurnya terbaca sebagai berkas cahaya, dan berkas cahaya justru yang
+dihindari.
+
+#### Latar berpartikel
+
+Satu `<canvas>`, bukan puluhan elemen berposisi mutlak. Jumlah partikel
+mengikuti luas layar (satu per 26.000 piksel persegi, ditahan antara 14 dan
+46), kerapatan piksel dibatasi 2, aliran tinta hanya muncul mulai 768 piksel,
+dan penggambaran **berhenti saat tab tidak terlihat**. Selisih waktu antar
+bingkai dibatasi 48 milidetik supaya tab yang kembali dari latar belakang tidak
+membuat seluruh partikel melompat sekaligus.
+
+Yang dituju: halaman terlihat diam pada pandangan pertama, dan geraknya baru
+disadari ketika diperhatikan.
+
+#### Umpan balik sentuhan
+
+Ketukan menghasilkan bercak tinta, sapuan menghasilkan jejak yang meruncing di
+belakang jari, dan tekanan lama menghasilkan bercak yang lebih besar dan lebih
+lambat. Ketiganya satu jalur kode; yang membedakan hanya ukuran dan umurnya.
+
+Bercaknya sengaja bukan lingkaran - keempat jari-jarinya berbeda dan bentuknya
+sedikit berputar selagi menyebar. Lingkaran sempurna yang membesar terbaca
+sebagai gelombang antarmuka; yang dituju setetes tinta yang meresap.
+
+Tiga pembatas menjaganya tetap murah: jeda minimal antar-titik (42 md), jarak
+minimal (16 piksel), dan **batas jumlah yang hidup bersamaan** (18). Dua yang
+pertama menjaga laju kelahiran; yang ketiga menjaga jumlahnya - pada perangkat
+lambat animasinya selesai lebih lama daripada laju kelahirannya, dan tanpa
+batas itu jumlahnya tetap merayap naik.
+
+Percikan cahaya yang dulu ada di `CursorGlow` dilepas. Keduanya tidak boleh
+berjalan bersamaan: satu sentuhan akan meninggalkan dua bekas berbeda di titik
+yang sama, dan yang terlihat bukan dua efek melainkan satu efek yang keliru.
+Yang tersisa di berkas itu hanya cahaya pengikut kursor.
+
+#### Pengurangan gerak
+
+Permintaan `prefers-reduced-motion` dihormati bertingkat, bukan sebagai
+sakelar tunggal: intro tidak diputar sama sekali, latar berpartikel tidak
+dipasang, jejak sapuan dimatikan, tetapi bercak ketukan tetap ada - hanya
+menjadi kilasan 220 milidetik tanpa penyebaran. Yang diminta pengguna adalah
+berkurangnya gerak, bukan hilangnya umpan balik.
+
+Tidak satu pun efek tinta ikut tercetak.
 
 ### 8.2 Gerak dan Kedalaman
 

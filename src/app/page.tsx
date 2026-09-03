@@ -17,6 +17,8 @@ import {
   Upload,
 } from "lucide-react";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
+import { InkBackground } from "@/components/ink/InkBackground";
+import { SamuraiIntro } from "@/components/ink/SamuraiIntro";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CountUp, Interactive, Reveal, TiltCard } from "@/components/motion";
@@ -78,7 +80,18 @@ export default async function LandingPage() {
   );
 
   return (
-    <div className="flex min-h-full flex-col bg-white">
+    <div className="relative flex min-h-full flex-col bg-white">
+      {/*
+        Intro pembuka dan latar bertinta.
+
+        Keduanya hiasan, dan urutannya di sini mencerminkan itu: keduanya
+        berdiri di luar <main>, tidak membungkus apa pun, dan tidak menahan
+        apa pun. Halaman di belakangnya sudah utuh sejak byte pertama - bila
+        JavaScript gagal, yang hilang hanya hiasannya.
+      */}
+      <SamuraiIntro />
+      <InkBackground />
+
       {/* Tautan lompat untuk pengguna papan ketik dan pembaca layar. */}
       <a
         href="#konten"
@@ -89,7 +102,7 @@ export default async function LandingPage() {
 
       <PublicHeader signedIn={signedIn} />
 
-      <main id="konten" className="flex-1">
+      <main id="konten" className="relative z-[1] flex-1">
         {/* ================================================================ */}
         {/* Hero                                                             */}
         {/* ================================================================ */}
@@ -104,7 +117,7 @@ export default async function LandingPage() {
             <div className="pulse-glow absolute top-40 -left-32 h-80 w-80 rounded-full bg-ink-100 blur-3xl" />
           </div>
 
-          <div className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-5 sm:pt-16 lg:pt-20 lg:pb-24">
+          <div className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-5 sm:pt-16 md:px-8 lg:px-5 lg:pt-20 lg:pb-24">
             <div className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
               <Reveal>
                 <Badge>
@@ -112,7 +125,17 @@ export default async function LandingPage() {
                   {t.home.heroBadge}
                 </Badge>
 
-                <h1 className="mt-4 text-[2.1rem] leading-[1.1] font-bold tracking-tight text-ink-900 sm:text-5xl lg:text-[3.4rem]">
+                {/*
+                  Ukuran judul ikut lebar layar, dengan batas atas dan bawah.
+
+                  Nilai tetap 2,1rem terlalu besar untuk layar 320 piksel:
+                  judulnya pecah menjadi lima baris dan mendorong tombol utama
+                  keluar dari layar pertama. clamp() menahannya di 1,7rem pada
+                  layar paling sempit dan mengembalikannya ke 2,1rem begitu ada
+                  ruang. Mulai 640 piksel ukurannya diambil alih `sm:` seperti
+                  sebelumnya, jadi tampilan lebar tidak bergeser sedikit pun.
+                */}
+                <h1 className="mt-4 text-[clamp(1.7rem,7.4vw,2.1rem)] leading-[1.12] font-bold tracking-tight text-ink-900 sm:text-5xl lg:text-[3.4rem]">
                   {t.home.heroTitleLine1}
                   <br />
                   {/*
@@ -157,7 +180,16 @@ export default async function LandingPage() {
                   </Link>
                 </div>
 
-                <dl className="mt-10 grid max-w-lg grid-cols-4 gap-3 border-t border-ink-200 pt-6 sm:gap-5">
+                {/*
+                  Dua kolom di ponsel, empat mulai layar sedang.
+
+                  Empat kolom pada layar 320 piksel menyisakan sekitar 70
+                  piksel per kolom - cukup untuk angkanya, tidak cukup untuk
+                  keterangan di bawahnya, sehingga setiap keterangan pecah
+                  menjadi tiga baris dan barisan itu berubah menjadi blok teks
+                  yang tidak lagi terbaca sebagai angka.
+                */}
+                <dl className="mt-10 grid max-w-lg grid-cols-2 gap-x-4 gap-y-6 border-t border-ink-200 pt-6 sm:grid-cols-4 sm:gap-5">
                   {[
                     { to: 11, label: t.home.statSections },
                     { to: 10, label: t.home.statTemplates },
@@ -252,7 +284,7 @@ export default async function LandingPage() {
         {/* Dua cara memakainya                                              */}
         {/* ================================================================ */}
         <section className="border-y border-ink-200 bg-ink-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5">
+          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.pathsTitle}
@@ -321,7 +353,7 @@ export default async function LandingPage() {
         {/* Cara kerja                                                       */}
         {/* ================================================================ */}
         <section className="py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5">
+          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.stepsTitle}
@@ -362,7 +394,7 @@ export default async function LandingPage() {
         {/* Fitur                                                            */}
         {/* ================================================================ */}
         <section className="border-y border-ink-200 bg-ink-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5">
+          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.featuresTitle}
@@ -398,7 +430,7 @@ export default async function LandingPage() {
         {/* Template                                                         */}
         {/* ================================================================ */}
         <section className="py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5">
+          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.templatesTitle}
@@ -427,7 +459,7 @@ export default async function LandingPage() {
         {/* Pertanyaan yang sering muncul                                    */}
         {/* ================================================================ */}
         <section className="border-t border-ink-200 bg-ink-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-3xl px-4 sm:px-5">
+          <div className="mx-auto max-w-3xl px-4 sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.faqTitle}
@@ -467,7 +499,7 @@ export default async function LandingPage() {
         {/* Ajakan penutup                                                   */}
         {/* ================================================================ */}
         <section className="border-t border-ink-200 bg-ink-900 py-16 sm:py-20">
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-5">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-white sm:text-3xl">
                 {t.home.ctaTitle}

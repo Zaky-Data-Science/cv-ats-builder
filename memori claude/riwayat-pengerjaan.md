@@ -739,13 +739,327 @@ pada daftar lama, yang untuk sekarang sengaja tidak dikerjakan.
 
 ---
 
+## Sesi 7 - 3 September 2026: melengkapi "Ketik di kertas"
+
+Sesi 6 meninggalkan tiga hal yang sengaja tidak dapat disunting dari kertas:
+tanggal, baris gabungan (perusahaan + kota + negara), dan penambahan entri.
+Sesi ini menutup ketiganya - **tanpa membatalkan satu pun alasan aslinya.**
+
+### Yang membuat ketiganya bisa dibuka
+
+Alasan-alasan sesi 6 ternyata menolak *cara tertentu*, bukan *tujuannya*.
+Membaca ulang alasannya satu per satu, bukan kesimpulannya, yang membuka
+jalannya:
+
+| Alasan sesi 6 | Yang sebenarnya ditolak | Jalan keluarnya |
+|---|---|---|
+| Tanggal disimpan "YYYY-MM"; teks bebas akan menerima "Feb 2023" | Tanggal sebagai **teks bebas** | Pemilih bulan yang dipanggil dari kertas. Nilainya tetap dari `<input type="month">` |
+| Membelah satu untaian menjadi tiga field hanyalah tebakan | **Pembelahan**-nya | Tiap sub-field dirender sebagai elemennya sendiri sejak awal. Tidak ada yang perlu dibelah |
+| Mengetik mengubah kata, bukan struktur | **Mengetik** sebagai pemicu perubahan struktur | Tombol yang ditekan sengaja, dan Enter di poin - kebiasaan pengolah kata yang sudah dikenal |
+
+### Celah yang belum tercatat di mana pun
+
+Ditemukan saat menelusuri kodenya: allowlist `EDITABLE` di `edit-path.ts`
+**sudah** memuat sembilan field yang di DOM tidak pernah diberi atribut
+`data-edit` - `educations.degree`, `educations.institution`, `projects.role`,
+`organizations.name`, `certifications.issuer`, `awards.issuer`,
+`publications.publisher`, `skills.name`, `languages.name`. Mesinnya
+mengizinkan; penggunanya tidak pernah bisa mengklik. Setelah sesi ini, CV
+contoh punya **79 tempat yang dapat diketik** di atas kertas - diukur dari
+markup yang benar-benar dirender, bukan dari daftar allowlist-nya.
+
+### Langkah nol: mengunci keluaran sebelum menyentuh apa pun
+
+Pekerjaan ini menuntut membongkar cara baris entri dirender, dan pembongkaran
+itu dapat menggeser pemenggalan baris tanpa satu pun pemeriksaan berteriak:
+berkas PDF tetap terbentuk, isinya tetap ada, hanya jumlah halamannya berubah.
+
+Karena itu langkah pertama bukan menulis fitur, melainkan merekam acuan:
+`tests/fixtures/kertas-acuan.html`, berisi markup dokumen CV untuk **10
+template x 2 bahasa** dengan `editable` mati. `tests/kertas.test.ts`
+membandingkannya setiap kali `npm test` berjalan. Acuan itu direkam sebelum
+satu baris pun diubah, dan tetap identik sampai akhir sesi.
+
+Satu hal yang harus ditangani supaya perbandingannya bermakna: `sampleResume()`
+membangkitkan id acak, dan id itu ikut tertulis ke atribut `data-field`. Tanpa
+penomoran ulang, dua render dari data yang sama tidak akan pernah sama.
+
+### Yang dikerjakan
+
+1. **`EntryHeader` menerima bagian, bukan untaian jadi.** Penggabungannya
+   pindah ke dalam komponen. Saat tidak ada satu pun bagian yang dapat diketik,
+   seluruhnya kembali digabung menjadi satu simpul teks - bukan sekadar demi
+   keluaran yang identik, melainkan karena teks yang dipecah menjadi beberapa
+   simpul membuat React menyisipkan penanda pemisahnya sendiri saat merender di
+   server, dan halaman cetak dirender di server.
+
+   Jebakan yang sempat menggigit: `edit()` mengembalikan objek **kosong**, bukan
+   `undefined`, ketika mode ketik mati - dan objek kosong tetap bernilai benar.
+   Pemeriksaan "dapat diketik" karena itu harus melihat isinya, bukan
+   keberadaannya.
+
+2. **Tanggal lewat pemilih bulan.** Dokumen menandai periodenya dengan
+   `data-date`; `PreviewPane` yang membuka `DatePopover`. Bentuk tanggal tiap
+   bagian dikumpulkan di satu tempat (`dateShape()`), sebab tidak seragam:
+   proyek tidak punya `isCurrent`, sertifikasi memakai kolom `issueDate`
+   sedangkan penghargaan dan publikasi memakai `date`.
+
+   Popovernya digambar lewat portal ke `<body>`. Kertas berada di dalam
+   pembungkus ber-`transform: scale(zoom)`; popover yang menjadi anaknya ikut
+   mengecil dan pada perbesaran rendah pemilih bulannya tidak lagi terpakai.
+
+3. **Penampung untuk field kosong.** `joinNonEmpty` membuang bagian kosong,
+   sehingga kota yang belum diisi tidak punya elemen untuk diklik - dan justru
+   field kosong itulah yang paling perlu diisi. Labelnya digambar lewat
+   `::before`: yang disimpan saat kursor pergi adalah `innerText`, dan isi
+   bangkitan tidak ikut terbaca di sana. Ditulis sebagai isi sungguhan,
+   mengklik "Kota" lalu keluar tanpa mengetik akan menyimpan kata "Kota"
+   sebagai nama kota.
+
+4. **Aksi struktural di berkasnya sendiri** (`structure.ts`): tambah/hapus
+   entri, tambah/hapus poin, dan pembersihan poin kosong. Terpisah dari
+   `applyEdit` karena mengubah panjang larik - salah bagian atau salah nomor
+   berarti entri lain ikut terhapus tanpa tanda apa pun di layar.
+
+   Poin kosong dibersihkan saat mode ketik **dimatikan**, bukan saat kursor
+   meninggalkan sebuah poin. Membersihkan pada saat lepas fokus akan menghapus
+   poin yang baru saja dibuat pengguna tepat ketika ia mengkliknya untuk
+   mengetik.
+
+5. **Enter di poin membuat poin berikutnya.** Di field lain perilakunya tidak
+   berubah. Yang tetap sama pada keduanya: Enter tidak pernah menyisipkan baris
+   di dalam elemennya. Fokus ke poin baru dititipkan lewat ref dan dijemput
+   efek yang berjalan setelah penggambaran berikutnya - elemennya belum ada di
+   DOM saat tombolnya ditangani.
+
+6. **Keahlian dan bahasa ikut dapat diketik**, dengan pengelompokan per
+   kategori tetap terlihat: `groupSkills()` membuang entri tanpa nama beserta
+   nomornya, jadi mode ketik memakai pengelompokan tandingan yang membawa nomor
+   aslinya.
+
+### Cacat yang ditemukan dan diperbaiki
+
+1. **Sembilan field diizinkan mesin tetapi tidak pernah dapat diklik** (lihat
+   di atas). Kini dikunci dua arah oleh `tests/kertas.test.ts`: setiap jalur
+   yang ditandai dokumen harus diterima allowlist, dan kesembilannya harus
+   tetap ada. Jalur salah ketik tidak menimbulkan galat apa pun - `applyEdit`
+   memang sengaja mengabaikan jalur tak dikenal - sehingga fieldnya cuma "tidak
+   tersimpan" dan pengguna baru sadar setelah ketikannya hilang.
+2. **`emptyEducation()` membuat `bullets: []`**, sedangkan tiga pembuat entri
+   lain membuat `[""]`. Entri pendidikan baru karena itu tidak punya satu pun
+   poin untuk diklik, dan Enter-untuk-poin-baru tidak punya titik awal.
+3. **Popover keluar dari layar bagian bawah.** Periode berdiri di tepi kanan
+   kertas dan kerap di dekat dasar layar. Letaknya kini dihitung setelah
+   tingginya diketahui, dan yang tidak muat di bawah dibalikkan ke atas
+   jangkarnya.
+4. **Berkas acuan gagal setelah `git stash`.** Git di Windows menuliskannya
+   kembali dengan CRLF, dan perbandingan per baris jadi gagal di baris pertama.
+   Perbandingannya kini membuang pengembalian kereta lebih dulu - kalau tidak,
+   berkas uji ini akan gagal di setiap mesin yang bukan mesin perekamnya.
+
+### Pengujian
+
+`npm test` naik dari 222 menjadi **284 pemeriksaan, seluruhnya lulus** - dua
+berkas uji baru: `structure.test.ts` (tanggal dan aksi struktural) dan
+`kertas.test.ts` (pengunci markup dan penanda mode ketik).
+
+Pola yang diwarisi dari `edit-path.test.ts` dipegang: setiap "berhasil ditulis"
+berpasangan dengan "yang lain tidak ikut berubah" dan "objek asli tidak
+termutasi". Jaminan lama ikut dikunci sebagai uji negatif -
+`isEditablePath("experiences.0.startDate")` harus **tetap** ditolak, sebab
+kanal teks bebas tidak boleh ikut longgar hanya karena tanggal kini punya
+kanalnya sendiri.
+
+Jalur peramban diuji dengan Chrome sungguhan di `/coba`:
+
+| Yang diuji | Hasil |
+|---|---|
+| Penanda terpasang saat mode ketik menyala | 79 `data-edit`, 14 `data-date`, 9 `data-add` |
+| Menyunting kota dari kertas | tersimpan ke `city`, perusahaan dan negara tidak tersentuh |
+| Pemilih bulan rentang | "Mei 2020 - Sekarang", tersimpan `"2020-05"`, `isCurrent` mengosongkan bulan selesai |
+| Pemilih bulan tunggal (sertifikasi) | satu isian, tanpa centang, menulis ke `issueDate` - bukan `date` |
+| Letak popover | dibalik ke atas jangkarnya saat tidak muat di bawah; tetap 232 px pada perbesaran kertas berapa pun |
+| Escape | menutup popover tanpa mengganggu pembatalan suntingan teks |
+| Enter di poin | poin baru dibuat, kursor berpindah ke sana |
+| "+ Tambah entri" | entri kosong muncul lengkap dengan penampungnya |
+| Mematikan mode ketik | poin kosong dibersihkan, seluruh penanda hilang |
+| Halaman cetak | nol penampung, nol penanda |
+
+### Catatan tentang pengujian di peramban
+
+Dua kali tersesat mengejar cacat yang tidak ada, keduanya kesalahan alat ukur:
+
+- `document.body.innerText.slice(0, 100)` mengembalikan "Memuat halaman..." -
+  teks `sr-only` milik kerangka pemuatan yang kebetulan berada paling awal di
+  dalam body. Halamannya sendiri sudah utuh.
+- Koordinat klik dihitung dengan faktor skala tangkapan layar yang sudah basi
+  setelah ukuran jendela berubah, sehingga kliknya mendarat di elemen lain.
+  Gejalanya menyerupai "field ini tidak tersimpan".
+
+Yang meluruskan keduanya: membandingkan dengan kode sebelum perubahan
+(`git stash`). Baselinenya berperilaku persis sama - dan itu menutup dugaan
+regresi dalam satu langkah.
+
+---
+
+## Sesi 8 - 3 September 2026: tampilan ponsel, dan tanda pengenal bertinta
+
+Dua pekerjaan yang tidak berhubungan, dikerjakan berurutan: memperbaiki
+tampilan di ponsel, lalu menambahkan intro pembuka bertema tinta beserta umpan
+balik sentuhannya.
+
+### Bagian satu: mengapa tampilan ponsel keliru
+
+Keluhannya: di Android halaman hanya memakai sebagian lebar layar dan
+menyisakan pita gelap di sisi kanan - "seperti tata letak desktop yang
+diperkecil". Di laptop tampilannya baik-baik saja.
+
+**Yang dikerjakan lebih dulu bukan menulis ulang tata letak, melainkan
+mengukur.** Halaman depan dirender di dalam iframe berlebar tertentu - media
+query tetap dievaluasi terhadap lebar iframe - lalu dicari elemen mana yang
+tepinya melewati lebar viewport:
+
+| Lebar viewport | Lebar dokumen | Kelebihan |
+|---:|---:|---:|
+| 320 | 398 | +80 |
+| 360 | 398 | +40 |
+| 375 | 398 | +24 |
+| 390 | 398 | +9 |
+| 768 ke atas | - | 0 |
+
+Elemen yang meluber selalu sama, dan cuma satu: barisan kendali di
+`PublicHeader` - bahasa, tema, tombol akun, dan tombol menu berdampingan dalam
+satu baris **berlebar tetap 224 piksel**, dan itu pun saat pengguna sudah
+masuk. Pada screenshot yang dikirim, penggunanya belum masuk, sehingga ada dua
+tombol ("Masuk" dan "Daftar Gratis") dan barisannya jauh lebih lebar - itulah
+sebabnya "Daftar Gratis" pecah menjadi dua baris.
+
+Jadi dokumennya memang lebih lebar daripada layarnya, dan pita gelap itu ruang
+di luar `body`. Sisa halaman depan sudah mobile-first sejak awal:
+`grid gap-12 lg:grid-cols-[...]`, `md:grid-cols-2`, tombol `w-full sm:w-auto`.
+
+Kalau langsung menulis ulang tata letaknya, satu sesi akan habis memperbaiki
+yang tidak rusak - dan penyebab sebenarnya kemungkinan besar tetap tertinggal.
+
+#### Yang diubah
+
+1. **`PublicHeader` ditulis ulang.** Di bawah 768 piksel bilahnya hanya memuat
+   identitas dan tombol menu; seluruh kendali lain pindah ke laci. Laci berisi
+   lima tautan, grup "Tampilan" (bahasa dan tema), lalu tombol akun. Tutup
+   lewat X, klik lapisan gelap, Escape, dan berpindah halaman. Gulir halaman
+   dikunci lewat `overflow` pada `<html>` - bukan `position: fixed` pada
+   `<body>`, yang membuang posisi gulir pengguna.
+2. **Statistik menjadi 2x2 di ponsel.** Empat kolom pada 320 piksel menyisakan
+   sekitar 70 piksel per kolom - cukup untuk angkanya, tidak cukup untuk
+   keterangannya.
+3. **Judul hero memakai `clamp(1.7rem, 7.4vw, 2.1rem)`.** Di atas 640 piksel
+   diambil alih `sm:` seperti sebelumnya, jadi tampilan lebar tidak bergeser.
+4. **Padding tablet `md:px-8`, kembali ke `lg:px-5`.** Turun lagi di desktop
+   memang tidak lazim, tetapi itu yang menjamin tampilan lebar tidak bergeser
+   sedikit pun - dan di atas 1152 piksel wadahnya sudah dibatasi `max-w-6xl`
+   sehingga paddingnya tidak lagi terlihat.
+5. **`body { overflow-x: clip }`** sebagai jaring pengaman.
+6. **Sasaran sentuh 44 piksel** lewat elemen bangkitan pada `pointer: coarse`.
+
+#### Jebakan yang menggigit di tengah jalan
+
+Laci pertama kali muncul **tergencet setinggi bilahnya sendiri**. Sebabnya
+`backdrop-blur` pada `<header>`: penyaring latar menjadikan elemennya blok
+penampung bagi keturunan `position: fixed`, sehingga `inset-0` berarti "nol
+terhadap bilah", bukan terhadap layar. Kodenya terlihat benar; yang salah
+anggapan tentang apa yang dimaksud "nol". Lacinya kini digambar lewat portal
+ke `<body>`.
+
+#### Hasil
+
+Nol luberan mendatar pada 320, 360, 375, 390, 412, 768, 820, 1024, 1280, 1440,
+dan 1920 - di halaman depan maupun di `/bandingkan`, `/panduan`, `/tentang`,
+`/alur`, `/login`, dan `/coba`.
+
+### Bagian dua: tinta
+
+Tanda pengenal rupa berupa tinta hitam-putih: intro pembuka sekali per
+perangkat, latar berpartikel, dan bercak tinta di setiap sentuhan. Tanpa
+pustaka baru, tanpa berkas gambar.
+
+Seluruhnya bersandar pada satu variabel `--ink` berisi tiga bilangan RGB,
+sehingga tiap efek menentukan kepekatannya sendiri. Cukup dua blok tanpa
+cabang `prefers-color-scheme`, sebab `THEME_INIT_SCRIPT` di `<head>` selalu
+menuliskan `data-theme` sebelum halaman digambar.
+
+Intronya: kertas CV muncul, siluet samurai melintas di belakangnya, satu
+tebasan membelah kertasnya, tinta menyebar, halaman depan tersingkap. 2,1
+detik. Siluetnya SVG sebaris yang mewarisi `currentColor`.
+
+#### Tiga hal yang baru terlihat setelah dijalankan
+
+Ketiganya tidak mungkin ditemukan dengan membaca kode:
+
+1. **Siluet putih di atas kertas putih lenyap.** Di mode gelap tintanya putih,
+   dan kertasnya juga putih - yang tersisa di layar hanya sepasang kaki di
+   bawah selembar kertas. Siluetnya dipindah ke belakang kertas, dan yang
+   terlihat justru bagian yang menjulur keluar. Itu pula yang membuatnya
+   terbaca sebagai sosok di balik kertas.
+2. **Siluet pertama terbaca seperti bidak catur.** Topinya kubah, badannya
+   trapesium, kakinya dua persegi. Digambar ulang dengan kasa berbentuk
+   kerucut, badan menyempit di bahu lalu melebar seperti hakama, dan kaki
+   dalam kuda-kuda.
+3. **Tebasan pertama terbaca seperti berkas cahaya.** Pita lurus setebal sama
+   selebar layar. Diperbaiki dua hal: bentuknya menjadi lensa bermata runcing
+   lewat `clip-path`, dan panjangnya diikat ke ukuran kertas - bukan ke ukuran
+   layar, supaya yang terjadi adalah tebasan terhadap kertas itu, bukan
+   kejadian yang berdiri sendiri di seluruh halaman.
+
+Ditemukan juga bahwa jahitan antara dua bagian kertas terlihat sebagai garis
+diagonal samar **sebelum** ditebas - penghalusan tepi peramban menyisakan celah
+selebar sebagian piksel. Kedua bagian kini ditumpangkan setengah persen.
+
+#### Latar dan sentuhan
+
+Latar memakai satu `<canvas>`, bukan puluhan elemen berposisi mutlak. Jumlah
+partikel mengikuti luas layar (satu per 26.000 piksel persegi, ditahan antara
+14 dan 46), kerapatan piksel dibatasi 2, aliran tinta hanya muncul mulai 768
+piksel, dan penggambaran berhenti saat tab tidak terlihat.
+
+Bercak sentuhan mengikuti pola `CursorGlow` yang sudah terbukti: tanpa state
+React, ber-rAF, dibatasi jarak dan waktu. Ditambah satu pembatas yang tidak ada
+di sana - **batas jumlah yang hidup bersamaan**. Dua pembatas lama menjaga laju
+kelahiran, bukan jumlah yang menumpuk; pada perangkat lambat animasinya selesai
+lebih lama daripada laju kelahirannya.
+
+Percikan cahaya lama di `CursorGlow` dilepas. Dua efek di titik sentuh yang
+sama tidak terbaca sebagai dua efek, melainkan sebagai satu efek yang keliru.
+
+#### Pengurangan gerak
+
+Dihormati bertingkat, bukan sebagai sakelar tunggal: intro tidak diputar sama
+sekali, latar tidak dipasang, jejak sapuan dimatikan, tetapi bercak ketukan
+tetap ada - hanya menjadi kilasan 220 milidetik. Yang diminta pengguna adalah
+berkurangnya gerak, bukan hilangnya umpan balik.
+
+### Catatan tentang cara mengujinya
+
+Hidrasi di mesin ini lambat luar biasa - puluhan detik, bahkan pada build
+produksi di localhost. Menangkap frame animasi 2,1 detik dengan tangkapan layar
+biasa karena itu mustahil.
+
+Yang dipakai: durasi intro dinaikkan sementara menjadi 60 detik, lalu seluruh
+animasinya dibekukan lewat `document.getAnimations()` dan `currentTime`-nya
+digeser ke momen yang ingin diperiksa. Ketiga cacat di atas ditemukan dengan
+cara itu, dan tidak satu pun akan tertangkap tanpa melihat gambarnya.
+
+Durasinya dikembalikan ke 2100 setelah selesai.
+
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 6.
+Angka di bawah ini per akhir sesi 8.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 104 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 110 |
 | Baris kode termasuk berkas uji dan skrip | ~26.100 |
 | Tabel basis data | 16 |
 | Berkas migrasi | 5 |
@@ -757,6 +1071,6 @@ Angka di bawah ini per akhir sesi 6.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 222 |
+| Pemeriksaan otomatis | 284 |
 
 ---

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../styles/ink.css";
 
 /* ==========================================================================
    TOKEN DESAIN
@@ -123,6 +124,36 @@
   color-scheme: light;
 }
 
+/* ==========================================================================
+   TINTA
+   --------------------------------------------------------------------------
+   Satu warna untuk seluruh efek tinta - intro pembuka, latar berpartikel,
+   bercak sentuhan, dan jejak sapuan. Ditulis sebagai tiga bilangan RGB, bukan
+   sebagai warna jadi, supaya setiap efek dapat menentukan kepekatannya
+   sendiri lewat `rgb(var(--ink) / <alpha>)` tanpa menulis ulang warnanya.
+
+   Tintanya berlawanan dengan kertasnya: gelap di atas terang, terang di atas
+   gelap. Itu seluruh gagasannya - keseimbangan hitam-putih, bukan lambang.
+
+   Cukup dua blok tanpa cabang prefers-color-scheme, sebab THEME_INIT_SCRIPT
+   di <head> selalu menuliskan data-theme sebelum halaman digambar - lihat
+   komentarnya di src/lib/theme.ts.
+   ========================================================================== */
+
+:root {
+  --ink: 10 10 11;
+}
+
+:root[data-theme="dark"] {
+  --ink: 255 255 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --ink: 255 255 255;
+  }
+}
+
 /* Jaring pengaman bila JavaScript mati.
    Dalam keadaan normal, skrip di <head> selalu menuliskan data-theme sebelum
    halaman digambar, sehingga blok ini tidak pernah terpakai. Yang dijaganya
@@ -172,6 +203,34 @@
 html,
 body {
   height: 100%;
+}
+
+/*
+  Jaring pengaman terhadap gulir mendatar.
+
+  Yang dipakai `clip`, bukan `hidden`. Keduanya sama-sama memangkas isi yang
+  meluber, tetapi `hidden` menjadikan elemennya wadah gulir - dan wadah gulir
+  baru membuat `position: sticky` pada bilah atas berhenti bekerja. `clip`
+  memangkas tanpa membuat wadah gulir, sehingga bilahnya tetap menempel.
+
+  Ini benar-benar jaring pengaman, bukan perbaikan: penyebab luberannya sudah
+  dihilangkan di PublicHeader. Yang dijaga di sini adalah hiasan berposisi
+  mutlak yang di kemudian hari kelewat lebar - kesalahan yang di layar lebar
+  tidak terlihat sama sekali, tetapi di ponsel langsung memunculkan pita
+  kosong di sisi kanan.
+*/
+body {
+  overflow-x: clip;
+}
+
+/*
+  Ukuran teks tidak diperbesar sendiri saat ponsel diputar ke mendatar.
+  Tanpa ini Safari iOS membesarkan sebagian teks dan merusak perhitungan
+  tinggi baris yang sudah disetel per breakpoint.
+*/
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -460,6 +519,32 @@ body {
   font-weight: 400;
 }
 
+/*
+  Laci navigasi layar sempit.
+
+  Geraknya sengaja pendek dan cepat: laci yang meluncur perlahan terasa
+  seperti halaman yang lambat, bukan seperti antarmuka yang halus.
+*/
+.drawer-overlay {
+  animation: drawer-fade 160ms ease-out;
+}
+
+.drawer-panel {
+  animation: drawer-slide 200ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes drawer-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-slide {
+  from {
+    transform: translateX(100%);
+  }
+}
+
 /* ==========================================================================
    Aturan cetak
    --------------------------------------------------------------------------
@@ -679,6 +764,36 @@ body {
 
 /* Umpan balik sentuh pada tombol - penting di layar sentuh, karena di sana
    tidak ada keadaan hover yang bisa dirasakan pengguna. */
+/*
+  Sasaran sentuh minimal pada perangkat berjari.
+
+  Yang diperbesar hanya **area sentuhnya**, lewat elemen bangkitan yang tidak
+  tergambar - ukuran, jarak, dan tata letak tombolnya sendiri tidak berubah
+  sedikit pun. Itu disengaja: menaikkan tinggi tombol menjadi 44 piksel di
+  ponsel akan menggeser seluruh baris yang memuatnya, sedangkan yang
+  sebenarnya kurang bukan ukuran yang terlihat melainkan ketepatan jari.
+
+  Hanya berlaku pada `pointer: coarse`, sehingga tampilan dan perilaku di
+  desktop sama persis seperti sebelumnya.
+*/
+@media (pointer: coarse) {
+  .tap-target {
+    position: relative;
+  }
+
+  .tap-target::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+    /* Tidak menghalangi apa pun secara rupa - hanya menangkap sentuhan. */
+    background: transparent;
+  }
+}
+
 .press {
   transition:
     transform 160ms cubic-bezier(0.22, 1, 0.36, 1),

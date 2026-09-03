@@ -1,0 +1,443 @@
+/* ==========================================================================
+   TINTA - INTRO PEMBUKA, LATAR, DAN UMPAN BALIK SENTUHAN
+   --------------------------------------------------------------------------
+   Seluruh geraknya ada di berkas ini, bukan di JavaScript. Yang dikerjakan
+   komponennya hanya memasang dan melepas elemen; peramban yang menjalankan
+   animasinya, sehingga jatuh ke compositor dan tidak bersaing dengan React.
+
+   Warna tintanya satu: var(--ink), tiga bilangan RGB yang dibalik oleh tema -
+   lihat blok TINTA di globals.css. Tidak ada satu pun warna lain di berkas
+   ini, dan itu memang syaratnya.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Intro pembuka
+   -------------------------------------------------------------------------- */
+
+.intro-akar {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  pointer-events: none;
+  /* Tinta berlawanan dengan kertas; siluet mewarisi warna ini lewat
+     currentColor sehingga tidak perlu aturan tersendiri per tema. */
+  color: rgb(var(--ink));
+}
+
+/* Latar seukuran kertas halaman - bukan hitam pekat, melainkan warna
+   permukaan aplikasi, supaya peralihan ke halaman depan tidak terasa seperti
+   pindah dari layar lain. */
+.intro-tirai {
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink-100);
+  animation: intro-tirai 2100ms ease-in forwards;
+}
+
+@keyframes intro-tirai {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/*
+  Ukuran kertas ditetapkan sekali di sini lalu dipakai ulang oleh kertas dan
+  siluet. Keduanya harus berhubungan: siluet yang ukurannya ditentukan
+  terpisah akan berubah perbandingannya terhadap kertas di setiap lebar layar,
+  dan komposisinya rusak justru di ukuran yang tidak diuji.
+*/
+.intro-panggung {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  --kertas: min(34vw, 230px);
+  --kertas-h: calc(var(--kertas) * 297 / 210);
+}
+
+/* -------------------------------------- kertas CV */
+
+.intro-kertas {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: var(--kertas);
+  height: var(--kertas-h);
+  margin: calc(var(--kertas-h) / -2) 0 0 calc(var(--kertas) / -2);
+  background: #ffffff;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.35);
+  opacity: 0;
+}
+
+/*
+  Garis belahnya miring dan berimpit: kedua bagian memakai batas yang sama
+  persis, satu mengambil sisi kiri dan satu sisi kanan. Ditulis sebagai
+  persentase supaya sudutnya tetap sama di setiap ukuran layar.
+*/
+/*
+  Kedua bagian sengaja ditumpangkan setengah persen.
+
+  Dengan batas yang berimpit persis, penghalusan tepi peramban menyisakan
+  celah selebar sebagian piksel - dan celah itu terlihat sebagai garis
+  diagonal samar di atas kertas yang **belum** ditebas, yang merusak
+  kejutannya. Tumpangan ini menghilangkannya tanpa mengubah letak belahnya.
+*/
+.intro-kertas-kiri {
+  clip-path: polygon(0 0, 62.4% 0, 38.4% 100%, 0 100%);
+  animation:
+    intro-kertas-masuk 620ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards,
+    intro-belah-kiri 900ms cubic-bezier(0.33, 0, 0.15, 1) 1080ms forwards;
+}
+
+.intro-kertas-kanan {
+  clip-path: polygon(61.6% 0, 100% 0, 100% 100%, 37.6% 100%);
+  animation:
+    intro-kertas-masuk 620ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards,
+    intro-belah-kanan 900ms cubic-bezier(0.33, 0, 0.15, 1) 1080ms forwards;
+}
+
+@keyframes intro-kertas-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Dua bagian saling menjauh sambil sedikit berputar dan tenggelam - kertas
+   yang terbelah jatuh, bukan meledak. */
+@keyframes intro-belah-kiri {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-26%, 16%, 0) rotate(-7deg);
+  }
+}
+
+@keyframes intro-belah-kanan {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(26%, 16%, 0) rotate(7deg);
+  }
+}
+
+.intro-kertas-isi {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 3.5%;
+  padding: 9% 10%;
+}
+
+.intro-baris {
+  height: 2px;
+  width: 78%;
+  border-radius: 2px;
+  background: rgb(10 10 11 / 0.22);
+}
+
+.intro-baris-judul {
+  height: 7px;
+  width: 52%;
+  background: rgb(10 10 11 / 0.5);
+}
+
+.intro-baris-sub {
+  height: 3px;
+  width: 34%;
+  margin-bottom: 4%;
+  background: rgb(10 10 11 / 0.3);
+}
+
+.intro-jeda {
+  height: 5px;
+}
+
+/* -------------------------------------- siluet */
+
+/*
+  Siluet berdiri di BELAKANG kertas, sedikit ke kanannya.
+
+  Urutan lapisan itu bukan selera. Tintanya berlawanan dengan kertas: di mode
+  gelap siluetnya putih, dan kertasnya juga putih - siluet yang digambar di
+  atas kertas karena itu lenyap sepenuhnya di bagian yang bertumpang tindih,
+  dan yang tersisa di layar hanya sepasang kaki di bawah selembar kertas.
+  Dengan berdiri di belakangnya, yang terlihat justru bagian yang menjulur
+  keluar - dan itulah yang membuatnya terbaca sebagai sosok di balik kertas.
+*/
+.intro-siluet {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  height: calc(var(--kertas-h) * 1.12);
+  width: auto;
+  margin: calc(var(--kertas-h) * 0.5 - var(--kertas-h) * 1.12) 0 0
+    calc(var(--kertas) * 0.12);
+  opacity: 0;
+  transform-origin: 24% 88%;
+  filter: drop-shadow(0 0 18px rgb(var(--ink) / 0.28));
+  animation: intro-siluet 900ms cubic-bezier(0.4, 0, 0.2, 1) 560ms forwards;
+}
+
+/*
+  Siluetnya hanya hadir sekejap - muncul, menebas, hilang.
+
+  Kehadiran yang lebih lama membuatnya menjadi tokoh, dan begitu ia menjadi
+  tokoh halamannya berubah menjadi halaman bertema, bukan halaman produk.
+*/
+@keyframes intro-siluet {
+  0% {
+    opacity: 0;
+    transform: translateX(30px) scale(0.97) rotate(4deg);
+  }
+  24% {
+    opacity: 0.78;
+    transform: translateX(0) scale(1) rotate(0deg);
+  }
+  52% {
+    opacity: 0.78;
+    transform: translateX(-8px) scale(1.01) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-26px) scale(1.02) rotate(-7deg);
+  }
+}
+
+/* -------------------------------------- tebasan */
+
+/*
+  Sapuan kuas.
+
+  Bentuknya bukan persegi panjang melainkan lensa bermata runcing - itulah
+  yang memisahkan sebuah sapuan dari sebuah garis. Pita lurus setebal sama di
+  sepanjang jalurnya terbaca sebagai berkas cahaya, dan berkas cahaya adalah
+  hal yang justru dihindari halaman ini.
+
+  Panjangnya diikat ke ukuran kertas, bukan ke ukuran layar. Sapuan selebar
+  layar melintasi seluruh halaman dan menjadi kejadian yang berdiri sendiri;
+  yang dituju adalah tebasan **terhadap kertas itu**, jadi ia hanya perlu
+  sedikit lebih panjang daripada diagonalnya.
+*/
+.intro-tebasan {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--kertas-h) * 1.9);
+  height: clamp(10px, 2.4vmin, 22px);
+  margin: calc(clamp(10px, 2.4vmin, 22px) / -2) 0 0
+    calc(var(--kertas-h) * -0.95);
+  opacity: 0;
+  transform: rotate(-58deg) scaleX(0);
+  transform-origin: 50% 50%;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--ink) / 0) 0%,
+    rgb(var(--ink) / 0.1) 16%,
+    rgb(var(--ink) / 0.62) 44%,
+    rgb(var(--ink) / 0.72) 54%,
+    rgb(var(--ink) / 0.14) 82%,
+    rgb(var(--ink) / 0) 100%
+  );
+  /* Lensa meruncing: tebal di tengah, hampir nol di kedua ujungnya. */
+  clip-path: polygon(
+    0% 50%,
+    7% 22%,
+    26% 6%,
+    52% 0%,
+    76% 10%,
+    100% 50%,
+    76% 90%,
+    52% 100%,
+    26% 94%,
+    7% 78%
+  );
+  filter: blur(1.2px);
+  animation: intro-tebasan 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 1020ms forwards;
+}
+
+@keyframes intro-tebasan {
+  0% {
+    opacity: 0;
+    transform: rotate(-58deg) scaleX(0);
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-58deg) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-58deg) scaleX(1);
+  }
+}
+
+/* -------------------------------------- tinta penutup */
+
+/*
+  Tinta yang menyebar dari titik belah lalu memudar.
+
+  Bentuknya tidak bulat sempurna: border-radius berbeda pada tiap sudut, dan
+  perbedaan itulah yang membuatnya terbaca sebagai tinta di atas kertas alih-
+  alih sebuah lingkaran yang membesar.
+*/
+.intro-tinta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 42vmax;
+  height: 42vmax;
+  margin: -21vmax 0 0 -21vmax;
+  opacity: 0;
+  border-radius: 46% 54% 51% 49% / 52% 47% 53% 48%;
+  background: radial-gradient(
+    circle closest-side,
+    rgb(var(--ink) / 0.5) 0%,
+    rgb(var(--ink) / 0.26) 44%,
+    rgb(var(--ink) / 0.08) 72%,
+    rgb(var(--ink) / 0) 100%
+  );
+  animation: intro-tinta 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1120ms forwards;
+}
+
+@keyframes intro-tinta {
+  0% {
+    opacity: 0;
+    transform: scale(0.12) rotate(0deg);
+  }
+  38% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5) rotate(22deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Umpan balik sentuhan
+   -------------------------------------------------------------------------- */
+
+/*
+  Bercak tinta di titik sentuh.
+
+  Bukan lingkaran: keempat jari-jarinya berbeda, dan bentuknya sedikit
+  berputar selagi menyebar. Lingkaran sempurna yang membesar terbaca sebagai
+  gelombang antarmuka; yang dituju di sini adalah setetes tinta yang meresap.
+*/
+.ink-blot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: var(--ink-size, 7rem);
+  height: var(--ink-size, 7rem);
+  margin: calc(var(--ink-size, 7rem) / -2) 0 0 calc(var(--ink-size, 7rem) / -2);
+  pointer-events: none;
+  border-radius: 47% 53% 44% 56% / 53% 44% 56% 47%;
+  transform: translate3d(var(--ix), var(--iy), 0) scale(0.2);
+  background: radial-gradient(
+    circle closest-side,
+    rgb(var(--ink) / 0.3) 0%,
+    rgb(var(--ink) / 0.17) 26%,
+    rgb(var(--ink) / 0.07) 52%,
+    rgb(var(--ink) / 0.02) 76%,
+    rgb(var(--ink) / 0) 100%
+  );
+  animation: ink-blot var(--ink-life, 780ms) cubic-bezier(0.22, 1, 0.36, 1)
+    forwards;
+}
+
+@keyframes ink-blot {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--ix), var(--iy), 0) scale(0.18) rotate(0deg);
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--ix), var(--iy), 0) scale(1) rotate(18deg);
+  }
+}
+
+/*
+  Jejak sapuan: setiap titik jejak lebih kecil dan lebih pendek umurnya
+  daripada bercak ketukan, sehingga yang terbentuk adalah garis yang
+  meruncing di belakang jari - bukan deretan bercak yang berdiri sendiri.
+*/
+.ink-trail {
+  --ink-size: 2.6rem;
+  --ink-life: 520ms;
+}
+
+/* --------------------------------------------------------------------------
+   3. Latar berpartikel
+   -------------------------------------------------------------------------- */
+
+/*
+  Kanvas latar. Isinya digambar JavaScript; yang diatur di sini hanya
+  tempatnya - di belakang segalanya, dan tidak pernah menangkap sentuhan.
+*/
+.ink-latar {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.ink-latar[data-siap="true"] {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   4. Pengurangan gerak
+   --------------------------------------------------------------------------
+   Yang diminta pengguna adalah berkurangnya gerak, bukan hilangnya umpan
+   balik. Intro dan latar berpartikel karena itu tidak dipasang sama sekali
+   (dijaga di sisi JavaScript), sedangkan bercak sentuhan tetap ada - hanya
+   berubah menjadi kilasan singkat tanpa penyebaran.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-blot {
+    animation-duration: 220ms;
+    animation-timing-function: linear;
+    transform: translate3d(var(--ix), var(--iy), 0) scale(0.6);
+  }
+
+  .ink-latar {
+    display: none;
+  }
+}
+
+/* Tidak satu pun efek tinta ikut tercetak. */
+@media print {
+  .intro-akar,
+  .ink-blot,
+  .ink-latar {
+    display: none !important;
+  }
+}

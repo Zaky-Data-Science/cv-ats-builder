@@ -52,6 +52,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "inline-flex items-center justify-center rounded-lg font-medium",
           "transition-colors disabled:cursor-not-allowed disabled:opacity-70",
+          // Area sentuh 44 piksel di perangkat berjari, tanpa mengubah
+          // ukuran tombolnya - lihat .tap-target di globals.css.
+          "tap-target",
           buttonVariants[variant],
           buttonSizes[size],
           className,

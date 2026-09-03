@@ -698,6 +698,7 @@ export const id = {
     closeMenu: "Tutup menu",
     mainNav: "Utama",
     mobileNav: "Utama (ponsel)",
+    settingsGroup: "Tampilan",
     breadcrumb: "Jejak navigasi",
     backHome: "Kembali ke beranda",
     backDashboard: "Kembali ke dashboard",

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CursorGlow } from "@/components/CursorGlow";
+import { InkTouch } from "@/components/ink/InkTouch";
 import { I18nProvider } from "@/components/i18n";
 import { getDictionary, LOCALE_HTML_LANG } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
@@ -103,6 +104,13 @@ export default async function RootLayout({
       >
         <I18nProvider locale={locale} dictionary={dictionary}>
           <CursorGlow />
+          {/*
+            Umpan balik tinta berlaku di seluruh aplikasi, bukan hanya di
+            halaman depan: yang dijanjikannya adalah "begini rasanya menyentuh
+            aplikasi ini", dan janji itu batal bila hilang begitu pengguna
+            masuk ke editornya.
+          */}
+          <InkTouch />
           {children}
         </I18nProvider>
       </body>
