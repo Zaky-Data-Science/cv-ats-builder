@@ -243,6 +243,16 @@ export const en: Dictionary = {
     savedLocal: "Saved in this browser",
     saveFailed:
       "The browser refused to save. The usual cause is that storage is full - the photo is by far the largest thing in a CV, so removing it is usually enough. The CV is still on screen; download the files now if that does not help.",
+    loadFromJson: "Load from JSON",
+    loadHint:
+      "Opens a file saved with Download JSON. Useful for keeping several versions of a CV as your own files, without piling them up in the browser.",
+    loadConfirm:
+      "The CV currently on screen will be replaced entirely by the contents of that file, and the old one cannot be brought back.",
+    loadYes: "Replace with the file",
+    loadFailed:
+      "That file could not be read as a CV. Choose a file saved with Download JSON from this app.",
+    loadTooNew:
+      "That file was made by a newer version of the app. Reload this page first, then try again.",
     moveToAccount: "Move to an account",
     moveHint:
       "You will be asked to sign in or sign up, and can then import this CV into that account.",
@@ -739,6 +749,11 @@ export const en: Dictionary = {
     signInFailed: "Sign-in failed. Please try again.",
     invalidCredentials: "That email or password is not right.",
     registerFailed: "Sign-up failed. Please try again.",
+    forgotPassword: "Forgotten your password?",
+    forgotViaGoogle:
+      "Recovery by email is not available yet - it needs an email sending service and a verified domain, and this app has neither. What you can do now: sign in with Google using the same email address, then set a new password on the Settings page. An account with a matching email address is linked, not duplicated.",
+    forgotNoGoogle:
+      "Recovery by email is not available yet - it needs an email sending service and a verified domain, and this app has neither. Google sign-in is also turned off on this installation, so an account with a forgotten password cannot yet be recovered on your own.",
     toRegister: "No account yet?",
     toRegisterLink: "Sign up free",
     toLogin: "Already have an account?",

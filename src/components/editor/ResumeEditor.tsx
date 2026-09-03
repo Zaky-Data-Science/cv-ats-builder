@@ -41,9 +41,12 @@ import {
 } from "@/lib/resume/download";
 import {
   commitGuestResume,
+  GUEST_ID,
   stashForImport,
 } from "@/lib/resume/guest";
 import { sampleResume } from "@/lib/resume/sample";
+import { resumeFileSchema } from "@/lib/resume/schema";
+import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
 import { sectionCount } from "@/lib/resume/sections";
 import {
@@ -97,6 +100,11 @@ export function ResumeEditor({
   const [pane, setPane] = React.useState<Pane>("form");
   const [showSettings, setShowSettings] = React.useState(false);
   const [confirmSample, setConfirmSample] = React.useState(false);
+  // CV yang baru dibaca dari berkas JSON, menunggu dikonfirmasi. Isinya belum
+  // diterapkan: memuat berkas berarti mengganti CV yang sedang di layar, dan
+  // yang lama tidak dapat dikembalikan.
+  const [pendingLoad, setPendingLoad] = React.useState<ResumeData | null>(null);
+  const loadInputRef = React.useRef<HTMLInputElement>(null);
   const [openSections, setOpenSections] = React.useState<Set<string>>(
     () => new Set(["personal"]),
   );
@@ -224,6 +232,50 @@ export function ResumeEditor({
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+  }
+
+  /**
+   * Membaca kembali CV dari berkas JSON hasil unduhan.
+   *
+   * Pasangan dari tombol Unduh JSON, dan sengaja hanya ada di mode tanpa akun.
+   * Mode itu memang hanya menyimpan satu CV di peramban - batasan yang
+   * disengaja, karena menumpuk banyak CV orang di komputer bersama justru
+   * berlawanan dengan alasan mode ini dibuat tanpa server. Berkas JSON
+   * memberi jalan keluarnya tanpa menambah tumpukan itu: versi yang ingin
+   * disimpan pengguna berpindah ke berkas miliknya sendiri.
+   *
+   * Isinya divalidasi dengan skema yang sama seperti yang dipakai jalur impor
+   * di server, sehingga berkas rusak atau berkas dari aplikasi lain ditolak
+   * dengan pesan - bukan diterima setengah jadi lalu merusak isian yang ada.
+   */
+  async function readJsonFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    // Dikosongkan supaya memilih berkas yang sama dua kali tetap terbaca.
+    event.target.value = "";
+    if (!file) return;
+
+    setErrorText(null);
+    try {
+      const parsed = resumeFileSchema.parse(JSON.parse(await file.text()));
+      if (parsed.schemaVersion > 1) {
+        setErrorText(t.guest.loadTooNew);
+        return;
+      }
+      setPendingLoad(
+        regenerateIds({
+          ...(parsed.resume as unknown as ResumeData),
+          id: GUEST_ID,
+        }),
+      );
+    } catch {
+      setErrorText(t.guest.loadFailed);
+    }
+  }
+
+  function applyPendingLoad() {
+    if (!pendingLoad) return;
+    update({ ...pendingLoad, id: GUEST_ID });
+    setPendingLoad(null);
   }
 
   /**
@@ -414,6 +466,22 @@ export function ResumeEditor({
                 <strong className="text-ink-900">{t.guest.bannerTitle}</strong>{" "}
                 {t.guest.bannerBody}
               </p>
+              <input
+                ref={loadInputRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={readJsonFile}
+                className="sr-only"
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                className="press shrink-0"
+                onClick={() => loadInputRef.current?.click()}
+                title={t.guest.loadHint}
+              >
+                {t.guest.loadFromJson}
+              </Button>
               <Button
                 size="sm"
                 className="press shrink-0"
@@ -781,6 +849,26 @@ export function ResumeEditor({
                   size="sm"
                   variant="ghost"
                   onClick={() => setConfirmSample(false)}
+                >
+                  {t.common.cancel}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {pendingLoad && (
+            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <p className="text-xs leading-relaxed text-warn">
+                {t.guest.loadConfirm}
+              </p>
+              <div className="mt-2.5 flex gap-2">
+                <Button size="sm" onClick={applyPendingLoad}>
+                  {t.guest.loadYes}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setPendingLoad(null)}
                 >
                   {t.common.cancel}
                 </Button>

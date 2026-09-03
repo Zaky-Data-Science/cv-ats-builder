@@ -76,6 +76,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
     params.get("error") ? t.auth.signInFailed : null,
   );
   const [busy, setBusy] = React.useState(false);
+  const [forgotOpen, setForgotOpen] = React.useState(false);
 
   const justRegistered = params.get("registered") === "1";
 
@@ -151,6 +152,31 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             placeholder="••••••••"
           />
         </Field>
+
+        {/*
+          Jalan pulang bagi yang lupa kata sandinya sengaja dijelaskan di sini,
+          bukan disembunyikan di halaman bantuan. Halaman masuk adalah
+          satu-satunya tempat orang menyadari dirinya lupa - mengarahkannya ke
+          tempat lain berarti menuntut ia mencari sendiri jawaban yang muat
+          dalam satu paragraf.
+        */}
+        <div className="-mt-1">
+          <button
+            type="button"
+            className="text-xs text-ink-600 underline hover:text-ink-900"
+            aria-expanded={forgotOpen}
+            onClick={() => setForgotOpen((open) => !open)}
+          >
+            {t.auth.forgotPassword}
+          </button>
+          {forgotOpen && (
+            <div className="mt-2">
+              <Callout tone="info">
+                {googleEnabled ? t.auth.forgotViaGoogle : t.auth.forgotNoGoogle}
+              </Callout>
+            </div>
+          )}
+        </div>
 
         {error && <Callout tone="bad">{error}</Callout>}
 

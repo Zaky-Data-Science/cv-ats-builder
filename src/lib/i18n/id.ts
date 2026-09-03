@@ -261,6 +261,16 @@ export const id = {
     savedLocal: "Tersimpan di peramban ini",
     saveFailed:
       "Peramban menolak menyimpan. Penyebab tersering: penyimpanan penuh - pas foto adalah isi paling besar, jadi menghapusnya biasanya cukup. CV masih ada di layar; segera unduh berkasnya bila cara itu tidak menolong.",
+    loadFromJson: "Muat dari JSON",
+    loadHint:
+      "Membuka kembali berkas hasil Unduh JSON. Berguna untuk menyimpan beberapa versi CV sebagai berkas Anda sendiri, tanpa menumpuknya di peramban.",
+    loadConfirm:
+      "CV yang sekarang ada di layar akan diganti seluruhnya oleh isi berkas itu, dan yang lama tidak dapat dikembalikan.",
+    loadYes: "Ganti dengan isi berkas",
+    loadFailed:
+      "Berkas itu tidak dapat dibaca sebagai CV. Pilih berkas hasil Unduh JSON dari aplikasi ini.",
+    loadTooNew:
+      "Berkas itu dibuat versi aplikasi yang lebih baru. Muat ulang halaman ini lebih dulu, lalu coba lagi.",
     moveToAccount: "Pindahkan ke akun",
     moveHint:
       "Anda akan diminta masuk atau mendaftar, lalu CV ini dapat diimpor ke akun tersebut.",
@@ -775,6 +785,11 @@ export const id = {
     signInFailed: "Gagal masuk. Silakan coba lagi.",
     invalidCredentials: "Email atau kata sandi salah.",
     registerFailed: "Pendaftaran gagal. Silakan coba lagi.",
+    forgotPassword: "Lupa kata sandi?",
+    forgotViaGoogle:
+      "Pemulihan lewat surel belum tersedia - fitur itu memerlukan layanan pengirim surel beserta domain terverifikasi, dan aplikasi ini belum memilikinya. Yang dapat Anda lakukan sekarang: masuk dengan Google memakai alamat surel yang sama, lalu buat kata sandi baru di halaman Pengaturan. Akun yang alamat surelnya sama akan tersambung, bukan tergandakan.",
+    forgotNoGoogle:
+      "Pemulihan lewat surel belum tersedia - fitur itu memerlukan layanan pengirim surel beserta domain terverifikasi, dan aplikasi ini belum memilikinya. Masuk dengan Google juga sedang tidak aktif pada pemasangan ini, sehingga akun yang kata sandinya terlupa belum dapat dipulihkan sendiri.",
     toRegister: "Belum punya akun?",
     toRegisterLink: "Daftar gratis",
     toLogin: "Sudah punya akun?",
