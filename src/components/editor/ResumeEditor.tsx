@@ -33,7 +33,6 @@ import {
   PAPER_NOTE,
   PAPER_ORDER,
   PAPER_SIZES,
-  paperSpec,
   RECOMMENDED_PAPER,
 } from "@/lib/resume/paper";
 import {
@@ -308,20 +307,30 @@ export function ResumeEditor({
   }
 
   /**
-   * Mencetak lewat iframe yang memuat halaman /print.
+   * Menuju halaman cetak, yang memanggil dialog cetaknya sendiri.
    *
-   * Halaman itu hanya berisi dokumen CV, sehingga hasil PDF tidak mengandung
-   * sisa antarmuka aplikasi dan teksnya tetap dapat diseleksi.
+   * Sebelumnya halaman itu dimuat ke dalam bingkai tersembunyi lalu bingkainya
+   * yang disuruh mencetak. Cara itu **tidak dapat diandalkan** dan sudah dua
+   * kali gagal dengan gejala berbeda: mula-mula Chrome menolak mencetak
+   * bingkai tak berukuran lalu diam-diam mencetak halaman editor, dan setelah
+   * bingkainya diberi ukuran sungguhan pun hasilnya berupa satu halaman kosong
+   * yang kop dan kakinya justru menunjukkan alamat editor - bukti bahwa yang
+   * dicetak tetap dokumen induknya.
    *
-   * Bingkainya disembunyikan dengan **menggesernya ke luar layar**, bukan
-   * dengan `width:0;height:0;visibility:hidden` seperti sebelumnya. Cara lama
-   * itu sumber cacat yang sulit dilacak: sebagian versi Chrome menolak
-   * mencetak bingkai yang tak berukuran atau tersembunyi, lalu diam-diam
-   * mencetak dokumen induknya - yaitu halaman editor. Yang keluar akhirnya
-   * bukan CV, melainkan tata letak dua panel editor tanpa isi yang jelas.
+   * Akar masalahnya: dokumen mana yang dicetak saat `print()` dipanggil pada
+   * bingkai adalah perilaku peramban, bukan sesuatu yang dapat dipastikan dari
+   * sisi aplikasi. Karena itu bingkainya dibuang sama sekali.
    *
-   * Bingkainya kini berukuran satu halaman penuh dan tetap terlihat menurut
-   * peramban, hanya berada di luar bidang pandang.
+   * Gantinya memakai mekanisme yang memang sudah ada dan berdiri sendiri:
+   * halaman cetak mencetak dirinya sendiri bila alamatnya berakhiran
+   * `?cetak=1` - lihat `PrintToolbar`. Tidak ada lagi dua dokumen yang bisa
+   * tertukar, sebab hanya ada satu.
+   *
+   * Tab yang sama, bukan tab baru: pop-up yang dibuka setelah `await` kerap
+   * diblokir peramban karena izin dari klik penggunanya sudah kedaluwarsa.
+   * Bila dialog cetaknya ditutup, pengguna tetap melihat CV-nya di sana
+   * lengkap dengan tombol cetak dan tautan kembali ke editor - tidak pernah
+   * kehabisan jalan.
    */
   async function printPdf() {
     const ok = await save();
@@ -329,48 +338,9 @@ export function ResumeEditor({
 
     // Halaman cetak tamu membaca CV dari penyimpanan peramban; yang untuk
     // akun membacanya dari basis data.
-    const url = guest ? "/cetak" : `/resume/${initial.id}/print`;
-
-    // Ukuran bingkainya mengikuti kertas yang dipilih pengguna, bukan dipatok
-    // A4. Bingkai seukuran A4 untuk CV Legal membuat peramban menghitung
-    // pergantian halaman pada tinggi yang salah, sehingga jumlah halaman di
-    // PDF bisa berbeda dari yang baru saja dilihat pengguna di pratinjau.
-    const paper = paperSpec(dataRef.current.pageSize);
-
-    const frame = document.createElement("iframe");
-    frame.setAttribute("aria-hidden", "true");
-    frame.setAttribute("tabindex", "-1");
-    frame.title = t.editor.actionPdfLabel;
-    frame.style.cssText =
-      `position:fixed;left:-10000px;top:0;width:${paper.widthMm}mm;` +
-      `height:${paper.heightMm}mm;border:0;`;
-    frame.src = url;
-
-    frame.onload = () => {
-      const win = frame.contentWindow;
-      if (!win) {
-        window.open(url, "_blank", "noopener");
-        return;
-      }
-
-      // Satu bingkai animasi diberikan lebih dulu supaya gaya dan huruf
-      // web selesai diterapkan. Memanggil print() pada bingkai yang baru
-      // saja selesai memuat kadang menangkap keadaan sebelum huruf terpasang,
-      // dan hasilnya PDF berhuruf pengganti.
-      requestAnimationFrame(() => {
-        try {
-          win.focus();
-          win.print();
-        } catch {
-          // Bila peramban menolak, halaman cetaknya dibuka apa adanya -
-          // pengguna tetap dapat menekan Ctrl+P di sana.
-          window.open(url, "_blank", "noopener");
-        }
-        setTimeout(() => frame.remove(), 60_000);
-      });
-    };
-
-    document.body.appendChild(frame);
+    router.push(
+      guest ? "/cetak?cetak=1" : `/resume/${initial.id}/print?cetak=1`,
+    );
   }
 
   /**

@@ -10,7 +10,6 @@ import {
   subscribeGuestResume,
 } from "@/lib/resume/guest";
 import { paperSpec } from "@/lib/resume/paper";
-import { resumeMargins } from "@/lib/resume/templates";
 
 /**
  * Halaman cetak untuk CV tanpa akun.
@@ -22,7 +21,8 @@ import { resumeMargins } from "@/lib/resume/templates";
  * andal - HTML-nya sudah lengkap sejak byte pertama.
  *
  * Aturan @page disisipkan dengan cara yang sama, dan karena berasal dari
- * fungsi yang sama, hasil cetak keduanya identik.
+ * fungsi yang sama, hasil cetak keduanya identik - termasuk margin cetaknya
+ * yang nol dan digantikan padding kertas.
  */
 export function GuestPrint() {
   const { t } = useI18n();
@@ -42,16 +42,18 @@ export function GuestPrint() {
   }
 
   const paper = paperSpec(data.pageSize);
-  const margins = resumeMargins(data);
 
   return (
     <div className="flex min-h-full justify-center bg-ink-200 pt-14 print:block print:bg-white print:pt-0">
       <PrintToolbar backHref="/coba" />
-      <style>{`@page { size: ${paper.cssSize}; margin: ${margins.y}mm ${margins.x}mm; }`}</style>
+      {/* Margin cetak nol dan marginnya menjadi padding kertas - alasannya
+          sama persis dengan halaman cetak berakun, lihat komentar panjang di
+          `src/app/resume/[id]/print/page.tsx`. */}
+      <style>{`@page { size: ${paper.cssSize}; margin: 0; }`}</style>
       <ResumeDocument
         data={data}
         printMode
-        padding="none"
+        padding="full"
         className="shadow-lg print:shadow-none"
       />
     </div>

@@ -485,6 +485,28 @@ body {
     min-height: 0;
     box-shadow: none !important;
     margin: 0 !important;
+
+    /*
+      Inilah yang membuat margin halaman berlaku pada SETIAP halaman.
+
+      Margin cetak di aturan @page sengaja nol - satu-satunya cara menghapus
+      kop dan kaki bawaan Chrome (tanggal, judul tab, alamat, nomor halaman),
+      yang tidak boleh ikut tercetak pada CV yang dikirim ke perusahaan.
+      Diuji: margin 2mm pun masih memunculkannya.
+
+      Karena @page tidak lagi menyediakan margin, padding kertas yang
+      mengambil alih. Tanpa properti di bawah, padding pada dokumen yang
+      mengalir hanya berlaku sekali untuk seluruh dokumen: halaman pertama
+      memperoleh margin atas, halaman terakhir memperoleh margin bawah, dan
+      pergantian halaman di antaranya tidak memperoleh apa pun - teks di dasar
+      halaman menempel ke tepi kertas.
+
+      `box-decoration-break: clone` memerintahkan peramban memperlakukan
+      setiap pecahan halaman sebagai kotak utuh tersendiri, lengkap dengan
+      padding, batas, dan latarnya masing-masing.
+    */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 
   /* Jangan memotong satu entri pengalaman/pendidikan di tengah halaman. */

@@ -68,7 +68,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 197 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 222 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -144,7 +144,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `resumeMargins()` di `templates.ts` | Margin yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template |
 | `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
-| `tests/` | 197 pemeriksaan; `npm test` |
+| `tests/` | 222 pemeriksaan; `npm test` |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
 | `src/components/HeaderBack.tsx` | Panah kembali di bilah atas; menuju halaman induk tetap, bukan riwayat peramban |
@@ -189,6 +189,8 @@ supaya tidak perlu diingat-ingat lagi.
 | **Penilai berkas terpisah dari penilai CV terstruktur** | Yang satu punya data terstruktur, yang lain harus menebak strukturnya dari teks. Menyatukannya memaksa salah satu berpura-pura. Yang dibagi hanya yang memang sama: bobot dimensi, daftar kata kerja, dan mesin kata kunci - sehingga skor keduanya tetap dapat dibandingkan. |
 | **Saran diubah dari "maksimal 2 halaman" menjadi "satu halaman"** | Perekrut memindai CV dalam hitungan detik; apa pun di halaman kedua besar kemungkinan tidak terbaca. Penilaiannya bertingkat, bukan lolos-gagal: 1 halaman nilai penuh, 2 halaman 75%, 3 halaman ke atas 25%. |
 | **Diagram dibangkitkan dari data, bukan digambar** | Diagram yang disimpan sebagai gambar hasil gambar tangan selalu berakhir usang. `src/lib/diagrams.ts` melayani halaman /alur sekaligus berkas SVG/PNG di `docs/diagram/`. |
+| **Cetak PDF lewat halaman mandiri, bukan bingkai tersembunyi** | Dokumen mana yang tercetak saat `print()` dipanggil pada sebuah bingkai adalah perilaku peramban, bukan sesuatu yang dapat dipastikan aplikasi. Sudah dua kali gagal dengan gejala berbeda. Halaman cetak yang mencetak dirinya sendiri hanya punya satu dokumen - tidak ada yang bisa tertukar. |
+| **Margin cetak nol, margin sebenarnya dari padding kertas** | Hanya `@page { margin: 0 }` di keempat sisi yang menghapus kop dan kaki bawaan Chrome; margin 2mm pun masih memunculkannya. CV yang dikirim ke perusahaan tidak boleh memuat tanggal, alamat halaman, dan nomor "1/2". `box-decoration-break: clone` membuat padding itu berlaku di setiap halaman, bukan sekali untuk seluruh dokumen. |
 | **Sakelar tema satu tombol, tanpa pilihan "ikut sistem"** | Menu tiga pilihan menuntut dua tindakan untuk sesuatu yang hanya punya dua keadaan. Setelan sistem tetap dihormati, tetapi perannya bergeser menjadi penentu keadaan **awal** - dituliskan skrip di `<head>` sebagai atribut `data-theme` sebelum halaman digambar. |
 | **Tombol utama menuju `/login`, bukan `/dashboard` atau `/register`** | Halaman login sudah mengalihkan pengguna yang sudah masuk langsung ke dashboard, sehingga satu tautan melayani kedua keadaan - dan tidak ada tombol yang menjanjikan dashboard kepada orang yang belum punya akun. |
 | **Cahaya kursor memakai kurva peluruhan bercacah, bukan tiga titik henti** | Gradasi CSS menarik garis lurus antar-titik henti; tiga titik menghasilkan dua ruas lurus, dan dua ruas lurus terbaca sebagai cakram berwarna - bukan cahaya. Delapan titik mendekati kurva (1-r)^3: separuh kepekatan hilang sebelum 15% jari-jari, lalu menipis hingga tepat nol pada 100%. |
@@ -236,6 +238,9 @@ Berguna bila gejala serupa muncul lagi.
 | Bingkai cetak selalu A4 | `frame.style` dipatok 210x297 mm walau pengguna memilih Legal atau F4 | Mengikuti `paperSpec(pageSize)` |
 | Ketidakcocokan hidrasi di halaman depan | `previewResume()` memakai `newId()`, dan id acak itu ditulis ke atribut `data-field` sehingga berbeda antara server dan peramban | Id berurutan yang tetap |
 | Ketikan di kertas bisa menimpa poin yang salah | `Bullets` menyaring poin kosong lebih dulu, sehingga nomor di layar berbeda dari nomor di dalam data | Nomor aslinya dibawa serta |
+| PDF hasil unduhan berisi satu halaman kosong | Tombol PDF mencetak lewat bingkai tersembunyi, dan dokumen mana yang tercetak adalah perilaku peramban - yang keluar halaman editor. Cacat yang sama sudah "diperbaiki" di sesi 5 | Bingkainya dibuang; tombol menuju halaman cetak dengan `?cetak=1` yang mencetak dirinya sendiri |
+| Kop dan kaki Chrome ikut tercetak di CV | `@page` bermargin lebih dari nol menyediakan ruang bagi peramban untuk menggambarnya. Diuji: 2mm pun masih muncul | `@page { margin: 0 }`, margin dipindah ke padding kertas + `box-decoration-break: clone` agar berlaku di setiap halaman |
+| Halaman cetak terlihat sempit di layar | Kertas dirender `padding="none"` karena marginnya diserahkan ke `@page`, yang hanya berlaku saat mencetak | Ikut selesai oleh perbaikan di atas - paddingnya kini nyata |
 
 ---
 

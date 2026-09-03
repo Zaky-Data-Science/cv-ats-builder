@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { PrintToolbar } from "@/components/preview/PrintToolbar";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { paperSpec } from "@/lib/resume/paper";
-import { resumeMargins } from "@/lib/resume/templates";
 import { getResume } from "@/lib/resume/persist";
 
 export const metadata: Metadata = {
@@ -36,7 +35,6 @@ export default async function PrintResumePage({
   if (!resume) notFound();
 
   const paper = paperSpec(resume.pageSize);
-  const margins = resumeMargins(resume);
 
   return (
     <div className="flex min-h-full justify-center bg-ink-200 pt-14 print:block print:bg-white print:pt-0">
@@ -45,22 +43,32 @@ export default async function PrintResumePage({
       <PrintToolbar backHref={`/resume/${id}/edit`} />
 
       {/*
-        Ukuran DAN margin kertas disampaikan lewat aturan @page, karena at-rule
-        tidak dapat membaca custom property CSS.
+        Ukuran kertas disampaikan lewat @page, tetapi **marginnya tidak**.
 
-        Margin sengaja ditaruh di sini, bukan sebagai padding pada elemen
-        kertas. Padding hanya berlaku sekali untuk seluruh dokumen yang
-        mengalir: halaman pertama memperoleh margin atas, halaman terakhir
-        memperoleh margin bawah, dan setiap pergantian halaman di antaranya
-        tidak memperoleh apa pun - teks di dasar halaman menempel ke tepi
-        kertas. Aturan @page berlaku pada **setiap** halaman, dan itulah yang
-        benar.
+        Margin cetak sengaja nol di keempat sisi, dan itu satu-satunya cara
+        menghilangkan kop dan kaki bawaan Chrome - tanggal, judul tab, alamat
+        halaman, dan nomor "1/2". Diuji: margin 2mm pun masih memunculkannya,
+        bahkan ketika atas dan bawah sudah nol. Kop itu tidak boleh ada pada CV
+        yang dikirim ke perusahaan, dan mematikannya lewat centang di dialog
+        cetak tidak dapat diandalkan - pengguna tidak selalu tahu, dan
+        centangnya menyala secara bawaan.
+
+        Marginnya karena itu dipindahkan menjadi padding elemen kertas,
+        ditambah `box-decoration-break: clone` di globals.css. Tanpa properti
+        itu, padding pada dokumen yang mengalir hanya berlaku sekali: halaman
+        pertama memperoleh margin atas, halaman terakhir memperoleh margin
+        bawah, dan pergantian halaman di antaranya tidak memperoleh apa pun.
+        Dengan clone, setiap pecahan halaman memperoleh paddingnya sendiri.
+
+        Efek sampingnya menguntungkan: halaman ini kini juga tampak benar di
+        layar. Sebelumnya kertasnya dirender tanpa padding sama sekali sehingga
+        teksnya menempel ke tepi.
       */}
-      <style>{`@page { size: ${paper.cssSize}; margin: ${margins.y}mm ${margins.x}mm; }`}</style>
+      <style>{`@page { size: ${paper.cssSize}; margin: 0; }`}</style>
       <ResumeDocument
         data={resume}
         printMode
-        padding="none"
+        padding="full"
         className="shadow-lg print:shadow-none"
       />
     </div>

@@ -634,11 +634,67 @@ bertambah empat permintaan baru.
    kosong lebih dulu, sehingga nomor di layar berbeda dari nomor di dalam data.
    Nomor aslinya kini dibawa serta.
 
+### Ekspor PDF: cacat yang kambuh, dan watermark yang wajib hilang
+
+Ditemukan pengguna setelah seluruh pekerjaan di atas selesai. Berkas PDF yang
+diunduh berisi **satu halaman kosong** - yang tercetak hanya kop dan kaki
+bawaan Chrome, dan alamat di kakinya menunjuk `/edit`, bukan `/print`. Bukti
+bahwa yang dicetak adalah halaman editor, bukan dokumen CV di dalam bingkainya.
+
+Ini cacat yang sama dengan sesi 5 dan sudah dinyatakan diperbaiki di sana.
+Perbaikan waktu itu - memberi bingkai tersembunyi ukuran kertas sungguhan -
+ternyata tidak bertahan. Yang membuatnya lolos dari pengujian: uji otomatis
+memakai `Page.printToPDF` langsung ke halaman cetak, sehingga **melewati
+bingkainya sepenuhnya**. Yang diuji halaman cetaknya, bukan tombolnya.
+
+Akar masalahnya: dokumen mana yang dicetak saat `print()` dipanggil pada sebuah
+bingkai adalah perilaku peramban, bukan sesuatu yang dapat dipastikan dari sisi
+aplikasi. Bingkainya karena itu dibuang sama sekali. Tombol PDF kini menuju
+halaman cetak dengan akhiran `?cetak=1`, dan halaman itu memanggil dialog
+cetaknya sendiri - mekanisme yang sudah ada sejak sesi 5 sebagai jalur cadangan
+dan memang berdiri sendiri. Tidak ada lagi dua dokumen yang bisa tertukar,
+sebab hanya ada satu.
+
+**Watermark Chrome.** Pengguna meminta kop dan kaki bawaan peramban (tanggal,
+judul tab, alamat halaman, nomor "1/2") hilang sama sekali, sebab CV-nya akan
+dikirim ke perusahaan. Diuji satu per satu dengan Chrome sungguhan:
+
+| Aturan @page | Kop/kaki Chrome |
+|---|---|
+| `margin: 20mm 18mm` (cara lama) | muncul |
+| `margin: 5mm 18mm` | muncul |
+| `margin: 2mm 18mm` | muncul |
+| `margin: 0 18mm` (atas-bawah nol) | masih muncul |
+| **`margin: 0`** | **hilang** |
+
+Hanya margin nol di keempat sisi yang menghapusnya. Mematikannya lewat centang
+"Headers and footers" di dialog cetak tidak dapat diandalkan - centangnya
+menyala secara bawaan dan pengguna tidak selalu tahu.
+
+Konsekuensinya margin halaman harus datang dari tempat lain, dan di situ
+muncul persoalan yang sudah dikenal sejak sesi 5: padding pada dokumen yang
+mengalir hanya berlaku sekali, sehingga halaman kedua tercetak tanpa margin
+atas. Jalan keluarnya **`box-decoration-break: clone`** - properti yang
+memerintahkan peramban memperlakukan setiap pecahan halaman sebagai kotak utuh
+tersendiri, lengkap dengan paddingnya. Diukur pada CV contoh dua halaman:
+margin atas 26mm dan 24mm, margin kiri 18mm dan 18mm. Benar di kedua halaman.
+
+Efek sampingnya menguntungkan: halaman cetak kini juga **tampak benar di
+layar**. Sebelumnya kertasnya dirender tanpa padding sama sekali - marginnya
+diserahkan ke `@page` yang hanya berlaku saat mencetak - sehingga teksnya
+menempel ke tepi kertas dan terlihat sempit. Itu keluhan kedua pengguna, dan
+satu perubahan ini menyelesaikan keduanya.
+
+Ditambahkan `tests/cetak.test.ts` yang mengunci syarat-syaratnya. Berbeda dari
+berkas uji lain, yang diperiksa adalah bentuk kodenya sendiri - itu disengaja,
+sebab hasil cetak sungguhan hanya dapat diperiksa dengan menjalankan peramban,
+dan cacat ini sudah lolos dua kali justru karena itu.
+
 ### Pengujian
 
-`npm test` bertambah dari 107 menjadi **197 pemeriksaan, seluruhnya lulus** -
-tiga berkas uji baru: `keywords.test.ts` (38), `photo.test.ts` (12), dan
-`edit-path.test.ts` (36).
+`npm test` bertambah dari 107 menjadi **222 pemeriksaan, seluruhnya lulus** -
+lima berkas uji baru: `keywords.test.ts` (38), `photo.test.ts` (12),
+`edit-path.test.ts` (36), `stale-session.test.ts` (12), dan `cetak.test.ts` (13).
 
 Selain itu tiga jalur peramban diuji dengan Chrome sungguhan lewat DevTools
 Protocol:
@@ -701,6 +757,6 @@ Angka di bawah ini per akhir sesi 6.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 197 |
+| Pemeriksaan otomatis | 222 |
 
 ---
