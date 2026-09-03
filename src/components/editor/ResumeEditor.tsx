@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -152,6 +153,18 @@ export function ResumeEditor({
 
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
+        // Sesi yang menunjuk pengguna yang sudah tidak ada tidak dapat
+        // diperbaiki dengan mencoba lagi. Menyimpan otomatis akan terus
+        // mengulang kegagalan yang sama setiap 0,8 detik, jadi pengguna
+        // langsung dikeluarkan dan diarahkan untuk masuk kembali.
+        if (response.status === 401) {
+          setErrorText(t.auth.sessionStale);
+          setSaveState("error");
+          // Lihat catatan yang sama di DashboardClient: alasannya dititipkan
+          // pada alamat supaya bertahan melewati pengalihan.
+          void signOut({ redirectTo: "/login?sesi=habis" });
+          return false;
+        }
         setErrorText(payload.error ?? t.editor.saveFailedGeneric);
         setSaveState("error");
         return false;

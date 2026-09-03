@@ -75,6 +75,12 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const [error, setError] = React.useState<string | null>(
     params.get("error") ? t.auth.signInFailed : null,
   );
+  /*
+    Pengguna yang tiba di sini karena sesinya sudah tidak berlaku perlu tahu
+    mengapa - tanpa penjelasan, ia hanya melihat dirinya tiba-tiba terlempar
+    keluar dan akan menyangka aplikasinya rusak.
+  */
+  const sesiHabis = params.get("sesi") === "habis";
   const [busy, setBusy] = React.useState(false);
   const [forgotOpen, setForgotOpen] = React.useState(false);
 
@@ -178,6 +184,9 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
           )}
         </div>
 
+        {sesiHabis && !error && (
+          <Callout tone="warn">{t.auth.sessionStale}</Callout>
+        )}
         {error && <Callout tone="bad">{error}</Callout>}
 
         <Button type="submit" className="w-full" disabled={busy}>

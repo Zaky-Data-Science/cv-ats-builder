@@ -790,6 +790,8 @@ export const id = {
     signInFailed: "Gagal masuk. Silakan coba lagi.",
     invalidCredentials: "Email atau kata sandi salah.",
     registerFailed: "Pendaftaran gagal. Silakan coba lagi.",
+    sessionStale:
+      "Sesi Anda sudah tidak berlaku - akun yang tercatat pada sesi ini tidak ditemukan lagi. Anda akan diarahkan ke halaman masuk.",
     forgotPassword: "Lupa kata sandi?",
     forgotViaGoogle:
       "Pemulihan lewat surel belum tersedia - fitur itu memerlukan layanan pengirim surel beserta domain terverifikasi, dan aplikasi ini belum memilikinya. Yang dapat Anda lakukan sekarang: masuk dengan Google memakai alamat surel yang sama, lalu buat kata sandi baru di halaman Pengaturan. Akun yang alamat surelnya sama akan tersambung, bukan tergandakan.",

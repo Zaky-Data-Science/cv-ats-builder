@@ -5,6 +5,7 @@ import { runI18nTests } from "./i18n.test";
 import { runKeywordTests } from "./keywords.test";
 import { runPdfTests } from "./pdf.test";
 import { runPhotoTests } from "./photo.test";
+import { runStaleSessionTests } from "./stale-session.test";
 import { runTemplateTests } from "./templates.test";
 import { summary } from "./harness";
 
@@ -19,6 +20,7 @@ async function main() {
   runI18nTests();
   runKeywordTests();
   runEditPathTests();
+  runStaleSessionTests();
   runAtsEngineTests();
   runTemplateTests();
   runDocumentTests();

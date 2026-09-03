@@ -754,6 +754,8 @@ export const en: Dictionary = {
     signInFailed: "Sign-in failed. Please try again.",
     invalidCredentials: "That email or password is not right.",
     registerFailed: "Sign-up failed. Please try again.",
+    sessionStale:
+      "Your session is no longer valid - the account it refers to no longer exists. You are being taken to the sign-in page.",
     forgotPassword: "Forgotten your password?",
     forgotViaGoogle:
       "Recovery by email is not available yet - it needs an email sending service and a verified domain, and this app has neither. What you can do now: sign in with Google using the same email address, then set a new password on the Settings page. An account with a matching email address is linked, not duplicated.",

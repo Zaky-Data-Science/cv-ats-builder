@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   Copy,
   FilePlus2,
@@ -62,6 +63,18 @@ export function DashboardClient({
       const response = await fetch(url, init);
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
+        // Sesi yang menunjuk pengguna yang sudah tidak ada tidak dapat
+        // diperbaiki dengan mencoba lagi - satu-satunya jalan keluar adalah
+        // masuk kembali. Karena itu pengguna tidak sekadar diberi tahu,
+        // melainkan langsung dikeluarkan dari sesi yang sudah mati.
+        if (response.status === 401) {
+          setError(t.auth.sessionStale);
+          // Alasannya dititipkan pada alamat, bukan pada state: pengalihan
+          // menghapus seluruh state halaman ini, sehingga pesan yang hanya
+          // ditampilkan di sini akan lenyap sebelum sempat terbaca.
+          void signOut({ redirectTo: "/login?sesi=habis" });
+          return null;
+        }
         setError(payload.error ?? t.dashboard.errorGeneric);
         return null;
       }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { isStaleSessionError } from "@/lib/stale-session";
 
 /** Galat yang membawa kode status HTTP agar handler API tetap ringkas. */
 export class HttpError extends Error {
@@ -49,6 +50,15 @@ export async function requireOwnedResume<T extends object | undefined>(
 export function errorResponse(error: unknown) {
   if (error instanceof HttpError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
+  }
+  if (isStaleSessionError(error)) {
+    return NextResponse.json(
+      {
+        error: "Sesi Anda sudah tidak berlaku. Silakan masuk lagi.",
+        code: "SESSION_STALE",
+      },
+      { status: 401 },
+    );
   }
   if (error instanceof ZodError) {
     return NextResponse.json(
