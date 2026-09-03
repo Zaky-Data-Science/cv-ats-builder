@@ -44,6 +44,7 @@ dikirim ke server.
 | Field terstruktur | 11 section CV, masing-masing dengan field sendiri, teks petunjuk, dan contoh pengisian |
 | Pratinjau langsung | CV ukuran A4 di sebelah kanan berubah seketika saat mengetik |
 | Sorotan sinkron | Memfokuskan sebuah field akan menyorot bagian terkait di pratinjau |
+| Ketik langsung di kertas | Nama, jabatan, ringkasan, judul entri, dan poin pencapaian dapat diketik langsung di atas kertas seperti di pengolah kata - dan field di panel kiri ikut berubah, karena keduanya satu data yang sama |
 | Isi data contoh | Satu klik mengisi seluruh CV dengan contoh lengkap dan realistis |
 | Simpan otomatis | Perubahan tersimpan ke basis data 0,8 detik setelah berhenti mengetik |
 | Banyak CV per akun | Duplikasi CV untuk disesuaikan dengan tiap lowongan |
@@ -57,6 +58,7 @@ dikirim ke server.
 | Bandingkan & pindai CV | Unggah 1-5 berkas PDF/DOCX/TXT, lihat kelebihan-kekurangan tiap CV dan mana yang paling siap dikirim - diproses di peramban, tanpa akun |
 | Dwibahasa | Antarmuka Indonesia dan Inggris; bahasa judul bagian CV diatur terpisah |
 | Mode terang dan gelap | Palet monokrom, mengikuti setelan sistem atau pilihan pengguna |
+| Pas foto diunggah | Pilih berkas gambar; dikecilkan dan dikompresi di peramban ke ukuran cetak 3x4, lalu tersimpan menyatu dengan CV - ikut ke PDF maupun berkas Word |
 | 4 format unduhan | PDF, Word (.docx), teks polos (.txt), dan JSON untuk cadangan data |
 
 ---

@@ -535,17 +535,158 @@ salah.
    sebelum halaman digambar, sehingga berbeda dari HTML server. Diselesaikan
    dengan `suppressHydrationWarning` pada `<html>`, disertai komentar
    alasannya agar tidak disalahartikan sebagai menyembunyikan masalah.
+## Sesi 6 - 3 September 2026: delapan butir yang tersisa, performa, dan menyunting di atas kertas
+
+Sesi ini dimulai dari daftar "yang belum dikerjakan" di sesi 5. Delapan butir
+ditimbang satu per satu: empat dikerjakan, empat ditolak, dua penolakan diganti
+pekerjaan murah yang menutup hampir seluruh kegunaannya. Di tengah jalan
+bertambah empat permintaan baru.
+
+### Keputusan atas kedelapan butir
+
+| # | Butir | Keputusan | Alasan ringkas |
+|---|---|---|---|
+| 1 | Repositori publik | dikerjakan | riwayat Git diaudit, tidak ada rahasia nyata |
+| 2 | Reset kata sandi via surel | ditolak, diganti | hambatannya domain terverifikasi, bukan koding |
+| 3 | Kata kunci leksikal | dikerjakan | murah, deterministik, terkurung di satu berkas |
+| 4 | Unggah foto | dikerjakan | sekaligus menutup dua cacat yang belum tercatat |
+| 5 | CSP `unsafe-inline` | ditolak | separuh mustahil, separuh bertukar dengan butir 7 |
+| 6 | Struktur CV unggahan | dikerjakan | yang rusak ternyata pembacaan kolomnya, bukan daftar judulnya |
+| 7 | Bahasa ke segmen alamat | ditolak | 19 berkas pindah demi 6 halaman statis |
+| 8 | Tamu satu CV | ditolak, diganti | multi-CV melawan alasan mode tamu dibuat tanpa server |
+
+### Yang dikerjakan
+
+1. **Repositori disiapkan untuk dibuka.** Seluruh riwayat commit diaudit: yang
+   tersaring hanya placeholder `USER:PASSWORD@HOST` dan kredensial dev lokal
+   `postgres:postgres@localhost`. Ditambahkan `LICENSE` MIT - tanpa berkas itu
+   berlaku hak cipta penuh, sehingga kode boleh dibaca tetapi tidak boleh
+   dipakai bahkan untuk belajar. Kredensial akun demo tetap terbuka karena
+   itulah gunanya, tetapi konsekuensinya kini disebutkan di README. Nama tim
+   Vercel dan id project Google Cloud dihapus dari catatan.
+
+2. **Kata kunci dicocokkan dalam bentuk kanonik.** Tanda hubung, titik, garis
+   miring, dan spasi dibuang saat membandingkan, sehingga `front-end`,
+   `front end`, dan `frontend` menjadi satu istilah. Plus dan tagar sengaja
+   dipertahankan supaya `c++`, `c#`, dan `c` tetap tiga bahasa berbeda.
+   Ditambah `src/lib/ats/aliases.ts` berisi ~55 kelompok padanan yang ditulis
+   manual. Perubahan cara pencocokan ini sekaligus menutup arah sebaliknya:
+   kecocokan sebagian seperti "java" di dalam "javascript" kini mustahil,
+   karena yang dibandingkan token utuh.
+
+3. **CV dua kolom dibaca per kolom.** `detectColumns()` sudah menghitung pita
+   kosong yang membelah halaman tetapi membuang letaknya.
+   `detectColumnLayout()` kini mengembalikan keduanya dari perhitungan yang
+   sama, dan `itemsToText()` mengelompokkan per kolom sebelum per baris.
+   Skor CV contoh dua kolom naik 53 menjadi 70; peringatan tata letaknya tetap.
+
+4. **Pas foto diunggah sebagai berkas**, dikecilkan dan dikompresi di peramban
+   ke 400x533 piksel lalu disimpan sebagai data URI pada kolom `photoUrl` yang
+   sudah ada. Tanpa migrasi - kolomnya sudah `TEXT` sejak migrasi pertama.
+
+5. **Dua pengganti murah.** Tautan "Lupa kata sandi?" di halaman masuk yang
+   menjelaskan jalur Google + Pengaturan, dan tombol "Muat dari JSON" di mode
+   tamu yang melengkapi "Unduh JSON" yang sudah ada.
+
+### Empat permintaan tambahan di tengah sesi
+
+6. **Menyunting langsung di atas kertas.** Tombol "Ketik di kertas" membuat
+   nama, jabatan, ringkasan, judul entri, dan seluruh poin pencapaian dapat
+   diklik dan diketik di panel kanan. Yang diketik masuk ke data CV yang sama
+   dengan yang diisi formulir, sehingga field di kiri ikut berubah seketika.
+   Rancangan lengkapnya di `docs/dokumentasi-teknis.md` bagian 8.1b.
+
+7. **Halaman depan diringankan.** HTML-nya 574 KB, dan 218 KB di antaranya
+   muatan React - salinan kedua dari pohon elemen yang sama. Sebelas dokumen
+   CV utuh ditulis dua kali. Dua perbaikan: contoh CV untuk pratinjau
+   dipangkas ke isi yang memang muat satu halaman (sisanya mustahil terlihat
+   karena kartunya memotong tepat di sana), dan pratinjau template dijadikan
+   komponen klien yang membangun sendiri datanya sehingga hanya nama template
+   yang ikut ke muatan React. **574 -> 224 KB, terkompresi 77 -> 41 KB, render
+   di server 0,85 -> 0,24 detik.**
+
+8. **Bingkai cetak mengikuti ukuran kertas.** Sebelumnya dipatok 210x297 mm
+   walau pengguna memilih Legal atau F4.
+
+9. **Lencana "N" Next.js tetap dimatikan** - lencana itu hanya muncul saat
+   `npm run dev` dan tidak pernah terbit ke production; mematikannya membuat
+   tampilan lokal sama persis dengan yang di Vercel.
+
+### Cacat yang ditemukan dan diperbaiki
+
+1. **Foto tidak pernah ikut ke berkas Word.** `src/lib/docx/build.ts` 492 baris
+   tanpa satu pun logika gambar. Berkas Word yang diunduh pengguna diam-diam
+   berbeda dari PDF yang baru saja dilihatnya, dan tidak ada pemeriksaan yang
+   menangkapnya. Ditemukan saat mengerjakan unggah foto.
+2. **CV dua kolom dihukum dua kali.** Judul bagian tidak pernah terdeteksi
+   karena tergabung dengan teks kolom sebelah, sehingga CV kehilangan poin di
+   dimensi kelengkapan maupun keterbacaan - hukuman yang berasal dari cara
+   aplikasi ini membaca, bukan dari CV-nya.
+3. **Ketidakcocokan hidrasi** setelah pratinjau template dijadikan komponen
+   klien: `previewResume()` memakai `newId()`, dan id acak itu ditulis ke
+   atribut `data-field` sehingga berbeda antara server dan peramban. Diperbaiki
+   dengan id berurutan yang tetap.
+4. **Poin pencapaian bisa tertimpa yang salah.** `Bullets` menyaring poin
+   kosong lebih dulu, sehingga nomor di layar berbeda dari nomor di dalam data.
+   Nomor aslinya kini dibawa serta.
+
+### Pengujian
+
+`npm test` bertambah dari 107 menjadi **197 pemeriksaan, seluruhnya lulus** -
+tiga berkas uji baru: `keywords.test.ts` (38), `photo.test.ts` (12), dan
+`edit-path.test.ts` (36).
+
+Selain itu tiga jalur peramban diuji dengan Chrome sungguhan lewat DevTools
+Protocol:
+
+| Yang diuji | Hasil |
+|---|---|
+| Unggah foto + muat JSON di mode tamu (15 pemeriksaan) | 15 lulus |
+| Mengetik langsung di atas kertas (12 pemeriksaan) | 12 lulus |
+| Cetak PDF A4 dan Legal (9 pemeriksaan) | 9 lulus |
+
+Angka yang tercatat dari pengujian itu: berkas foto 7,3 MB terkompresi menjadi
+82 KB pada 400x533 piksel; PDF A4 berukuran 595x842 pt dan Legal 612x1008 pt,
+keduanya dua halaman dengan teks yang tetap dapat diseleksi; nol galat
+JavaScript di seluruh jalur.
+
+### Catatan tentang lambatnya situs production
+
+Diukur, bukan ditebak. TTFB halaman production 8-15 detik. Tetapi pada aset
+statis yang sudah **cache HIT**, membuka koneksi TCP saja memakan 1,7-3,2 detik
+dan jabat tangan TLS 3,4-6,2 detik. Artinya sebagian besar lambatnya berasal
+dari jalur jaringan ke Singapura, bukan dari kode - dan tidak ada perubahan
+kode yang dapat memperbaikinya.
+
+Yang memang milik aplikasi sudah diperbaiki (butir 7 di atas). Satu hal lagi
+yang tercatat tetapi belum dikerjakan: seluruh halaman membalas
+`Cache-Control: private, no-store` dengan `X-Vercel-Cache: MISS` selalu, karena
+membaca cookie bahasa. Tidak ada satu halaman pun yang dapat di-cache di server
+tepi. Memperbaikinya menuntut memindahkan bahasa ke segmen alamat - butir 7
+pada daftar lama, yang untuk sekarang sengaja tidak dikerjakan.
+
+### Kalibrasi skor setelah perubahan
+
+| Keadaan | Skor |
+|---|---:|
+| CV kosong | 4 |
+| CV contoh, satu halaman | 98 |
+| CV contoh berfoto | 95 |
+| Berkas PDF satu kolom yang tersusun baik | 98 |
+| Berkas PDF dua kolom | 70 (sebelumnya 53) |
+| Berkas CV lemah | 45 |
+
 
 ---
 
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 5.
+Angka di bawah ini per akhir sesi 6.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 98 |
-| Baris kode termasuk berkas uji dan skrip | ~22.700 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 104 |
+| Baris kode termasuk berkas uji dan skrip | ~26.100 |
 | Tabel basis data | 16 |
 | Berkas migrasi | 5 |
 | Route aplikasi | 33 |
@@ -556,4 +697,6 @@ Angka di bawah ini per akhir sesi 5.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 107 |
+| Pemeriksaan otomatis | 197 |
+
+---

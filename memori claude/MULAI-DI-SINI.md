@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **2 September 2026** (sesi 5)
+Terakhir diperbarui: **3 September 2026** (sesi 6)
 
 ---
 
@@ -23,6 +23,11 @@ Sejak sesi 4, aplikasi ini juga **memindai dan membandingkan CV yang sudah
 ada**: berkas PDF/DOCX/TXT dibaca dan dinilai di dalam peramban, tanpa pernah
 dikirim ke server. Antarmukanya dwibahasa (Indonesia/Inggris), bertema
 monokrom, dan punya mode terang/gelap.
+
+Sejak sesi 6, CV dapat disunting lewat **dua jalur yang menyentuh data yang
+sama**: formulir di panel kiri, dan kertas di panel kanan yang dapat diketik
+langsung seperti di pengolah kata. Pas foto juga diunggah sebagai berkas,
+bukan lagi lewat tautan gambar.
 
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
@@ -45,7 +50,7 @@ Politeknik Negeri Samarinda.
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV` |
-| Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> (privat, branch `main`) |
+| Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> (branch `main`, berlisensi MIT) |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
@@ -63,7 +68,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 107 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 197 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -129,13 +134,17 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/ats/document-messages.ts` | Kalimat kelebihan/kekurangan untuk penilai berkas |
 | `src/lib/intake/extract.ts` | Pembaca PDF (pdf.js) dan DOCX (zip + XML) di peramban, beserta deteksi jumlah kolom |
 | `src/lib/ats/vocabulary.ts` | Kata henti, kata kerja aksi, frasa klise |
+| `src/lib/ats/aliases.ts` | Kelompok padanan kata kunci - singkatan lawan kepanjangannya. Murni data; alasan apa yang sengaja tidak dimasukkan ada di kepala berkasnya |
+| `src/lib/resume/photo.ts` | Kompresi pas foto di peramban dan pembacaan data URI-nya |
+| `src/lib/resume/edit-path.ts` | Menulis balik teks yang diketik langsung di atas kertas. Hanya jalur terdaftar yang boleh ditulis |
+| `src/components/home/TemplatePreview.tsx` | Pratinjau template di halaman depan. Komponen klien **demi berat halaman**, bukan demi interaktivitas - alasannya di kepala berkasnya |
 | `src/lib/i18n/id.ts`, `en.ts` | Kamus antarmuka. `en.ts` diketik sebagai `Dictionary`, jadi kunci yang lupa diterjemahkan menggagalkan build |
 | `src/lib/resume/templates.ts` | Katalog 10 template beserta ciri rupanya |
 | `src/lib/resume/paper.ts` | Ukuran kertas A4/Letter/Legal/F4 |
 | `resumeMargins()` di `templates.ts` | Margin yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template |
 | `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
-| `tests/` | 107 pemeriksaan; `npm test` |
+| `tests/` | 197 pemeriksaan; `npm test` |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
 | `src/components/HeaderBack.tsx` | Panah kembali di bilah atas; menuju halaman induk tetap, bukan riwayat peramban |
@@ -190,6 +199,12 @@ supaya tidak perlu diingat-ingat lagi.
 | **Jejak navigasi, bukan hanya tombol kembali peramban** | Halaman dalam kerap dibuka langsung dari hasil pencarian atau tautan yang dibagikan - pada keadaan itu tombol kembali peramban tidak punya riwayat untuk dimundurkan sama sekali. Butir terakhirnya sengaja bukan tautan: tautan menuju halaman yang sedang dibuka hanya menambah sasaran papan ketik yang tidak melakukan apa-apa. |
 | **Kredit pembuat tidak ikut di CV** | CV adalah dokumen milik pelamar. Mencantumkan nama pihak lain akan membingungkan perekrut dan merugikan penggunanya. |
 | **Tidak mencantumkan statistik "sekian persen CV ditolak ATS"** | Angka yang beredar luas itu tidak punya sumber primer yang dapat diverifikasi - berisiko dipertanyakan penguji. |
+| **Kata kunci dibandingkan dalam bentuk kanonik, tetapi plus dan tagar dipertahankan** | Membuang tanda hubung menyamakan "front-end" dengan "frontend" - itu memang satu keahlian. Membuang plus dan tagar akan menyamakan "c++", "c#", dan "c" - itu tiga bahasa berbeda. |
+| **Pas foto disimpan sebagai data URI, bukan di penyimpanan objek** | Mode tanpa akun menyimpan seluruh CV di localStorage dan tidak pernah menyentuh server; penyimpanan berkas akan memaksanya punya id sesi anonim beserta pembersihan berkas yatim. Satu jalur kode melayani kedua mode, dan tidak ada berkas yang bisa tertinggal setelah CV-nya dihapus. |
+| **Foto pada DOCX diletakkan setelah blok identitas, bukan berdampingan** | Satu-satunya cara meletakkan gambar berdampingan teks di Word adalah tabel atau kotak teks - dua penyebab tersering kegagalan pengurai ATS yang sejak awal dihindari berkas itu. |
+| **Menyunting di kertas disimpan saat lepas fokus, bukan tiap ketukan tombol** | Elemen contentEditable menyimpan teksnya sendiri di DOM; menulis ke state React tiap huruf membuat React menggambar ulang elemennya di tengah pengguna mengetik, dan kursor melompat ke awal paragraf. |
+| **Hanya jalur terdaftar yang boleh ditulis dari kertas** | Nilai `data-edit` berasal dari DOM, dan DOM dapat disunting siapa pun lewat konsol. Penyetel jalur bebas akan mengizinkan penulisan ke `id`, yang memutus hubungan entri dengan barisnya di basis data. |
+| **Pratinjau template di halaman depan jadi komponen klien** | Sebagai komponen server, seluruh pohon elemen dokumen ikut ditulis dua kali ke halaman - sekali sebagai HTML, sekali lagi sebagai muatan React. Untuk sebelas dokumen, salinan kedua itu saja lebih dari 200 KB. |
 
 ---
 
@@ -216,44 +231,77 @@ Berguna bila gejala serupa muncul lagi.
 | Cahaya kursor terbaca sebagai cakram, bukan cahaya | Gradasi hanya tiga titik henti dan berhenti di 72% jari-jari | Delapan titik henti mendekati kurva (1-r)^3, berakhir tepat nol di 100% |
 | Teks menempel ke tepi bawah kertas pada CV lebih dari satu halaman - ikut terbawa ke PDF | Margin berupa `padding` elemen kertas, yang hanya berlaku sekali untuk seluruh dokumen yang mengalir; `@page` bermargin nol | Margin dipindah ke `@page`, padding dikosongkan saat mencetak, pratinjau per halaman memakai "tinggi terpakai" |
 | Berkas Word diam-diam berbeda dari PDF | Margin DOCX dipatok 15 mm dan ukuran kertasnya tidak pernah disetel (Word memakai bawaannya, kerap Letter) | Keduanya kini mengikuti pilihan pengguna |
+| Pas foto tidak pernah ikut ke berkas Word | `docx/build.ts` sama sekali tidak punya logika gambar - 492 baris, nol | Foto disisipkan sebagai `ImageRun` setelah blok identitas |
+| CV dua kolom dihukum di dua dimensi sekaligus | Pembaca PDF mengelompokkan teks hanya menurut koordinat vertikal, sehingga judul bagian menyatu dengan teks kolom sebelah dan tidak pernah terdeteksi | Teks dibaca per kolom lebih dulu; skor CV dua kolom 53 -> 70 |
+| Bingkai cetak selalu A4 | `frame.style` dipatok 210x297 mm walau pengguna memilih Legal atau F4 | Mengikuti `paperSpec(pageSize)` |
+| Ketidakcocokan hidrasi di halaman depan | `previewResume()` memakai `newId()`, dan id acak itu ditulis ke atribut `data-field` sehingga berbeda antara server dan peramban | Id berurutan yang tetap |
+| Ketikan di kertas bisa menimpa poin yang salah | `Bullets` menyaring poin kosong lebih dulu, sehingga nomor di layar berbeda dari nomor di dalam data | Nomor aslinya dibawa serta |
 
 ---
 
 ## 8. Yang belum dikerjakan
 
-Daftar ini sengaja jujur - berguna sebagai bab saran pengembangan lanjutan.
+Delapan butir pada daftar sesi 5 sudah ditimbang satu per satu di sesi 6.
+Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
+`riwayat-pengerjaan.md` sesi 6. Yang masih terbuka:
 
-1. **Repositori masih privat.** Untuk menjadikannya publik (mis. agar
-   tautannya dapat dicantumkan di jurnal): buka Settings repositori di GitHub,
-   gulir ke bawah, pilih "Change repository visibility". Perlu diingat,
-   menjadikan repo publik tidak dapat ditarik kembali sepenuhnya karena
-   isinya dapat terlanjur disalin orang lain.
-3. **Pemulihan kata sandi lewat surel belum ada** - memerlukan layanan
-   pengirim surel.
-4. **Pencocokan kata kunci masih leksikal.** "frontend" dan "front-end"
-   dikenali berbeda; sinonim belum dikenali.
-5. **Foto lewat tautan gambar, belum unggah berkas.**
-6. **CSP masih memuat `'unsafe-inline'`** pada script-src, karena Next.js
-   menyisipkan skrip bootstrap sebaris.
-7. **Struktur CV yang diunggah ditebak dari teksnya.** CV dengan judul bagian
-   tidak lazim dinilai lebih rendah daripada seharusnya - meski itu sendiri
-   pertanda yang benar, karena pengurai ATS pun akan kesulitan yang sama.
-8. **Halaman publik kini dirender dinamis**, bukan statis, karena membaca
-   cookie bahasa. Bila suatu saat perlu statis lagi, jalannya adalah
-   memindahkan bahasa ke segmen alamat (`/en/...`).
+1. **Pemulihan kata sandi lewat surel belum ada.** Hambatannya bukan koding
+   melainkan domain: surel dari `vercel.app` tanpa SPF/DKIM terverifikasi
+   berakhir di folder spam. Sementara ini halaman masuk menjelaskan jalan yang
+   memang sudah ada - masuk dengan Google memakai alamat surel yang sama, lalu
+   buat kata sandi baru di Pengaturan. Bangun yang sebenarnya kalau nanti punya
+   domain sendiri.
 
-9. **Mode tanpa akun hanya menyimpan satu CV.** Cukup untuk mencoba, tetapi
-   riwayat beberapa CV memang menuntut akun. Ini batasan yang disengaja,
-   bukan kekurangan yang terlewat.
-10. **Penyimpanan akun memakai basis data aplikasi sendiri.** Masuk lewat
-    Google hanya dipakai untuk membuktikan identitas; datanya tidak
-    disimpan di dalam akun Google pengguna, dan Google API tidak dipakai
-    untuk menyimpan apa pun.
+2. **Pencocokan kata kunci masih tidak mengenali kata berimbuhan.**
+   "mengembangkan" dan "pengembangan" dihitung berbeda. Perbedaan ejaan dan
+   singkatan sudah tertangani sejak sesi 6. Yang tersisa menuntut pemenggalan
+   morfologis, dan itu akan mengorbankan sifat deterministik yang menjadi
+   alasan mesin ini dibuat berbasis kaidah - jadi ini batasan yang dipilih,
+   bukan yang terlewat.
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 107
-pemeriksaan di folder `tests/`). Sejak sesi 5, jalur peramban diuji dengan
-menjalankan Chrome sungguhan lewat DevTools Protocol - termasuk memeriksa
-isi berkas PDF yang benar-benar dihasilkan, bukan sekadar keberadaannya.
+3. **CSP masih memuat `'unsafe-inline'`.** Pada `style-src` praktis tidak dapat
+   dihilangkan: dokumen CV memakai puluhan gaya sebaris, dan nonce tidak
+   berlaku untuk atribut `style`. Pada `script-src` bisa dengan nonce, tetapi
+   itu menuntut middleware berjalan di semua path dan memaksa setiap halaman
+   dinamis - bertukar langsung dengan butir 5 di bawah. Permukaan XSS aplikasi
+   ini sendiri sempit: tidak ada konten dari pengguna lain, tidak ada komentar,
+   tidak ada HTML dari luar.
+
+4. **Struktur CV yang diunggah masih ditebak dari teksnya.** Judul bagian yang
+   tidak lazim tetap dinilai lebih rendah - dan itu sendiri pertanda yang
+   benar, karena pengurai ATS pun akan kesulitan yang sama. Kerusakan yang
+   **bukan** milik CV-nya (teks dua kolom yang menyatu) sudah diperbaiki.
+
+5. **Tidak ada satu halaman pun yang dapat di-cache di server tepi.** Seluruh
+   halaman membalas `Cache-Control: private, no-store` dengan
+   `X-Vercel-Cache: MISS` selalu, karena membaca cookie bahasa. Memperbaikinya
+   menuntut memindahkan bahasa ke segmen alamat (`/en/...`) - 19 berkas pindah,
+   15 `generateMetadata` ditulis ulang, sitemap dan robots ikut berubah.
+
+   Perlu diketahui sebelum memutuskan: lambatnya situs production **bukan**
+   terutama dari sini. Diukur pada aset statis yang sudah cache HIT, membuka
+   koneksi TCP saja 1,7-3,2 detik dan jabat tangan TLS 3,4-6,2 detik. Yang
+   memang milik aplikasi sudah diperbaiki di sesi 6 (halaman depan 574 -> 224
+   KB, render 0,85 -> 0,24 detik).
+
+6. **Mode tanpa akun hanya menyimpan satu CV.** Batasan yang disengaja:
+   menumpuk banyak CV orang di peramban komputer bersama berlawanan dengan
+   alasan mode ini dibuat tanpa server. Tombol Unduh/Muat JSON menjawab
+   kebutuhan menyimpan beberapa versi tanpa menambah tumpukan itu.
+
+7. **Menyunting di atas kertas belum mencakup semuanya.** Tanggal, baris
+   gabungan (perusahaan + kota + negara), dan penambahan entri tetap lewat
+   formulir. Ketiganya disengaja, alasannya di `docs/dokumentasi-teknis.md`
+   bagian 8.1b.
+
+8. **Penyimpanan akun memakai basis data aplikasi sendiri.** Masuk lewat Google
+   hanya dipakai untuk membuktikan identitas; datanya tidak disimpan di dalam
+   akun Google pengguna.
+
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 197
+pemeriksaan). Sejak sesi 5, jalur peramban diuji dengan menjalankan Chrome
+sungguhan lewat DevTools Protocol - termasuk memeriksa isi berkas PDF yang
+benar-benar dihasilkan, bukan sekadar keberadaannya.
 
 ---
 

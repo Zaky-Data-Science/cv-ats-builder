@@ -588,11 +588,24 @@ Disebutkan terbuka agar dapat ditulis pada bab keterbatasan penelitian.
    sendiri yang tidak dipublikasikan. Aturan di sini disusun dari kaidah yang
    berlaku umum, sehingga skor tinggi berarti "memenuhi kaidah yang diperiksa",
    bukan jaminan lolos pada sistem tertentu.
-2. **Pencocokan kata kunci bersifat leksikal.** `frontend` dan `front-end`
-   dikenali berbeda, dan sinonim tidak dikenali. Penambahan pencocokan
-   semantik merupakan arah pengembangan lanjutan.
-3. **Foto diunggah lewat URL, bukan berkas.** Aplikasi belum menyediakan
-   penyimpanan berkas.
+2. **Pencocokan kata kunci bersifat leksikal, tetapi tidak lagi harfiah.**
+   Sejak sesi 6, perbandingan dilakukan terhadap bentuk kanonik - tanda
+   hubung, titik, garis miring, dan spasi dibuang - sehingga `frontend`,
+   `front-end`, dan `front end` dikenali sebagai satu istilah. Ditambah daftar
+   padanan yang ditulis manual untuk singkatan lawan kepanjangannya. Yang
+   masih belum dikenali adalah sinonim yang tidak terdaftar dan kata berimbuhan
+   ("mengembangkan" lawan "pengembangan"): keduanya menuntut pemenggalan
+   morfologis atau model bahasa, dan keduanya akan mengorbankan sifat
+   deterministik yang menjadi alasan mesin ini dibuat berbasis kaidah.
+3. **Foto disimpan menyatu dengan CV, bukan sebagai berkas terpisah.** Sejak
+   sesi 6 pengguna memilih berkas gambar, yang dikecilkan dan dikompresi di
+   peramban lalu disimpan sebagai data URI pada kolom `photoUrl`. Bentuk ini
+   dipilih supaya satu jalur kode melayani mode berakun maupun mode tanpa
+   akun - yang menyimpan seluruh CV di `localStorage` dan tidak pernah
+   menyentuh server. Konsekuensinya yang perlu diakui: isi CV bertambah
+   sekitar 30-80 KB, dan kuota `localStorage` pada mode tanpa akun menjadi
+   lebih ketat. Kolom yang sama tetap menerima tautan gambar, sehingga CV yang
+   dibuat sebelumnya tidak berubah.
 4. **Perkiraan jumlah halaman pada mesin penilaian bersifat heuristik.**
    Antarmuka editor menampilkan jumlah halaman sebenarnya dari hasil
    pengukuran DOM; angka heuristik hanya dipakai saat penilaian dijalankan di
@@ -605,6 +618,16 @@ Disebutkan terbuka agar dapat ditulis pada bab keterbatasan penelitian.
    yang tidak lazim akan dinilai lebih rendah daripada seharusnya - meski itu
    sendiri pertanda yang benar, karena pengurai ATS pun akan kesulitan yang
    sama.
+
+   Satu penyebab yang **bukan** milik CV-nya sudah diperbaiki pada sesi 6:
+   pembaca PDF dulu mengelompokkan potongan teks hanya menurut koordinat
+   vertikalnya, sehingga pada CV dua kolom teks kiri dan kanan yang sejajar
+   menyatu menjadi satu baris. Judul bagian karena itu tidak pernah berdiri
+   sendiri dan tidak pernah terdeteksi, dan CV kehilangan poin pada dimensi
+   kelengkapan maupun keterbacaan sekaligus - hukuman ganda yang berasal dari
+   cara aplikasi ini membaca, bukan dari CV-nya. Teks kini dibaca per kolom.
+   Peringatan tata letak dua kolom sendiri tetap berlaku dan tetap memotong
+   nilai keterbacaan.
 7. **Halaman publik kini dirender dinamis, bukan statis,** karena membaca
    cookie bahasa antarmuka. Itu harga yang dibayar agar HTML pertama yang
    diterima pengunjung sudah berbahasa yang ia pilih. Bila suatu saat perlu
@@ -644,6 +667,52 @@ layar 390 piksel dan harus menggulir menyamping hanya untuk membaca satu
 baris. Pengukuran sengaja ditunda sampai panelnya benar-benar terlihat -
 mengukur saat panel masih tersembunyi menghasilkan lebar nol dan mengunci
 perbesaran pada nilai terkecil.
+
+### 8.1b Dua Cara Menyunting CV yang Sama
+
+Sejak sesi 6, CV dapat disunting lewat dua jalur yang menyentuh data yang
+sama: formulir di panel kiri, dan **kertas di panel kanan yang dapat diketik
+langsung**. Tombol "Ketik di kertas" di bilah pratinjau menyalakannya.
+
+Alasannya bukan sekadar kenyamanan. Menulis poin pencapaian adalah pekerjaan
+merangkai kalimat, dan merangkai kalimat paling wajar dilakukan sambil
+melihat hasil jadinya - panjangnya, letak pergantian barisnya, dan apakah ia
+masih muat satu halaman. Formulir memperlihatkan isian; kertas memperlihatkan
+akibatnya.
+
+Rancangannya memegang tiga hal:
+
+1. **Satu data, dua tampilan.** Ketikan di kertas menulis ke objek CV yang
+   sama dengan yang diisi formulir. Field di kiri karena itu ikut berubah
+   seketika, skor ATS ikut dihitung ulang, dan simpan otomatis berjalan tanpa
+   jalur tersendiri. Tidak ada penggabungan dua salinan yang bisa berselisih.
+
+2. **Dokumen CV menandai, panel pratinjau menangani.** Komponen dokumen hanya
+   menuliskan `contentEditable` beserta atribut `data-edit` berisi jalur
+   datanya; satu penangan di elemen pembungkus panel pratinjau yang menangkap
+   ketikannya. Pembagian itu perlu karena komponen dokumen yang sama juga
+   dirender di server untuk halaman cetak dan halaman depan, tempat tidak ada
+   penangan peristiwa sama sekali.
+
+3. **Yang dapat diketik dibatasi dengan sengaja.** Hanya field bertipe teks
+   yang berpadanan satu-ke-satu: nama, jabatan, ringkasan, judul entri, dan
+   poin pencapaian. Tanggal tidak, karena disimpan sebagai `"YYYY-MM"` dan
+   diisi lewat pemilih bulan - menerimanya sebagai teks bebas berarti menerima
+   `"Feb 2023"` sebagai tanggal. Baris yang di kertas merupakan gabungan
+   beberapa field juga tidak, karena membelahnya kembali hanyalah tebakan, dan
+   tebakan yang salah memindahkan isi ke field keliru tanpa pengguna sadari.
+   Menambah dan menghapus entri tetap lewat formulir: mengetik mengubah kata,
+   bukan struktur.
+
+Suntingan disimpan saat kursor meninggalkan teksnya, bukan pada setiap ketukan
+tombol. Elemen `contentEditable` menyimpan teksnya sendiri di dalam DOM; bila
+setiap ketukan langsung mengubah state React, React menggambar ulang elemennya
+di tengah pengguna mengetik dan kursor melompat ke awal paragraf setiap huruf.
+
+Selama mengetik, tampilan berpindah ke mode bersambung. Pada mode per halaman
+dokumen yang sama dirender sekali untuk setiap lembar lalu digeser dan
+dipangkas, sehingga satu paragraf punya beberapa salinan di dalam DOM dan
+salinan yang terpotong di batas halaman mustahil diketik dengan benar.
 
 ### 8.2 Gerak dan Kedalaman
 

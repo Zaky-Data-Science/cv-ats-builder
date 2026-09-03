@@ -206,6 +206,42 @@ Di atas pratinjau ada dua tombol: **Per halaman** dan **Sambung**.
 
 Keduanya menampilkan dokumen yang sama; yang berbeda hanya cara melihatnya.
 
+### Mengetik langsung di atas kertas
+
+Di sebelah kedua tombol itu ada tombol **Ketik di kertas**. Menyalakannya
+membuat CV di sebelah kanan dapat diklik dan diketik langsung, seperti di
+pengolah kata.
+
+Yang Anda ketik di kertas **masuk ke field di panel kiri**, dan sebaliknya -
+keduanya satu CV yang sama, bukan dua salinan. Jadi Anda bebas memilih: isi
+lewat field dulu lalu rapikan kalimatnya di atas kertas, atau langsung
+mengetik di kertas sejak awal.
+
+Yang dapat diketik di kertas:
+
+- Nama dan jabatan yang dituju
+- Ringkasan profil
+- Judul tiap entri - jabatan, nama proyek, jabatan organisasi, nama sertifikat
+- Seluruh poin pencapaian
+
+Yang tetap lewat field, beserta alasannya:
+
+| Hal | Mengapa |
+|---|---|
+| Tanggal | Disimpan sebagai bulan dan tahun, diisi lewat pemilih bulan. Bila diketik bebas, "Feb 2023" bukan tanggal yang dapat dibaca aplikasi |
+| Nama perusahaan bersama kota dan negara | Di kertas ketiganya tampil sebagai satu baris. Membelahnya kembali menjadi tiga isian hanyalah tebakan, dan tebakan yang salah memindahkan isi ke tempat yang keliru |
+| Menambah atau menghapus entri | Mengetik mengubah kata, bukan struktur. Menambah entri tetap lewat tombol di formulir |
+
+Beberapa hal yang perlu diketahui:
+
+- Tekan **Enter** untuk menyelesaikan suntingan, **Esc** untuk membatalkan dan
+  mengembalikan teks semula.
+- Menempel teks dari Word atau dari halaman web masuk sebagai teks polos -
+  huruf dan warna asalnya tidak ikut, karena gaya CV ditentukan templatenya.
+- Selama mengetik, tampilan berpindah ke **Sambung**. Pada tampilan per
+  halaman dokumen terpotong di batas halaman, dan kursor tidak dapat
+  menyeberangi potongan itu.
+
 ---
 
 ## 6. Mengisi tiap bagian
@@ -251,6 +287,17 @@ negara, foto juga dihindari untuk mengurangi bias dalam seleksi.
 Bila lowongan Anda memang memintanya, nyalakan opsinya lalu pilih salah satu
 template pada kelompok **Dengan foto**. Bila fotonya tidak muncul, hampir pasti
 template yang sedang dipakai memang tidak menyediakan tempat foto.
+
+**Cara memasang fotonya:** tekan **Pilih berkas foto**, lalu pilih berkas JPG,
+PNG, atau WebP dari perangkat Anda. Foto dari kamera ponsel berukuran beberapa
+megabyte tidak masalah - aplikasi mengecilkannya sendiri ke ukuran cetak 3x4
+sebelum disimpan, jadi berkas CV Anda tidak ikut membengkak. Latar polos
+memberi hasil paling baik, dan sekaligus paling ringan.
+
+Fotonya tersimpan menyatu dengan CV, bukan sebagai berkas terpisah di suatu
+tempat. Artinya foto itu ikut ke mana pun CV-nya pergi: ikut ke berkas PDF,
+ikut ke berkas Word, dan ikut ke berkas JSON bila Anda mengunduhnya sebagai
+cadangan. Tidak ada tautan yang bisa mati di kemudian hari.
 
 ---
 
