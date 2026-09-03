@@ -12,6 +12,9 @@ import {
 import { useI18n } from "@/components/i18n";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { Badge, Button } from "@/components/ui";
+import { DatePopover, type DateValue } from "./DatePopover";
+import { dateShape, type DatePatch } from "@/lib/resume/edit-path";
+import type { StructureAction } from "@/lib/resume/structure";
 import { mmToPx, paperPx, paperSpec } from "@/lib/resume/paper";
 import { resumeMargins } from "@/lib/resume/templates";
 import type { ResumeData } from "@/lib/resume/types";
@@ -77,6 +80,8 @@ export function PreviewPane({
   highlight,
   onPageCountChange,
   onEdit,
+  onDateEdit,
+  onStructure,
 }: {
   data: ResumeData;
   highlight: string | null;
@@ -88,6 +93,10 @@ export function PreviewPane({
    * halaman cetak dan pratinjau template. Editor-lah yang menyediakannya.
    */
   onEdit?: (path: string, value: string) => void;
+  /** Menerima periode yang dipilih lewat pemilih bulan di atas kertas. */
+  onDateEdit?: (path: string, patch: DatePatch) => void;
+  /** Menerima penambahan dan penghapusan entri maupun poin. */
+  onStructure?: (action: StructureAction) => void;
 }) {
   const { t } = useI18n();
 
@@ -176,13 +185,53 @@ export function PreviewPane({
    * disimpan apa adanya, lalu diam-diam meratakannya kembali saat menyimpan.
    * Escape membatalkan dengan mengembalikan teks aslinya.
    */
+  /**
+   * Poin yang menunggu difokuskan setelah React menggambarnya.
+   *
+   * Poin baru belum ada di DOM saat tombol Enter ditangani - yang baru terjadi
+   * adalah permintaan perubahan state. Jalurnya karena itu dititipkan di sini,
+   * dan efek yang berjalan setelah penggambaran berikutnya yang mencarinya.
+   */
+  const fokusMenungguRef = React.useRef<string | null>(null);
+
   const handleEditKey = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       const target = event.target as HTMLElement;
-      if (!target?.dataset?.edit) return;
+      const path = target?.dataset?.edit;
+      if (!path) return;
 
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
+
+        /*
+          Enter di sebuah poin pencapaian membuat poin berikutnya, seperti di
+          pengolah kata. Di field lain perilakunya tidak berubah: Enter
+          menyelesaikan suntingan.
+
+          Yang tidak berubah pada keduanya: Enter tidak pernah menyisipkan
+          baris baru di dalam elemennya. Setiap teks yang dapat diketik di
+          sini adalah untaian satu baris di dalam data, dan baris kedua di
+          dalam satu untaian tidak dapat disimpan apa adanya.
+        */
+        const poin = /^([a-z]+)\.(\d+)\.bullets\.(\d+)$/.exec(path);
+        if (poin && onStructure && onEdit) {
+          const [, section, nomorEntri, nomorPoin] = poin;
+          // Teks yang sedang diketik disimpan lebih dulu. Poin baru menggeser
+          // penomoran, dan menyimpan setelahnya akan menulis ke poin yang
+          // salah.
+          onEdit(path, target.innerText ?? "");
+          onStructure({
+            kind: "addBullet",
+            section,
+            index: Number(nomorEntri),
+            after: Number(nomorPoin),
+          });
+          fokusMenungguRef.current = `${section}.${nomorEntri}.bullets.${
+            Number(nomorPoin) + 1
+          }`;
+          return;
+        }
+
         target.blur();
       }
       if (event.key === "Escape") {
@@ -191,7 +240,28 @@ export function PreviewPane({
         target.blur();
       }
     },
-    [],
+    [onEdit, onStructure],
+  );
+
+  /**
+   * Menambah entri lewat tombol yang berdiri di ujung sebuah bagian.
+   *
+   * Sengaja tidak lewat `handlePaperClick` yang sama dengan periode: keduanya
+   * memang dua penanda berbeda, dan menggabungkannya akan membuat satu klik
+   * harus diuji terhadap dua kemungkinan sebelum diketahui maksudnya.
+   */
+  const handleAddClick = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!onStructure) return false;
+      const el = (event.target as HTMLElement).closest?.<HTMLElement>(
+        "[data-add]",
+      );
+      const section = el?.dataset.add;
+      if (!section) return false;
+      onStructure({ kind: "addEntry", section });
+      return true;
+    },
+    [onStructure],
   );
 
   /**
@@ -212,6 +282,85 @@ export function PreviewPane({
     },
     [],
   );
+
+  /**
+   * Memfokuskan poin yang baru dibuat, begitu React selesai menggambarnya.
+   *
+   * Bila belum ketemu, tidak melakukan apa-apa - penggambarannya belum
+   * selesai, dan efek berikutnya yang akan mencobanya lagi. Gagal diam
+   * disengaja: yang hilang paling banter satu lompatan kursor.
+   */
+  React.useEffect(() => {
+    const path = fokusMenungguRef.current;
+    if (!path) return;
+    const node = scrollRef.current?.querySelector<HTMLElement>(
+      `[data-edit="${CSS.escape(path)}"]`,
+    );
+    if (!node) return;
+    fokusMenungguRef.current = null;
+    node.focus();
+  }, [data]);
+
+  /* ------------------------------------------------------------------ */
+  /* Periode: pemilih bulan, bukan teks bebas                            */
+  /* ------------------------------------------------------------------ */
+
+  const [popoverTanggal, setPopoverTanggal] = React.useState<{
+    path: string;
+    anchor: HTMLElement;
+  } | null>(null);
+
+  /**
+   * Membuka pemilih bulan saat periode diklik.
+   *
+   * Dokumen hanya menandai periodenya dengan `data-date`; yang membuka
+   * pemilihnya panel ini - pembagian yang sama dengan `data-edit`, dan karena
+   * alasan yang sama: dokumen itu juga dirender di server.
+   */
+  const handlePaperClick = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (handleAddClick(event)) return;
+      if (!onDateEdit) return;
+      const el = (event.target as HTMLElement).closest?.<HTMLElement>(
+        "[data-date]",
+      );
+      if (!el?.dataset.date) return;
+      setPopoverTanggal({ path: el.dataset.date, anchor: el });
+    },
+    [handleAddClick, onDateEdit],
+  );
+
+  /*
+    Mematikan mode ketik ikut menutup pemilih yang sedang terbuka.
+
+    Diturunkan dari `editing`, bukan dikosongkan lewat efek: pemilih yang
+    menggantung di atas kertas yang tidak lagi dapat disunting akan menulis ke
+    CV lewat jalan yang sudah ditutup penggunanya, dan menyaringnya di sini
+    menutup itu tanpa satu pun render tambahan.
+  */
+  const tanggalAktif = editing ? popoverTanggal : null;
+
+  const bentukTanggal = tanggalAktif
+    ? dateShape(tanggalAktif.path.split(".")[0])
+    : null;
+
+  /** Nilai tanggal entri yang sedang dibuka, dibaca dari CV yang sama. */
+  const nilaiTanggal = ((): DateValue => {
+    if (!tanggalAktif || !bentukTanggal) return {};
+    const [bagian, nomor] = tanggalAktif.path.split(".");
+    const entri = (data as unknown as Record<string, Record<string, string>[]>)[
+      bagian
+    ]?.[Number(nomor)];
+    if (!entri) return {};
+    if (bentukTanggal.kind === "range") {
+      return {
+        startDate: entri.startDate ?? "",
+        endDate: entri.endDate ?? "",
+        isCurrent: Boolean(entri.isCurrent),
+      };
+    }
+    return { date: entri[bentukTanggal.field] ?? "" };
+  })();
 
   /** Perbesaran yang membuat lebar kertas pas dengan lebar area yang tersedia. */
   const fitZoom = React.useCallback(() => {
@@ -360,7 +509,14 @@ export function PreviewPane({
           {onEdit && (
             <button
               type="button"
-              onClick={() => setTyping((on) => !on)}
+              onClick={() => {
+          // Mematikan mode ketik membuang poin yang ditinggalkan kosong.
+          // Dibersihkan di sini, bukan saat kursor meninggalkan sebuah poin:
+          // membersihkan pada saat lepas fokus akan menghapus poin yang baru
+          // saja dibuat pengguna tepat ketika ia mengkliknya untuk mengetik.
+          if (editing) onStructure?.({ kind: "pruneBullets" });
+          setTyping((on) => !on);
+        }}
               aria-pressed={editing}
               title={t.preview.typeHint}
               className={cn(
@@ -463,6 +619,7 @@ export function PreviewPane({
         onBlur={commitEdit}
         onKeyDown={handleEditKey}
         onPaste={handleEditPaste}
+        onClick={handlePaperClick}
       >
         <div
           ref={documentRef}
@@ -557,6 +714,16 @@ export function PreviewPane({
           )}
         </div>
       </div>
+
+      {tanggalAktif && bentukTanggal && onDateEdit && (
+        <DatePopover
+          anchor={tanggalAktif.anchor}
+          shape={bentukTanggal}
+          value={nilaiTanggal}
+          onSave={(patch) => onDateEdit(tanggalAktif.path, patch)}
+          onClose={() => setPopoverTanggal(null)}
+        />
+      )}
     </div>
   );
 }

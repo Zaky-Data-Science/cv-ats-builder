@@ -46,7 +46,15 @@ import {
   stashForImport,
 } from "@/lib/resume/guest";
 import { sampleResume } from "@/lib/resume/sample";
-import { applyEdit } from "@/lib/resume/edit-path";
+import {
+  applyDateEdit,
+  applyEdit,
+  type DatePatch,
+} from "@/lib/resume/edit-path";
+import {
+  applyStructure,
+  type StructureAction,
+} from "@/lib/resume/structure";
 import { resumeFileSchema } from "@/lib/resume/schema";
 import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
@@ -192,6 +200,31 @@ export function ResumeEditor({
     dirtyRef.current = true;
     setSaveState("dirty");
     setData((prev) => applyEdit(prev, path, value));
+  }, []);
+
+  /**
+   * Periode yang dipilih lewat pemilih bulan di atas kertas.
+   *
+   * Jalur tersendiri, bukan menumpang `editOnPaper`: yang satu menerima teks
+   * bebas hasil ketikan, yang ini hanya menerima nilai yang memang berasal
+   * dari <input type="month">. Menyatukannya akan meloloskan "Feb 2023"
+   * sebagai tanggal - persis alasan tanggal dulu tidak dapat disunting di
+   * kertas sama sekali.
+   */
+  const editDateOnPaper = React.useCallback(
+    (path: string, patch: DatePatch) => {
+      dirtyRef.current = true;
+      setSaveState("dirty");
+      setData((prev) => applyDateEdit(prev, path, patch));
+    },
+    [],
+  );
+
+  /** Menambah dan menghapus entri maupun poin dari atas kertas. */
+  const structureOnPaper = React.useCallback((action: StructureAction) => {
+    dirtyRef.current = true;
+    setSaveState("dirty");
+    setData((prev) => applyStructure(prev, action));
   }, []);
 
   const update = React.useCallback((patch: Partial<ResumeData>) => {
@@ -1008,6 +1041,8 @@ export function ResumeEditor({
                 highlight={highlight}
                 onPageCountChange={setPages}
                 onEdit={editOnPaper}
+              onDateEdit={editDateOnPaper}
+              onStructure={structureOnPaper}
               />
             </div>
 

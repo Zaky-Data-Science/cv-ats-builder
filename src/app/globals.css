@@ -440,6 +440,26 @@ body {
   transition: background-color 0.15s ease;
 }
 
+/*
+  Penampung untuk field yang masih kosong saat "Ketik di kertas" menyala.
+
+  Labelnya digambar lewat ::before, bukan ditulis sebagai isi elemen. Itu
+  syarat, bukan selera: elemen ini contentEditable, dan yang disimpan saat
+  kursor meninggalkannya adalah `innerText`-nya. Bila labelnya berupa isi
+  sungguhan, pengguna yang mengklik lalu keluar tanpa mengetik akan menyimpan
+  kata "Kota" sebagai nama kotanya. Isi bangkitan ::before tidak pernah ikut
+  terbaca `innerText`.
+
+  Sekaligus memberi elemen kosong itu lebar untuk diklik - tanpa label, tidak
+  ada apa pun yang dapat disasar penunjuk.
+*/
+.edit-kosong::before {
+  content: attr(data-ph);
+  color: #9ca3af;
+  font-style: italic;
+  font-weight: 400;
+}
+
 /* ==========================================================================
    Aturan cetak
    --------------------------------------------------------------------------
@@ -473,6 +493,12 @@ body {
 
   .page-guide {
     display: none !important;
+  }
+
+  /* Jaring pengaman kedua. Pertahanan utamanya tetap `editable` yang selalu
+     mati di jalur cetak, sehingga atributnya tidak pernah ikut dirender. */
+  .edit-kosong::before {
+    content: none !important;
   }
 
   .preview-highlight {

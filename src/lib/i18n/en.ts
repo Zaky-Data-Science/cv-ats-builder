@@ -614,9 +614,19 @@ export const en: Dictionary = {
     viewLabel: "Preview mode",
     viewPaged: "Paged",
     viewContinuous: "Continuous",
-    typeHere: "Type on paper",
+    typeHere: "Type on the page",
     typeHint:
-      "Edit straight on the page, the way you would in a word processor. What you type flows back into the fields on the left - they are one CV, not two copies. Dates, section order, and adding entries stay in the fields, because none of those are free text.",
+      "Edit straight on the page, like in a word processor. What you type flows back into the fields on the left - both are the same CV, not two copies. Dates are picked from a month picker that opens when you click the period, so their format stays intact.",
+    typeDateTitle: "Edit period",
+    typeDateStart: "Start",
+    typeDateEnd: "End",
+    typeDateSingle: "Month",
+    typeDateCurrent: "Ongoing",
+    typeDateSave: "Save",
+    typeDateCancel: "Cancel",
+    typeAddEntry: "Add entry",
+    typePageNote:
+      "The page count is recalculated once typing mode is off - empty fields shown while typing are never printed.",
     typeForcesContinuous:
       "Not available while typing. The paged view cuts the document at page breaks, and the cursor cannot cross a cut.",
     viewPagedHint: "Cut into separate sheets like Word - shows exactly where each page breaks.",

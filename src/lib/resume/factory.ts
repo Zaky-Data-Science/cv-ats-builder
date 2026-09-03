@@ -66,7 +66,10 @@ export function emptyEducation(): EducationItem {
     isCurrent: false,
     gpa: "",
     maxGpa: "4.00",
-    bullets: [],
+    // Satu baris poin kosong, sama seperti pengalaman dan proyek. Tanpa itu
+    // entri pendidikan baru tidak punya satu pun poin untuk diklik di atas
+    // kertas, sehingga menambah poin di sana tidak punya titik awal.
+    bullets: [""],
   };
 }
 

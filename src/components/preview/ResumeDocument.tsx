@@ -9,7 +9,11 @@ import {
   type PaddingMode,
   type TemplateStyle,
 } from "@/lib/resume/templates";
-import type { ResumeData, SectionKey } from "@/lib/resume/types";
+import type {
+  ResumeData,
+  ResumeLanguage,
+  SectionKey,
+} from "@/lib/resume/types";
 import {
   ensureHttp,
   formatDateRange,
@@ -60,14 +64,20 @@ export interface ResumeDocumentProps {
   padding?: PaddingMode;
   className?: string;
   /**
-   * Menjadikan teks di atas kertas dapat langsung diketik.
+   * Menjadikan isi kertas dapat disunting langsung.
    *
-   * Yang dikerjakan di sini hanya **menandai** elemennya: `contentEditable`
-   * beserta atribut `data-edit` berisi jalur datanya. Yang menangkap
-   * ketikannya adalah panel pratinjau di editor, lewat satu penangan di
-   * elemen pembungkusnya. Pembagian itu disengaja - dokumen ini juga dirender
-   * di server untuk halaman cetak dan halaman depan, tempat tidak ada
-   * penangan peristiwa sama sekali.
+   * Yang dikerjakan di sini hanya **menandai** elemennya, dengan tiga penanda
+   * menurut jenis suntingannya: `data-edit` beserta `contentEditable` untuk
+   * teks yang diketik, `data-date` untuk periode yang dipilih lewat pemilih
+   * bulan, dan `data-add` untuk tombol tambah entri. Yang menanganinya adalah
+   * panel pratinjau di editor. Pembagian itu disengaja - berkas ini juga
+   * dirender di server untuk halaman cetak dan halaman depan, tempat tidak
+   * ada penangan peristiwa sama sekali.
+   *
+   * Selama menyala, field yang masih kosong ikut dirender sebagai penampung
+   * samar supaya ada yang dapat diklik. Penampung itu tidak pernah ikut ke
+   * jalur cetak - lihat `.edit-kosong` di globals.css untuk alasan labelnya
+   * digambar lewat ::before, bukan ditulis sebagai isi elemen.
    */
   editable?: boolean;
 }
@@ -112,6 +122,9 @@ export function ResumeDocument({
     kesalahan padahal tidak ada yang salah - dan pratinjau ini yang dipakai
     pengguna untuk menilai apakah CV-nya sudah rapi.
   */
+  /** Label penampung dalam bahasa CV ini. */
+  const ph = (kunci: string) => (editable ? labelPenampung(kunci, lang) : "");
+
   const edit: EditAttrs = (path) =>
     editable
       ? {
@@ -209,18 +222,38 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
-                      primaryEdit={edit(`experiences.${i}.jobTitle`)}
-                      primary={e.jobTitle}
-                      secondary={joinNonEmpty([
-                        e.company,
-                        joinNonEmpty([e.city, e.country]),
-                      ])}
+                      primary={[
+                        {
+                          text: e.jobTitle,
+                          attrs: edit(`experiences.${i}.jobTitle`),
+                          ph: ph("jobTitle"),
+                        },
+                      ]}
+                      secondary={[
+                        {
+                          text: e.company,
+                          attrs: edit(`experiences.${i}.company`),
+                          ph: ph("company"),
+                        },
+                        {
+                          text: e.city,
+                          attrs: edit(`experiences.${i}.city`),
+                          ph: ph("city"),
+                        },
+                        {
+                          text: e.country,
+                          attrs: edit(`experiences.${i}.country`),
+                          ph: ph("country"),
+                        },
+                      ]}
                       meta={formatDateRange(
                         e.startDate,
                         e.endDate,
                         e.isCurrent,
                         lang,
                       )}
+                      metaPath={editable ? `experiences.${i}` : undefined}
+                      metaPh={ph("period")}
                       fontSize={data.fontSize}
                     />
                     <Bullets
@@ -228,9 +261,11 @@ export function ResumeDocument({
                       fontSize={data.fontSize}
                       edit={edit}
                       basePath={`experiences.${i}`}
+                      ph={ph("bullet")}
                     />
                   </div>
                 ))}
+                <TombolTambah section="experiences" label={ph("addEntry")} />
               </section>
             );
 
@@ -246,14 +281,38 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
-                      primary={joinNonEmpty([e.degree, e.fieldOfStudy], " - ")}
-                      secondary={joinNonEmpty([e.institution, e.city])}
+                      primary={[
+                        {
+                          text: e.degree,
+                          attrs: edit(`educations.${i}.degree`),
+                          ph: ph("degree"),
+                        },
+                        {
+                          text: e.fieldOfStudy,
+                          attrs: edit(`educations.${i}.fieldOfStudy`),
+                          ph: ph("fieldOfStudy"),
+                        },
+                      ]}
+                      secondary={[
+                        {
+                          text: e.institution,
+                          attrs: edit(`educations.${i}.institution`),
+                          ph: ph("institution"),
+                        },
+                        {
+                          text: e.city,
+                          attrs: edit(`educations.${i}.city`),
+                          ph: ph("city"),
+                        },
+                      ]}
                       meta={formatDateRange(
                         e.startDate,
                         e.endDate,
                         e.isCurrent,
                         lang,
                       )}
+                      metaPath={editable ? `educations.${i}` : undefined}
+                      metaPh={ph("period")}
                       fontSize={data.fontSize}
                     />
                     {e.gpa && (
@@ -267,9 +326,11 @@ export function ResumeDocument({
                       fontSize={data.fontSize}
                       edit={edit}
                       basePath={`educations.${i}`}
+                      ph={ph("bullet")}
                     />
                   </div>
                 ))}
+                <TombolTambah section="educations" label={ph("addEntry")} />
               </section>
             );
 
@@ -282,11 +343,29 @@ export function ResumeDocument({
                 style={{ marginBottom: style.sectionGap }}
               >
                 {heading(key)}
-                {groupSkills(data).map(([category, names]) => (
-                  <p key={category} style={{ marginBottom: "1.5pt" }}>
-                    <strong>{category}:</strong> {names.join(", ")}
-                  </p>
-                ))}
+                {editable
+                  ? kelompokKeahlian(data).map(([category, entri]) => (
+                      <p key={category} style={{ marginBottom: "1.5pt" }}>
+                        <strong>{category}:</strong>{" "}
+                        {entri.map((s, n) => (
+                          <React.Fragment key={s.index}>
+                            {n > 0 && ", "}
+                            <span
+                              {...edit(`skills.${s.index}.name`)}
+                              {...penampung({ text: s.name, ph: ph("skill") })}
+                            >
+                              {s.name}
+                            </span>
+                          </React.Fragment>
+                        ))}
+                      </p>
+                    ))
+                  : groupSkills(data).map(([category, names]) => (
+                      <p key={category} style={{ marginBottom: "1.5pt" }}>
+                        <strong>{category}:</strong> {names.join(", ")}
+                      </p>
+                    ))}
+                <TombolTambah section="skills" label={ph("addEntry")} />
               </section>
             );
 
@@ -302,10 +381,29 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
-                      primaryEdit={edit(`projects.${i}.name`)}
-                      primary={p.name}
-                      secondary={joinNonEmpty([p.role, prettyUrl(p.url)], " - ")}
+                      primary={[
+                        {
+                          text: p.name,
+                          attrs: edit(`projects.${i}.name`),
+                          ph: ph("name"),
+                        },
+                      ]}
+                      secondary={[
+                        {
+                          text: p.role,
+                          attrs: edit(`projects.${i}.role`),
+                          ph: ph("role"),
+                        },
+                        // Alamat proyek sengaja tanpa jalur sunting: yang
+                        // tampil sudah dirapikan prettyUrl() tanpa skema, dan
+                        // menulis balik apa yang terlihat akan membuang
+                        // bagian yang sengaja disembunyikan itu.
+                        { text: prettyUrl(p.url) },
+                      ]}
+                      secondarySep=" - "
                       meta={formatDateRange(p.startDate, p.endDate, false, lang)}
+                      metaPath={editable ? `projects.${i}` : undefined}
+                      metaPh={ph("period")}
                       fontSize={data.fontSize}
                     />
                     <Bullets
@@ -313,9 +411,11 @@ export function ResumeDocument({
                       fontSize={data.fontSize}
                       edit={edit}
                       basePath={`projects.${i}`}
+                      ph={ph("bullet")}
                     />
                   </div>
                 ))}
+                <TombolTambah section="projects" label={ph("addEntry")} />
               </section>
             );
 
@@ -331,15 +431,33 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
-                      primaryEdit={edit(`organizations.${i}.role`)}
-                      primary={o.role}
-                      secondary={joinNonEmpty([o.name, o.city])}
+                      primary={[
+                        {
+                          text: o.role,
+                          attrs: edit(`organizations.${i}.role`),
+                          ph: ph("role"),
+                        },
+                      ]}
+                      secondary={[
+                        {
+                          text: o.name,
+                          attrs: edit(`organizations.${i}.name`),
+                          ph: ph("name"),
+                        },
+                        {
+                          text: o.city,
+                          attrs: edit(`organizations.${i}.city`),
+                          ph: ph("city"),
+                        },
+                      ]}
                       meta={formatDateRange(
                         o.startDate,
                         o.endDate,
                         o.isCurrent,
                         lang,
                       )}
+                      metaPath={editable ? `organizations.${i}` : undefined}
+                      metaPh={ph("period")}
                       fontSize={data.fontSize}
                     />
                     <Bullets
@@ -347,9 +465,11 @@ export function ResumeDocument({
                       fontSize={data.fontSize}
                       edit={edit}
                       basePath={`organizations.${i}`}
+                      ph={ph("bullet")}
                     />
                   </div>
                 ))}
+                <TombolTambah section="organizations" label={ph("addEntry")} />
               </section>
             );
 
@@ -368,10 +488,19 @@ export function ResumeDocument({
                       <strong {...edit(`certifications.${i}.name`)}>
                         {c.name}
                       </strong>
-                      {c.issuer && <span> - {c.issuer}</span>}
-                      {c.issueDate && (
-                        <span> ({formatMonth(c.issueDate, lang)})</span>
+                      {(c.issuer || ph("issuer")) && (
+                        <Berimbuhan
+                          prefix=" - "
+                          text={c.issuer}
+                          attrs={edit(`certifications.${i}.issuer`)}
+                          ph={ph("issuer")}
+                        />
                       )}
+                      <TanggalTunggal
+                        text={c.issueDate ? formatMonth(c.issueDate, lang) : ""}
+                        path={editable ? `certifications.${i}` : undefined}
+                        ph={ph("period")}
+                      />
                     </p>
                     {(c.credentialId || c.url) && (
                       <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
@@ -386,6 +515,7 @@ export function ResumeDocument({
                     )}
                   </div>
                 ))}
+                <TombolTambah section="certifications" label={ph("addEntry")} />
               </section>
             );
 
@@ -402,14 +532,26 @@ export function ResumeDocument({
                   >
                     <p>
                       <strong {...edit(`awards.${i}.title`)}>{a.title}</strong>
-                      {a.issuer && <span> - {a.issuer}</span>}
-                      {a.date && <span> ({formatMonth(a.date, lang)})</span>}
+                      {(a.issuer || ph("issuer")) && (
+                        <Berimbuhan
+                          prefix=" - "
+                          text={a.issuer}
+                          attrs={edit(`awards.${i}.issuer`)}
+                          ph={ph("issuer")}
+                        />
+                      )}
+                      <TanggalTunggal
+                        text={a.date ? formatMonth(a.date, lang) : ""}
+                        path={editable ? `awards.${i}` : undefined}
+                        ph={ph("period")}
+                      />
                     </p>
                     {a.description && (
                       <p {...edit(`awards.${i}.description`)}>{a.description}</p>
                     )}
                   </div>
                 ))}
+                <TombolTambah section="awards" label={ph("addEntry")} />
               </section>
             );
 
@@ -423,11 +565,28 @@ export function ResumeDocument({
               >
                 {heading(key)}
                 <p>
-                  {data.languages
-                    .filter((l) => l.name.trim())
-                    .map((l) => `${l.name} (${proficiencyLabel(l.proficiency, lang)})`)
-                    .join("  •  ")}
+                  {editable
+                    ? data.languages.map((l, i) => (
+                        <React.Fragment key={l.id}>
+                          {i > 0 && "  •  "}
+                          <span
+                            {...edit(`languages.${i}.name`)}
+                            {...penampung({ text: l.name, ph: ph("language") })}
+                          >
+                            {l.name}
+                          </span>
+                          {` (${proficiencyLabel(l.proficiency, lang)})`}
+                        </React.Fragment>
+                      ))
+                    : data.languages
+                        .filter((l) => l.name.trim())
+                        .map(
+                          (l) =>
+                            `${l.name} (${proficiencyLabel(l.proficiency, lang)})`,
+                        )
+                        .join("  •  ")}
                 </p>
+                <TombolTambah section="languages" label={ph("addEntry")} />
               </section>
             );
 
@@ -446,8 +605,19 @@ export function ResumeDocument({
                       <strong {...edit(`publications.${i}.title`)}>
                         {p.title}
                       </strong>
-                      {p.publisher && <span>. {p.publisher}</span>}
-                      {p.date && <span> ({formatMonth(p.date, lang)})</span>}
+                      {(p.publisher || ph("publisher")) && (
+                        <Berimbuhan
+                          prefix=". "
+                          text={p.publisher}
+                          attrs={edit(`publications.${i}.publisher`)}
+                          ph={ph("publisher")}
+                        />
+                      )}
+                      <TanggalTunggal
+                        text={p.date ? formatMonth(p.date, lang) : ""}
+                        path={editable ? `publications.${i}` : undefined}
+                        ph={ph("period")}
+                      />
                     </p>
                     {(p.doi || p.url) && (
                       <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
@@ -459,6 +629,7 @@ export function ResumeDocument({
                     )}
                   </div>
                 ))}
+                <TombolTambah section="publications" label={ph("addEntry")} />
               </section>
             );
 
@@ -483,8 +654,8 @@ export function ResumeDocument({
                         style={entryStyle}
                       >
                         <EntryHeader
-                          primary={item.title}
-                          secondary={item.subtitle}
+                          primary={[{ text: item.title }]}
+                          secondary={[{ text: item.subtitle }]}
                           meta={formatDateRange(
                             item.startDate,
                             item.endDate,
@@ -762,27 +933,299 @@ function SectionHeading({
  * flexbox, bukan tabel - secara visual tampak berkolom namun urutan bacaan
  * mesin tetap linier: jabatan, lalu periode.
  */
+/**
+ * Satu bagian dari sebuah baris di kepala entri.
+ *
+ * Baris "perusahaan, kota, negara" dulu sudah digabung pemanggilnya menjadi
+ * satu untaian sebelum sampai ke sini, dan bentuk itulah yang membuat setiap
+ * sub-fieldnya mustahil diklik: yang ada di DOM cuma satu teks, sedangkan
+ * membelahnya kembali menjadi tiga field hanyalah tebakan. Dengan
+ * bagian-bagiannya dibawa utuh, tidak ada yang perlu dibelah - masing-masing
+ * sudah membawa jalur datanya sendiri sejak dirender.
+ */
+export type HeaderPart = {
+  text: string;
+  /** Atribut penyunting; tanpa ini bagiannya tidak dapat diketik. */
+  attrs?: Record<string, unknown>;
+  /** Label yang tampil samar selama bagiannya masih kosong. */
+  ph?: string;
+};
+
+/**
+ * Pengelompokan keahlian yang membawa serta nomor asli tiap entri.
+ *
+ * `groupSkills()` membuang keahlian tanpa nama beserta nomornya, dan keduanya
+ * justru yang dibutuhkan mode ketik: nomor asli untuk jalur `data-edit`, dan
+ * entri kosong supaya ada yang dapat diklik. Kategorinya dibentuk dengan
+ * aturan yang sama persis, sehingga susunan yang terlihat saat mengetik tidak
+ * berbeda dari yang tercetak.
+ */
+function kelompokKeahlian(
+  data: ResumeData,
+): [string, { name: string; index: number }[]][] {
+  const groups = new Map<string, { name: string; index: number }[]>();
+  data.skills.forEach((skill, index) => {
+    const category = skill.category.trim() || "Umum";
+    if (!groups.has(category)) groups.set(category, []);
+    groups.get(category)!.push({ name: skill.name, index });
+  });
+  return [...groups.entries()];
+}
+
+/**
+ * Label penampung untuk field yang masih kosong.
+ *
+ * Mengikuti bahasa CV, bukan bahasa antarmuka - sama seperti judul bagian.
+ * Seluruh yang tampak di atas kertas berbahasa CV; satu kata berbahasa lain
+ * di antaranya akan terbaca seperti isi CV yang salah bahasa, bukan seperti
+ * petunjuk aplikasi.
+ */
+const PENAMPUNG: Record<ResumeLanguage, Record<string, string>> = {
+  ID: {
+    jobTitle: "Jabatan",
+    company: "Perusahaan",
+    city: "Kota",
+    country: "Negara",
+    degree: "Jenjang",
+    fieldOfStudy: "Bidang studi",
+    institution: "Institusi",
+    role: "Peran",
+    name: "Nama",
+    title: "Judul",
+    issuer: "Penerbit",
+    publisher: "Penerbit",
+    bullet: "Poin pencapaian",
+    skill: "Keahlian",
+    language: "Bahasa",
+    period: "Periode",
+    addEntry: "+ Tambah entri",
+  },
+  EN: {
+    jobTitle: "Job title",
+    company: "Company",
+    city: "City",
+    country: "Country",
+    degree: "Degree",
+    fieldOfStudy: "Field of study",
+    institution: "Institution",
+    role: "Role",
+    name: "Name",
+    title: "Title",
+    issuer: "Issuer",
+    publisher: "Publisher",
+    bullet: "Achievement",
+    skill: "Skill",
+    language: "Language",
+    period: "Period",
+    addEntry: "+ Add entry",
+  },
+};
+
+export function labelPenampung(kunci: string, lang: ResumeLanguage): string {
+  return PENAMPUNG[lang][kunci] ?? "";
+}
+
+/** Atribut penampung, hanya untuk bagian yang dapat diketik dan masih kosong. */
+function penampung(part: { text: string; ph?: string }): Record<string, string> {
+  if (!part.ph || part.text.trim().length > 0) return {};
+  return { className: "edit-kosong", "data-ph": part.ph };
+}
+
+/**
+ * Apakah sebuah bagian benar-benar dapat diketik.
+ *
+ * `edit()` mengembalikan objek kosong - bukan undefined - ketika mode ketik
+ * mati, supaya pemanggilnya dapat menyebarnya tanpa syarat. Objek kosong tetap
+ * bernilai benar, jadi keberadaan `attrs` saja bukan jawaban.
+ */
+function dapatDiketik(part: HeaderPart): boolean {
+  return Boolean(part.attrs && Object.keys(part.attrs).length > 0);
+}
+
+/** Bagian yang tampil: yang ada isinya, atau yang dapat diketik. */
+function bagianTampil(parts: HeaderPart[]): HeaderPart[] {
+  return parts.filter((p) => p.text.trim().length > 0 || dapatDiketik(p));
+}
+
+function HeaderLine({ parts, sep }: { parts: HeaderPart[]; sep: string }) {
+  const bisaDiketik = parts.some(dapatDiketik);
+
+  /*
+    Tanpa satu pun bagian yang dapat diketik, seluruhnya kembali menjadi satu
+    untaian - sama persis dengan sebelum baris ini dapat diklik.
+
+    Ini bukan sekadar demi keluaran yang identik. Teks yang dipecah menjadi
+    beberapa simpul membuat React menyisipkan penanda pemisahnya sendiri di
+    antara simpul-simpul itu saat merender di server, dan halaman cetak
+    dirender di server. Jalur cetak karena itu tetap menerima satu untaian.
+  */
+  if (!bisaDiketik) {
+    return <>{joinNonEmpty(parts.map((p) => p.text), sep)}</>;
+  }
+
+  return (
+    <>
+      {bagianTampil(parts).map((part, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && sep}
+          {dapatDiketik(part) ? (
+            <span {...part.attrs} {...penampung(part)}>
+              {part.text}
+            </span>
+          ) : (
+            part.text
+          )}
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
+
+/**
+ * Nilai yang didahului pemisah tetap, mis. " - " sebelum nama penerbit.
+ *
+ * Saat mode ketik mati, pemisah dan nilainya tetap satu simpul teks seperti
+ * sebelumnya. Saat menyala, keduanya dipisah supaya yang dapat diketik hanya
+ * nilainya - kalau tidak, pemisahnya ikut terbawa masuk ke dalam field.
+ */
+function Berimbuhan({
+  prefix,
+  suffix = "",
+  text,
+  attrs,
+  ph,
+}: {
+  prefix: string;
+  suffix?: string;
+  text: string;
+  attrs: Record<string, unknown>;
+  ph?: string;
+}) {
+  if (!dapatDiketik({ text, attrs })) {
+    return (
+      <span>
+        {prefix}
+        {text}
+        {suffix}
+      </span>
+    );
+  }
+  return (
+    <span>
+      {prefix}
+      <span {...attrs} {...penampung({ text, ph })}>
+        {text}
+      </span>
+      {suffix}
+    </span>
+  );
+}
+
+/**
+ * Tombol tambah entri di ujung sebuah bagian, hanya saat mode ketik menyala.
+ *
+ * Dokumen hanya menandainya dengan `data-add`; yang menambah entrinya adalah
+ * panel pratinjau - pembagian yang sama dengan `data-edit` dan `data-date`.
+ *
+ * Ini satu-satunya elemen antarmuka yang boleh berdiri di atas kertas, dan
+ * itu disengaja: menambah entri dari bilah di luar kertas berarti pengguna
+ * harus menebak entri barunya muncul di mana, sedangkan tombol yang berdiri
+ * tepat di ujung bagiannya sudah menunjukkan jawabannya.
+ */
+function TombolTambah({ section, label }: { section: string; label: string }) {
+  if (!label) return null;
+  return (
+    <button
+      type="button"
+      data-add={section}
+      className="no-print"
+      style={{
+        display: "block",
+        marginTop: "2pt",
+        padding: 0,
+        border: 0,
+        background: "none",
+        font: "inherit",
+        fontSize: "0.85em",
+        fontStyle: "italic",
+        color: "#9ca3af",
+        cursor: "pointer",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+/**
+ * Tanggal tunggal dalam tanda kurung, mis. pada sertifikasi.
+ *
+ * Tanda kurungnya tetap di luar bagian yang dapat diklik: yang disunting
+ * adalah bulannya, bukan tanda bacanya.
+ */
+function TanggalTunggal({
+  text,
+  path,
+  ph,
+}: {
+  text: string;
+  path?: string;
+  ph?: string;
+}) {
+  if (!path) return text ? <span> ({text})</span> : null;
+  return (
+    <span>
+      {" ("}
+      <span
+        data-date={path}
+        role="button"
+        tabIndex={0}
+        {...penampung({ text, ph })}
+      >
+        {text}
+      </span>
+      {")"}
+    </span>
+  );
+}
+
 function EntryHeader({
   primary,
+  primarySep = " - ",
   secondary,
+  secondarySep = ", ",
   meta,
+  metaPath,
+  metaPh,
   fontSize,
-  primaryEdit,
 }: {
-  primary: string;
-  secondary: string;
+  primary: HeaderPart[];
+  /** Pemisah antar-bagian judul, mis. gelar dan bidang studi. */
+  primarySep?: string;
+  secondary?: HeaderPart[];
+  secondarySep?: string;
   meta: string;
-  fontSize: number;
   /**
-   * Atribut penyunting untuk judul entri.
+   * Jalur entri pemilik periode ini, mis. "experiences.0".
    *
-   * Hanya judulnya, tidak barisan di bawahnya: baris kedua adalah gabungan
-   * beberapa field - nama perusahaan bersama kota dan negara - dan membelah
-   * kembali satu untaian menjadi tiga field hanyalah tebakan. Tebakan yang
-   * salah akan memindahkan isi ke field yang keliru tanpa pengguna sadari.
+   * Terisi hanya saat mode ketik menyala. Dokumen cukup menandai; yang
+   * membuka pemilih bulannya adalah panel pratinjau - pembagian yang sama
+   * dengan `data-edit`, dan karena alasan yang sama: berkas ini juga dirender
+   * di server, tempat tidak ada penangan peristiwa sama sekali.
    */
-  primaryEdit?: Record<string, unknown>;
+  metaPath?: string;
+  /** Label periode yang belum diisi. */
+  metaPh?: string;
+  fontSize: number;
 }) {
+  const isiSecondary = secondary ?? [];
+  // Baris kedua tetap muncul selama ada bagian yang dapat diketik, walau
+  // seluruhnya masih kosong - kalau tidak, kota yang belum diisi tidak punya
+  // apa pun untuk diklik, dan justru field kosong itulah yang perlu diisi.
+  const adaSecondary =
+    isiSecondary.some((p) => p.text.trim().length > 0) ||
+    isiSecondary.some(dapatDiketik);
+
   return (
     <>
       <div
@@ -793,9 +1236,17 @@ function EntryHeader({
           gap: "8pt",
         }}
       >
-        <strong {...primaryEdit}>{primary}</strong>
-        {meta && (
-          <span style={{ whiteSpace: "nowrap", fontSize: `${fontSize - 0.5}pt` }}>
+        <strong>
+          <HeaderLine parts={primary} sep={primarySep} />
+        </strong>
+        {(meta || (metaPath && metaPh)) && (
+          <span
+            style={{ whiteSpace: "nowrap", fontSize: `${fontSize - 0.5}pt` }}
+            {...(metaPath
+              ? { "data-date": metaPath, role: "button", tabIndex: 0 }
+              : {})}
+            {...(metaPath ? penampung({ text: meta, ph: metaPh }) : {})}
+          >
             {/*
               Spasi tak-putus di depan periode sengaja dipertahankan.
               Jabatan dan periode adalah dua item flex terpisah, sehingga
@@ -811,7 +1262,11 @@ function EntryHeader({
           </span>
         )}
       </div>
-      {secondary && <div style={{ fontStyle: "italic" }}>{secondary}</div>}
+      {adaSecondary && (
+        <div style={{ fontStyle: "italic" }}>
+          <HeaderLine parts={isiSecondary} sep={secondarySep} />
+        </div>
+      )}
     </>
   );
 }
@@ -821,21 +1276,34 @@ function Bullets({
   fontSize,
   edit,
   basePath,
+  ph,
 }: {
   items: string[];
   fontSize: number;
   edit?: EditAttrs;
   /** Jalur daftar poinnya, mis. "experiences.0". */
   basePath?: string;
+  /** Label penampung; terisi hanya saat mode ketik menyala. */
+  ph?: string;
 }) {
   // Nomor urut aslinya dibawa serta, bukan nomor setelah penyaringan. Poin
   // kosong tidak ditampilkan, sehingga nomor di layar dan nomor di dalam data
   // berbeda - dan menulis balik memakai nomor di layar akan menimpa poin yang
   // salah begitu ada satu saja poin kosong di atasnya.
-  const filled = items
-    .map((text, index) => ({ text, index }))
-    .filter((b) => b.text.trim());
-  if (filled.length === 0) return null;
+  const bernomor = items.map((text, index) => ({ text, index }));
+
+  /*
+    Selama mode ketik menyala, poin kosong ikut ditampilkan.
+
+    Tanpa itu poin yang baru saja ditambahkan - yang selalu lahir kosong -
+    tidak pernah punya elemen untuk diketik, sehingga menambah poin tidak
+    menghasilkan apa pun yang terlihat. Poin kosong lama yang selama ini
+    tersembunyi ikut muncul, dan itu memang benar di sini: poin itu ada di
+    dalam data, dan pengguna berhak melihat serta menghapusnya. Di jalur
+    cetak penyaringannya tidak berubah sama sekali.
+  */
+  const tampil = ph ? bernomor : bernomor.filter((b) => b.text.trim());
+  if (tampil.length === 0) return null;
 
   return (
     <ul
@@ -845,10 +1313,13 @@ function Bullets({
         marginTop: `${fontSize * 0.15}pt`,
       }}
     >
-      {filled.map((bullet) => (
+      {tampil.map((bullet) => (
         <li
           key={bullet.index}
           style={{ marginBottom: "1pt" }}
+          {...(ph && !bullet.text.trim()
+            ? { className: "edit-kosong", "data-ph": ph }
+            : {})}
           {...(edit && basePath
             ? edit(`${basePath}.bullets.${bullet.index}`)
             : {})}

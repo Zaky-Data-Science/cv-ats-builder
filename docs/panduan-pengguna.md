@@ -217,25 +217,43 @@ keduanya satu CV yang sama, bukan dua salinan. Jadi Anda bebas memilih: isi
 lewat field dulu lalu rapikan kalimatnya di atas kertas, atau langsung
 mengetik di kertas sejak awal.
 
-Yang dapat diketik di kertas:
+Hampir seluruh isi CV dapat disunting dari kertas, masing-masing dengan cara
+yang sesuai bentuk datanya:
 
-- Nama dan jabatan yang dituju
-- Ringkasan profil
-- Judul tiap entri - jabatan, nama proyek, jabatan organisasi, nama sertifikat
-- Seluruh poin pencapaian
+| Yang disunting | Caranya |
+|---|---|
+| Nama, jabatan, ringkasan | Klik teksnya, lalu ketik |
+| Judul tiap entri, nama perusahaan, institusi, kota, negara | Klik bagiannya masing-masing. Ketiganya tampil sebaris, tetapi tiap bagian punya tempatnya sendiri - jadi mengetik kota tidak akan menyentuh nama perusahaan |
+| Nama keahlian, nama bahasa, penerbit sertifikat, penerbit publikasi | Klik teksnya, lalu ketik |
+| Seluruh poin pencapaian | Klik teksnya. **Enter** di akhir sebuah poin membuat poin berikutnya, seperti di pengolah kata |
+| Periode dan tanggal | Klik periodenya - muncul pemilih bulan berisi bulan mulai, bulan selesai, dan centang "Masih berlangsung" |
+| Menambah entri | Tombol **+ Tambah entri** di ujung tiap bagian |
 
-Yang tetap lewat field, beserta alasannya:
+**Field yang masih kosong tetap dapat diklik.** Selama mode ketik menyala, ia
+tampil sebagai tulisan samar berisi namanya - "Kota", "Negara", "Poin
+pencapaian". Tulisan itu hanya penanda tempat: ia tidak pernah ikut tercetak,
+dan tidak akan tersimpan sebagai isi CV bila Anda mengkliknya lalu keluar tanpa
+mengetik apa pun.
+
+Yang tetap lewat field di panel kiri:
 
 | Hal | Mengapa |
 |---|---|
-| Tanggal | Disimpan sebagai bulan dan tahun, diisi lewat pemilih bulan. Bila diketik bebas, "Feb 2023" bukan tanggal yang dapat dibaca aplikasi |
-| Nama perusahaan bersama kota dan negara | Di kertas ketiganya tampil sebagai satu baris. Membelahnya kembali menjadi tiga isian hanyalah tebakan, dan tebakan yang salah memindahkan isi ke tempat yang keliru |
-| Menambah atau menghapus entri | Mengetik mengubah kata, bukan struktur. Menambah entri tetap lewat tombol di formulir |
+| Alamat proyek dan alamat sertifikat | Yang tampil di kertas sudah dirapikan tanpa `https://`. Menulis balik apa yang terlihat akan menghapus bagian yang sengaja disembunyikan itu |
+| Kategori keahlian dan urutan bagian | Keduanya mengatur susunan CV, bukan isinya |
+| Memulai bagian yang masih kosong | Bagian tanpa satu pun entri memang tidak dicetak, jadi tidak ada tempat untuk meletakkan tombolnya di kertas |
 
 Beberapa hal yang perlu diketahui:
 
-- Tekan **Enter** untuk menyelesaikan suntingan, **Esc** untuk membatalkan dan
-  mengembalikan teks semula.
+- Tekan **Enter** untuk menyelesaikan suntingan - kecuali di poin pencapaian,
+  tempat Enter membuat poin baru. **Esc** membatalkan dan mengembalikan teks
+  semula.
+- Poin yang Anda tinggalkan kosong dibersihkan sendiri begitu mode ketik
+  dimatikan. Selama masih menyala poin kosong sengaja dibiarkan terlihat,
+  supaya poin yang baru Anda buat tidak lenyap tepat saat hendak diketik.
+- Karena field kosong ikut tampil selama mengetik, **jumlah halaman dapat
+  terbaca lebih banyak dari yang sebenarnya**. Angkanya kembali tepat setelah
+  mode ketik dimatikan; yang tercetak tidak pernah memuat penanda tempat itu.
 - Menempel teks dari Word atau dari halaman web masuk sebagai teks polos -
   huruf dan warna asalnya tidak ikut, karena gaya CV ditentukan templatenya.
 - Selama mengetik, tampilan berpindah ke **Sambung**. Pada tampilan per

@@ -645,7 +645,17 @@ export const id = {
     viewContinuous: "Sambung",
     typeHere: "Ketik di kertas",
     typeHint:
-      "Menyunting langsung di atas kertas, seperti di pengolah kata. Yang diketik masuk kembali ke field di sebelah kiri - keduanya satu CV yang sama, bukan dua salinan. Tanggal, urutan bagian, dan penambahan entri tetap lewat field, sebab keduanya bukan teks bebas.",
+      "Menyunting langsung di atas kertas, seperti di pengolah kata. Yang diketik masuk kembali ke field di sebelah kiri - keduanya satu CV yang sama, bukan dua salinan. Tanggal dipilih lewat pemilih bulan yang muncul saat periodenya diklik, sehingga formatnya tetap terjaga.",
+    typeDateTitle: "Sunting periode",
+    typeDateStart: "Mulai",
+    typeDateEnd: "Selesai",
+    typeDateSingle: "Bulan",
+    typeDateCurrent: "Masih berlangsung",
+    typeDateSave: "Simpan",
+    typeDateCancel: "Batal",
+    typeAddEntry: "Tambah entri",
+    typePageNote:
+      "Jumlah halaman dihitung ulang setelah mode ketik dimatikan - field kosong yang tampil selama mengetik tidak ikut tercetak.",
     typeForcesContinuous:
       "Tidak tersedia selama mengetik. Tampilan per halaman memotong dokumen di batas halaman, dan kursor tidak dapat menyeberang potongan itu.",
     viewPagedHint: "Terpotong per halaman seperti di Word - memperlihatkan persis di mana halaman berganti.",

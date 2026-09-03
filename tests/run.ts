@@ -3,10 +3,12 @@ import { runCetakTests } from "./cetak.test";
 import { runDocumentTests } from "./document.test";
 import { runEditPathTests } from "./edit-path.test";
 import { runI18nTests } from "./i18n.test";
+import { runKertasTests } from "./kertas.test";
 import { runKeywordTests } from "./keywords.test";
 import { runPdfTests } from "./pdf.test";
 import { runPhotoTests } from "./photo.test";
 import { runStaleSessionTests } from "./stale-session.test";
+import { runStructureTests } from "./structure.test";
 import { runTemplateTests } from "./templates.test";
 import { summary } from "./harness";
 
@@ -21,10 +23,12 @@ async function main() {
   runI18nTests();
   runKeywordTests();
   runEditPathTests();
+  runStructureTests();
   runStaleSessionTests();
   runCetakTests();
   runAtsEngineTests();
   runTemplateTests();
+  runKertasTests();
   runDocumentTests();
   await runPhotoTests();
   await runPdfTests();
