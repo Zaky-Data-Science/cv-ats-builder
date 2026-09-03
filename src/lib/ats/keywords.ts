@@ -1,3 +1,4 @@
+import { ALIAS_GROUPS } from "./aliases";
 import { STOPWORDS } from "./vocabulary";
 
 /**
@@ -28,22 +29,121 @@ export interface KeywordAnalysis {
 
 /** Memecah teks menjadi token huruf kecil, mempertahankan karakter khas teknologi. */
 export function tokenize(text: string): string[] {
+  return (
+    text
+      .toLowerCase()
+      .replace(/[‘’“”]/g, " ")
+      // Titik, plus, dan tagar dipertahankan agar "node.js", "c++", dan "c#"
+      // tidak terpecah menjadi token yang kehilangan makna.
+      .split(/[^a-z0-9+#.à-ÿ-]+/)
+      .map((t) => t.replace(/^[.\-]+|[.\-]+$/g, ""))
+      .filter((t) => t.length > 0)
+  );
+}
+
+/**
+ * Bentuk kanonik sebuah istilah - dipakai HANYA untuk membandingkan, tidak
+ * pernah untuk ditampilkan.
+ *
+ * Tanda hubung, titik, garis miring, garis bawah, dan spasi dibuang, sehingga
+ * "front-end", "front end", dan "frontend" menjadi satu bentuk yang sama.
+ * Ketiganya keahlian yang sama, dan iklan lowongan menuliskannya bergantian
+ * tanpa pola - sebelum ini, CV yang menulis "frontend" dinilai tidak memuat
+ * kata kunci "front-end" sama sekali.
+ *
+ * Plus dan tagar sengaja TIDAK dibuang: membuangnya akan menyamakan "c++",
+ * "c#", dan "c" menjadi satu istilah, padahal ketiganya bahasa berbeda.
+ */
+export function canonical(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[‘’“”]/g, " ")
-    // Titik, plus, dan tagar dipertahankan agar "node.js", "c++", dan "c#"
-    // tidak terpecah menjadi token yang kehilangan makna.
-    .split(/[^a-z0-9+#.à-ÿ-]+/)
-    .map((t) => t.replace(/^[.\-]+|[.\-]+$/g, ""))
-    .filter((t) => t.length > 0);
+    .replace(/[‘’“”]/g, "")
+    .replace(/[\s._\-/\\]+/g, "");
 }
+
+/**
+ * Peta bentuk kanonik ke seluruh padanannya, dibangun sekali saat modul
+ * dimuat dari `ALIAS_GROUPS`.
+ *
+ * Sebuah istilah boleh muncul di lebih dari satu kelompok; kelompoknya
+ * digabung, bukan saling menimpa, agar urutan penulisan di berkas alias tidak
+ * diam-diam menentukan hasilnya.
+ */
+const ALIAS_INDEX: Map<string, Set<string>> = (() => {
+  const index = new Map<string, Set<string>>();
+  for (const group of ALIAS_GROUPS) {
+    const forms = group.map(canonical).filter((f) => f.length > 0);
+    for (const form of forms) {
+      const bucket = index.get(form) ?? new Set<string>();
+      for (const other of forms) bucket.add(other);
+      index.set(form, bucket);
+    }
+  }
+  return index;
+})();
+
+/**
+ * Frasa terpanjang yang perlu dikenali sebagai satu istilah.
+ *
+ * Ditentukan oleh anggota terpanjang di `ALIAS_GROUPS` - "software as a
+ * service", empat kata. Menaikkan angka ini tanpa alasan hanya memperbesar
+ * himpunannya tanpa menambah satu pun kecocokan.
+ */
+const MAX_PHRASE_WORDS = 4;
+
+/**
+ * Himpunan seluruh bentuk kanonik yang muncul pada sebuah teks, mencakup kata
+ * tunggal sampai frasa empat kata.
+ *
+ * Frasa hanya dibentuk dari kata-kata pada baris yang sama. Tanpa batas itu,
+ * kata terakhir sebuah baris dan kata pertama baris berikutnya akan menyatu
+ * menjadi frasa yang tidak pernah ditulis siapa pun - dan pada CV, dua baris
+ * berurutan kerap berasal dari bagian yang sama sekali berbeda.
+ */
+function canonicalIndex(text: string): Set<string> {
+  const index = new Set<string>();
+  for (const line of text.split(/\r?\n/)) {
+    const tokens = tokenize(line);
+    for (let i = 0; i < tokens.length; i++) {
+      for (let n = 1; n <= MAX_PHRASE_WORDS && i + n <= tokens.length; n++) {
+        const form = canonical(tokens.slice(i, i + n).join(" "));
+        if (form.length > 0) index.add(form);
+      }
+    }
+  }
+  return index;
+}
+
+/**
+ * Singkatan dan nama teknologi sepanjang satu atau dua huruf.
+ *
+ * Diperlukan karena aturan umumnya membuang token pendek: tanpa daftar ini,
+ * "UI", "QA", "JS", dan "K3" akan hilang bersama kata sambung. Isinya sengaja
+ * ditahan pada istilah yang maknanya tunggal di konteks lowongan kerja.
+ */
+const SHORT_KEYWORDS = [
+  "c#",
+  "c++",
+  "go",
+  "r",
+  "ai",
+  "ux",
+  "ui",
+  "qa",
+  "hr",
+  "js",
+  "ts",
+  "ci",
+  "cd",
+  "db",
+  "bi",
+  "k3",
+  "s1",
+];
 
 function isUsefulToken(token: string): boolean {
   if (token.length < 3) {
-    // Token pendek hanya diterima bila merupakan nama teknologi yang lazim.
-    return ["c#", "c++", "go", "r", "ai", "ux", "ui", "qa", "hr"].includes(
-      token,
-    );
+    return SHORT_KEYWORDS.includes(token);
   }
   if (STOPWORDS.has(token)) return false;
   // Angka murni (mis. "2024", "3") bukan kata kunci keahlian.
@@ -101,12 +201,33 @@ export function extractKeywords(
     .slice(0, limit);
 }
 
-/** Mencocokkan sebuah kata kunci ke teks CV dengan batas kata. */
+/** Mencari sebuah kata kunci di dalam himpunan bentuk kanonik sebuah teks. */
+function foundInIndex(index: Set<string>, keyword: string): boolean {
+  const form = canonical(keyword);
+  if (form.length === 0) return false;
+  if (index.has(form)) return true;
+
+  const aliases = ALIAS_INDEX.get(form);
+  if (!aliases) return false;
+  for (const alias of aliases) {
+    if (index.has(alias)) return true;
+  }
+  return false;
+}
+
+/**
+ * Mencocokkan sebuah kata kunci ke teks CV.
+ *
+ * Pencocokan dilakukan terhadap himpunan bentuk kanonik teks, bukan dengan
+ * mencari pola di dalam untaian teksnya. Bedanya bukan sekadar kecepatan:
+ * pencarian pola menuntut istilah tertulis persis sama huruf demi huruf,
+ * sehingga "front-end" tidak pernah cocok dengan "frontend". Membandingkan
+ * himpunan juga menutup arah sebaliknya - kecocokan sebagian, seperti "java"
+ * yang dianggap ada di dalam "javascript", mustahil terjadi karena yang
+ * dibandingkan adalah token utuh.
+ */
 export function containsKeyword(haystack: string, keyword: string): boolean {
-  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  // (?![\w-]) mencegah "java" dianggap cocok pada "javascript".
-  const pattern = new RegExp(`(?<![\\w-])${escaped}(?![\\w-])`, "i");
-  return pattern.test(haystack);
+  return foundInIndex(canonicalIndex(haystack), keyword);
 }
 
 /** Membandingkan kata kunci lowongan terhadap teks CV. */
@@ -116,11 +237,12 @@ export function analyzeKeywords(
   limit = 25,
 ): KeywordAnalysis {
   const extracted = extractKeywords(jobDescription, limit);
-  const haystack = resumeText.toLowerCase();
+  // Himpunannya dibangun sekali, lalu dipakai untuk seluruh kata kunci.
+  const index = canonicalIndex(resumeText);
 
   const keywords: KeywordMatch[] = extracted.map((k) => ({
     ...k,
-    found: containsKeyword(haystack, k.keyword),
+    found: foundInIndex(index, k.keyword),
   }));
 
   const totalWeight = keywords.reduce((sum, k) => sum + k.weight, 0);
