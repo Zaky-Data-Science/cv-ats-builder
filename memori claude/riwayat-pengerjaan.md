@@ -557,9 +557,13 @@ bertambah empat permintaan baru.
 
 ### Yang dikerjakan
 
-1. **Repositori disiapkan untuk dibuka.** Seluruh riwayat commit diaudit: yang
-   tersaring hanya placeholder `USER:PASSWORD@HOST` dan kredensial dev lokal
-   `postgres:postgres@localhost`. Ditambahkan `LICENSE` MIT - tanpa berkas itu
+1. **Repositori dibuka menjadi publik.** Terverifikasi dari luar tanpa
+   kredensial: API GitHub membalas `visibility: public`, lisensi terdeteksi
+   MIT, dan klon anonim berhasil - 188 berkas, tanpa satu pun berkas `.env`.
+
+   Persiapan sebelum dibuka: seluruh riwayat commit diaudit, dan yang
+   tersaring hanya placeholder `USER:PASSWORD@HOST` beserta kredensial dev
+   lokal `postgres:postgres@localhost`. Ditambahkan `LICENSE` MIT - tanpa itu
    berlaku hak cipta penuh, sehingga kode boleh dibaca tetapi tidak boleh
    dipakai bahkan untuk belajar. Kredensial akun demo tetap terbuka karena
    itulah gunanya, tetapi konsekuensinya kini disebutkan di README. Nama tim

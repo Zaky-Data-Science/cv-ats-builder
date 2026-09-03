@@ -12,6 +12,13 @@ dikirim ke server.
 > Muhammad Agus Riyadh Zaky
 > Mahasiswa D3 Teknik Komputer, Politeknik Negeri Samarinda
 
+**Coba langsung:** <https://cv-ats-builder-henna.vercel.app>
+
+Tidak perlu mendaftar - tombol **Coba tanpa akun** membuka editornya seketika, dan
+CV-nya tersimpan di peramban Anda sendiri. Untuk melihat versi berakun lengkap
+dengan CV contoh, masuk memakai `demo@atscv.local` / `demo12345`; akun itu memang
+dipakai bersama, jadi jangan menaruh data pribadi di dalamnya.
+
 **Dokumentasi lain:**
 - [Panduan Pengguna](docs/panduan-pengguna.md) - cara memakai aplikasi, lengkap dengan diagram alur
 - [Dokumentasi Teknis](docs/dokumentasi-teknis.md) - ERD, use case, arsitektur, aturan penilaian, hasil verifikasi

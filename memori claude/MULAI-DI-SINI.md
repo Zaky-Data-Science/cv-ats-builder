@@ -50,7 +50,7 @@ Politeknik Negeri Samarinda.
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV` |
-| Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> (branch `main`, berlisensi MIT) |
+| Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
