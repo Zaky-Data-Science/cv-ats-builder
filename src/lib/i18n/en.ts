@@ -614,6 +614,11 @@ export const en: Dictionary = {
     viewLabel: "Preview mode",
     viewPaged: "Paged",
     viewContinuous: "Continuous",
+    typeHere: "Type on paper",
+    typeHint:
+      "Edit straight on the page, the way you would in a word processor. What you type flows back into the fields on the left - they are one CV, not two copies. Dates, section order, and adding entries stay in the fields, because none of those are free text.",
+    typeForcesContinuous:
+      "Not available while typing. The paged view cuts the document at page breaks, and the cursor cannot cross a cut.",
     viewPagedHint: "Cut into separate sheets like Word - shows exactly where each page breaks.",
     viewContinuousHint: "One long scroll with no breaks - easier to skim while you edit.",
     zoomIn: "Zoom in",

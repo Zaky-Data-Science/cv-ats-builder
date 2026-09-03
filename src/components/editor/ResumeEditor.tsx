@@ -46,6 +46,7 @@ import {
   stashForImport,
 } from "@/lib/resume/guest";
 import { sampleResume } from "@/lib/resume/sample";
+import { applyEdit } from "@/lib/resume/edit-path";
 import { resumeFileSchema } from "@/lib/resume/schema";
 import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
@@ -166,6 +167,20 @@ export function ResumeEditor({
       return false;
     }
   }, [initial.id, guest, t]);
+
+  /**
+   * Menerapkan teks yang diketik langsung di atas kertas.
+   *
+   * Yang diubah adalah data CV yang sama dengan yang diisi lewat formulir -
+   * bukan salinan kedua. Karena itu field di sebelah kiri ikut berubah
+   * seketika, skor ATS ikut dihitung ulang, dan simpan otomatis berjalan
+   * seperti biasa. Kertas dan formulir adalah dua cara memandang satu benda.
+   */
+  const editOnPaper = React.useCallback((path: string, value: string) => {
+    dirtyRef.current = true;
+    setSaveState("dirty");
+    setData((prev) => applyEdit(prev, path, value));
+  }, []);
 
   const update = React.useCallback((patch: Partial<ResumeData>) => {
     dirtyRef.current = true;
@@ -1009,6 +1024,7 @@ export function ResumeEditor({
                 data={data}
                 highlight={highlight}
                 onPageCountChange={setPages}
+                onEdit={editOnPaper}
               />
             </div>
 

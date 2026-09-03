@@ -643,6 +643,11 @@ export const id = {
     viewLabel: "Tampilan pratinjau",
     viewPaged: "Per halaman",
     viewContinuous: "Sambung",
+    typeHere: "Ketik di kertas",
+    typeHint:
+      "Menyunting langsung di atas kertas, seperti di pengolah kata. Yang diketik masuk kembali ke field di sebelah kiri - keduanya satu CV yang sama, bukan dua salinan. Tanggal, urutan bagian, dan penambahan entri tetap lewat field, sebab keduanya bukan teks bebas.",
+    typeForcesContinuous:
+      "Tidak tersedia selama mengetik. Tampilan per halaman memotong dokumen di batas halaman, dan kursor tidak dapat menyeberang potongan itu.",
     viewPagedHint: "Terpotong per halaman seperti di Word - memperlihatkan persis di mana halaman berganti.",
     viewContinuousHint: "Satu gulungan panjang tanpa potongan - enak untuk membaca cepat sambil menyunting.",
     zoomIn: "Perbesar",

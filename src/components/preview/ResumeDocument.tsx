@@ -59,7 +59,21 @@ export interface ResumeDocumentProps {
    */
   padding?: PaddingMode;
   className?: string;
+  /**
+   * Menjadikan teks di atas kertas dapat langsung diketik.
+   *
+   * Yang dikerjakan di sini hanya **menandai** elemennya: `contentEditable`
+   * beserta atribut `data-edit` berisi jalur datanya. Yang menangkap
+   * ketikannya adalah panel pratinjau di editor, lewat satu penangan di
+   * elemen pembungkusnya. Pembagian itu disengaja - dokumen ini juga dirender
+   * di server untuk halaman cetak dan halaman depan, tempat tidak ada
+   * penangan peristiwa sama sekali.
+   */
+  editable?: boolean;
 }
+
+/** Atribut yang menjadikan sebuah teks dapat diketik, atau tidak sama sekali. */
+export type EditAttrs = (path: string) => Record<string, unknown>;
 
 export function ResumeDocument({
   data,
@@ -67,6 +81,7 @@ export function ResumeDocument({
   printMode = false,
   padding = "full",
   className,
+  editable = false,
 }: ResumeDocumentProps) {
   const style = templateStyle(data.template);
   const paper = paperSpec(data.pageSize);
@@ -90,6 +105,22 @@ export function ResumeDocument({
   const isOn = (key: string) => !printMode && highlight === key;
   const blockClass = (key: string) =>
     `avoid-break${isOn(key) ? " preview-highlight" : ""}`;
+
+  /*
+    Pemeriksa ejaan sengaja dimatikan. Garis merah bergelombang di bawah nama
+    perusahaan dan istilah teknis membuat kertas pratinjau terlihat penuh
+    kesalahan padahal tidak ada yang salah - dan pratinjau ini yang dipakai
+    pengguna untuk menilai apakah CV-nya sudah rapi.
+  */
+  const edit: EditAttrs = (path) =>
+    editable
+      ? {
+          contentEditable: true,
+          suppressContentEditableWarning: true,
+          spellCheck: false,
+          "data-edit": path,
+        }
+      : {};
 
   const heading = (key: SectionKey) => (
     <SectionHeading
@@ -141,6 +172,7 @@ export function ResumeDocument({
         contactLine={contactLine}
         linkParts={linkParts}
         className={blockClass("personal")}
+        edit={edit}
       />
 
       {/* ------------------------------------------------------------------ */}
@@ -158,6 +190,7 @@ export function ResumeDocument({
                   data-field="summary"
                   className={blockClass("summary")}
                   style={{ textAlign: "justify" }}
+                  {...edit("personalInfo.summary")}
                 >
                   {info.summary}
                 </p>
@@ -168,7 +201,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.experiences.map((e) => (
+                {data.experiences.map((e, i) => (
                   <div
                     key={e.id}
                     data-field={`experience:${e.id}`}
@@ -176,6 +209,7 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
+                      primaryEdit={edit(`experiences.${i}.jobTitle`)}
                       primary={e.jobTitle}
                       secondary={joinNonEmpty([
                         e.company,
@@ -189,7 +223,12 @@ export function ResumeDocument({
                       )}
                       fontSize={data.fontSize}
                     />
-                    <Bullets items={e.bullets} fontSize={data.fontSize} />
+                    <Bullets
+                      items={e.bullets}
+                      fontSize={data.fontSize}
+                      edit={edit}
+                      basePath={`experiences.${i}`}
+                    />
                   </div>
                 ))}
               </section>
@@ -199,7 +238,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.educations.map((e) => (
+                {data.educations.map((e, i) => (
                   <div
                     key={e.id}
                     data-field={`education:${e.id}`}
@@ -223,7 +262,12 @@ export function ResumeDocument({
                         {e.maxGpa ? ` / ${e.maxGpa}` : ""}
                       </p>
                     )}
-                    <Bullets items={e.bullets} fontSize={data.fontSize} />
+                    <Bullets
+                      items={e.bullets}
+                      fontSize={data.fontSize}
+                      edit={edit}
+                      basePath={`educations.${i}`}
+                    />
                   </div>
                 ))}
               </section>
@@ -250,7 +294,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.projects.map((p) => (
+                {data.projects.map((p, i) => (
                   <div
                     key={p.id}
                     data-field={`project:${p.id}`}
@@ -258,12 +302,18 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
+                      primaryEdit={edit(`projects.${i}.name`)}
                       primary={p.name}
                       secondary={joinNonEmpty([p.role, prettyUrl(p.url)], " - ")}
                       meta={formatDateRange(p.startDate, p.endDate, false, lang)}
                       fontSize={data.fontSize}
                     />
-                    <Bullets items={p.bullets} fontSize={data.fontSize} />
+                    <Bullets
+                      items={p.bullets}
+                      fontSize={data.fontSize}
+                      edit={edit}
+                      basePath={`projects.${i}`}
+                    />
                   </div>
                 ))}
               </section>
@@ -273,7 +323,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.organizations.map((o) => (
+                {data.organizations.map((o, i) => (
                   <div
                     key={o.id}
                     data-field={`organization:${o.id}`}
@@ -281,6 +331,7 @@ export function ResumeDocument({
                     style={entryStyle}
                   >
                     <EntryHeader
+                      primaryEdit={edit(`organizations.${i}.role`)}
                       primary={o.role}
                       secondary={joinNonEmpty([o.name, o.city])}
                       meta={formatDateRange(
@@ -291,7 +342,12 @@ export function ResumeDocument({
                       )}
                       fontSize={data.fontSize}
                     />
-                    <Bullets items={o.bullets} fontSize={data.fontSize} />
+                    <Bullets
+                      items={o.bullets}
+                      fontSize={data.fontSize}
+                      edit={edit}
+                      basePath={`organizations.${i}`}
+                    />
                   </div>
                 ))}
               </section>
@@ -301,7 +357,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.certifications.map((c) => (
+                {data.certifications.map((c, i) => (
                   <div
                     key={c.id}
                     data-field={`certification:${c.id}`}
@@ -309,7 +365,9 @@ export function ResumeDocument({
                     style={{ marginBottom: "3pt" }}
                   >
                     <p>
-                      <strong>{c.name}</strong>
+                      <strong {...edit(`certifications.${i}.name`)}>
+                        {c.name}
+                      </strong>
                       {c.issuer && <span> - {c.issuer}</span>}
                       {c.issueDate && (
                         <span> ({formatMonth(c.issueDate, lang)})</span>
@@ -335,7 +393,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.awards.map((a) => (
+                {data.awards.map((a, i) => (
                   <div
                     key={a.id}
                     data-field={`award:${a.id}`}
@@ -343,11 +401,13 @@ export function ResumeDocument({
                     style={{ marginBottom: "3pt" }}
                   >
                     <p>
-                      <strong>{a.title}</strong>
+                      <strong {...edit(`awards.${i}.title`)}>{a.title}</strong>
                       {a.issuer && <span> - {a.issuer}</span>}
                       {a.date && <span> ({formatMonth(a.date, lang)})</span>}
                     </p>
-                    {a.description && <p>{a.description}</p>}
+                    {a.description && (
+                      <p {...edit(`awards.${i}.description`)}>{a.description}</p>
+                    )}
                   </div>
                 ))}
               </section>
@@ -375,7 +435,7 @@ export function ResumeDocument({
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
-                {data.publications.map((p) => (
+                {data.publications.map((p, i) => (
                   <div
                     key={p.id}
                     data-field={`publication:${p.id}`}
@@ -383,7 +443,9 @@ export function ResumeDocument({
                     style={{ marginBottom: "3pt" }}
                   >
                     <p>
-                      <strong>{p.title}</strong>
+                      <strong {...edit(`publications.${i}.title`)}>
+                        {p.title}
+                      </strong>
                       {p.publisher && <span>. {p.publisher}</span>}
                       {p.date && <span> ({formatMonth(p.date, lang)})</span>}
                     </p>
@@ -477,6 +539,7 @@ function ResumeHeader({
   contactLine,
   linkParts,
   className,
+  edit,
 }: {
   data: ResumeData;
   style: TemplateStyle;
@@ -484,6 +547,7 @@ function ResumeHeader({
   contactLine: string;
   linkParts: string[];
   className: string;
+  edit: EditAttrs;
 }) {
   const info = data.personalInfo;
   const small = `${data.fontSize - 0.5}pt`;
@@ -529,11 +593,16 @@ function ResumeHeader({
           color: style.useAccent ? accent : "#000",
         }}
       >
-        {info.fullName || "Nama Lengkap Anda"}
+        <span {...edit("personalInfo.fullName")}>
+          {info.fullName || "Nama Lengkap Anda"}
+        </span>
       </h1>
 
       {info.headline && (
-        <p style={{ fontSize: style.headlineSize, marginTop: "1pt" }}>
+        <p
+          style={{ fontSize: style.headlineSize, marginTop: "1pt" }}
+          {...edit("personalInfo.headline")}
+        >
           {info.headline}
         </p>
       )}
@@ -698,11 +767,21 @@ function EntryHeader({
   secondary,
   meta,
   fontSize,
+  primaryEdit,
 }: {
   primary: string;
   secondary: string;
   meta: string;
   fontSize: number;
+  /**
+   * Atribut penyunting untuk judul entri.
+   *
+   * Hanya judulnya, tidak barisan di bawahnya: baris kedua adalah gabungan
+   * beberapa field - nama perusahaan bersama kota dan negara - dan membelah
+   * kembali satu untaian menjadi tiga field hanyalah tebakan. Tebakan yang
+   * salah akan memindahkan isi ke field yang keliru tanpa pengguna sadari.
+   */
+  primaryEdit?: Record<string, unknown>;
 }) {
   return (
     <>
@@ -714,7 +793,7 @@ function EntryHeader({
           gap: "8pt",
         }}
       >
-        <strong>{primary}</strong>
+        <strong {...primaryEdit}>{primary}</strong>
         {meta && (
           <span style={{ whiteSpace: "nowrap", fontSize: `${fontSize - 0.5}pt` }}>
             {/*
@@ -737,9 +816,27 @@ function EntryHeader({
   );
 }
 
-function Bullets({ items, fontSize }: { items: string[]; fontSize: number }) {
-  const filled = items.filter((b) => b.trim());
+function Bullets({
+  items,
+  fontSize,
+  edit,
+  basePath,
+}: {
+  items: string[];
+  fontSize: number;
+  edit?: EditAttrs;
+  /** Jalur daftar poinnya, mis. "experiences.0". */
+  basePath?: string;
+}) {
+  // Nomor urut aslinya dibawa serta, bukan nomor setelah penyaringan. Poin
+  // kosong tidak ditampilkan, sehingga nomor di layar dan nomor di dalam data
+  // berbeda - dan menulis balik memakai nomor di layar akan menimpa poin yang
+  // salah begitu ada satu saja poin kosong di atasnya.
+  const filled = items
+    .map((text, index) => ({ text, index }))
+    .filter((b) => b.text.trim());
   if (filled.length === 0) return null;
+
   return (
     <ul
       style={{
@@ -748,9 +845,15 @@ function Bullets({ items, fontSize }: { items: string[]; fontSize: number }) {
         marginTop: `${fontSize * 0.15}pt`,
       }}
     >
-      {filled.map((bullet, index) => (
-        <li key={index} style={{ marginBottom: "1pt" }}>
-          {bullet}
+      {filled.map((bullet) => (
+        <li
+          key={bullet.index}
+          style={{ marginBottom: "1pt" }}
+          {...(edit && basePath
+            ? edit(`${basePath}.bullets.${bullet.index}`)
+            : {})}
+        >
+          {bullet.text}
         </li>
       ))}
     </ul>
