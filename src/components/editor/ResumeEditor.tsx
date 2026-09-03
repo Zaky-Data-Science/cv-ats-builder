@@ -32,6 +32,7 @@ import {
   PAPER_NOTE,
   PAPER_ORDER,
   PAPER_SIZES,
+  paperSpec,
   RECOMMENDED_PAPER,
 } from "@/lib/resume/paper";
 import {
@@ -302,12 +303,19 @@ export function ResumeEditor({
     // akun membacanya dari basis data.
     const url = guest ? "/cetak" : `/resume/${initial.id}/print`;
 
+    // Ukuran bingkainya mengikuti kertas yang dipilih pengguna, bukan dipatok
+    // A4. Bingkai seukuran A4 untuk CV Legal membuat peramban menghitung
+    // pergantian halaman pada tinggi yang salah, sehingga jumlah halaman di
+    // PDF bisa berbeda dari yang baru saja dilihat pengguna di pratinjau.
+    const paper = paperSpec(dataRef.current.pageSize);
+
     const frame = document.createElement("iframe");
     frame.setAttribute("aria-hidden", "true");
     frame.setAttribute("tabindex", "-1");
     frame.title = t.editor.actionPdfLabel;
     frame.style.cssText =
-      "position:fixed;left:-10000px;top:0;width:210mm;height:297mm;border:0;";
+      `position:fixed;left:-10000px;top:0;width:${paper.widthMm}mm;` +
+      `height:${paper.heightMm}mm;border:0;`;
     frame.src = url;
 
     frame.onload = () => {

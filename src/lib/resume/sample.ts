@@ -503,3 +503,57 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
     customSections: [],
   };
 }
+
+/**
+ * Versi pendek contoh CV, khusus untuk pratinjau template di halaman depan.
+ *
+ * Kartu template memotong dokumennya tepat pada satu halaman dan mengecilkannya
+ * ke sekitar sepertiga ukuran asli. Segala isi di luar halaman pertama karena
+ * itu **tidak pernah terlihat** - tetapi tetap dirender, tetap dikirim di dalam
+ * HTML, dan tetap dikirim sekali lagi di dalam muatan React. Untuk sepuluh
+ * kartu, sisa yang tak terlihat itu menjadi ratusan kilobyte yang harus
+ * diunduh setiap pengunjung, setiap kali - dan halaman depan adalah halaman
+ * yang paling sering dibuka dari koneksi paling lambat.
+ *
+ * Yang disisakan cukup untuk memperlihatkan yang memang membedakan template:
+ * blok identitas, satu paragraf, dua entri berpoin, satu entri pendek, dan
+ * satu bagian berbentuk daftar. Prosanya tetap berasal dari contoh yang sama,
+ * jadi tidak ada teks kedua yang harus ikut dipelihara.
+ */
+export function previewResume(locale: Locale = "id"): ResumeData {
+  const full = sampleResume("", locale);
+
+  // Id entri harus tetap, bukan hasil newId().
+  //
+  // Dokumen CV menuliskan id tiap entri ke dalam atribut `data-field`, dan
+  // pratinjau ini dirender di server lalu disambung kembali di peramban. Id
+  // acak menghasilkan atribut yang berbeda di kedua sisi, dan React melaporkan
+  // ketidakcocokan hidrasi - keluhan yang benar, sebab yang salah memang
+  // datanya, bukan peringatannya. Untuk data contoh yang sama sekali tidak
+  // pernah disunting, id berurutan sudah memadai dan justru lebih jujur.
+  const fixedId = (prefix: string, index: number) => `pratinjau-${prefix}-${index}`;
+
+  return {
+    ...full,
+    sectionOrder: ["summary", "experience", "education", "skill"],
+    experiences: full.experiences.slice(0, 2).map((entry, i) => ({
+      ...entry,
+      id: fixedId("pengalaman", i),
+      bullets: entry.bullets.slice(0, 2),
+    })),
+    educations: full.educations.slice(0, 1).map((entry, i) => ({
+      ...entry,
+      id: fixedId("pendidikan", i),
+    })),
+    skills: full.skills.map((entry, i) => ({
+      ...entry,
+      id: fixedId("keahlian", i),
+    })),
+    projects: [],
+    certifications: [],
+    organizations: [],
+    awards: [],
+    languages: [],
+    publications: [],
+  };
+}

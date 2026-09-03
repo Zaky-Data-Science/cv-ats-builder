@@ -16,14 +16,13 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import { ResumeDocument } from "@/components/preview/ResumeDocument";
+import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CountUp, Interactive, Reveal, TiltCard } from "@/components/motion";
 import { Badge, Button, Card } from "@/components/ui";
 import { auth } from "@/auth";
 import { getT } from "@/lib/i18n/server";
-import { sampleResume } from "@/lib/resume/sample";
 import {
   TEMPLATE_INFO,
   TEMPLATE_ORDER,
@@ -46,7 +45,6 @@ export default async function LandingPage() {
   const session = await auth();
   const { locale, t } = await getT();
   const signedIn = Boolean(session?.user?.id);
-  const example = sampleResume("", locale);
 
   const steps = [
     { icon: LayoutList, title: t.home.step1Title, body: t.home.step1Body },
@@ -205,7 +203,7 @@ export default async function LandingPage() {
                           transform: "scale(var(--doc-scale))",
                         }}
                       >
-                        <ResumeDocument data={example} printMode />
+                        <TemplatePreview template="CLASSIC" locale={locale} />
                       </div>
                     </div>
                     <span className="tilt-sheen" aria-hidden />
@@ -414,14 +412,12 @@ export default async function LandingPage() {
               ids={withoutPhoto}
               heading={t.home.templatesWithoutPhoto}
               locale={locale}
-              example={example}
             />
 
             <TemplateGrid
               ids={withPhoto}
               heading={t.home.templatesWithPhoto}
               locale={locale}
-              example={example}
               note={t.home.templatesPhotoNote}
             />
           </div>
@@ -517,13 +513,11 @@ function TemplateGrid({
   ids,
   heading,
   locale,
-  example,
   note,
 }: {
   ids: TemplateId[];
   heading: string;
   locale: "id" | "en";
-  example: ReturnType<typeof sampleResume>;
   note?: string;
 }) {
   return (
@@ -544,25 +538,6 @@ function TemplateGrid({
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {ids.map((id, index) => {
           const info = TEMPLATE_INFO[locale][id];
-          const style = templateStyle(id);
-          const data = {
-            ...example,
-            template: id,
-            personalInfo: {
-              ...example.personalInfo,
-              // Template berfoto perlu memperlihatkan tempat fotonya. Yang
-              // dipakai gambar kosong bertanda abu, bukan wajah seseorang -
-              // memasang wajah asing di halaman depan tidak pada tempatnya.
-              showPhoto: style.photo !== "none",
-              photoUrl:
-                style.photo !== "none"
-                  ? "data:image/svg+xml;utf8," +
-                    encodeURIComponent(
-                      '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="160"><rect width="120" height="160" fill="#e6e6e8"/><circle cx="60" cy="60" r="26" fill="#c9c9cd"/><path d="M14 160c0-28 21-46 46-46s46 18 46 46z" fill="#c9c9cd"/></svg>',
-                    )
-                  : "",
-            },
-          };
 
           return (
             <Reveal key={id} delay={index * 60} className="scene">
@@ -584,7 +559,7 @@ function TemplateGrid({
                         transform: "scale(var(--tpl-scale))",
                       }}
                     >
-                      <ResumeDocument data={data} printMode />
+                      <TemplatePreview template={id} locale={locale} />
                     </div>
                   </div>
                 </div>
