@@ -240,8 +240,11 @@ async function extractPdf(
     const content = await page.getTextContent();
     const items = content.items as unknown as PdfTextItem[];
 
-    pageTexts.push(itemsToText(items));
-    maxColumns = Math.max(maxColumns, detectColumns(items));
+    // Tata letaknya dihitung sekali: jumlah kolomnya menjadi peringatan bagi
+    // pengguna, letak celahnya menjadi panduan membaca teksnya.
+    const layout = detectColumnLayout(items);
+    pageTexts.push(itemsToText(items, layout.boundaries));
+    maxColumns = Math.max(maxColumns, layout.columns);
 
     // Melepas sumber daya halaman satu per satu. Tanpa ini, membandingkan
     // lima CV sekaligus dapat menahan puluhan megabyte di memori peramban.
@@ -273,26 +276,57 @@ async function extractPdf(
  * sebagai baris. Kepingan dikelompokkan berdasarkan koordinat vertikalnya
  * (indeks ke-5 pada matriks transform), sehingga poin-poin CV tetap terbaca
  * sebagai baris terpisah - persis seperti yang dilakukan pengurai ATS.
+ *
+ * Bila halaman berkolom, `boundaries` berisi koordinat x pemisahnya dan
+ * kepingan dikelompokkan **per kolom lebih dulu**, baru per baris. Tanpa itu,
+ * kepingan dari kolom kiri dan kolom kanan yang kebetulan sejajar menyatu
+ * menjadi satu baris - dan baris campuran semacam itu merusak dua hal
+ * sekaligus: judul bagian tidak lagi berdiri sendiri sehingga tak terdeteksi,
+ * dan kalimatnya terbaca berselang-seling. Kerusakan itu berasal dari cara
+ * membacanya, bukan dari CV-nya, jadi memperbaikinya di sini membuat dimensi
+ * penilaian lain berhenti menghukum hal yang bukan salah penggunanya.
+ *
+ * Peringatan tata letak dua kolom sendiri tetap berlaku dan tetap memotong
+ * nilai keterbacaan - lihat `columnHint`. Banyak ATS memang gagal membacanya,
+ * dan itu tetap perlu disampaikan.
  */
-export function itemsToText(items: PdfTextItem[]): string {
-  const rows = new Map<number, PdfTextItem[]>();
+export function itemsToText(
+  items: PdfTextItem[],
+  boundaries: number[] = [],
+): string {
+  const sorted = [...boundaries].sort((a, b) => a - b);
+
+  /** Nomor kolom sebuah kepingan, ditentukan oleh titik tengahnya. */
+  const columnOf = (item: PdfTextItem): number => {
+    const middle = item.transform[4] + (item.width || 0) / 2;
+    let column = 0;
+    while (column < sorted.length && middle > sorted[column]) column += 1;
+    return column;
+  };
+
+  // Kunci pengelompokan menggabungkan nomor kolom dan koordinat vertikal,
+  // sehingga dua kepingan sejajar di kolom berbeda tidak pernah bertemu.
+  const rows = new Map<string, { column: number; y: number; items: PdfTextItem[] }>();
 
   for (const item of items) {
     if (!item.str) continue;
+    const column = columnOf(item);
     // Dibulatkan ke kelipatan 2 titik: teks pada satu baris kerap berbeda
     // sepersekian titik karena perbedaan tinggi huruf.
     const y = Math.round(item.transform[5] / 2) * 2;
-    const row = rows.get(y);
-    if (row) row.push(item);
-    else rows.set(y, [item]);
+    const key = `${column}:${y}`;
+    const row = rows.get(key);
+    if (row) row.items.push(item);
+    else rows.set(key, { column, y, items: [item] });
   }
 
-  return [...rows.entries()]
-    // Koordinat PDF dihitung dari bawah halaman, jadi urutan bacaannya
+  return [...rows.values()]
+    // Kolom dibaca berurutan dari kiri ke kanan; di dalam tiap kolom,
+    // koordinat PDF dihitung dari bawah halaman sehingga urutan bacaannya
     // adalah dari y terbesar ke terkecil.
-    .sort((a, b) => b[0] - a[0])
-    .map(([, row]) =>
-      row
+    .sort((a, b) => a.column - b.column || b.y - a.y)
+    .map((row) =>
+      row.items
         .sort((a, b) => a.transform[4] - b.transform[4])
         .map((item) => item.str)
         .join(" ")
@@ -303,8 +337,15 @@ export function itemsToText(items: PdfTextItem[]): string {
     .join("\n");
 }
 
+/** Jumlah kolom sebuah halaman beserta letak celah pemisahnya. */
+export interface ColumnLayout {
+  columns: number;
+  /** Koordinat x di tengah tiap celah pemisah kolom, urut dari kiri. */
+  boundaries: number[];
+}
+
 /**
- * Menaksir jumlah kolom pada sebuah halaman.
+ * Menaksir jumlah kolom pada sebuah halaman, sekaligus letak pemisahnya.
  *
  * Caranya: seluruh potongan teks dipetakan ke posisi horizontalnya, lalu
  * dicari apakah ada celah lebar yang membelah halaman - celah yang tidak
@@ -314,8 +355,14 @@ export function itemsToText(items: PdfTextItem[]): string {
  * Deteksi ini penting karena tata letak dua kolom adalah penyebab paling
  * sering CV terbaca berselang-seling oleh ATS, dan itu tidak terlihat sama
  * sekali dari teks hasil ekstraksi.
+ *
+ * Letak celahnya ikut dikembalikan supaya `itemsToText()` dapat membaca tiap
+ * kolom secara utuh. Keduanya berasal dari perhitungan yang sama, jadi tidak
+ * mungkin kedua bagian berbeda pendapat tentang di mana kolomnya terbelah.
  */
-export function detectColumns(items: PdfTextItem[]): number {
+export function detectColumnLayout(items: PdfTextItem[]): ColumnLayout {
+  const single: ColumnLayout = { columns: 1, boundaries: [] };
+
   const spans = items
     .filter((item) => item.str.trim().length > 0)
     .map((item) => ({
@@ -326,12 +373,12 @@ export function detectColumns(items: PdfTextItem[]): number {
   // Halaman dengan potongan teks terlalu sedikit tidak dinilai: halaman
   // sampul atau halaman berisi satu paragraf tidak punya cukup bahan untuk
   // membedakan "dua kolom" dari "kebetulan ada ruang kosong".
-  if (spans.length < 12) return 1;
+  if (spans.length < 12) return single;
 
   const pageLeft = Math.min(...spans.map((s) => s.left));
   const pageRight = Math.max(...spans.map((s) => s.right));
   const width = pageRight - pageLeft;
-  if (width <= 0) return 1;
+  if (width <= 0) return single;
 
   // Halaman dibagi menjadi 60 pita. Sebuah pita dianggap kosong bila tidak
   // ada satu pun potongan teks yang melintasinya.
@@ -349,23 +396,34 @@ export function detectColumns(items: PdfTextItem[]): number {
     for (let i = from; i <= to; i++) occupied[i] = true;
   }
 
+  /** Koordinat x di tengah sebuah celah yang berakhir tepat sebelum pita `end`. */
+  const middleOfGap = (end: number, gap: number): number =>
+    pageLeft + ((end - gap / 2) / BANDS) * width;
+
   // Celah dihitung hanya di bagian tengah halaman (20%-80%), karena margin
   // kiri dan kanan memang selalu kosong dan bukan pemisah kolom.
-  let columns = 1;
+  const boundaries: number[] = [];
+  const scanTo = Math.floor(BANDS * 0.8);
   let gap = 0;
-  for (let i = Math.floor(BANDS * 0.2); i < Math.floor(BANDS * 0.8); i++) {
+  for (let i = Math.floor(BANDS * 0.2); i < scanTo; i++) {
     if (occupied[i]) {
       // Celah selebar 5 pita (sekitar 8% lebar halaman) sudah terlalu lebar
       // untuk sekadar jarak antar-kata.
-      if (gap >= 5) columns += 1;
+      if (gap >= 5) boundaries.push(middleOfGap(i, gap));
       gap = 0;
     } else {
       gap += 1;
     }
   }
-  if (gap >= 5) columns += 1;
+  if (gap >= 5) boundaries.push(middleOfGap(scanTo, gap));
 
-  return Math.min(columns, 3);
+  const columns = Math.min(boundaries.length + 1, 3);
+  return { columns, boundaries: boundaries.slice(0, columns - 1) };
+}
+
+/** Jumlah kolom saja, untuk pemanggil yang tidak memerlukan letak celahnya. */
+export function detectColumns(items: PdfTextItem[]): number {
+  return detectColumnLayout(items).columns;
 }
 
 /* -------------------------------------------------------------------------- */
