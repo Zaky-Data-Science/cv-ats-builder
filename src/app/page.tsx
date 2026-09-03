@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { InkBackground } from "@/components/ink/InkBackground";
+import { InkWash } from "@/components/ink/InkWash";
 import { SamuraiIntro } from "@/components/ink/SamuraiIntro";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -31,6 +32,7 @@ import {
   templateStyle,
 } from "@/lib/resume/templates";
 import { SITE, SITE_META } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import type { TemplateId } from "@/lib/resume/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -82,15 +84,17 @@ export default async function LandingPage() {
   return (
     <div className="relative flex min-h-full flex-col bg-white">
       {/*
-        Intro pembuka dan latar bertinta.
-
-        Keduanya hiasan, dan urutannya di sini mencerminkan itu: keduanya
+        Intro pembuka - hiasan, dan urutannya di sini mencerminkan itu: ia
         berdiri di luar <main>, tidak membungkus apa pun, dan tidak menahan
-        apa pun. Halaman di belakangnya sudah utuh sejak byte pertama - bila
+        apa pun. Halaman di belakangnya sudah utuh sejak byte pertama; bila
         JavaScript gagal, yang hilang hanya hiasannya.
+
+        Jaring partikel TIDAK dipasang di sini. Ia dipasang di dalam panel
+        hero, dan hanya di sana - dua kanvas sekaligus akan membuat salah
+        satunya seluas dokumen, digambar ulang setiap bingkai untuk daerah
+        yang bahkan tidak terlihat.
       */}
       <SamuraiIntro />
-      <InkBackground />
 
       {/* Tautan lompat untuk pengguna papan ketik dan pembaca layar. */}
       <a
@@ -106,20 +110,43 @@ export default async function LandingPage() {
         {/* ================================================================ */}
         {/* Hero                                                             */}
         {/* ================================================================ */}
-        <section className="relative overflow-hidden">
-          {/*
-            Latar dekoratif. Pada palet monokrom, kabut ini tidak lagi berupa
-            warna melainkan perbedaan terang-gelap yang sangat tipis - cukup
-            untuk memberi kedalaman tanpa memaksa mata membaca sesuatu di sana.
-          */}
-          <div aria-hidden className="pointer-events-none absolute inset-0">
-            <div className="pulse-glow absolute -top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-ink-200 blur-3xl" />
-            <div className="pulse-glow absolute top-40 -left-32 h-80 w-80 rounded-full bg-ink-100 blur-3xl" />
-          </div>
+        {/*
+          Hero berupa panel tersendiri, bukan bagian yang menyatu dengan
+          halaman.
 
-          <div className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-5 sm:pt-16 md:px-8 lg:px-5 lg:pt-20 lg:pb-24">
-            <div className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
-              <Reveal>
+          Sapuan tinta dan jaring partikel harus punya batas. Dibiarkan
+          mengalir ke seluruh halaman, keduanya akan berada di belakang setiap
+          paragraf sampai ke footer - dan tinta di belakang teks yang harus
+          dibaca berhenti menjadi rupa, berubah menjadi gangguan. Panel yang
+          membulat dan memangkas isinya memberi keduanya tempat yang jelas.
+        */}
+        <section className="px-3 pt-3 sm:px-4 sm:pt-4 lg:px-5 lg:pt-5">
+          <div className="hero-panel relative isolate overflow-hidden rounded-[1.25rem] border border-ink-200 sm:rounded-[1.75rem]">
+            <InkWash />
+            <InkBackground />
+
+            <div className="relative z-[1] mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 sm:pt-16 md:px-10 lg:px-12 lg:pt-20 lg:pb-24">
+            {/*
+              Tiga blok, bukan dua.
+
+              Di ponsel urutannya: teks, pratinjau CV, lalu tombol dan
+              statistik - pratinjaunya muncul begitu penjelasannya selesai
+              dibaca, bukan setelah seluruh isi hero. Di layar lebar
+              susunannya tetap dua kolom seperti sebelumnya: teks dan tombol
+              bertumpuk di kolom kiri, pratinjau menempati kolom kanan
+              sepanjang keduanya.
+
+              Yang membuatnya bisa keduanya sekaligus: penempatan baris dan
+              kolom baru diberikan mulai `lg:`. Di bawah itu ketiganya
+              mengalir menurut urutan penulisannya - dan urutan penulisan
+              itulah urutan yang benar untuk ponsel.
+
+              Jaraknya juga dibedakan: di ponsel dari `gap`, di layar lebar
+              dari `lg:mt-8` pada blok tombol - sebab di sana kedua blok itu
+              satu kolom yang tidak boleh terpisah sejauh jarak antar-kolom.
+            */}
+            <div className="grid gap-9 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-x-10 lg:gap-y-0">
+              <Reveal className="lg:col-start-1 lg:row-start-1">
                 <Badge>
                   <Sparkles size={12} className="mr-1" />
                   {t.home.heroBadge}
@@ -160,58 +187,15 @@ export default async function LandingPage() {
                 <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-600 sm:text-base">
                   {t.home.heroBody}
                 </p>
-
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Link href={signedIn ? "/dashboard" : "/login"}>
-                    <Button size="lg" className="press w-full sm:w-auto">
-                      {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
-                      <ArrowRight size={18} />
-                    </Button>
-                  </Link>
-                  <Link href="/coba">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="press w-full sm:w-auto"
-                      title={t.guest.ctaTryHint}
-                    >
-                      {t.guest.ctaTry}
-                    </Button>
-                  </Link>
-                </div>
-
-                {/*
-                  Dua kolom di ponsel, empat mulai layar sedang.
-
-                  Empat kolom pada layar 320 piksel menyisakan sekitar 70
-                  piksel per kolom - cukup untuk angkanya, tidak cukup untuk
-                  keterangan di bawahnya, sehingga setiap keterangan pecah
-                  menjadi tiga baris dan barisan itu berubah menjadi blok teks
-                  yang tidak lagi terbaca sebagai angka.
-                */}
-                <dl className="mt-10 grid max-w-lg grid-cols-2 gap-x-4 gap-y-6 border-t border-ink-200 pt-6 sm:grid-cols-4 sm:gap-5">
-                  {[
-                    { to: 11, label: t.home.statSections },
-                    { to: 10, label: t.home.statTemplates },
-                    { to: 5, label: t.home.statDimensions },
-                    { to: 4, label: t.home.statFormats },
-                  ].map((stat) => (
-                    <div key={stat.label}>
-                      <dt className="text-2xl font-bold text-ink-900 sm:text-3xl">
-                        <CountUp to={stat.to} />
-                      </dt>
-                      <dd className="mt-0.5 text-[11px] leading-tight text-ink-500">
-                        {stat.label}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
               </Reveal>
 
               {/* ---------------------------------------------------------- */}
               {/* Kartu CV 3D                                                 */}
               {/* ---------------------------------------------------------- */}
-              <Reveal delay={120} className="scene justify-self-center">
+              <Reveal
+                delay={120}
+                className="scene justify-self-center lg:col-start-2 lg:row-span-2 lg:row-start-1"
+              >
                 <TiltCard className="relative">
                   <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-white shadow-2xl">
                     {/*
@@ -276,6 +260,70 @@ export default async function LandingPage() {
                   {t.home.heroCaption}
                 </p>
               </Reveal>
+
+              <Reveal delay={60} className="lg:col-start-1 lg:row-start-2">
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-8">
+                  <Link href={signedIn ? "/dashboard" : "/login"}>
+                    <Button size="lg" className="press w-full sm:w-auto">
+                      {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
+                      <ArrowRight size={18} />
+                    </Button>
+                  </Link>
+                  <Link href="/coba">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="press w-full sm:w-auto"
+                      title={t.guest.ctaTryHint}
+                    >
+                      {t.guest.ctaTry}
+                    </Button>
+                  </Link>
+                </div>
+
+                {/*
+                  Dua kolom di ponsel, empat mulai layar sedang.
+
+                  Empat kolom pada layar 320 piksel menyisakan sekitar 70
+                  piksel per kolom - cukup untuk angkanya, tidak cukup untuk
+                  keterangan di bawahnya, sehingga setiap keterangan pecah
+                  menjadi tiga baris dan barisan itu berubah menjadi blok teks
+                  yang tidak lagi terbaca sebagai angka.
+                */}
+                <dl className="mt-10 grid max-w-lg grid-cols-2 border-t border-ink-200 pt-6 sm:grid-cols-4">
+                  {[
+                    { to: 11, label: t.home.statSections },
+                    { to: 10, label: t.home.statTemplates },
+                    { to: 5, label: t.home.statDimensions },
+                    { to: 4, label: t.home.statFormats },
+                  ].map((stat, i) => (
+                    /*
+                      Garis pemisah dipasang per butir, bukan lewat `divide-x`
+                      pada wadahnya. Pada susunan 2x2, `divide-x` menaruh garis
+                      di kiri butir ketiga - yaitu di tepi luar kolom pertama,
+                      tempat yang tidak memisahkan apa pun. Nomor butirnya
+                      dibawa serta supaya garisnya hanya muncul di antara.
+                    */
+                    <div
+                      key={stat.label}
+                      className={cn(
+                        "px-4 py-1 first:pl-0 sm:px-5",
+                        i % 2 === 1 && "border-l border-ink-200",
+                        "sm:border-l sm:first:border-l-0",
+                      )}
+                    >
+                      <dt className="text-2xl font-bold text-ink-900 sm:text-3xl">
+                        <CountUp to={stat.to} />
+                      </dt>
+                      <dd className="mt-0.5 text-[11px] leading-tight text-ink-500">
+                        {stat.label}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
+            </div>
             </div>
           </div>
         </section>

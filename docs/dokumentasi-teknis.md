@@ -869,17 +869,65 @@ lensa bermata runcing, bukan pita lurus - pita setebal sama di sepanjang
 jalurnya terbaca sebagai berkas cahaya, dan berkas cahaya justru yang
 dihindari.
 
-#### Latar berpartikel
+#### Panel hero, sapuan tinta, dan jaring partikel
 
-Satu `<canvas>`, bukan puluhan elemen berposisi mutlak. Jumlah partikel
-mengikuti luas layar (satu per 26.000 piksel persegi, ditahan antara 14 dan
-46), kerapatan piksel dibatasi 2, aliran tinta hanya muncul mulai 768 piksel,
-dan penggambaran **berhenti saat tab tidak terlihat**. Selisih waktu antar
-bingkai dibatasi 48 milidetik supaya tab yang kembali dari latar belakang tidak
-membuat seluruh partikel melompat sekaligus.
+Hero adalah **panel tersendiri** yang memangkas isinya, bukan bagian yang
+menyatu dengan halaman. Sapuan tinta dan jaring partikel harus punya batas:
+dibiarkan mengalir ke seluruh halaman, keduanya akan berada di belakang setiap
+paragraf sampai ke footer - dan tinta di belakang teks yang harus dibaca
+berhenti menjadi rupa, berubah menjadi gangguan.
 
-Yang dituju: halaman terlihat diam pada pandangan pertama, dan geraknya baru
-disadari ketika diperhatikan.
+**Jaring partikel** (`InkBackground`): satu `<canvas>`, bukan puluhan elemen
+berposisi mutlak. Titik yang hanyut beserta garis penghubung yang memudar
+seiring jarak - jaring itulah yang membedakannya dari sekadar bintang
+bertaburan. Jumlah titik mengikuti luas kanvas dengan batas atas 40, sebab
+jumlah pasangan tumbuh kuadratik: 40 titik berarti 780 perbandingan jarak per
+bingkai, sedangkan 120 titik berarti 7.140. Perbandingannya memakai kuadrat,
+bukan akar - yang ditanya hanya "lebih dekat atau tidak". Penggambaran
+**berhenti saat tab tidak terlihat**, dan selisih waktu antar bingkai dibatasi
+48 milidetik supaya tab yang kembali dari latar belakang tidak membuat seluruh
+titik melompat sekaligus.
+
+**Sapuan tinta** (`InkWash`): aliran bersulur di tepi kiri panel, dua aksen di
+sisi kanan yang hanya muncul mulai 768 piksel. Digambar **sekali** ke kanvas
+sepertiga ukuran lalu diperbesar - kelembutannya datang dari pembesaran itu,
+dan itu justru tepat sebab bentuk sepucat ini tidak punya rincian yang bisa
+hilang.
+
+Dua cara lain sudah dicoba dan ditinggalkan, dan alasannya perlu diketahui
+supaya tidak dicoba ulang:
+
+- **Penyaring SVG** (`feTurbulence` + `feDisplacementMap`) memberi bentuk yang
+  paling menyerupai tinta, tetapi penyaring SVG **dihitung ulang setiap kali
+  daerahnya digambar ulang** - dan kanvas partikel yang beranimasi di atasnya
+  menjamin itu terjadi terus. Ia bukan sesuatu yang "dihitung sekali lalu
+  disimpan".
+- **`ctx.filter = "blur(...)"`** berlaku per gambar, bukan sekali untuk
+  seluruh kanvas: tujuh puluh cakram berarti tujuh puluh peredaman atas
+  permukaan besar.
+
+Satu hal yang wajib ditulis eksplisit pada SVG apa pun di sini:
+`fill="currentColor"`. Bentuk SVG tanpa `fill` **tidak** mewarisi warna teks -
+bawaannya hitam pekat, dan di mode gelap kertasnya juga hitam, sehingga
+seluruh gambarnya lenyap tanpa satu pun galat.
+
+#### Urutan hero: berbeda di ponsel, tanpa merender apa pun dua kali
+
+Di ponsel urutannya teks, pratinjau CV, lalu tombol dan statistik -
+pratinjaunya muncul begitu penjelasannya selesai dibaca. Di layar lebar tetap
+dua kolom.
+
+Caranya: grid berisi **tiga** blok, dan penempatan baris-kolomnya baru
+diberikan mulai `lg:`. Di bawah itu ketiganya mengalir menurut urutan
+penulisannya - dan urutan penulisan itulah urutan yang benar untuk ponsel.
+Jaraknya pun dibedakan: di ponsel dari `gap`, di layar lebar dari margin pada
+blok tombol, sebab di sana kedua blok itu satu kolom yang tidak boleh terpisah
+sejauh jarak antar-kolom.
+
+Yang sengaja **tidak** dilakukan: merender pratinjau dua kali dan
+menyembunyikan salah satunya per breakpoint. Pratinjau CV adalah elemen
+terberat di halaman ini; menggandakannya akan mengembalikan beban yang
+dipangkas dari 574 ke 224 KB pada sesi 6.
 
 #### Umpan balik sentuhan
 

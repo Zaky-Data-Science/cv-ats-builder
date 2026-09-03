@@ -396,20 +396,82 @@
    -------------------------------------------------------------------------- */
 
 /*
-  Kanvas latar. Isinya digambar JavaScript; yang diatur di sini hanya
-  tempatnya - di belakang segalanya, dan tidak pernah menangkap sentuhan.
+  Kanvas jaring partikel. Isinya digambar JavaScript; yang diatur di sini
+  hanya tempatnya.
+
+  `absolute`, bukan `fixed`: jaringnya milik hero. Yang menutupi seluruh
+  halaman akan menaruh garis-garis di belakang teks yang justru harus dibaca -
+  dan pada halaman sepanjang ini, itu berarti sebagian besar halamannya.
 */
 .ink-latar {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 900ms ease;
+  transition: opacity 1200ms ease;
 }
 
 .ink-latar[data-siap="true"] {
   opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   3a. Panel hero
+   -------------------------------------------------------------------------- */
+
+/*
+  Permukaan hero.
+
+  Warnanya sengaja bukan warna rata, melainkan gradasi tipis antara dua
+  langkah tangga abu. Sapuan tinta memerlukan permukaan yang tidak rata untuk
+  terbaca sebagai tinta di atas kertas; di atas warna rata sempurna, gumpalan
+  sepucat itu terlihat seperti cacat gambar.
+*/
+.hero-panel {
+  background:
+    radial-gradient(
+      120% 90% at 12% 88%,
+      var(--color-ink-100) 0%,
+      var(--color-white) 62%
+    ),
+    var(--color-white);
+}
+
+:root[data-theme="dark"] .hero-panel {
+  background:
+    radial-gradient(120% 90% at 12% 88%, #131317 0%, #0a0a0b 58%),
+    #0a0a0b;
+}
+
+/* --------------------------------------------------------------------------
+   3b. Sapuan tinta sumi-e
+   -------------------------------------------------------------------------- */
+
+/*
+  Kanvas sapuan tinta. Digambar sekali, lalu tidak disentuh lagi.
+
+  Kepekatannya dibedakan per tema, dan itu perlu: tinta putih di atas hitam
+  terlihat lebih kuat daripada tinta hitam di atas putih pada kepekatan yang
+  sama - mata lebih peka pada terang yang muncul di kegelapan daripada
+  sebaliknya. Nilai yang sama akan membuat tema terang terlihat pudar.
+*/
+.ink-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1200ms ease;
+}
+
+.ink-wash[data-siap="true"] {
+  opacity: 0.8;
+}
+
+:root[data-theme="dark"] .ink-wash[data-siap="true"] {
+  opacity: 0.95;
 }
 
 /* --------------------------------------------------------------------------
@@ -437,7 +499,8 @@
 @media print {
   .intro-akar,
   .ink-blot,
-  .ink-latar {
+  .ink-latar,
+  .ink-wash {
     display: none !important;
   }
 }

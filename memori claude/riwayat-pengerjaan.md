@@ -1053,13 +1053,132 @@ Durasinya dikembalikan ke 2100 setelah selesai.
 
 ---
 
+## Sesi 9 - 3 September 2026: rupa hero bertinta, dan sebuah pengukuran yang ternyata palsu
+
+Lanjutan sesi 8. Permintaannya: tampilan halaman depan dibuat menyerupai mockup
+referensi - tinta sumi-e yang benar-benar terlihat, jaring partikel berkait
+garis, dan hero berupa panel tersendiri. "Rombak besar tidak apa-apa."
+
+### Yang dikerjakan
+
+1. **Hero menjadi panel membulat tersendiri** (`.hero-panel`), bukan bagian
+   yang menyatu dengan halaman. Sapuan tinta dan jaring partikel harus punya
+   batas: dibiarkan mengalir ke seluruh halaman, keduanya akan berada di
+   belakang setiap paragraf sampai ke footer - dan tinta di belakang teks yang
+   harus dibaca berhenti menjadi rupa, berubah menjadi gangguan.
+
+2. **Sapuan tinta sumi-e** (`InkWash`) - aliran tinta bersulur di tepi kiri
+   panel, dengan dua aksen di sisi kanan yang hanya muncul mulai 768 piksel.
+   Dibangkitkan, bukan berupa berkas gambar: mengikuti tema lewat satu
+   variabel `--ink`, tajam di kerapatan piksel apa pun, dan tidak menambah
+   satu pun permintaan jaringan pada halaman yang baru dipangkas ke 224 KB.
+
+3. **Jaring partikel** (`InkBackground` ditulis ulang) - titik yang hanyut
+   beserta garis penghubung yang memudar seiring jarak. Jaring itulah yang
+   membedakannya dari sekadar bintang bertaburan, dan itu yang paling khas
+   dari rupa yang dituju. Kanvasnya kini `absolute` dan milik hero, bukan
+   `fixed` menutupi halaman.
+
+4. **Statistik bergaris pemisah**, dan **navigasi lengkap baru muncul di 1024
+   piksel** - lihat sesi 8 untuk sebabnya.
+
+5. **Urutan hero di ponsel diubah**: teks, lalu pratinjau CV, lalu tombol dan
+   statistik. Pratinjaunya muncul begitu penjelasannya selesai dibaca, bukan
+   setelah seluruh isi hero. Di layar lebar susunannya tetap dua kolom.
+
+   Caranya: grid berisi **tiga** blok, dan penempatan baris-kolomnya baru
+   diberikan mulai `lg:`. Di bawah itu ketiganya mengalir menurut urutan
+   penulisannya - dan urutan penulisan itulah urutan yang benar untuk ponsel.
+   Tidak ada satu pun elemen yang dirender dua kali; menggandakan pratinjau
+   CV demi dua urutan akan mengembalikan beban yang dipangkas di sesi 6.
+
+### Cacat yang ditemukan dan diperbaiki
+
+**Dua kanvas jaring partikel sekaligus.** Saat kanvasnya dipindahkan ke dalam
+panel hero, yang lama di tingkat halaman lupa dilepas. Yang di tingkat halaman
+berukuran seluas **seluruh dokumen** dan digambar ulang setiap bingkai untuk
+daerah yang bahkan tidak terlihat.
+
+Gejalanya dilaporkan pengguna sebagai "temanya jadi panjang ke bawah, tidak
+jelas" - garis-garis tinta samar yang terlihat sampai ke dasar halaman, bukan
+hanya di hero. Tidak satu pun pemeriksaan otomatis dapat menangkap ini: dua
+kanvas sama sahnya dengan satu.
+
+### Pelajaran terpenting sesi ini: pengukuran yang tidak sah
+
+Sapuan tinta mula-mula dibuat dengan penyaring SVG (`feTurbulence` +
+`feDisplacementMap`). Ia diganti dua kali karena "terukur sangat mahal":
+mula-mula 100 bingkai tidak selesai dalam 45 detik, lalu 15 bingkai juga
+tidak.
+
+**Kedua angka itu palsu.** Jendela Chrome yang dipakai menguji sedang
+terhalang, sehingga `document.visibilityState` bernilai `hidden` - dan tab
+tersembunyi membuat peramban menghentikan `requestAnimationFrame` sama sekali.
+Gelung pengukurannya karena itu tidak pernah berjalan, dan yang tercatat
+bukan biaya penyaring melainkan waktu tunggu yang tidak ada ujungnya.
+
+Hal yang sama menjelaskan seluruh keluhan "hidrasi di mesin ini lambat luar
+biasa" sepanjang sesi 7 sampai 9: tab tersembunyi juga membuat React menunda
+hidrasi. Bukan mesinnya, bukan kodenya.
+
+Yang perlu diingat untuk pengujian berikutnya:
+
+> Sebelum mengukur apa pun yang bergantung pada bingkai atau hidrasi,
+> **periksa `document.visibilityState` lebih dulu.** Bila `hidden`, tidak ada
+> angka dari tab itu yang berarti.
+
+Rancangan kanvas yang sekarang tetap dipertahankan, tetapi alasannya kini
+berdiri sendiri dan tidak bersandar pada angka palsu itu: kanvas digambar
+sekali lalu menjadi bitmap, sehingga kanvas partikel yang beranimasi di
+atasnya tidak memaksa apa pun dihitung ulang. Penyaring SVG sebaliknya
+dihitung ulang setiap kali daerahnya digambar ulang - dan apa pun yang
+beranimasi di atasnya menjamin itu terjadi terus. Itu sifat penyaring SVG,
+bukan hasil pengukuran.
+
+### Yang dicoba, ditolak, dan dibuang
+
+Satu putaran pekerjaan dibatalkan atas permintaan pengguna: mengganti cahaya
+kursor dengan jejak tinta (`InkPointer`), membuka kemiringan kartu untuk layar
+sentuh, menghapus intro pembuka, dan mempekatkan bercak sentuh. Sebabnya
+tampilannya rusak - dan kerusakan itu, seperti diuraikan di atas, sebenarnya
+berasal dari kanvas ganda, bukan dari perubahan itu sendiri.
+
+Dua hal dari putaran itu tetap sah dan layak dicoba lagi kapan-kapan, dengan
+catatan bahwa keduanya belum pernah terbukti bekerja di perangkat sungguhan:
+
+- `motion.tsx` membatasi kemiringan kartu ke `(hover: hover) and (pointer:
+  fine)`, sehingga **di ponsel tidak terjadi apa pun sama sekali**. Alasan
+  yang tertulis di komentarnya ("tidak ada kursor untuk diikuti") keliru: yang
+  tidak ada di layar sentuh bukan penunjuknya melainkan gerak tanpa menekan.
+  Yang benar-benar perlu ditangani hanya pemulihan keadaan saat jari diangkat.
+- Cahaya pengikut kursor dan bercak sentuh dulu berjalan bersamaan, masing-
+  masing memasang `pointermove` sendiri pada `window` dengan pembatas laju
+  yang tidak saling tahu.
+
+### Pengujian
+
+`npm test` tetap **284 pemeriksaan, seluruhnya lulus** - termasuk pengunci
+markup dokumen CV, yang membuktikan seluruh pekerjaan rupa ini tidak menyentuh
+satu karakter pun keluaran jalur cetak.
+
+Nol luberan mendatar pada 320, 360, 375, 390, 412, 768, 820, 1024, 1280, 1440,
+dan 1920 - di halaman depan maupun di `/bandingkan`, `/panduan`, `/tentang`,
+`/alur`, `/login`, dan `/coba`.
+
+Urutan hero di ponsel diperiksa dari urutan DOM, bukan dari tata letak: pada
+satu kolom keduanya sama, dan urutan DOM dapat diperiksa tanpa bergantung pada
+tab yang terlihat.
+
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 8.
+Angka di bawah ini per akhir sesi 9.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 110 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 111 |
 | Baris kode termasuk berkas uji dan skrip | ~26.100 |
 | Tabel basis data | 16 |
 | Berkas migrasi | 5 |

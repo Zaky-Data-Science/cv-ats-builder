@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **3 September 2026** (sesi 8)
+Terakhir diperbarui: **3 September 2026** (sesi 9)
 
 ---
 
@@ -37,8 +37,11 @@ masih kosong tampil sebagai penampung samar supaya ada yang dapat diklik.
 Sesi 8 memperbaiki tampilan di ponsel - yang ternyata rusak oleh satu barisan
 kendali di bilah atas yang tidak dapat menyusut - dan menambahkan tanda
 pengenal rupa berupa **tinta hitam-putih**: intro pembuka sekali per perangkat,
-latar berpartikel yang nyaris tak terlihat, dan bercak tinta di setiap
-sentuhan.
+latar berpartikel, dan bercak tinta di setiap sentuhan.
+
+Sesi 9 memperkuat rupa itu: hero menjadi panel tersendiri berisi sapuan tinta
+sumi-e dan jaring partikel berkait garis, dan di ponsel pratinjau CV pindah ke
+atas - tepat setelah paragraf penjelasan, sebelum tombolnya.
 
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
@@ -153,7 +156,8 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/components/PublicHeader.tsx` | Bilah atas semua halaman publik **dan** laci navigasi ponsel. Satu-satunya penyebab luberan mendatar sebelum sesi 8 |
 | `src/styles/ink.css` | Seluruh gerak efek tinta - intro, bercak, jejak, latar. Warnanya satu: `var(--ink)` di globals.css |
 | `src/components/ink/SamuraiIntro.tsx` | Intro pembuka. Siluetnya SVG sebaris, bukan berkas gambar |
-| `src/components/ink/InkBackground.tsx` | Latar berpartikel di kanvas; berhenti saat tab tidak terlihat |
+| `src/components/ink/InkBackground.tsx` | Jaring partikel di kanvas - titik beserta garis penghubung. `absolute`, milik panel hero, bukan menutupi halaman |
+| `src/components/ink/InkWash.tsx` | Sapuan tinta sumi-e. Digambar sekali ke kanvas kecil lalu diperbesar; **bukan** penyaring SVG - lihat kepala berkasnya |
 | `src/components/ink/InkTouch.tsx` | Bercak tinta untuk ketukan, sapuan, dan tekanan lama |
 | `src/lib/intro.ts` | Store "intro perlu diputar atau tidak", pola yang sama dengan `theme.ts` |
 | `src/components/home/TemplatePreview.tsx` | Pratinjau template di halaman depan. Komponen klien **demi berat halaman**, bukan demi interaktivitas - alasannya di kepala berkasnya |
@@ -225,6 +229,11 @@ supaya tidak perlu diingat-ingat lagi.
 | **Foto pada DOCX diletakkan setelah blok identitas, bukan berdampingan** | Satu-satunya cara meletakkan gambar berdampingan teks di Word adalah tabel atau kotak teks - dua penyebab tersering kegagalan pengurai ATS yang sejak awal dihindari berkas itu. |
 | **Menyunting di kertas disimpan saat lepas fokus, bukan tiap ketukan tombol** | Elemen contentEditable menyimpan teksnya sendiri di DOM; menulis ke state React tiap huruf membuat React menggambar ulang elemennya di tengah pengguna mengetik, dan kursor melompat ke awal paragraf. |
 | **Hanya jalur terdaftar yang boleh ditulis dari kertas** | Nilai `data-edit` berasal dari DOM, dan DOM dapat disunting siapa pun lewat konsol. Penyetel jalur bebas akan mengizinkan penulisan ke `id`, yang memutus hubungan entri dengan barisnya di basis data. |
+| **Sebelum mengukur apa pun yang bergantung bingkai atau hidrasi, periksa `document.visibilityState`** | Sepanjang sesi 7-9 berulang kali disimpulkan "hidrasi di mesin ini lambat luar biasa" dan "penyaring SVG memakan satu detik per bingkai". Keduanya palsu: jendela Chrome yang dipakai menguji sedang terhalang, dan tab tersembunyi membuat peramban menghentikan `requestAnimationFrame` sekaligus membuat React menunda hidrasi. Angka dari tab tersembunyi tidak berarti apa pun. |
+| **Sapuan tinta digambar ke kanvas, bukan dengan penyaring SVG** | Penyaring SVG dihitung ulang setiap kali daerahnya digambar ulang - dan kanvas partikel yang beranimasi di atasnya menjamin itu terjadi terus. Kanvas digambar sekali lalu menjadi bitmap. (Catatan: alasan ini benar, tetapi angka yang dulu dipakai membuangnya berasal dari pengukuran tak sah di atas.) |
+| **Kelembutan tinta dari pembesaran bitmap kecil, bukan dari `ctx.filter`** | `ctx.filter = "blur(...)"` berlaku per gambar, bukan sekali untuk seluruh kanvas: tujuh puluh cakram berarti tujuh puluh peredaman. Menggambar pada sepertiga ukuran lalu memperbesar memberi kelembutan yang sama dengan biaya satu `drawImage`. |
+| **Urutan hero berbeda di ponsel dan desktop tanpa merender apa pun dua kali** | Grid berisi tiga blok, dan penempatan baris-kolomnya baru diberikan mulai `lg:`. Di bawah itu ketiganya mengalir menurut urutan penulisan - dan urutan penulisan itulah urutan yang benar untuk ponsel. Menggandakan pratinjau CV demi dua urutan akan mengembalikan beban yang dipangkas di sesi 6. |
+| **Sapuan tinta dan jaring partikel dibatasi panel hero** | Dibiarkan mengalir ke seluruh halaman, keduanya akan berada di belakang setiap paragraf sampai ke footer - dan tinta di belakang teks yang harus dibaca berhenti menjadi rupa, berubah menjadi gangguan. |
 | **Tampilan ponsel diperbaiki dengan mengukur lebih dulu, bukan dengan menulis ulang tata letak** | Gejalanya - halaman hanya memakai sebagian lebar layar - menyerupai kesalahan tata letak besar. Yang terukur ternyata satu elemen: barisan kendali di bilah atas berlebar tetap 224 piksel (300+ saat belum masuk) yang tidak pernah menyusut, membuat dokumen 398 piksel di layar 320. Sisa halaman depan sudah mobile-first sejak awal. Menulis ulang tata letaknya akan menghabiskan satu sesi untuk memperbaiki yang tidak rusak. |
 | **`body { overflow-x: clip }`, bukan `hidden`** | Keduanya memangkas isi yang meluber, tetapi `hidden` menjadikan elemennya wadah gulir - dan wadah gulir baru membuat `position: sticky` pada bilah atas berhenti bekerja. |
 | **Laci navigasi ponsel digambar lewat portal ke `<body>`** | Bilah atas memakai `backdrop-blur`, dan penyaring latar menjadikan elemennya blok penampung bagi keturunan `position: fixed`. Laci di dalamnya terpotong setinggi bilahnya sendiri; `inset-0` terlihat benar di kode, tetapi "nol" yang dimaksud peramban adalah nol terhadap bilah. |
@@ -274,6 +283,8 @@ Berguna bila gejala serupa muncul lagi.
 | Ketikan di kertas bisa menimpa poin yang salah | `Bullets` menyaring poin kosong lebih dulu, sehingga nomor di layar berbeda dari nomor di dalam data | Nomor aslinya dibawa serta |
 | PDF hasil unduhan berisi satu halaman kosong | Tombol PDF mencetak lewat bingkai tersembunyi, dan dokumen mana yang tercetak adalah perilaku peramban - yang keluar halaman editor. Cacat yang sama sudah "diperbaiki" di sesi 5 | Bingkainya dibuang; tombol menuju halaman cetak dengan `?cetak=1` yang mencetak dirinya sendiri |
 | Kop dan kaki Chrome ikut tercetak di CV | `@page` bermargin lebih dari nol menyediakan ruang bagi peramban untuk menggambarnya. Diuji: 2mm pun masih muncul | `@page { margin: 0 }`, margin dipindah ke padding kertas + `box-decoration-break: clone` agar berlaku di setiap halaman |
+| Halaman terasa "panjang ke bawah dan tidak jelas" | **Dua** kanvas jaring partikel sekaligus: yang lama di tingkat halaman lupa dilepas saat kanvasnya dipindahkan ke dalam panel hero. Yang di tingkat halaman seluas seluruh dokumen dan digambar ulang setiap bingkai. Tidak ada pemeriksaan otomatis yang dapat menangkapnya - dua kanvas sama sahnya dengan satu | Yang di tingkat halaman dilepas; tinggal satu di dalam hero |
+| Sapuan tinta di mode gelap lenyap sama sekali | Bentuk SVG tanpa atribut `fill` **tidak** mewarisi warna teks - bawaannya hitam pekat, dan kertasnya juga hitam | `fill="currentColor"` ditulis eksplisit |
 | Sembilan field diizinkan mesin tetapi tidak pernah dapat diklik | Allowlist `edit-path.ts` memuat `educations.degree`, `certifications.issuer`, `skills.name`, dan enam lainnya, tetapi dokumen tidak pernah memasang `data-edit` di sana | Ditandai seluruhnya; `tests/kertas.test.ts` kini memeriksa kedua arah - setiap jalur yang ditandai harus diterima allowlist, dan sembilan field itu harus tetap ada |
 | Entri pendidikan baru tidak punya satu pun poin untuk diklik | `emptyEducation()` membuat `bullets: []`, sedangkan tiga pembuat entri lain membuat `[""]` | Disamakan menjadi `[""]` |
 | Halaman cetak terlihat sempit di layar | Kertas dirender `padding="none"` karena marginnya diserahkan ke `@page`, yang hanya berlaku saat mencetak | Ikut selesai oleh perbaikan di atas - paddingnya kini nyata |
