@@ -33,6 +33,7 @@ dikirim ke server.
 - [Deploy ke Internet (Gratis)](#deploy-ke-internet-gratis)
 - [Pengujian](#pengujian)
 - [Perintah yang Tersedia](#perintah-yang-tersedia)
+- [Lisensi](#lisensi)
 
 ---
 
@@ -165,6 +166,11 @@ Setelah `npm run db:seed`:
 - Kata sandi: `demo12345`
 
 Akun tersebut sudah berisi satu CV contoh lengkap.
+
+Kredensialnya sengaja dicantumkan terbuka supaya siapa pun dapat mencoba aplikasinya
+tanpa mendaftar lebih dulu. Konsekuensinya, akun ini dipakai bersama - isinya dapat
+diubah atau dihapus pengunjung lain. Jalankan `npm run db:seed` untuk memulihkannya,
+dan jangan pernah menaruh data pribadi di dalamnya.
 
 ---
 
@@ -381,3 +387,14 @@ disimpan sebagai berkas biner - sehingga isi berkas ujinya terbaca sebagai kode.
 > `npm run db:migrate` sengaja tidak dipakai pada basis data lokal `prisma dev` -
 > perintah itu terbukti mengosongkan seluruh tabelnya. Migrasi ditulis manual;
 > lihat bagian yang sama pada `memori claude/MULAI-DI-SINI.md`.
+
+---
+
+## Lisensi
+
+[MIT](LICENSE) - bebas dipakai, diubah, dan disebarkan, termasuk untuk keperluan
+komersial, selama pemberitahuan hak cipta dan teks lisensinya ikut disertakan.
+
+Lisensi ini berlaku untuk kode aplikasinya. CV yang disusun pengguna adalah milik
+pengguna sepenuhnya, dan aplikasi ini tidak mencantumkan kredit pembuat pada berkas
+CV yang diunduh - lihat alasannya pada `src/lib/site.ts`.

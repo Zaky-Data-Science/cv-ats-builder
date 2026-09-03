@@ -41,14 +41,14 @@ Politeknik Negeri Samarinda.
 |---|---|
 | Alamat production | <https://cv-ats-builder-henna.vercel.app> |
 | Akun demo | `demo@atscv.local` / `demo12345` |
-| Tim Vercel | `zaky17` |
+| Tim Vercel | ada di catatan pribadi |
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> (privat, branch `main`) |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
-| Project Google Cloud | `CV ATS Builder` (id: `bold-upgrade-507408-a0`) |
+| Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 
 **Hasil uji terakhir di production: 10 dari 10 poin lulus, 0 galat
 JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6.
@@ -109,7 +109,7 @@ Bila suatu saat ingin deploy manual tanpa lewat Git:
 
 ```bash
 vercel login                                # sekali saja
-vercel deploy --prod --yes --scope zaky17
+vercel deploy --prod --yes --scope <nama-tim>
 ```
 
 Perintah build di `vercel.json` otomatis menjalankan
