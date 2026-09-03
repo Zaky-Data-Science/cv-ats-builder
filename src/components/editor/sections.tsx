@@ -20,6 +20,7 @@ import { templateStyle } from "@/lib/resume/templates";
 import type { ResumeLanguage, SectionKey } from "@/lib/resume/types";
 import { moveItem, removeAt, replaceAt, useEditor } from "./context";
 import { AddButton, BulletEditor, EntryCard, MonthInput, Row } from "./parts";
+import { PhotoInput } from "./PhotoInput";
 
 /**
  * Formulir untuk setiap section CV.
@@ -242,16 +243,10 @@ export function PersonalSection() {
 
         {info.showPhoto && (
           <div className="mt-3">
-            <Field
-              label={t.form.photoUrl}
-              hint={t.form.photoUrlHint}
-              htmlFor="photoUrl"
-            >
-              <Input
-                id="photoUrl"
+            <Field label={t.form.photo} htmlFor="photoFile">
+              <PhotoInput
                 value={info.photoUrl}
-                onChange={(e) => set({ photoUrl: e.target.value })}
-                placeholder={t.form.photoUrlPh}
+                onChange={(photoUrl) => set({ photoUrl })}
               />
             </Field>
           </div>

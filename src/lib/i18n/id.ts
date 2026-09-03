@@ -82,9 +82,20 @@ export const id = {
     showPhoto: "Tampilkan pas foto",
     showPhotoHint:
       "Sebaiknya dimatikan. Sebagian besar pengurai ATS tidak membaca gambar, dan tata letak di sekitar foto sering membuat teks terbaca berantakan. Aktifkan hanya bila lowongan memintanya.",
-    photoUrl: "URL Foto",
-    photoUrlHint: "Tempelkan tautan gambar. Ukuran ideal 3x4 dengan latar polos.",
-    photoUrlPh: "https://drive.google.com/uc?id=1AbCdEfGh",
+    photo: "Pas Foto",
+    photoHint:
+      "JPG, PNG, atau WebP. Foto dikecilkan otomatis ke ukuran cetak 3x4, jadi berkas besar dari kamera ponsel tidak masalah. Latar polos memberi hasil terbaik.",
+    photoChoose: "Pilih berkas foto",
+    photoReplace: "Ganti foto",
+    photoRemove: "Hapus foto",
+    photoWorking: "Memproses...",
+    photoLinked:
+      "Foto ini masih berupa tautan gambar dari CV yang dibuat sebelumnya. Tautannya tetap berfungsi; pilih berkas bila ingin fotonya ikut tersimpan di dalam CV.",
+    photoErrorType: "Berkas itu bukan gambar. Pilih berkas JPG, PNG, atau WebP.",
+    photoErrorRead:
+      "Gambarnya tidak dapat dibaca. Berkasnya mungkin rusak - coba berkas lain.",
+    photoErrorTooBig:
+      "Gambarnya masih terlalu besar setelah dikecilkan. Foto berlatar polos jauh lebih ringan daripada foto berlatar ramai.",
 
     summary: "Ringkasan Profil",
     summaryHint:
@@ -249,7 +260,7 @@ export const id = {
       "Tidak ada yang dikirim ke server, jadi tidak perlu akun. Konsekuensinya: membuka dari perangkat lain, membersihkan data situs, atau memakai mode penyamaran berarti CV ini hilang. Unduh berkasnya, atau pindahkan ke akun bila ingin disimpan permanen.",
     savedLocal: "Tersimpan di peramban ini",
     saveFailed:
-      "Peramban menolak menyimpan. CV masih ada di layar - segera unduh berkasnya.",
+      "Peramban menolak menyimpan. Penyebab tersering: penyimpanan penuh - pas foto adalah isi paling besar, jadi menghapusnya biasanya cukup. CV masih ada di layar; segera unduh berkasnya bila cara itu tidak menolong.",
     moveToAccount: "Pindahkan ke akun",
     moveHint:
       "Anda akan diminta masuk atau mendaftar, lalu CV ini dapat diimpor ke akun tersebut.",

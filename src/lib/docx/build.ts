@@ -3,6 +3,7 @@ import {
   BorderStyle,
   Document,
   ExternalHyperlink,
+  ImageRun,
   Packer,
   Paragraph,
   TabStopPosition,
@@ -10,10 +11,15 @@ import {
   TextRun,
 } from "docx";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
+import { parseEmbeddedPhoto } from "@/lib/resume/photo";
 import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import { paperSpec } from "@/lib/resume/paper";
-import { resumeMargins } from "@/lib/resume/templates";
+import {
+  resumeMargins,
+  templateStyle,
+  templateSupportsPhoto,
+} from "@/lib/resume/templates";
 import {
   ensureHttp,
   formatDateRange,
@@ -46,6 +52,74 @@ import {
 // untuk jarak serta margin.
 const HALF_POINT = 2;
 const MM_TO_TWIP = 56.7;
+// Ukuran gambar pada docx dinyatakan dalam piksel pada 96 dpi.
+const MM_TO_PX = 96 / 25.4;
+
+/** Jenis gambar yang dapat disematkan Word, dipetakan dari tipe MIME-nya. */
+const DOCX_IMAGE_TYPES: Record<string, "jpg" | "png" | "gif" | "bmp"> = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/gif": "gif",
+  "image/bmp": "bmp",
+};
+
+/**
+ * Paragraf berisi pas foto, atau null bila CV ini memang tidak memakainya.
+ *
+ * Fotonya diletakkan **setelah** blok identitas, bukan sebelumnya - alasan
+ * yang sama dengan versi HTML-nya: hal pertama yang ditemukan pengurai harus
+ * nama pelamar, bukan gambar tanpa teks alternatif.
+ *
+ * Berbeda dari versi HTML, di sini foto berdiri sebagai paragraf tersendiri
+ * dan tidak dapat diletakkan berdampingan dengan teks. Satu-satunya cara
+ * melakukannya di Word adalah tabel atau kotak teks, dan keduanya justru
+ * merupakan dua penyebab tersering kegagalan pengurai ATS yang sejak awal
+ * dihindari berkas ini. Tata letaknya karena itu sedikit berbeda dari PDF -
+ * yang tidak berbeda adalah isinya.
+ *
+ * Hanya foto yang tertanam sebagai data URI yang dapat disertakan. CV lama
+ * yang fotonya berupa tautan gambar dilewati tanpa galat: mengunduh gambar
+ * dari alamat yang ditulis pengguna berarti server ini menembak alamat
+ * sembarang atas perintah orang luar.
+ */
+function photoParagraph(data: ResumeData): Paragraph | null {
+  const info = data.personalInfo;
+  if (!info.showPhoto || !templateSupportsPhoto(data.template)) return null;
+
+  const embedded = parseEmbeddedPhoto(info.photoUrl);
+  if (!embedded) return null;
+
+  // Word hanya menerima empat jenis gambar. Foto yang dipilih lewat aplikasi
+  // ini selalu JPEG, tetapi CV yang diimpor dari berkas JSON dapat memuat
+  // jenis lain - yang tidak dikenali dilewati, bukan dipaksakan dengan jenis
+  // yang salah, sebab Word menolak membuka berkas yang isinya tidak cocok
+  // dengan keterangannya.
+  const type = DOCX_IMAGE_TYPES[embedded.mime];
+  if (!type) return null;
+
+  const style = templateStyle(data.template);
+  return new Paragraph({
+    alignment:
+      style.photo === "beside" ? AlignmentType.RIGHT : AlignmentType.CENTER,
+    spacing: { after: 120 },
+    children: [
+      new ImageRun({
+        type,
+        data: Buffer.from(embedded.base64, "base64"),
+        transformation: {
+          width: Math.round(style.photoWidthMm * MM_TO_PX),
+          height: Math.round(style.photoHeightMm * MM_TO_PX),
+        },
+        altText: {
+          name: info.fullName || "Pas foto",
+          description: info.fullName || "Pas foto",
+          title: info.fullName || "Pas foto",
+        },
+      }),
+    ],
+  });
+}
 
 export async function buildDocx(data: ResumeData): Promise<Buffer> {
   const lang = data.language;
@@ -116,6 +190,9 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
       }),
     );
   }
+
+  const photo = photoParagraph(data);
+  if (photo) children.push(photo);
 
   /* ---------------------------------------------------------------- */
   /* Section                                                           */

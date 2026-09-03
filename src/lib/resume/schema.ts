@@ -62,7 +62,10 @@ export const personalInfoSchema = z.object({
   linkedinUrl: str(300),
   portfolioUrl: str(300),
   githubUrl: str(300),
-  photoUrl: str(2000),
+  // Data URI pas foto tersimpan di kolom ini. Batasnya mengikuti
+  // PHOTO_MAX_BYTES (200 KB) setelah dikodekan base64, ditambah kelonggaran
+  // untuk awalan "data:image/jpeg;base64,".
+  photoUrl: str(300_000),
   showPhoto: z.boolean().default(false),
   summary: z.string().max(3000).default(""),
 });

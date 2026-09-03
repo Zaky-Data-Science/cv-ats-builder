@@ -3,6 +3,7 @@ import { runDocumentTests } from "./document.test";
 import { runI18nTests } from "./i18n.test";
 import { runKeywordTests } from "./keywords.test";
 import { runPdfTests } from "./pdf.test";
+import { runPhotoTests } from "./photo.test";
 import { runTemplateTests } from "./templates.test";
 import { summary } from "./harness";
 
@@ -19,6 +20,7 @@ async function main() {
   runAtsEngineTests();
   runTemplateTests();
   runDocumentTests();
+  await runPhotoTests();
   await runPdfTests();
   summary();
 }

@@ -65,9 +65,20 @@ export const en: Dictionary = {
     showPhoto: "Show a photo",
     showPhotoHint:
       "Best left off. Most ATS parsers cannot read images, and the layout around a photo often scrambles the surrounding text. Turn it on only when the job ad asks for one.",
-    photoUrl: "Photo URL",
-    photoUrlHint: "Paste an image link. A 3:4 portrait on a plain background works best.",
-    photoUrlPh: "https://drive.google.com/uc?id=1AbCdEfGh",
+    photo: "Photo",
+    photoHint:
+      "JPG, PNG, or WebP. The photo is resized automatically to 3:4 print size, so a large file straight from a phone camera is fine. A plain background gives the best result.",
+    photoChoose: "Choose a photo file",
+    photoReplace: "Replace photo",
+    photoRemove: "Remove photo",
+    photoWorking: "Processing...",
+    photoLinked:
+      "This photo is still an image link from a CV built earlier. The link keeps working; choose a file if you would rather store the photo inside the CV itself.",
+    photoErrorType: "That file is not an image. Choose a JPG, PNG, or WebP file.",
+    photoErrorRead:
+      "The image could not be read. The file may be damaged - try another one.",
+    photoErrorTooBig:
+      "The image is still too large after resizing. A photo on a plain background is far lighter than one on a busy background.",
 
     summary: "Professional summary",
     summaryHint:
@@ -231,7 +242,7 @@ export const en: Dictionary = {
       "Nothing is sent to a server, which is why no account is needed. The trade-off: opening it on another device, clearing site data, or using a private window means this CV is gone. Download the files, or move it into an account if you want it kept permanently.",
     savedLocal: "Saved in this browser",
     saveFailed:
-      "The browser refused to save. The CV is still on screen - download the files now.",
+      "The browser refused to save. The usual cause is that storage is full - the photo is by far the largest thing in a CV, so removing it is usually enough. The CV is still on screen; download the files now if that does not help.",
     moveToAccount: "Move to an account",
     moveHint:
       "You will be asked to sign in or sign up, and can then import this CV into that account.",
