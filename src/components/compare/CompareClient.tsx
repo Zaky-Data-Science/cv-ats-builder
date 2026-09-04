@@ -9,6 +9,7 @@ import {
   FileText,
   Info,
   Loader2,
+  Plus,
   ShieldCheck,
   Trophy,
   Upload,
@@ -80,31 +81,54 @@ export function CompareClient() {
 
   const addFiles = React.useCallback(
     (incoming: FileList | File[]) => {
+      /*
+        `FileList` disalin menjadi larik **sebelum** apa pun yang lain, dan di
+        sinilah letak cacat yang membuat berkas kedua tidak pernah masuk.
+
+        `FileList` yang datang dari sebuah `<input type="file">` bukan
+        salinan: ia menunjuk ke input itu, dan menjadi kosong begitu
+        `input.value` dikosongkan. Penangan di bawah memang mengosongkannya -
+        dan harus, kalau tidak memilih berkas yang sama dua kali tidak akan
+        memicu `change` yang kedua.
+
+        Dulu `Array.from(incoming)` dipanggil di dalam updater `setSlots`, dan
+        updater React berjalan belakangan - setelah penangannya selesai, jadi
+        setelah input dikosongkan. Yang tersalin karena itu larik kosong.
+
+        Bahwa berkas pertama tetap masuk justru yang membuatnya sulit
+        ditemukan: saat tidak ada pembaruan state yang tertunda, React
+        menghitung state berikutnya seketika, sehingga updater sempat berjalan
+        sebelum input dikosongkan. Begitu ada satu saja hasil analisis di
+        layar, syarat itu tidak lagi terpenuhi dan berkas berikutnya lenyap
+        tanpa satu pun pesan galat.
+      */
+      const berkas = Array.from(incoming);
+      if (berkas.length === 0) return;
+
       setNotice(null);
       setAnalyses(null);
 
-      setSlots((previous) => {
-        const room = MAX_FILES - previous.length;
-        if (room <= 0) {
-          setNotice(t.compare.tooMany);
-          return previous;
-        }
-        const accepted = Array.from(incoming).slice(0, room);
-        if (Array.from(incoming).length > room) setNotice(t.compare.tooMany);
+      // Ruang tersisa dihitung dari state yang terbaca sekarang, bukan di
+      // dalam updater: `setNotice` adalah efek samping, dan efek samping di
+      // dalam updater dijalankan dua kali oleh React pada mode ketat.
+      const room = MAX_FILES - slots.length;
+      if (room <= 0) {
+        setNotice(t.compare.tooMany);
+        return;
+      }
+      if (berkas.length > room) setNotice(t.compare.tooMany);
 
-        return [
-          ...previous,
-          ...accepted.map((file) => ({
-            // crypto.randomUUID tersedia di seluruh peramban yang didukung
-            // aplikasi ini, dan id ini hanya dipakai sebagai kunci daftar.
-            id: crypto.randomUUID(),
-            file,
-            state: "idle" as const,
-          })),
-        ];
-      });
+      const baru = berkas.slice(0, room).map((file) => ({
+        // crypto.randomUUID tersedia di seluruh peramban yang didukung
+        // aplikasi ini, dan id ini hanya dipakai sebagai kunci daftar.
+        id: crypto.randomUUID(),
+        file,
+        state: "idle" as const,
+      }));
+
+      setSlots((previous) => [...previous, ...baru].slice(0, MAX_FILES));
     },
-    [t],
+    [slots.length, t],
   );
 
   const removeSlot = (id: string) => {
@@ -377,6 +401,33 @@ export function CompareClient() {
               ? t.compare.resultCompareTitle
               : t.compare.resultSingleTitle}
           </h2>
+
+          {/*
+            Jalan menambah CV berikutnya, tepat di tempat orang berada saat
+            memikirkannya. Area unggah memang tetap ada di atas, tetapi
+            setelah hasil satu CV terbentang, ia berada jauh di luar layar -
+            dan yang tidak terlihat sama saja dengan tidak ada. Inilah yang
+            membuat halaman ini terasa "harus di-refresh dulu", padahal
+            sebenarnya tersandung cacat FileList di atas.
+          */}
+          {slots.length < MAX_FILES && !busy && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-ink-200 bg-ink-50 px-3 py-2.5">
+              <Plus size={15} className="shrink-0 text-ink-500" aria-hidden />
+              <p className="min-w-0 flex-1 text-xs leading-relaxed text-ink-600">
+                {analyses.length === 1
+                  ? t.compare.addMoreSingle
+                  : t.compare.addMoreMany}
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="press shrink-0"
+                onClick={() => inputRef.current?.click()}
+              >
+                {t.compare.addMoreButton}
+              </Button>
+            </div>
+          )}
 
           {comparison && <ComparisonSummary comparison={comparison} />}
 
