@@ -202,18 +202,55 @@ export function toggleThemeDari(x: number, y: number): void {
   void transisi.ready
     .then(() => {
       /*
-        Jari-jari diambil dari sudut terjauh, bukan dari lebar layar. Titik
-        tekannya bisa di mana saja - pada tombol di pojok kanan atas, sudut
-        terjauhnya adalah kiri bawah - dan lingkaran yang hanya selebar layar
-        akan meninggalkan sepotong sudut yang tidak pernah tersapu.
+        Titik pusatnya ditulis dalam **persen**, bukan piksel.
+
+        Alasannya satu cacat yang dilaporkan begini: "lokasinya beda titik
+        tengahnya". Koordinat pikselnya sendiri terbukti benar - lingkaran
+        yang sama, digambar sebagai lapisan biasa, mendarat tepat di ikonnya.
+        Yang meleset adalah asumsinya: `clip-path` pada
+        `::view-transition-new(root)` diukur dari kotak pseudo-element itu,
+        dan kotak itu **tidak dijamin** seukuran `innerWidth`/`innerHeight`.
+
+        Ia berbeda setiap kali ada sesuatu di antara keduanya - bilah alamat
+        peramban ponsel yang menyusut saat digulir, batang gulir, perbesaran
+        halaman, atau `visualViewport.scale` yang bukan satu. Piksel yang
+        benar terhadap viewport karena itu dapat mendarat di tempat lain di
+        dalam kotak transisinya.
+
+        Persen tidak punya masalah itu: ia selalu diukur terhadap kotak yang
+        sama dengan yang sedang dipotong. Berapa pun ukuran kotaknya, titiknya
+        mendarat di tempat yang sama secara proporsional - dan tempat itu
+        adalah tombolnya.
       */
+      const px = (x / window.innerWidth) * 100;
+      const py = (y / window.innerHeight) * 100;
+
+      /*
+        Jari-jarinya pun persen, dan rumusnya bukan sekadar "jarak dibagi
+        lebar". Radius persen pada `circle()` diukur terhadap
+        sqrt(w^2 + h^2) / sqrt(2) - bukan terhadap sisi mana pun - sehingga
+        jarak sudut terjauh harus dibagi angka itu untuk memperoleh
+        persentase yang setara.
+      */
+      const w = window.innerWidth;
+      const h = window.innerHeight;
       const jarak = (dx: number, dy: number) => Math.hypot(dx, dy);
-      const jariJari = Math.max(
+      const jariJariPx = Math.max(
         jarak(x, y),
-        jarak(window.innerWidth - x, y),
-        jarak(x, window.innerHeight - y),
-        jarak(window.innerWidth - x, window.innerHeight - y),
+        jarak(w - x, y),
+        jarak(x, h - y),
+        jarak(w - x, h - y),
       );
+      const acuan = Math.hypot(w, h) / Math.SQRT2;
+      // Dilebihkan sedikit: kotak transisinya boleh sedikit lebih besar
+      // daripada viewport, dan sudut yang tidak tersapu jauh lebih terlihat
+      // daripada gerak yang berakhir sepersekian detik lebih cepat.
+      const jariJari = (jariJariPx / acuan) * 100 * 1.06;
+
+      const di = `at ${px.toFixed(3)}% ${py.toFixed(3)}%`;
+      // Titik awalnya seukuran tombol, juga dinyatakan dalam persen terhadap
+      // acuan yang sama supaya besarnya tetap konsisten di layar mana pun.
+      const titik = (THEME_TITIK_PX / acuan) * 100;
 
       /*
         Tiga tahap, bukan dua - dan pembagiannya yang menentukan rasanya.
@@ -231,17 +268,17 @@ export function toggleThemeDari(x: number, y: number): void {
       document.documentElement.animate(
         [
           {
-            clipPath: `circle(0px at ${x}px ${y}px)`,
+            clipPath: `circle(0% ${di})`,
             offset: 0,
             easing: "cubic-bezier(0.16, 1, 0.3, 1)",
           },
           {
-            clipPath: `circle(${THEME_TITIK_PX}px at ${x}px ${y}px)`,
+            clipPath: `circle(${titik.toFixed(3)}% ${di})`,
             offset: THEME_TITIK_OFFSET,
             easing: "cubic-bezier(0.5, 0, 0.2, 1)",
           },
           {
-            clipPath: `circle(${jariJari}px at ${x}px ${y}px)`,
+            clipPath: `circle(${jariJari.toFixed(3)}% ${di})`,
             offset: 1,
           },
         ],
