@@ -2,6 +2,8 @@ import * as React from "react";
 import { paperSpec } from "@/lib/resume/paper";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
+import { customEntryBase, customEntryPath } from "@/lib/resume/edit-path";
+import { customItemsSection } from "@/lib/resume/structure";
 import {
   paperPadding,
   resumeMargins,
@@ -636,17 +638,25 @@ export function ResumeDocument({
           case "custom":
             return (
               <React.Fragment key={key}>
-                {data.customSections.map((section) => (
+                {data.customSections.map((section, s) => (
                   <section
                     key={section.id}
                     style={{ marginBottom: style.sectionGap }}
                   >
+                    {/*
+                      Judul bagiannya sendiri tidak dapat diketik di kertas.
+                      Yang tercetak sudah diubah bentuknya oleh template -
+                      seluruhnya kapital, atau kapital di awal kata - jadi
+                      menulis balik apa yang terlihat akan menyimpan versi
+                      yang sudah berubah itu sebagai judul aslinya. Alasan
+                      yang sama menahan alamat proyek; lihat edit-path.ts.
+                    */}
                     <SectionHeading
                       title={(section.title || "TAMBAHAN").toUpperCase()}
                       style={style}
                       accent={accent}
                     />
-                    {section.items.map((item) => (
+                    {section.items.map((item, i) => (
                       <div
                         key={item.id}
                         data-field={`custom:${section.id}`}
@@ -654,19 +664,43 @@ export function ResumeDocument({
                         style={entryStyle}
                       >
                         <EntryHeader
-                          primary={[{ text: item.title }]}
-                          secondary={[{ text: item.subtitle }]}
+                          primary={[
+                            {
+                              text: item.title,
+                              attrs: edit(customEntryPath(s, i, "title")),
+                              ph: ph("title"),
+                            },
+                          ]}
+                          secondary={[
+                            {
+                              text: item.subtitle,
+                              attrs: edit(customEntryPath(s, i, "subtitle")),
+                              ph: ph("subtitle"),
+                            },
+                          ]}
                           meta={formatDateRange(
                             item.startDate,
                             item.endDate,
                             false,
                             lang,
                           )}
+                          metaPath={editable ? customEntryBase(s, i) : undefined}
+                          metaPh={ph("period")}
                           fontSize={data.fontSize}
                         />
-                        <Bullets items={item.bullets} fontSize={data.fontSize} />
+                        <Bullets
+                          items={item.bullets}
+                          fontSize={data.fontSize}
+                          edit={edit}
+                          basePath={customEntryBase(s, i)}
+                          ph={ph("bullet")}
+                        />
                       </div>
                     ))}
+                    <TombolTambah
+                      section={customItemsSection(s)}
+                      label={ph("addEntry")}
+                    />
                   </section>
                 ))}
               </React.Fragment>
@@ -992,13 +1026,14 @@ const PENAMPUNG: Record<ResumeLanguage, Record<string, string>> = {
     role: "Peran",
     name: "Nama",
     title: "Judul",
+    subtitle: "Keterangan",
     issuer: "Penerbit",
     publisher: "Penerbit",
     bullet: "Poin pencapaian",
     skill: "Keahlian",
     language: "Bahasa",
     period: "Periode",
-    addEntry: "+ Tambah entri",
+    addEntry: "+ Tambah isian",
   },
   EN: {
     jobTitle: "Job title",
@@ -1011,13 +1046,14 @@ const PENAMPUNG: Record<ResumeLanguage, Record<string, string>> = {
     role: "Role",
     name: "Name",
     title: "Title",
+    subtitle: "Description",
     issuer: "Issuer",
     publisher: "Publisher",
     bullet: "Achievement",
     skill: "Skill",
     language: "Language",
     period: "Period",
-    addEntry: "+ Add entry",
+    addEntry: "+ Add another",
   },
 };
 

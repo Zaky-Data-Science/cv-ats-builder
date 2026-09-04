@@ -13,7 +13,13 @@ import { useI18n } from "@/components/i18n";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { Badge, Button } from "@/components/ui";
 import { DatePopover, type DateValue } from "./DatePopover";
-import { dateShape, type DatePatch } from "@/lib/resume/edit-path";
+import {
+  bulletPath,
+  dateEntryAt,
+  dateShapeForPath,
+  parseBulletPath,
+  type DatePatch,
+} from "@/lib/resume/edit-path";
 import type { StructureAction } from "@/lib/resume/structure";
 import { mmToPx, paperPx, paperSpec } from "@/lib/resume/paper";
 import { resumeMargins } from "@/lib/resume/templates";
@@ -213,22 +219,31 @@ export function PreviewPane({
           sini adalah untaian satu baris di dalam data, dan baris kedua di
           dalam satu untaian tidak dapat disimpan apa adanya.
         */
-        const poin = /^([a-z]+)\.(\d+)\.bullets\.(\d+)$/.exec(path);
+        /*
+          Bentuk jalurnya tidak lagi diurai dengan regex di sini, melainkan
+          oleh `parseBulletPath()` di edit-path.ts. Sebabnya: entri di dalam
+          bagian tambahan bersarang satu tingkat lebih dalam, dan regex lama
+          ("satu kata, nomor, bullets, nomor") tidak akan pernah mengenalinya
+          - Enter di sana diam-diam berhenti membuat poin baru. Dengan satu
+          pembaca bersama, bentuk jalur hanya diketahui di satu berkas.
+        */
+        const poin = parseBulletPath(path);
         if (poin && onStructure && onEdit) {
-          const [, section, nomorEntri, nomorPoin] = poin;
           // Teks yang sedang diketik disimpan lebih dulu. Poin baru menggeser
           // penomoran, dan menyimpan setelahnya akan menulis ke poin yang
           // salah.
           onEdit(path, target.innerText ?? "");
           onStructure({
             kind: "addBullet",
-            section,
-            index: Number(nomorEntri),
-            after: Number(nomorPoin),
+            section: poin.section,
+            index: poin.index,
+            after: poin.bulletIndex,
           });
-          fokusMenungguRef.current = `${section}.${nomorEntri}.bullets.${
-            Number(nomorPoin) + 1
-          }`;
+          fokusMenungguRef.current = bulletPath(
+            poin.section,
+            poin.index,
+            poin.bulletIndex + 1,
+          );
           return;
         }
 
@@ -341,25 +356,25 @@ export function PreviewPane({
   const tanggalAktif = editing ? popoverTanggal : null;
 
   const bentukTanggal = tanggalAktif
-    ? dateShape(tanggalAktif.path.split(".")[0])
+    ? dateShapeForPath(tanggalAktif.path)
     : null;
 
   /** Nilai tanggal entri yang sedang dibuka, dibaca dari CV yang sama. */
   const nilaiTanggal = ((): DateValue => {
     if (!tanggalAktif || !bentukTanggal) return {};
-    const [bagian, nomor] = tanggalAktif.path.split(".");
-    const entri = (data as unknown as Record<string, Record<string, string>[]>)[
-      bagian
-    ]?.[Number(nomor)];
+    // Entrinya dicari lewat edit-path.ts, bukan dengan memenggal jalur di
+    // sini: bagian tambahan menyimpan entrinya di dalam `items`, satu tingkat
+    // lebih dalam daripada bagian mana pun yang lain.
+    const entri = dateEntryAt(data, tanggalAktif.path);
     if (!entri) return {};
     if (bentukTanggal.kind === "range") {
       return {
-        startDate: entri.startDate ?? "",
-        endDate: entri.endDate ?? "",
+        startDate: String(entri.startDate ?? ""),
+        endDate: String(entri.endDate ?? ""),
         isCurrent: Boolean(entri.isCurrent),
       };
     }
-    return { date: entri[bentukTanggal.field] ?? "" };
+    return { date: String(entri[bentukTanggal.field] ?? "") };
   })();
 
   /** Perbesaran yang membuat lebar kertas pas dengan lebar area yang tersedia. */

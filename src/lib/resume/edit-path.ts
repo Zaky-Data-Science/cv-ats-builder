@@ -62,6 +62,32 @@ const EDITABLE: Record<string, readonly string[]> = {
   languages: ["name"],
 };
 
+/**
+ * Field entri di dalam sebuah bagian tambahan.
+ *
+ * Bagian tambahan adalah satu-satunya bagian yang bersarang dua tingkat:
+ * `customSections.<bagian>.items.<entri>.<field>` - lima segmen, sedangkan
+ * seluruh bagian lain berhenti di tiga.
+ *
+ * Sesi 7 memilih tidak menambahkannya justru karena itu: memperluas bentuk
+ * jalur secara umum ke lima segmen akan membuat setiap jalur berlima segmen
+ * dapat ditulis, bukan hanya yang ini. Yang ditambahkan di sini karena itu
+ * bukan "jalur lima segmen", melainkan satu bentuk tunggal yang tertutup -
+ * segmen pertamanya harus persis `customSections` dan segmen ketiganya harus
+ * persis `items`. Selain itu tetap ditolak seperti sebelumnya.
+ */
+const CUSTOM_ITEM_EDITABLE: readonly string[] = ["title", "subtitle"];
+
+/*
+  Judul bagian tambahan itu sendiri tetap lewat formulir, dan itu bukan
+  kelalaian. Judul bagian dicetak setelah diubah bentuknya - menjadi huruf
+  kapital seluruhnya, atau menjadi Huruf Kapital Di Awal Kata, tergantung
+  templatenya. Menulis balik apa yang terlihat karena itu akan menyimpan
+  "PELATIHAN DAN WORKSHOP" sebagai judulnya, lalu templat berikutnya
+  mengapitalkannya lagi. Ini kasus yang sama persis dengan alamat proyek yang
+  dirapikan prettyUrl(), dan ditolak karena alasan yang sama.
+*/
+
 /** Bagian yang punya daftar poin pencapaian yang boleh disunting. */
 const WITH_BULLETS = new Set([
   "experiences",
@@ -94,6 +120,47 @@ export function bulletPath(
   return `${section}.${index}.bullets.${bulletIndex}`;
 }
 
+/**
+ * Jalur bagi entri di dalam sebuah bagian tambahan.
+ *
+ * Ada sebagai fungsi tersendiri, bukan dengan menyambung untaian di tempat
+ * pemakaiannya, dengan alasan yang sama seperti `editPath()`: bentuk jalurnya
+ * hanya ditulis di satu tempat, sehingga tidak mungkin melenceng dari yang
+ * diterima `isEditablePath()`.
+ */
+export function customEntryBase(
+  sectionIndex: number,
+  itemIndex: number,
+): string {
+  return `customSections.${sectionIndex}.items.${itemIndex}`;
+}
+
+/** Jalur satu field pada entri bagian tambahan. */
+export function customEntryPath(
+  sectionIndex: number,
+  itemIndex: number,
+  field: string,
+): string {
+  return `${customEntryBase(sectionIndex, itemIndex)}.${field}`;
+}
+
+/**
+ * Membaca jalur bagian tambahan, atau null bila bentuknya bukan itu.
+ *
+ * Satu tempat yang memeriksa bentuknya, dipakai oleh pemeriksa jalur maupun
+ * oleh ketiga penerap di bawah - sehingga tidak ada satu pun di antara mereka
+ * yang bisa lebih longgar daripada yang lain.
+ */
+function bacaJalurCustom(
+  parts: string[],
+): { section: number; item: number; rest: string[] } | null {
+  if (parts.length < 4) return null;
+  const [root, sectionIndex, items, itemIndex, ...rest] = parts;
+  if (root !== "customSections" || items !== "items") return null;
+  if (!/^\d+$/.test(sectionIndex) || !/^\d+$/.test(itemIndex)) return null;
+  return { section: Number(sectionIndex), item: Number(itemIndex), rest };
+}
+
 /** Apakah sebuah jalur benar-benar boleh ditulis. */
 export function isEditablePath(path: string): boolean {
   const parts = path.split(".");
@@ -115,6 +182,17 @@ export function isEditablePath(path: string): boolean {
     const [section, index, kind, bulletIndex] = parts;
     if (!/^\d+$/.test(index) || !/^\d+$/.test(bulletIndex)) return false;
     return kind === "bullets" && WITH_BULLETS.has(section);
+  }
+
+  // Bagian tambahan: satu-satunya bentuk yang bersarang lebih dalam.
+  const custom = bacaJalurCustom(parts);
+  if (custom) {
+    if (custom.rest.length === 1) {
+      return CUSTOM_ITEM_EDITABLE.includes(custom.rest[0]);
+    }
+    if (custom.rest.length === 2) {
+      return custom.rest[0] === "bullets" && /^\d+$/.test(custom.rest[1]);
+    }
   }
 
   return false;
@@ -172,6 +250,9 @@ export function applyEdit(
     return next as ResumeData;
   }
 
+  const custom = bacaJalurCustom(parts);
+  if (custom) return tulisCustom(data, custom, text);
+
   const [section, indexText] = parts;
   const index = Number(indexText);
   const list = next[section];
@@ -199,6 +280,54 @@ export function applyEdit(
   nextList[index] = entry;
   next[section] = nextList;
   return next as ResumeData;
+}
+
+/**
+ * Menulis satu nilai ke dalam entri sebuah bagian tambahan.
+ *
+ * Dipisah dari badan `applyEdit` semata karena sarangnya dua tingkat: menulis
+ * balik berarti menyalin larik bagian, entri di dalamnya, dan kadang larik
+ * poinnya - tiga salinan yang, bila ditulis sebagai cabang di dalam fungsi
+ * itu, membuat alur bagian yang lain jauh lebih sulit diikuti.
+ */
+function tulisCustom(
+  data: ResumeData,
+  jalur: { section: number; item: number; rest: string[] },
+  text: string,
+): ResumeData {
+  const sections = (data as any).customSections;
+  if (!Array.isArray(sections)) return data;
+  if (jalur.section < 0 || jalur.section >= sections.length) return data;
+
+  const section = { ...sections[jalur.section] };
+  if (!Array.isArray(section.items)) return data;
+  if (jalur.item < 0 || jalur.item >= section.items.length) return data;
+
+  const item = { ...section.items[jalur.item] };
+
+  if (jalur.rest.length === 1) {
+    item[jalur.rest[0]] = text;
+  } else {
+    const bulletIndex = Number(jalur.rest[1]);
+    if (
+      !Array.isArray(item.bullets) ||
+      bulletIndex < 0 ||
+      bulletIndex >= item.bullets.length
+    ) {
+      return data;
+    }
+    const bullets = [...item.bullets];
+    bullets[bulletIndex] = text;
+    item.bullets = bullets;
+  }
+
+  const items = [...section.items];
+  items[jalur.item] = item;
+  section.items = items;
+
+  const nextSections = [...sections];
+  nextSections[jalur.section] = section;
+  return { ...data, customSections: nextSections } as ResumeData;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -229,6 +358,15 @@ const DATE_EDITABLE: Record<string, DateShape> = {
   awards: { kind: "single", field: "date" },
   publications: { kind: "single", field: "date" },
 };
+
+/**
+ * Bentuk tanggal entri bagian tambahan.
+ *
+ * Sama seperti proyek: punya bulan mulai dan selesai, tetapi tidak punya
+ * kolom `isCurrent` - jadi centang "masih berlangsung" tidak ditawarkan,
+ * karena tidak ada tempat menyimpan jawabannya.
+ */
+const CUSTOM_DATE_SHAPE: DateShape = { kind: "range", current: false };
 
 export function dateShape(section: string): DateShape | null {
   return DATE_EDITABLE[section] ?? null;
@@ -274,6 +412,12 @@ export function applyDateEdit(
   patch: DatePatch,
 ): ResumeData {
   const parts = path.split(".");
+
+  const custom = bacaJalurCustom(parts);
+  if (custom && custom.rest.length === 0) {
+    return tulisTanggalCustom(data, custom, patch);
+  }
+
   if (parts.length !== 2) return data;
 
   const [section, indexText] = parts;
@@ -311,4 +455,125 @@ export function applyDateEdit(
   const nextList = [...list];
   nextList[index] = entry;
   return { ...data, [section]: nextList } as ResumeData;
+}
+
+/**
+ * Menulis tanggal entri bagian tambahan.
+ *
+ * Nilainya diperiksa dengan `bulanSah()` yang sama seperti bagian lain -
+ * jangan sampai satu-satunya bagian yang bersarang lebih dalam juga menjadi
+ * satu-satunya yang menerima tanggal berbentuk apa pun.
+ */
+function tulisTanggalCustom(
+  data: ResumeData,
+  jalur: { section: number; item: number },
+  patch: DatePatch,
+): ResumeData {
+  const sections = (data as any).customSections;
+  if (!Array.isArray(sections)) return data;
+  if (jalur.section < 0 || jalur.section >= sections.length) return data;
+
+  const section = { ...sections[jalur.section] };
+  if (!Array.isArray(section.items)) return data;
+  if (jalur.item < 0 || jalur.item >= section.items.length) return data;
+
+  const item = { ...section.items[jalur.item] };
+
+  if (patch.startDate !== undefined) {
+    if (!bulanSah(patch.startDate)) return data;
+    item.startDate = patch.startDate;
+  }
+  if (patch.endDate !== undefined) {
+    if (!bulanSah(patch.endDate)) return data;
+    item.endDate = patch.endDate;
+  }
+
+  const items = [...section.items];
+  items[jalur.item] = item;
+  section.items = items;
+
+  const nextSections = [...sections];
+  nextSections[jalur.section] = section;
+  return { ...data, customSections: nextSections } as ResumeData;
+}
+
+/** Bentuk tanggal yang berlaku bagi entri bagian tambahan. */
+export function customDateShape(): DateShape {
+  return CUSTOM_DATE_SHAPE;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Pembaca jalur untuk panel pratinjau                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Memecah jalur sebuah poin menjadi bagian, nomor entri, dan nomor poin.
+ *
+ * `section` yang dikembalikan adalah nama yang dikenali `applyStructure` -
+ * "experiences" bagi bagian biasa, dan "customSections.0.items" bagi entri di
+ * dalam bagian tambahan. Dengan begitu panel pratinjau tidak perlu tahu bahwa
+ * salah satunya bersarang lebih dalam: ia cukup meneruskan apa yang didapat.
+ */
+export function parseBulletPath(
+  path: string,
+): { section: string; index: number; bulletIndex: number } | null {
+  const parts = path.split(".");
+
+  const custom = bacaJalurCustom(parts);
+  if (custom) {
+    if (custom.rest.length !== 2 || custom.rest[0] !== "bullets") return null;
+    if (!/^\d+$/.test(custom.rest[1])) return null;
+    return {
+      section: `customSections.${custom.section}.items`,
+      index: custom.item,
+      bulletIndex: Number(custom.rest[1]),
+    };
+  }
+
+  if (parts.length !== 4) return null;
+  const [section, index, kind, bulletIndex] = parts;
+  if (kind !== "bullets" || !WITH_BULLETS.has(section)) return null;
+  if (!/^\d+$/.test(index) || !/^\d+$/.test(bulletIndex)) return null;
+  return {
+    section,
+    index: Number(index),
+    bulletIndex: Number(bulletIndex),
+  };
+}
+
+/**
+ * Bentuk tanggal untuk sebuah jalur `data-date`, apa pun sarangnya.
+ *
+ * Menggantikan `dateShape(path.split(".")[0])` di panel pratinjau: pemenggalan
+ * itu membaca "customSections" sebagai nama bagian dan selalu memperoleh null,
+ * sehingga periode pada bagian tambahan tidak akan pernah dapat dibuka.
+ */
+export function dateShapeForPath(path: string): DateShape | null {
+  const parts = path.split(".");
+  const custom = bacaJalurCustom(parts);
+  if (custom) return custom.rest.length === 0 ? CUSTOM_DATE_SHAPE : null;
+  if (parts.length !== 2) return null;
+  return dateShape(parts[0]);
+}
+
+/**
+ * Entri yang ditunjuk sebuah jalur `data-date`, untuk membaca nilai tanggal
+ * yang sedang berlaku. Mengembalikan null bila jalurnya tidak menunjuk entri
+ * yang benar-benar ada.
+ */
+export function dateEntryAt(
+  data: ResumeData,
+  path: string,
+): Record<string, unknown> | null {
+  const parts = path.split(".");
+  const custom = bacaJalurCustom(parts);
+
+  if (custom && custom.rest.length === 0) {
+    const section = (data as any).customSections?.[custom.section];
+    return section?.items?.[custom.item] ?? null;
+  }
+
+  if (parts.length !== 2) return null;
+  const [section, index] = parts;
+  return (data as any)[section]?.[Number(index)] ?? null;
 }
