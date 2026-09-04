@@ -1933,6 +1933,101 @@ manual sesudahnya.
 
 ---
 
+## Sesi 11 - 4 September 2026: hero penuh, dan berkas pengalihan berganti nama
+
+Sesi pendek. Permintaannya dua: ganti `middleware` menjadi `proxy` seperti yang
+diminta Next, dan buat tema hero "full kanan kiri dan atas, gk usa dikasih
+space gitu".
+
+### Sebelum itu: server lokal yang melayani halaman yang salah
+
+Server lokal dinyalakan lebih dulu, dan hasilnya tidak seperti yang diharapkan.
+Ia menjawab - tetapi **seluruh halaman di grup `(auth)` membalas 404**:
+`/login`, `/register`, `/lupa-sandi`, `/atur-sandi`. Halaman lain (`/coba`,
+`/bandingkan`, `/panduan`) normal.
+
+Tiga hal membuktikan kodenya sendiri benar:
+
+- production menjawab `/login` dengan 200;
+- `.next/app-path-routes-manifest.json` memuat keempat rute itu;
+- berkasnya utuh di disk, dan `matcher` pada berkas pengalihan tidak menyentuh
+  `/login`.
+
+Sebabnya cache dev Turbopack yang basi - 817 MB di `.next/dev`, tertinggal dari
+sesi sebelumnya yang berakhir dengan Ctrl+C (`LastTaskResult` = `0xC000013A`).
+
+Dua hal yang pantas dicatat untuk lain kali. Pertama, pengawas
+`scripts/dev-24jam.ps1` tidak dapat menangkap keadaan seperti ini, dan itu
+bukan kelemahan yang perlu diperbaiki: ia memeriksa port, dan portnya memang
+menjawab. Yang salah bukan hidup-matinya melainkan isi yang dilayani - dan
+"apakah isinya benar" bukan pertanyaan yang dapat dijawab sebuah pengawas
+tanpa berubah menjadi berkas uji. Kedua, `Stop-ScheduledTask` **tidak** ikut
+mematikan `next dev`: prosesnya cucu dari rantai `cmd.exe` > `npm.cmd` >
+`node`, gejala yang sama persis dengan yang sudah tercatat di kepala berkas
+pengawas itu. Prosesnya harus dihentikan sendiri sampai port 3000 bebas.
+
+Yang dihapus hanya `.next/dev` - cache dev, bukan hasil build production.
+Setelah dinyalakan lagi, sebelas rute publik menjawab 200 dan `/dashboard`
+kembali 307.
+
+### 1. `middleware.ts` menjadi `proxy.ts`
+
+Peringatan yang muncul setiap kali server dinyalakan sejak Next 16:
+
+    The "middleware" file convention is deprecated. Please use "proxy" instead.
+
+Perubahannya sekecil yang dijanjikan dokumentasinya - nama berkas dan nama
+fungsi, tidak satu baris pun logika. `config.matcher` tetap apa adanya.
+
+Yang tidak disebut peringatan itu, tetapi ada di catatan versinya: sejak v16
+berkas ini berjalan di **runtime Node**, bukan lagi edge. Komentar lama pada
+kedua berkas yang bersangkutan karena itu ikut disesuaikan - bukan demi
+kerapian, melainkan karena keduanya menyebutkan "edge" dan "middleware" sebagai
+alasan, dan alasan yang tidak lagi benar akan menyesatkan siapa pun yang
+membacanya nanti. Alasan yang sesungguhnya justru tidak berubah: yang berjalan
+di depan setiap permintaan ke halaman terlindungi tidak boleh menyentuh basis
+data, apa pun runtime-nya.
+
+Sempat muncul galat `Proxy is missing expected function export name` di log.
+Itu berasal dari jendela waktu di antara dua langkah - berkasnya sudah bernama
+`proxy.ts` sementara fungsinya masih bernama `middleware` - dan yang terlihat
+di log sesudahnya hanyalah lapisan galat yang masih menempel di tab Chrome yang
+terbuka. Diuji ulang: `/` 200, `/login` 200, `/dashboard` **307**. Yang
+terakhir itu buktinya - 307 hanya dapat datang dari berkas ini.
+
+### 2. Hero penuh dari tepi ke tepi
+
+Panel hero punya `px-3 pt-3` (naik sampai `px-5 pt-5` di layar lebar), sudut
+membulat `1,25rem`-`1,75rem`, dan garis tepi mengelilinginya. Hasilnya terlihat
+jelas di tangkapan layar yang dikirim: hero terbaca sebagai kartu yang
+mengambang di atas halaman putih, dan sapuan tintanya - bagian yang paling
+lebar justru di dekat tepi - terpotong sebelum sampai ke tepi layar.
+
+Yang perlu dipastikan lebih dulu: apakah membuangnya membatalkan alasan panel
+itu dibuat di sesi 9. Ternyata tidak. Alasannya adalah tinta harus punya batas
+supaya tidak berada di belakang setiap paragraf sampai ke footer - dan yang
+memberi batas itu `isolate` dan `overflow-hidden`, bukan sudut membulatnya.
+Keduanya tetap.
+
+Garis tepinya dibuang seluruhnya, tidak disisakan `border-b`. Bagian
+berikutnya sudah memakai `border-y`, jadi batas bawahnya sudah ada; menambahkan
+satu lagi di sini menghasilkan dua garis berdampingan.
+
+Bilah atas sudah punya `border-b` sendiri, sehingga sambungannya tetap tegas
+meski hero kini menempel padanya.
+
+Diperiksa pada HTML yang benar-benar dikirim server: `<section>` tanpa satu pun
+kelas jarak, dan `class="hero-panel relative isolate overflow-hidden"` -
+tanpa `rounded-*`, tanpa `border`.
+
+### Gerbang kualitas
+
+`typecheck`, `lint`, `test` (348 lulus, 0 gagal), dan `build` - keempatnya
+lulus. Keluaran build kini menyebut `Proxy (Middleware)` dan **tidak lagi**
+memuat peringatan usang itu.
+
+---
+
 ## Rangkuman angka
 
 Angka di bawah ini per akhir sesi 10.

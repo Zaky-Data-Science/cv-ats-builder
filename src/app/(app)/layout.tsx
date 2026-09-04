@@ -12,11 +12,13 @@ import { SITE } from "@/lib/site";
 /**
  * Kerangka halaman yang membutuhkan login.
  *
- * Pemeriksaan sesi dilakukan di layout server, bukan di middleware, agar
- * pengecekan berjalan pada runtime Node dan dapat memakai koneksi database
- * yang sama dengan seluruh aplikasi. Setiap handler API tetap memeriksa
- * kepemilikan datanya sendiri, sehingga layout ini adalah lapisan
- * kenyamanan - bukan satu-satunya penjaga.
+ * Pemeriksaan sesi yang sesungguhnya dilakukan di sini, bukan di
+ * `src/proxy.ts`. Yang di sana hanya melihat ada-tidaknya cookie supaya tetap
+ * murah - ia berjalan di depan setiap permintaan ke halaman terlindungi;
+ * yang di sini memverifikasi tanda tangannya lewat `auth()` dan boleh memakai
+ * koneksi basis data yang sama dengan seluruh aplikasi. Setiap handler API
+ * tetap memeriksa kepemilikan datanya sendiri, sehingga layout ini adalah
+ * lapisan kenyamanan - bukan satu-satunya penjaga.
  */
 export default async function AppLayout({
   children,

@@ -21,8 +21,17 @@ import { NextResponse, type NextRequest } from "next/server";
  * pengunjung yang belum masuk memperoleh 307 yang tegas ke halaman masuk -
  * lebih cepat bagi pengguna sekaligus lebih jujur saat diperiksa.
  *
- * Pemeriksaannya sengaja dibuat sesederhana ini agar tetap dapat berjalan
- * di runtime edge, yang tidak memiliki akses basis data.
+ * Pemeriksaannya sengaja dibuat sesederhana ini - satu keberadaan cookie,
+ * tanpa satu pun kueri - supaya ia tetap murah di mana pun ia berjalan.
+ * Next 16 menjalankan berkas ini di runtime Node, bukan lagi edge seperti
+ * dulu, tetapi alasan aslinya tidak berubah: berkas ini berjalan di depan
+ * *setiap* permintaan ke halaman terlindungi, dan yang berjalan sesering itu
+ * tidak boleh menyentuh basis data.
+ *
+ * Namanya `proxy`, bukan `middleware`. Next 16 mengganti nama konvensi
+ * berkasnya - isinya sama persis, hanya nama berkas dan nama fungsinya yang
+ * berubah. Yang lama masih bekerja tetapi sudah usang, dan memperingatkan
+ * setiap kali server dinyalakan.
  */
 
 /** Nama cookie sesi Auth.js: tanpa awalan di HTTP, berawalan di HTTPS. */
@@ -31,7 +40,7 @@ const SESSION_COOKIES = [
   "__Secure-authjs.session-token",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const hasSessionCookie = SESSION_COOKIES.some((name) =>
     request.cookies.has(name),
   );

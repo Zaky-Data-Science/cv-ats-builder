@@ -117,11 +117,22 @@ export default async function LandingPage() {
           Sapuan tinta dan jaring partikel harus punya batas. Dibiarkan
           mengalir ke seluruh halaman, keduanya akan berada di belakang setiap
           paragraf sampai ke footer - dan tinta di belakang teks yang harus
-          dibaca berhenti menjadi rupa, berubah menjadi gangguan. Panel yang
-          membulat dan memangkas isinya memberi keduanya tempat yang jelas.
+          dibaca berhenti menjadi rupa, berubah menjadi gangguan. `isolate`
+          dan `overflow-hidden` yang memberi keduanya tempat itu; sudut
+          membulat tidak pernah menjadi bagian dari alasannya.
+
+          Panelnya karena itu penuh dari tepi ke tepi - tanpa jarak di kiri,
+          kanan, maupun atas, dan tanpa sudut membulat. Jarak itu dulu
+          memisahkan hero dari bilah atasnya, tetapi yang sebenarnya terjadi
+          adalah hero terbaca sebagai kartu yang mengambang di atas halaman
+          putih, dan sapuan tintanya terpotong sebelum sampai ke tepi layar.
+
+          Batas bawahnya diserahkan ke bagian berikutnya, yang sudah memakai
+          `border-y`. Menambahkan `border-b` di sini akan menghasilkan dua
+          garis berdampingan.
         */}
-        <section className="px-3 pt-3 sm:px-4 sm:pt-4 lg:px-5 lg:pt-5">
-          <div className="hero-panel relative isolate overflow-hidden rounded-[1.25rem] border border-ink-200 sm:rounded-[1.75rem]">
+        <section>
+          <div className="hero-panel relative isolate overflow-hidden">
             <InkWash />
             <InkBackground />
 

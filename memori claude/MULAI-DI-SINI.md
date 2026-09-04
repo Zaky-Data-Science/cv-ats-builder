@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **4 September 2026** (sesi 10)
+Terakhir diperbarui: **4 September 2026** (sesi 11)
 
 ---
 
@@ -51,6 +51,13 @@ Pengaturan tampilan CV pindah dari dalam bilah alat ke sebuah laci, supaya
 kertasnya tetap terlihat sementara diatur. Pemulihan kata sandi lewat surel
 akhirnya ada, bagian tambahan dapat disunting di kertas, dan kemiringan kartu
 kini bekerja di layar sentuh.
+
+Sesi 11 membereskan dua hal kecil yang sudah lama terlihat. Berkas
+pengalihan awal berganti nama mengikuti Next 16 - `middleware.ts` menjadi
+`proxy.ts` - sehingga peringatan usang berhenti muncul setiap server menyala.
+Dan panel hero di halaman depan kini penuh dari tepi ke tepi: jarak di kiri,
+kanan, dan atasnya membuatnya terbaca sebagai kartu yang mengambang, bukan
+sebagai pembuka halaman.
 
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
@@ -239,7 +246,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/components/CursorGlow.tsx` | Cahaya pengikut kursor dan percikan sentuh |
 | `src/components/editor/ResumeEditor.tsx` | Editor, simpan otomatis, tata letak responsif |
 | `src/app/privasi/` dan `src/app/ketentuan/` | Kebijakan privasi dan ketentuan layanan - disyaratkan Google untuk mempublikasikan aplikasi OAuth |
-| `src/middleware.ts` | Pengalihan awal halaman terlindungi (hanya kenyamanan, bukan lapisan keamanan) |
+| `src/proxy.ts` | Pengalihan awal halaman terlindungi (hanya kenyamanan, bukan lapisan keamanan). Dulu bernama `src/middleware.ts`; Next 16 mengganti nama konvensinya |
 | `docs/` | Panduan pengguna, dokumentasi teknis, panduan deploy |
 
 ---
@@ -345,6 +352,8 @@ supaya tidak perlu diingat-ingat lagi.
 | **Kriptografi token dipisah dari kueri basis datanya** | Mengimpor klien Prisma membuat berkasnya menuntut koneksi basis data begitu dimuat - dan bagian yang paling pantas diuji tanpa server justru bagian kriptografinya. |
 | **Permintaan tautan selalu dijawab sama, terdaftar maupun tidak** | Membedakan keduanya mengubah titik akhir itu menjadi alat pemeriksa keanggotaan: siapa pun dapat mencoba ribuan alamat dan tahu persis siapa yang punya akun di sini. Konsekuensinya - yang salah ketik alamatnya menunggu surel yang tidak datang - dijawab dengan menyebutkan kemungkinan itu secara eksplisit di layar. |
 | **Alamat tautan dalam surel dari `NEXTAUTH_URL`, bukan dari header Host** | Header itu dikirim peramban dan dapat dipalsukan. Tautan pemulihan yang menunjuk ke alamat pilihan penyerang adalah tepat cara mencuri akun. |
+| **Panel hero penuh dari tepi ke tepi, tanpa sudut membulat** | Jarak di kiri-kanan-atas dulu dimaksudkan memisahkan hero dari bilah atasnya. Yang sebenarnya terjadi: hero terbaca sebagai kartu yang mengambang di atas halaman putih, dan sapuan tintanya terpotong sebelum sampai ke tepi layar - persis bagian yang paling lebar sapuannya. Alasan panel itu ada sejak sesi 9 tetap utuh, sebab yang memberi tinta batasnya adalah `isolate` dan `overflow-hidden`, bukan sudut membulatnya. Batas bawahnya diserahkan ke bagian berikutnya yang sudah memakai `border-y`; menambahkan `border-b` di sini menghasilkan dua garis berdampingan. |
+| **`middleware.ts` menjadi `proxy.ts`** | Next 16 mengganti nama konvensi berkasnya dan memperingatkan setiap kali server dinyalakan. Isinya sama persis - hanya nama berkas dan nama fungsinya yang berubah. Satu hal ikut berubah tanpa menyentuh kode: sejak v16 berkas ini berjalan di runtime Node, bukan lagi edge. Alasan aslinya tetap berlaku dan komentarnya disesuaikan supaya tidak menyesatkan pembaca berikutnya: yang berjalan di depan setiap permintaan tidak boleh menyentuh basis data, apa pun runtime-nya. |
 | **Batas laju pemulihan dihitung per alamat surel, bukan per IP** | Yang dijaga di sini bukan penebakan kata sandi melainkan pengiriman surel: tanpa batas per alamat, kotak masuk orang lain dapat dibanjiri dari banyak IP sekaligus - dan yang menanggung akibatnya adalah reputasi alamat pengirim aplikasi ini. |
 
 ---
@@ -394,6 +403,7 @@ Berguna bila gejala serupa muncul lagi.
 | Periode pada bagian tambahan tidak akan pernah dapat dibuka | `dateShape(path.split(".")[0])` membaca "customSections" sebagai nama bagian dan selalu memperoleh null | `dateShapeForPath()` yang mengenali kedua bentuk jalur |
 | Halaman Pengaturan berakhir "Ada yang tidak beres" bila sesi menunjuk pengguna yang sudah terhapus | `isStaleSessionError` mengenali P2025 dari kata "user" di dalam pesan galat, tetapi pesan Prisma untuk `findUniqueOrThrow` tidak memuat kata itu - nama modelnya ada di `meta.modelName`, bukan di `message`. Contoh galat di berkas ujinya seluruhnya berasal dari `update` dan `delete`, sehingga cabang itu selalu lulus | `meta.modelName` ikut diperiksa, dan halaman kini mengalihkan ke `/login?sesi=habis` lewat `redirectIfStaleSession()` - `errorResponse()` hanya melayani titik akhir API |
 | Berkas kedua tidak pernah masuk di halaman Cek CV; halamannya harus dimuat ulang lebih dulu | `Array.from(FileList)` dipanggil **di dalam** updater `setSlots`. FileList dari sebuah `<input type="file">` menunjuk ke input itu dan menjadi kosong begitu `input.value` dikosongkan - dan updater React berjalan setelah penangannya selesai, jadi setelah pengosongan itu. Berkas pertama tetap masuk karena React menghitung state seketika saat tidak ada pembaruan tertunda | Berkasnya disalin ke larik sebagai baris pertama penangan, sebelum apa pun yang lain |
+| Seluruh halaman di grup `(auth)` - `/login`, `/register`, `/lupa-sandi`, `/atur-sandi` - membalas 404 di server lokal, sementara halaman lain normal dan production baik-baik saja | Cache dev Turbopack yang basi di `.next/dev` (817 MB), tertinggal dari sesi yang berakhir dengan Ctrl+C. Berkasnya utuh di disk dan `app-path-routes-manifest.json` memuat keempat rute itu - jadi bukan cacat kode. Pengawas `dev-24jam.ps1` tidak dapat menangkapnya: yang diperiksa portnya, dan portnya memang menjawab; yang salah isi yang dilayani | Hentikan `next dev` (perhatikan: `Stop-ScheduledTask` **tidak** ikut mematikannya - prosesnya cucu dari rantai `cmd` > `npm` > `node`), hapus `.next/dev` saja, lalu nyalakan lagi |
 
 ---
 
@@ -428,7 +438,7 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
 3. **CSP masih memuat `'unsafe-inline'`.** Pada `style-src` praktis tidak dapat
    dihilangkan: dokumen CV memakai puluhan gaya sebaris, dan nonce tidak
    berlaku untuk atribut `style`. Pada `script-src` bisa dengan nonce, tetapi
-   itu menuntut middleware berjalan di semua path dan memaksa setiap halaman
+   itu menuntut `proxy.ts` berjalan di semua path dan memaksa setiap halaman
    dinamis - bertukar langsung dengan butir 5 di bawah. Permukaan XSS aplikasi
    ini sendiri sempit: tidak ada konten dari pengguna lain, tidak ada komentar,
    tidak ada HTML dari luar.
