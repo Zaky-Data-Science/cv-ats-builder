@@ -177,6 +177,25 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
           )}
         </div>
 
+        {/*
+          Sakelar tema tetap di bilah, juga di layar sempit.
+
+          Ia sempat ikut pindah ke dalam laci bersama seluruh kendali lain pada
+          sesi 8 - dan itu keliru untuk yang satu ini. Bahasa dan tombol masuk
+          adalah hal yang dicari saat dibutuhkan; mode gelap adalah hal yang
+          diketuk begitu layarnya terasa terlalu terang, dan yang menuntut dua
+          ketukan serta satu gulir untuk sampai ke sana akan disimpulkan tidak
+          ada. Dilaporkan begitu: "di alamat ini gk ada temanya".
+
+          Yang dulu membuat dokumen lebih lebar daripada layarnya bukan tombol
+          semacam ini melainkan satu barisan kendali berlebar tetap 224 piksel.
+          Satu tombol ikon selebar 36 piksel diukur tidak menyentuh masalah itu
+          bahkan pada layar 320.
+        */}
+        <div className="lg:hidden">
+          <ThemeToggle />
+        </div>
+
         {/* Tombol menu - sasaran sentuhnya 44 piksel, bukan sebesar ikonnya. */}
         <button
           type="button"
@@ -279,15 +298,17 @@ function MobileDrawer({
             ))}
           </ul>
 
-          {/* Bahasa dan tema: setelan, bukan tujuan. Dipisahkan garis supaya
-              tidak terbaca sebagai halaman keenam dan ketujuh. */}
+          {/* Bahasa: setelan, bukan tujuan. Dipisahkan garis supaya tidak
+              terbaca sebagai halaman keenam.
+
+              Sakelar temanya tidak ada di sini lagi - ia pindah ke bilah atas,
+              tempat ia dapat dijangkau tanpa membuka laci sama sekali. */}
           <div className="mt-4 border-t border-ink-200 pt-4">
             <p className="px-4 pb-2 text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
               {t.nav.settingsGroup}
             </p>
             <div className="flex items-center gap-2 px-2">
               <LanguageToggle />
-              <ThemeToggle />
             </div>
           </div>
         </nav>

@@ -1,4 +1,40 @@
+import { networkInterfaces } from "node:os";
 import type { NextConfig } from "next";
+
+/**
+ * Seluruh alamat IPv4 mesin ini, untuk `allowedDevOrigins`.
+ *
+ * Dihitung, bukan ditulis tetap. Alamat Wi-Fi berubah setiap kali komputernya
+ * berpindah jaringan, dan daftar yang ditulis tangan akan usang tanpa satu
+ * pun tanda yang jelas - gejalanya bukan pesan galat melainkan **halaman yang
+ * memuat ulang dirinya sendiri sesekali**.
+ *
+ * Sebabnya begitu: Next menolak permintaan ke sumber daya dev-nya sendiri
+ * dari host yang tidak terdaftar, termasuk kanal HMR. Klien dev yang gagal
+ * menyambung akan mencoba lagi, dan pada akhirnya memuat ulang halamannya.
+ * Ditemukan sesi 10 lewat satu baris di log server:
+ *
+ *     Blocked cross-origin request to Next.js dev resource /_next/hmr
+ *
+ * yang dilaporkan pengguna sebagai "animasinya tiba-tiba muncul sendiri
+ * tanpa refresh" - sebab tiap pemuatan ulang memutar adegan pembukanya lagi.
+ *
+ * Daftar ini hanya berlaku pada mode pengembangan; Next mengabaikannya saat
+ * production.
+ */
+function alamatLokal(): string[] {
+  const alamat = new Set(["localhost", "127.0.0.1"]);
+
+  for (const daftar of Object.values(networkInterfaces())) {
+    for (const antarmuka of daftar ?? []) {
+      if (antarmuka.family === "IPv4" && !antarmuka.internal) {
+        alamat.add(antarmuka.address);
+      }
+    }
+  }
+
+  return [...alamat];
+}
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -80,12 +116,10 @@ const contentSecurityPolicy = [
   .join("; ");
 
 const nextConfig: NextConfig = {
-  // Saat pengembangan, aplikasi kerap dibuka lewat 127.0.0.1 atau alamat LAN
-  // (misalnya untuk mencobanya dari ponsel). Tanpa daftar ini Next memblokir
-  // permintaan ke sumber daya dev-nya sendiri dari host tersebut, sehingga
-  // JavaScript sisi klien gagal terhidrasi dan form tampak tidak berfungsi.
-  // Daftar ini hanya berlaku pada mode pengembangan.
-  allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.56.1"],
+  // Saat pengembangan, aplikasi kerap dibuka lewat alamat LAN - misalnya
+  // untuk mencobanya dari ponsel. Alamatnya dihitung dari kartu jaringan
+  // mesin ini; lihat alamatLokal() di atas untuk alasan lengkapnya.
+  allowedDevOrigins: alamatLokal(),
 
   // Menyembunyikan header X-Powered-By yang membocorkan kerangka kerja
   // beserta versinya.

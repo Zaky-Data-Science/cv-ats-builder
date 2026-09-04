@@ -48,5 +48,8 @@ next-env.d.ts
 .vercel
 .env*
 
-# log server lokal yang berjalan terus (scripts/dev-24jam.ps1)
+# Log server lokal ditulis ke luar project sejak sesi 10 - berkas log di
+# dalam project membuat next dev memuat ulang halaman setiap kali ditulis.
+# Baris ini tinggal sebagai jaring pengaman bila suatu saat ada yang
+# mengembalikannya ke sini.
 /logs

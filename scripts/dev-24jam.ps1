@@ -38,8 +38,21 @@
     mendengarkan di sana, layanannya hidup - siapa pun yang menyalakannya, dan
     dalam bentuk proses apa pun.
 
-    Log ditulis ke folder `logs/` di dalam project dan dipangkas sendiri
-    supaya tidak tumbuh tanpa batas.
+    ## Lognya sengaja di luar folder project
+
+    Percobaan pertama menaruhnya di `logs/` di dalam project, dan itu keliru
+    dengan cara yang tidak langsung terlihat: `next dev` mengawasi berkas di
+    dalam project, sehingga **setiap baris log yang ditulis pengawas ini
+    memicu satu pemuatan ulang halaman**. Yang terlihat pengguna adalah
+    halaman yang menyegarkan dirinya sendiri sesekali - dan, karena adegan
+    pembuka diputar setiap pemuatan, animasi yang tiba-tiba muncul tanpa ada
+    yang menyentuh apa pun.
+
+    Diuji langsung: menambahkan satu baris ke berkas log di dalam project
+    menghasilkan satu `GET /` tambahan di log server.
+
+    Karena itu lognya kini ditulis ke luar project sama sekali. Letaknya
+    ditampilkan pada baris pertama setiap kali pengawas menyala.
 
     Menjalankannya sekali (jendela ini harus tetap terbuka):
         powershell -ExecutionPolicy Bypass -File "scripts\dev-24jam.ps1"
@@ -53,8 +66,9 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
-$logDir = Join-Path $root "logs"
-if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir | Out-Null }
+# Di luar project - lihat alasannya di kepala berkas ini.
+$logDir = Join-Path $env:LOCALAPPDATA "cv-ats-builder\logs"
+if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 
 $logUtama = Join-Path $logDir "dev-24jam.log"
 
@@ -136,6 +150,7 @@ function Jaga-Layanan {
 }
 
 Tulis-Log "=== dev-24jam mulai (project: $root, basis data: $portDb, web: $portWeb) ==="
+Tulis-Log "Log ada di: $logDir"
 
 $dbTerakhir = [datetime]::MinValue
 $webTerakhir = [datetime]::MinValue
