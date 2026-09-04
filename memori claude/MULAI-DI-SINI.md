@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **3 September 2026** (sesi 9)
+Terakhir diperbarui: **4 September 2026** (sesi 10)
 
 ---
 
@@ -43,6 +43,15 @@ Sesi 9 memperkuat rupa itu: hero menjadi panel tersendiri berisi sapuan tinta
 sumi-e dan jaring partikel berkait garis, dan di ponsel pratinjau CV pindah ke
 atas - tepat setelah paragraf penjelasan, sebelum tombolnya.
 
+Sesi 10 mengganti bahasanya. Seluruh teks yang dilihat pengguna ditulis ulang
+dalam kata yang dipakai orang sehari-hari - "field" menjadi "kotak isian",
+"template" menjadi "desain", "dimensi penilaian" menjadi "hal yang dinilai" -
+dan angka di halaman depan kini menjelaskan dirinya sendiri saat disentuh.
+Pengaturan tampilan CV pindah dari dalam bilah alat ke sebuah laci, supaya
+kertasnya tetap terlihat sementara diatur. Pemulihan kata sandi lewat surel
+akhirnya ada, bagian tambahan dapat disunting di kertas, dan kemiringan kartu
+kini bekerja di layar sentuh.
+
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
 
@@ -76,13 +85,34 @@ JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6.
 
 ## 3. Cara menjalankan lagi di komputer
 
+**Sejak sesi 10, biasanya tidak perlu.** Server lokal berjalan sendiri:
+sebuah Scheduled Task bernama `CV ATS Builder - server lokal` menyalakannya
+setiap masuk Windows, dan menyalakannya lagi bila mati.
+
+```powershell
+# Melihat statusnya
+Get-ScheduledTask -TaskName "CV ATS Builder - server lokal" | Get-ScheduledTaskInfo
+
+# Menyalakan sekarang tanpa masuk ulang
+Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
+
+# Membatalkan pemasangannya
+powershell -ExecutionPolicy Bypass -File "scripts\pasang-tugas.ps1" -Hapus
+```
+
+Lognya di `logs/` - `dev-24jam.log` untuk pengawasnya, `web.log` dan
+`database.log` untuk keluaran masing-masing. Alamat yang dapat dibuka dari
+ponsel di Wi-Fi yang sama ikut dicatat di log pengawas setiap kali menyala.
+
+Bila ingin menjalankannya dengan tangan:
+
 ```bash
 cd "D:\Website CV"
 
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 284 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 348 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -161,13 +191,21 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/components/ink/InkTouch.tsx` | Bercak tinta untuk ketukan, sapuan, dan tekanan lama |
 | `src/lib/intro.ts` | Store "intro perlu diputar atau tidak", pola yang sama dengan `theme.ts` |
 | `src/components/home/TemplatePreview.tsx` | Pratinjau template di halaman depan. Komponen klien **demi berat halaman**, bukan demi interaktivitas - alasannya di kepala berkasnya |
+| `src/components/home/HeroStats.tsx` | Barisan angka di halaman depan. Tiap angka menjelaskan dirinya saat disentuh; penjelasannya ditumpuk pada satu sel grid supaya tingginya tidak pernah berubah |
+| `src/components/editor/AppearanceDrawer.tsx` | Laci "Atur tampilan CV". Kiri di layar lebar, lembar bawah di ponsel, dan **tanpa lapisan gelap** - kertasnya harus tetap terlihat |
+| `src/lib/mail.ts` | Pengirim surel (Brevo, lewat HTTP) beserta isi surel pemulihan dua bahasa. Diam total bila kuncinya belum diisi |
+| `src/lib/password-reset.ts` | Pembuatan dan hash token pemulihan. **Tidak mengimpor Prisma** - supaya dapat diuji tanpa basis data |
+| `src/lib/password-reset-store.ts` | Kueri basis data untuk tiket pemulihan. Terpisah dari berkas di atas justru karena mengimpor Prisma |
+| `scripts/dev-24jam.ps1` | Pengawas server lokal. Memeriksa **port**, bukan proses - alasannya di kepala berkasnya |
+| `scripts/pasang-tugas.ps1` | Mendaftarkan pengawas itu sebagai Scheduled Task per-pengguna; `-Hapus` membatalkannya |
+| `scripts/uji-surel.ts` | `npm run mail:test -- alamat@tujuan.com`. Mengirim surel pemulihan sungguhan sebagai percobaan |
 | `src/lib/i18n/id.ts`, `en.ts` | Kamus antarmuka. `en.ts` diketik sebagai `Dictionary`, jadi kunci yang lupa diterjemahkan menggagalkan build |
 | `src/lib/resume/templates.ts` | Katalog 10 template beserta ciri rupanya |
 | `src/lib/resume/paper.ts` | Ukuran kertas A4/Letter/Legal/F4 |
 | `resumeMargins()` di `templates.ts` | Margin yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template |
 | `src/lib/diagrams.ts` | **Satu sumber** untuk halaman /alur sekaligus berkas gambar SVG/PNG |
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore) |
-| `tests/` | 284 pemeriksaan; `npm test` |
+| `tests/` | 348 pemeriksaan; `npm test` |
 | `tests/kertas.test.ts` + `tests/fixtures/kertas-acuan.html` | Mengunci markup dokumen CV pada jalur cetak, 10 template x 2 bahasa. Rekam ulang acuannya **hanya** bila tampilannya memang sengaja diubah |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
@@ -250,6 +288,20 @@ supaya tidak perlu diingat-ingat lagi.
 | **Popover tanggal digambar lewat portal ke `<body>`** | Kertas berada di dalam pembungkus ber-`transform: scale(zoom)`. Popover yang menjadi anaknya ikut mengecil, dan pada perbesaran 40% pemilih bulannya tidak lagi dapat dipakai. `getBoundingClientRect()` sudah memperhitungkan skala itu, jadi letaknya tetap tepat. |
 | **Markup dokumen CV dikunci berkas uji, bukan dijaga dengan kehati-hatian** | Membongkar cara baris entri dirender dapat menggeser pemenggalan barisnya tanpa satu pun pemeriksaan lain berteriak - PDF tetap terbentuk, isinya tetap ada, hanya jumlah halamannya berubah. `tests/kertas.test.ts` membandingkan markup mentah seluruh template di kedua bahasa terhadap acuan yang direkam sebelum perubahan dimulai. |
 | **Pratinjau template di halaman depan jadi komponen klien** | Sebagai komponen server, seluruh pohon elemen dokumen ikut ditulis dua kali ke halaman - sekali sebagai HTML, sekali lagi sebagai muatan React. Untuk sebelas dokumen, salinan kedua itu saja lebih dari 200 KB. |
+| **Pengaturan tampilan jadi laci, bukan blok di dalam bilah alat** | Sebagai blok, ia mendorong kertas turun sekitar empat ratus piksel - sehingga perubahan yang baru saja diatur justru tidak terlihat - dan warnanya, abu sangat muda di atas putih, membuatnya terbaca sebagai bagian dari bilah. Jendela timbul menyelesaikan yang pertama tetapi memperburuk yang kedua: ia menutupi kertasnya. Laci di tepi kiri menyelesaikan keduanya sekaligus, sebab kertas ada di kolom kanan. |
+| **Laci itu tidak disertai lapisan gelap** | Lapisan gelap adalah tanda "selesaikan ini dulu". Yang dituju justru sebaliknya: mengatur sambil melihat, dan menggulir kertasnya bila perlu. |
+| **Membuka laci di ponsel ikut memindahkan panel ke pratinjau** | Lembar bawah menyisakan ruang di atasnya supaya kertas tetap terlihat - dan ruang itu tidak berarti apa-apa bila yang tampil di sana formulir. |
+| **Angka di halaman depan menjelaskan dirinya saat disentuh** | "11" dan "5" tidak mengatakan apa pun sendirian, dan keterangan dua kata di bawahnya hanya menyebutkan namanya, bukan artinya. Penjelasannya ditaruh di satu tempat di bawah barisan, bukan di bawah masing-masing angka: empat kalimat sekaligus mengubah barisan angka menjadi blok teks, dan pada kolom selebar tujuh puluh piksel di ponsel setiap kalimat pecah menjadi belasan baris. |
+| **Tinggi kotak penjelasan itu dari isi terpanjang, bukan dari angka `min-height`** | Prompt dan keempat penjelasan ditumpuk pada satu sel grid yang sama, sehingga wadahnya selalu setinggi yang terpanjang - berapa pun lebar layarnya. Angka `min-height` yang ditebak akan meleset di lebar lain, dan meleset lagi begitu kalimatnya suatu saat diubah. |
+| **Kemiringan kartu di layar sentuh dipicu jari yang menekan** | Alasan lama mematikannya sama sekali ("tidak ada kursor untuk diikuti") keliru: yang tidak ada di layar sentuh bukan penunjuknya melainkan gerak tanpa menekan. Kekhawatiran yang benar - kartu ikut miring saat menggulir - dijawab peramban sendiri: begitu gulir dimulai, `pointercancel` terkirim dan kartunya kembali datar. |
+| **Bahasa antarmuka ditulis ulang, bukan diberi glosarium** | Istilah yang harus dicari artinya lebih dulu menghalangi orang yang justru paling butuh aplikasi ini - orang yang baru pertama menyusun CV. Menambahkan penjelasan di samping istilahnya hanya menambah teks; menggantinya membuat teksnya lebih pendek sekaligus lebih terbaca. |
+| **Judul bagian tambahan tetap tidak dapat diketik di kertas** | Judul bagian dicetak setelah diubah bentuknya - kapital seluruhnya, atau Kapital Di Awal Kata, tergantung templatenya. Menulis balik apa yang terlihat akan menyimpan "PELATIHAN DAN WORKSHOP" sebagai judulnya. Kasus yang sama persis dengan alamat proyek yang dirapikan `prettyUrl()`. |
+| **Bagian tambahan menambah satu bentuk jalur, bukan izin bagi jalur lima segmen** | Sesi 7 menolak menambahkannya justru karena memperluas `isEditablePath` ke lima segmen akan mengizinkan setiap jalur berlima segmen. Yang ditambahkan sesi 10 adalah bentuk tunggal yang tertutup: segmen pertamanya harus persis `customSections`, segmen ketiganya harus persis `items`. Sembilan bentuk mirip yang tetap harus ditolak dikunci berkas uji. |
+| **Token pemulihan disimpan sebagai SHA-256, bukan apa adanya** | Tiket reset yang bocor sama saja dengan kata sandi yang bocor. Diperlakukan seperti kata sandi, dan karena alasan yang sama: tabelnya menjadi tidak berguna bagi siapa pun yang berhasil membacanya. |
+| **Kriptografi token dipisah dari kueri basis datanya** | Mengimpor klien Prisma membuat berkasnya menuntut koneksi basis data begitu dimuat - dan bagian yang paling pantas diuji tanpa server justru bagian kriptografinya. |
+| **Permintaan tautan selalu dijawab sama, terdaftar maupun tidak** | Membedakan keduanya mengubah titik akhir itu menjadi alat pemeriksa keanggotaan: siapa pun dapat mencoba ribuan alamat dan tahu persis siapa yang punya akun di sini. Konsekuensinya - yang salah ketik alamatnya menunggu surel yang tidak datang - dijawab dengan menyebutkan kemungkinan itu secara eksplisit di layar. |
+| **Alamat tautan dalam surel dari `NEXTAUTH_URL`, bukan dari header Host** | Header itu dikirim peramban dan dapat dipalsukan. Tautan pemulihan yang menunjuk ke alamat pilihan penyerang adalah tepat cara mencuri akun. |
+| **Batas laju pemulihan dihitung per alamat surel, bukan per IP** | Yang dijaga di sini bukan penebakan kata sandi melainkan pengiriman surel: tanpa batas per alamat, kotak masuk orang lain dapat dibanjiri dari banyak IP sekaligus - dan yang menanggung akibatnya adalah reputasi alamat pengirim aplikasi ini. |
 
 ---
 
@@ -288,6 +340,12 @@ Berguna bila gejala serupa muncul lagi.
 | Sembilan field diizinkan mesin tetapi tidak pernah dapat diklik | Allowlist `edit-path.ts` memuat `educations.degree`, `certifications.issuer`, `skills.name`, dan enam lainnya, tetapi dokumen tidak pernah memasang `data-edit` di sana | Ditandai seluruhnya; `tests/kertas.test.ts` kini memeriksa kedua arah - setiap jalur yang ditandai harus diterima allowlist, dan sembilan field itu harus tetap ada |
 | Entri pendidikan baru tidak punya satu pun poin untuk diklik | `emptyEducation()` membuat `bullets: []`, sedangkan tiga pembuat entri lain membuat `[""]` | Disamakan menjadi `[""]` |
 | Halaman cetak terlihat sempit di layar | Kertas dirender `padding="none"` karena marginnya diserahkan ke `@page`, yang hanya berlaku saat mencetak | Ikut selesai oleh perbaikan di atas - paddingnya kini nyata |
+| Angka "11" di halaman depan terlempar ke tepi kiri, beda sendiri dari tiga angka lainnya | `first:pl-0` menghapus padding kiri butir pertama, dan seluruh butir rata kiri sehingga angka satu digit tampak melayang jauh dari tengah keterangannya | Seluruh butir rata tengah; `first:pl-0` dibuang. Pusat angka dan pusat keterangan kini berselisih nol piksel di keempatnya |
+| Panel pengaturan tampilan mendorong kertas keluar layar | Ia disisipkan sebagai blok di dalam bilah alat, setinggi sekitar empat ratus piksel | Dipindahkan ke laci yang melayang - kertas tidak bergeser satu piksel pun saat dibuka maupun ditutup |
+| Enter di poin bagian tambahan diam-diam berhenti membuat poin baru | Panel pratinjau mengurai jalur poin dengan regex `^([a-z]+)\.(\d+)\.bullets\.(\d+)$`, dan jalur bagian tambahan bersarang satu tingkat lebih dalam | Pembacaan bentuk jalur dipindah ke `parseBulletPath()` di edit-path.ts, satu tempat untuk kedua bentuk |
+| Periode pada bagian tambahan tidak akan pernah dapat dibuka | `dateShape(path.split(".")[0])` membaca "customSections" sebagai nama bagian dan selalu memperoleh null | `dateShapeForPath()` yang mengenali kedua bentuk jalur |
+| Halaman Pengaturan berakhir "Ada yang tidak beres" bila sesi menunjuk pengguna yang sudah terhapus | `isStaleSessionError` mengenali P2025 dari kata "user" di dalam pesan galat, tetapi pesan Prisma untuk `findUniqueOrThrow` tidak memuat kata itu - nama modelnya ada di `meta.modelName`, bukan di `message`. Contoh galat di berkas ujinya seluruhnya berasal dari `update` dan `delete`, sehingga cabang itu selalu lulus | `meta.modelName` ikut diperiksa, dan halaman kini mengalihkan ke `/login?sesi=habis` lewat `redirectIfStaleSession()` - `errorResponse()` hanya melayani titik akhir API |
+| Berkas kedua tidak pernah masuk di halaman Cek CV; halamannya harus dimuat ulang lebih dulu | `Array.from(FileList)` dipanggil **di dalam** updater `setSlots`. FileList dari sebuah `<input type="file">` menunjuk ke input itu dan menjadi kosong begitu `input.value` dikosongkan - dan updater React berjalan setelah penangannya selesai, jadi setelah pengosongan itu. Berkas pertama tetap masuk karena React menghitung state seketika saat tidak ada pembaruan tertunda | Berkasnya disalin ke larik sebagai baris pertama penangan, sebelum apa pun yang lain |
 
 ---
 
@@ -297,12 +355,20 @@ Delapan butir pada daftar sesi 5 sudah ditimbang satu per satu di sesi 6.
 Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
 `riwayat-pengerjaan.md` sesi 6. Yang masih terbuka:
 
-1. **Pemulihan kata sandi lewat surel belum ada.** Hambatannya bukan koding
-   melainkan domain: surel dari `vercel.app` tanpa SPF/DKIM terverifikasi
-   berakhir di folder spam. Sementara ini halaman masuk menjelaskan jalan yang
-   memang sudah ada - masuk dengan Google memakai alamat surel yang sama, lalu
-   buat kata sandi baru di Pengaturan. Bangun yang sebenarnya kalau nanti punya
-   domain sendiri.
+1. **Pemulihan kata sandi lewat surel sudah ada sejak sesi 10, tetapi belum
+   menyala.** Seluruh alurnya terpasang - `/lupa-sandi`, `/atur-sandi`, dua
+   titik akhir API, tabel tiket, batas laju, dan surel dua bahasa. Yang belum:
+   `BREVO_API_KEY` dan `MAIL_FROM` di Vercel. Selama keduanya kosong, halaman
+   `/lupa-sandi` menampilkan penjelasan jalan lama alih-alih formulir yang
+   tidak akan mengirim apa pun.
+
+   Hambatan lamanya - surel dari `vercel.app` tanpa SPF/DKIM berakhir di spam -
+   dijawab tanpa menunggu domain sendiri: Brevo mengizinkan verifikasi **satu
+   alamat pengirim** biasa, Gmail sekalipun. Langkahnya ada di `.env.example`.
+
+   Yang masih pantas dikerjakan kalau nanti punya domain: pindahkan alamat
+   pengirimnya ke domain itu, supaya surelnya tidak lagi datang dari alamat
+   pribadi.
 
 2. **Pencocokan kata kunci masih tidak mengenali kata berimbuhan.**
    "mengembangkan" dan "pengembangan" dihitung berbeda. Perbedaan ejaan dan
@@ -367,7 +433,27 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
    hanya dipakai untuk membuktikan identitas; datanya tidak disimpan di dalam
    akun Google pengguna.
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 284
+9. **Pemulihan kata sandi menunggu kunci Brevo.** Lihat butir 1 - seluruh
+   alurnya sudah terpasang dan teruji; yang belum hanya `BREVO_API_KEY` dan
+   `MAIL_FROM`. Ada `npm run mail:test -- alamat@tujuan.com` untuk memastikan
+   pengirimannya benar-benar sampai begitu kuncinya diisi.
+
+10. **Laci pengaturan pada lembar bawah ponsel belum diperiksa di perangkat
+    sungguhan.** Kemiringan kartu di layar sentuh sudah - diuji dengan
+    mengirim `PointerEvent` bertipe `touch` sungguhan ke kartunya, dan
+    terukur `+3,5deg` di pojok kanan atas, `-3,5deg` di kiri bawah, lalu
+    kembali `0deg` begitu `pointercancel` datang. Yang tersisa hanyalah rupa
+    lembar bawah itu sendiri, yang menuntut layar sempit sungguhan.
+
+    Catatan untuk pengujian berikutnya: jendela Chrome yang dipakai sepanjang
+    sesi ini berada dalam keadaan `visibilityState: "hidden"`, dan di sana
+    `requestAnimationFrame` **tidak berjalan sama sekali**. Nilai apa pun yang
+    ditulis dari dalam rAF - termasuk `--ix`/`--iy` pada kartu - akan terbaca
+    kosong dan menyerupai fitur yang mati. Satu tangkapan layar di antara dua
+    pengukuran cukup untuk memaksa satu bingkai berjalan; itulah cara angka di
+    atas akhirnya diperoleh.
+
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 348
 pemeriksaan). Sejak sesi 5, jalur peramban diuji dengan menjalankan Chrome
 sungguhan lewat DevTools Protocol - termasuk memeriksa isi berkas PDF yang
 benar-benar dihasilkan, bukan sekadar keberadaannya.
@@ -383,6 +469,17 @@ Cukup sampaikan hal-hal ini:
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
 > basis data lokal. Sebelum menyatakan selesai, jalankan
 > `npm run typecheck && npm run lint && npm test && npm run build`.
+
+Sejak sesi 10 ada satu hal lagi yang mudah terlewat:
+
+3. **Teks yang dilihat pengguna memakai kata sehari-hari, bukan istilah
+   teknis.** Kolom isian bukan "field", desain CV bukan "template", jarak tepi
+   bukan "margin", hal yang dinilai bukan "dimensi", berkas cadangan bukan
+   "JSON", browser bukan "peramban". Yang membaca aplikasi ini adalah orang
+   yang sedang melamar kerja, bukan orang yang membangunnya - dan istilah yang
+   harus dicari artinya lebih dulu menghalangi justru yang paling
+   membutuhkannya. Komentar di dalam kode tetap boleh - dan memang harus -
+   memakai istilah yang tepat.
 
 Dua hal yang paling mudah terlewat saat menambah fitur:
 

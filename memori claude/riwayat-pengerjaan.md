@@ -1172,17 +1172,362 @@ tab yang terlihat.
 
 ---
 
+## Sesi 10 - 4 September 2026: bahasa manusia, laci tampilan, dan pemulihan kata sandi
+
+Permintaannya lima hal sekaligus, sebagian datang lewat tangkapan layar dari
+ponsel: selesaikan butir yang masih terbuka, betulkan barisan angka di halaman
+depan yang "ke pinggir sendiri, beda sendiri", pindahkan panel pengaturan yang
+"terlalu memenuhi space" supaya perubahannya tetap terlihat, dan - yang paling
+besar - tulis ulang seluruh teks aplikasi memakai "bahasa manusia" sehingga
+"orang awam bisa langsung faham". Di tengah pengerjaan ditambahkan satu lagi:
+angka di halaman depan harus menjelaskan dirinya sendiri saat disentuh.
+
+### Tiga keputusan yang ditanyakan lebih dulu
+
+Dua butir pada daftar terbuka tidak dapat dikerjakan tanpa keputusan pengguna,
+dan satu lagi menentukan bentuk seluruh pekerjaan berikutnya:
+
+| Pertanyaan | Jawaban |
+|---|---|
+| Bentuk panel pengaturan | Laci samping kiri di layar lebar, lembar bawah di ponsel |
+| Pemulihan kata sandi lewat surel | Dibangun; pengguna menyiapkan Brevo sendiri |
+| Pindahkan bahasa ke alamat (`/en/...`) demi cache edge | Dilewati - lihat alasannya di bawah |
+
+Butir cache edge dilewati dengan alasan yang sudah tercatat sejak sesi 6:
+lambatnya situs production bukan berasal dari sana melainkan dari TCP (1,7-3,2
+detik) dan TLS (3,4-6,2 detik), sementara ongkosnya 19 berkas pindah dan
+seluruh alamat berubah.
+
+### 1. Barisan angka di halaman depan
+
+Gejalanya dilaporkan dari ponsel: pada susunan dua kolom, angka "11" terlempar
+ke tepi kiri sementara tiga angka lainnya tidak.
+
+Sebabnya dua sekaligus. `first:pl-0` menghapus padding kiri butir pertama saja,
+dan seluruh butir rata kiri - sehingga angka satu digit seperti "5" tampak
+melayang jauh dari tengah keterangannya yang panjang. Keduanya diselesaikan
+dengan menjadikan setiap butir rata tengah. Pusat angka dan pusat keterangan
+kini berselisih **nol piksel** di keempat butir; diukur, bukan dikira-kira.
+
+### 2. Angka yang menjelaskan dirinya sendiri
+
+Permintaan yang datang di tengah pengerjaan: "kalau kursor atau kita pencet
+angka itu ada penjelasan maksudnya apa".
+
+Penjelasannya ditaruh di **satu tempat di bawah barisan**, bukan di bawah
+masing-masing angka. Empat penjelasan sekaligus akan mengubah barisan angka itu
+menjadi blok teks, dan pada kolom selebar tujuh puluh piksel di layar ponsel
+setiap kalimat akan pecah menjadi belasan baris.
+
+Satu hal yang baru benar pada percobaan kedua: tingginya. Mula-mula dipakai
+`min-h` yang ditebak - dan terukur menggeser tata letak 18 piksel begitu
+penjelasan terpanjang muncul. Gantinya, prompt dan keempat penjelasan
+ditumpuk pada satu sel grid yang sama, sehingga wadahnya selalu setinggi isi
+terpanjang berapa pun lebar layarnya. Terukur 58,5 piksel pada kelima keadaan,
+tanpa satu pun angka yang perlu ditebak.
+
+### 3. Panel tampilan menjadi laci
+
+Keluhannya: panelnya "terlalu memenuhi space", warnanya menyatu, dan
+"kalau pop up juga gk bisa liat perubahannya karena ketutup".
+
+Ketiganya satu masalah. Sebagai blok di dalam bilah alat, panel itu mendorong
+kertas turun sekitar empat ratus piksel - sehingga perubahan yang baru saja
+diatur justru tidak terlihat - dan warnanya, abu sangat muda di atas putih,
+membuatnya terbaca sebagai bagian dari bilahnya. Jendela timbul menyelesaikan
+yang pertama tetapi memperburuk yang kedua, dan pengguna sudah menolaknya
+lebih dulu.
+
+Laci di tepi kiri menyelesaikan keduanya sekaligus, sebab kertas ada di kolom
+kanan. Tanpa lapisan gelap: lapisan gelap adalah tanda "selesaikan ini dulu",
+sedangkan yang dituju justru mengatur sambil melihat.
+
+Terukur di layar lebar: kertas **tidak bergeser satu piksel pun** saat laci
+dibuka maupun ditutup (dx 0, dy 0), tepi kirinya di x=782 sementara laci
+berakhir di x=352, dan menggeser besar huruf langsung mengubah `article.paper`
+dari 10pt ke 12pt selagi lacinya terbuka.
+
+Di ponsel bentuknya lembar bawah setinggi paling banyak 55% layar, dan
+membukanya ikut memindahkan panel aktif ke pratinjau - ruang yang disisakan di
+atas lembar itu tidak berarti apa-apa bila yang tampil di sana formulir.
+
+### 4. Bahasa manusia
+
+Pekerjaan terbesar sesi ini, dan yang paling banyak menyentuh berkas: dua
+kamus antarmuka, pesan mesin penilaian, petunjuk tiap bagian CV, catatan
+ukuran kertas, dan seluruh halaman panduan - keduanya dalam dua bahasa.
+
+Contoh yang diberikan pengguna sendiri: "field sebagai salah satu contoh gk
+semua orang faham istilah itu".
+
+| Sebelum | Sesudah |
+|---|---|
+| field | kotak isian |
+| section | bagian |
+| template | desain CV |
+| margin | jarak tepi |
+| dimensi penilaian | hal yang dinilai |
+| unduh JSON | simpan berkas cadangan |
+| pengurai ATS | mesin penyaring lamaran |
+| peramban | browser |
+| Dashboard | CV Saya |
+| ID Kredensial | Nomor Sertifikat |
+| opsional | boleh dikosongkan |
+
+Judul halaman depan ikut berubah, dari "Isi field-nya. CV yang terbaca mesin
+tersusun sendiri." menjadi "Anda cukup isi datanya. Desain dan susunan CV-nya
+beres sendiri."
+
+Yang **tidak** ikut disederhanakan: komentar di dalam kode. Yang membaca
+aplikasi ini adalah orang yang sedang melamar kerja; yang membaca kodenya
+bukan.
+
+### 5. Butir terbuka yang diselesaikan
+
+**Kemiringan kartu di layar sentuh.** Sesi 9 mencatat bahwa alasan yang
+tertulis di komentarnya keliru, tetapi belum memperbaikinya. Yang tidak ada di
+layar sentuh bukan penunjuknya melainkan gerak tanpa menekan - jadi geraknya
+kini dipicu jari yang sedang menekan. Kekhawatiran yang benar, kartu ikut
+miring saat menggulir, dijawab peramban sendiri: begitu gulir dimulai,
+`pointercancel` terkirim dan kartunya kembali datar.
+
+**Bagian tambahan dapat disunting di kertas.** Sesi 7 menolaknya karena
+jalurnya lima segmen sedangkan `isEditablePath` berhenti di empat, dan
+memperluas bentuknya secara umum akan mengizinkan **setiap** jalur berlima
+segmen. Yang ditambahkan karena itu bukan "jalur lima segmen" melainkan satu
+bentuk tertutup: segmen pertamanya harus persis `customSections`, segmen
+ketiganya harus persis `items`. Sembilan bentuk mirip yang tetap harus ditolak
+dikunci berkas uji.
+
+Judul bagiannya sendiri tetap lewat formulir, dan itu bukan kelalaian: judul
+dicetak setelah diubah bentuknya oleh template, sehingga menulis balik apa yang
+terlihat akan menyimpan "PELATIHAN DAN WORKSHOP" sebagai judul aslinya. Kasus
+yang sama persis dengan alamat proyek yang dirapikan `prettyUrl()`.
+
+**Pemulihan kata sandi lewat surel.** Hambatan lamanya - surel dari
+`vercel.app` tanpa SPF/DKIM berakhir di spam - dijawab tanpa menunggu domain
+sendiri: Brevo mengizinkan verifikasi satu alamat pengirim biasa. Yang
+dibangun: tabel tiket, dua halaman, dua titik akhir API, batas laju, dan surel
+dua bahasa.
+
+Beberapa keputusan yang perlu diketahui sebelum menyentuhnya lagi:
+
+- Yang disimpan di basis data **hash SHA-256 token**, bukan tokennya. Tiket
+  reset yang bocor sama saja dengan kata sandi yang bocor.
+- Permintaan tautan **selalu dijawab sama**, terdaftar maupun tidak.
+  Membedakannya mengubah titik akhir itu menjadi alat pemeriksa keanggotaan.
+- Alamat tautan di dalam surel diambil dari `NEXTAUTH_URL`, **bukan** dari
+  header `Host` - header itu dapat dipalsukan, dan tautan pemulihan yang
+  menunjuk alamat penyerang adalah tepat cara mencuri akun.
+- Batas lajunya dihitung **per alamat surel**, bukan per IP: yang dijaga di
+  sini pengiriman surel, bukan penebakan kata sandi.
+- Kriptografinya dipisah dari kuerinya (`password-reset.ts` vs
+  `password-reset-store.ts`) supaya bagian yang paling pantas diuji tetap
+  dapat diuji tanpa basis data.
+
+Diuji terhadap basis data lokal: tautan sah menggantikan kata sandi (200,
+sandi lama tidak lagi berlaku), tautan yang sama dipakai lagi ditolak 400,
+tautan asing ditolak 400, tautan kedaluwarsa ditolak dengan alasan "expired",
+kunci Brevo yang salah menghasilkan 500 - bukan berpura-pura terkirim - dan
+permintaan keempat untuk satu alamat ditolak 429.
+
+### Pelajaran sesi ini: sebuah pengukuran palsu, lagi
+
+Tab yang dipakai menguji kembali berada dalam keadaan `visibilityState:
+"hidden"` sepanjang sesi. Akibatnya persis seperti yang dicatat sesi 9:
+`getBoundingClientRect()` mengembalikan tinggi **nol** untuk seluruh halaman,
+termasuk elemen yang jelas-jelas ada dan berisi lima anak. Sempat terbaca
+sebagai "komponen barunya tidak dirender".
+
+Yang menyelamatkan kali ini adalah catatan sesi 9 itu sendiri. Pengukuran
+diulang setelah tab sempat terlihat, dan angkanya langsung masuk akal.
+
+Satu lagi yang sejenis, dan lebih halus: skrip uji yang menyisipkan tiket
+kedaluwarsa **lewat `pg` mentah** melaporkan tiket itu diterima. Sempat
+terbaca sebagai bug keamanan. Ternyata kolomnya `TIMESTAMP(3)` tanpa zona
+waktu: `pg` menulis waktu lokal (WITA, +8), Prisma membacanya sebagai UTC, dan
+"satu menit lalu" berubah menjadi "tujuh jam lagi". Diuji ulang lewat jalur
+aplikasi sendiri - Prisma di kedua sisi - tiketnya ditolak dengan benar.
+
+> Yang perlu diingat: **jalur uji yang berbeda dari jalur aplikasi dapat
+> berbohong ke dua arah.** Bukan hanya gagal pada yang benar, tetapi juga
+> lulus pada yang salah.
+
+### Cacat yang ditemukan tetapi sengaja tidak diperbaiki
+
+Halaman Pengaturan berakhir "Ada yang tidak beres" bila sesi menunjuk pengguna
+yang sudah terhapus - keadaan yang sudah punya penanganannya sendiri sejak
+sesi 6. Sebabnya: `isStaleSessionError()` mengenali P2025 dari kata "user" di
+dalam pesan galat, sedangkan pesan Prisma untuk `findUniqueOrThrow` berbunyi
+"No record was found for a query" - nama modelnya ada di `meta.modelName`,
+bukan di `message`.
+
+Tidak ikut diperbaiki karena berada di luar yang sedang dikerjakan, dan
+perbaikannya menyentuh lebih dari satu tempat: pengenalannya sendiri, dan
+penanganan di halaman server component, yang tidak dilayani `errorResponse()`.
+Tercatat sebagai butir 9 di bagian "yang belum dikerjakan".
+
+### Putaran kedua: cacat, sentuhan, dan server yang hidup terus
+
+Putaran ini dimulai dari empat hal yang disampaikan sekaligus, sebagian
+setelah mencoba aplikasinya di ponsel.
+
+Satu di antaranya mengubah cara kerja seterusnya: **cacat apa pun yang
+ditemukan langsung diperbaiki, termasuk yang catatan lama menyatakan sudah
+selesai** - sebab kalau catatannya bilang selesai sementara gejalanya masih
+ada, yang salah verifikasinya.
+
+#### Cacat 1: berkas kedua tidak pernah masuk di halaman Cek CV
+
+Gejalanya dilaporkan begini: setelah membandingkan satu CV, mengunggah CV baru
+tidak bisa - halamannya harus dimuat ulang lebih dulu.
+
+Sebabnya bukan tombol dan bukan tampilan. `Array.from(FileList)` dipanggil di
+dalam updater `setSlots`, dan `FileList` yang datang dari sebuah
+`<input type="file">` **bukan salinan**: ia menunjuk ke input itu, dan menjadi
+kosong begitu `input.value` dikosongkan. Penangannya memang mengosongkannya -
+dan harus, kalau tidak memilih berkas yang sama dua kali tidak akan memicu
+`change` yang kedua. Updater React berjalan belakangan, setelah penanganya
+selesai, jadi setelah pengosongan itu. Yang tersalin larik kosong.
+
+Yang membuatnya sulit ditemukan justru berkas pertama yang selalu berhasil:
+saat tidak ada pembaruan state yang tertunda, React menghitung state
+berikutnya seketika, sehingga updaternya sempat berjalan sebelum input
+dikosongkan. Begitu ada satu hasil analisis di layar, syarat itu tidak lagi
+terpenuhi - dan berkas berikutnya lenyap tanpa satu pun pesan galat.
+
+Perbaikannya satu baris yang dipindahkan: berkasnya disalin ke larik sebagai
+hal pertama yang dilakukan penangan.
+
+Diuji dari ujung ke ujung di peramban: unggah CV pertama, periksa, lalu unggah
+CV kedua **tanpa memuat ulang** - keduanya masuk, perbandingannya terbentuk,
+dan menghapus salah satunya lalu menambah yang lain juga berjalan.
+
+Ditambahkan pula ajakan "Tambah CV lagi" tepat di bawah judul hasil. Area
+unggahnya memang selalu ada di atas, tetapi setelah hasil satu CV terbentang
+ia berada jauh di luar layar - dan yang tidak terlihat sama saja dengan tidak
+ada.
+
+#### Cacat 2: halaman Pengaturan pada sesi yang menunjuk pengguna terhapus
+
+Tercatat sebagai temuan di akhir putaran pertama, dan tidak diperbaiki karena
+di luar cakupan. Instruksi baru membalik keputusan itu.
+
+`isStaleSessionError()` mengenali P2025 lewat kata "user" di dalam pesan
+galat. `update` dan `delete` memang menyebutkannya - tetapi
+`findUniqueOrThrow` tidak: pesannya hanya "No record was found for a query",
+dan nama modelnya ada di `meta.modelName`. Halaman Pengaturan adalah
+satu-satunya yang memakai `findUniqueOrThrow`, dan karena itu satu-satunya
+yang tetap jatuh ke "Ada yang tidak beres".
+
+Berkas ujinya lulus sepanjang waktu, dan itu sendiri pelajarannya: **seluruh
+contoh galat di dalamnya berasal dari `update` dan `delete`.** Pemeriksaan
+yang hanya memuat satu bentuk masukan akan meloloskan bentuk kedua tanpa
+pernah menyinggungnya.
+
+Diperbaiki dua sisi: `meta.modelName` ikut diperiksa, dan halaman kini
+mengalihkan ke `/login?sesi=habis` lewat `redirectIfStaleSession()` -
+`errorResponse()` yang sudah ada hanya melayani titik akhir API, bukan
+halaman. Tiga pemeriksaan baru mengunci ketiga bentuknya, termasuk P2025 pada
+model lain yang **tidak** boleh disalahartikan sebagai sesi kedaluwarsa.
+
+#### Animasi di layar sentuh
+
+Keluhannya: menekan atau menggeser di halaman tidak menghasilkan gerak apa pun
+di ponsel.
+
+Yang memang mati hanya kemiringan kartu, dan itu sudah diperbaiki di putaran
+pertama - tetapi belum pernah dibuktikan. Kali ini dibuktikan dengan mengirim
+`PointerEvent` bertipe `touch` sungguhan ke kartunya:
+
+| Jari di | `--ix` | `--iy` |
+|---|---|---|
+| pojok kanan atas | +3,5deg | +3,5deg |
+| pojok kiri bawah | -3,5deg | -3,5deg |
+| gulir dimulai (`pointercancel`) | 0deg | 0deg |
+
+Cahaya pengikut (`CursorGlow`) dan bercak tinta (`InkTouch`) ternyata sudah
+menangani sentuhan sejak sesi 8; keduanya tidak diubah.
+
+#### Server lokal yang hidup terus
+
+Permintaannya: aplikasinya harus dapat dibuka kapan saja, supaya hasil
+pekerjaan dapat diperiksa tanpa menyalakan apa pun lebih dulu.
+
+`scripts/dev-24jam.ps1` mengawasi basis data dan aplikasinya, dan
+`scripts/pasang-tugas.ps1` mendaftarkannya sebagai Scheduled Task per-pengguna
+yang menyala setiap masuk Windows. Tugasnya milik akun ini saja - tidak
+menuntut hak administrator, dan dapat dibatalkan dengan `-Hapus`.
+
+**Dua percobaan pertama gagal dengan sebab yang sama**, dan sebab itu pantas
+diingat: di Windows, proses yang *menyalakan* sebuah layanan bukan layanan itu
+sendiri.
+
+- `prisma dev` menyalakan servernya lalu selesai - dan bila servernya sudah
+  hidup, ia keluar dengan kode 0 sambil menulis "Skipped!". Pengawas yang
+  memeriksa prosesnya menyalakannya lagi setiap dua puluh detik.
+- `npm run dev` pun begitu: rantai `cmd.exe` > `npm.cmd` > `node` membuat
+  pembungkusnya dapat selesai sementara Next.js di ujung rantai tetap
+  melayani. Beberapa instans akhirnya berebut port 3000, sebagian gagal
+  dengan kode 1 - sementara di log terlihat aplikasinya justru melayani
+  dengan baik.
+
+Keduanya kini diperiksa dengan cara yang sama: **tanya portnya.** Diuji
+dengan mematikan paksa prosesnya - hidup lagi sendiri dalam dua puluh detik.
+
+Alamat Wi-Fi ikut dicatat di log setiap kali menyala. Next.js sendiri hanya
+menyebut satu adapter, dan pada komputer ini yang disebutnya justru adapter
+VirtualBox (`192.168.56.1`), bukan Wi-Fi yang sesungguhnya - sehingga halaman
+itu tampak tidak dapat dibuka dari ponsel padahal bisa.
+
+#### Pelajaran yang ketiga kalinya muncul hari ini
+
+`requestAnimationFrame` **tidak berjalan sama sekali** di tab yang
+`visibilityState`-nya `hidden`. Nilai apa pun yang ditulis dari dalam rAF -
+`--ix` dan `--iy` pada kartu, misalnya - terbaca kosong, dan menyerupai fitur
+yang mati.
+
+Yang membedakannya dari fitur yang benar-benar mati: nilai yang **tidak**
+lewat rAF, seperti `--iy-lift` dan `--iscale`, tetap berubah. Perbedaan itu
+yang menunjukkan bahwa yang bermasalah lingkungan ujinya, bukan kodenya.
+
+Satu tangkapan layar di antara dua pengukuran memaksa satu bingkai berjalan -
+dan itulah cara angka pada tabel di atas akhirnya diperoleh.
+
+> Ditambah dua kejadian sebelumnya - tinggi elemen terbaca nol, dan tiket
+> kedaluwarsa yang terbaca sah - hari ini tercatat **tiga** pengukuran yang
+> hampir menjadi kesimpulan yang salah. Ketiganya berasal dari lingkungan
+> pengujian, bukan dari aplikasinya.
+
+### Pengujian
+
+`npm test` naik dari **284 menjadi 348 pemeriksaan**, seluruhnya lulus -
+termasuk pengunci markup dokumen CV, yang membuktikan seluruh pekerjaan bahasa
+dan penyuntingan bagian tambahan tidak menyentuh satu karakter pun keluaran
+jalur cetak. (Memang begitu rancangannya: pada `editable=false`, seluruh
+penanda sunting yang baru ditambahkan menghilang.)
+
+Yang baru: 29 pemeriksaan jalur bagian tambahan, 32 pemeriksaan pemulihan kata
+sandi - keacakan token, panjangnya, hash-nya, bentuk masukan yang diterima,
+dan isi surel dua bahasa beserta pelolosan HTML-nya - serta 3 pemeriksaan
+bentuk galat P2025 yang selama ini hanya diuji pada satu bentuknya saja.
+
+`npm run typecheck`, `npm run lint`, dan `npm run build` seluruhnya bersih.
+
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 9.
+Angka di bawah ini per akhir sesi 10.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 111 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 133 |
 | Baris kode termasuk berkas uji dan skrip | ~26.100 |
-| Tabel basis data | 16 |
-| Berkas migrasi | 5 |
-| Route aplikasi | 33 |
+| Tabel basis data | 17 |
+| Berkas migrasi | 6 |
+| Route aplikasi | 37 |
 | Dimensi penilaian ATS | 5 |
 | Bagian CV yang dapat diisi | 11 |
 | Template CV | 10 |
@@ -1190,6 +1535,6 @@ Angka di bawah ini per akhir sesi 9.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 284 |
+| Pemeriksaan otomatis | 348 |
 
 ---
