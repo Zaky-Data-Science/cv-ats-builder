@@ -113,6 +113,10 @@ export interface AtsMessages {
   employmentGapUnknown: string;
   employmentGapFix: string;
 
+  /* ------------------------------------------------------------ bahasa --*/
+  bahasaBerbeda: (bahasaCv: string, bahasaIklan: string) => string;
+  bahasaBerbedaFix: string;
+
   /* ---------------------------------------------------- kekuatan bukti --*/
   buktiKaryaOff: string;
   buktiKaryaOffFix: string;
@@ -273,6 +277,11 @@ const id: AtsMessages = {
   employmentGapUnknown: "Ada jeda di antara dua pengalaman kerja.",
   employmentGapFix:
     "Jeda lebih dari 12 bulan sebaiknya dijelaskan - isi periode itu dengan proyek, kursus, atau kegiatan organisasi yang Anda jalani.",
+
+  bahasaBerbeda: (bahasaCv, bahasaIklan) =>
+    `CV Anda berbahasa ${bahasaCv}, iklan lowongannya berbahasa ${bahasaIklan}.`,
+  bahasaBerbedaFix:
+    "Penemuan kandidat berjalan lewat pencocokan kata demi kata, jadi CV berbahasa berbeda gagal pada kata seperti \"pengalaman\", \"keuangan\", atau \"penjualan\". Samakan bahasanya dengan iklan yang Anda lamar. Nama perkakas, framework, dan sertifikasi tetap ditulis dalam bahasa Inggris di kedua kasus.",
 
   buktiKaryaOff: "Bagian portofolio belum dinyalakan.",
   buktiKaryaOffFix:
@@ -440,6 +449,11 @@ const en: AtsMessages = {
   employmentGapUnknown: "There is a gap between two roles.",
   employmentGapFix:
     "Gaps longer than 12 months are worth explaining - fill the period with a project, a course, or organisational work you did.",
+
+  bahasaBerbeda: (bahasaCv, bahasaIklan) =>
+    `Your CV is written in ${bahasaCv}, the job ad in ${bahasaIklan}.`,
+  bahasaBerbedaFix:
+    "Candidate search runs on word-for-word matching, so a CV in the other language misses words like \"experience\", \"finance\", or \"sales\". Match the language of the ad you are applying to. Tool, framework, and certification names stay in English either way.",
 
   buktiKaryaOff: "The portfolio section is not switched on yet.",
   buktiKaryaOffFix:

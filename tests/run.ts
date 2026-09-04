@@ -11,6 +11,8 @@ import { runPortofolioTests } from "./portofolio.test";
 import { runPortofolioRenderTests } from "./portofolio-render.test";
 import { runSkorBuktiKaryaTests } from "./skor-bukti-karya.test";
 import { runFase6Tests } from "./fase6.test";
+import { runFase7Tests } from "./fase7.test";
+import { runPenerimaanTests } from "./penerimaan.test";
 import { runPhotoTests } from "./photo.test";
 import { runStaleSessionTests } from "./stale-session.test";
 import { runStructureTests } from "./structure.test";
@@ -40,6 +42,8 @@ async function main() {
   runDocumentTests();
   await runPortofolioRenderTests();
   await runFase6Tests();
+  runFase7Tests();
+  await runPenerimaanTests();
   await runPhotoTests();
   await runPdfTests();
   summary();

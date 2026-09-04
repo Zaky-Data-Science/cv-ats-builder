@@ -680,6 +680,15 @@ export const id = {
 
   /* ------------------------------------------------------- pembanding CV */
   compare: {
+    shapeGuess: "Tebakan bentuk portofolio",
+    shapeGuessHint:
+      "Tebakan dari kata-kata di CV-nya, bukan dari isian terstruktur - jadi ini tawaran, bukan penilaian. Anda yang memutuskan.",
+    shapeGuessAccept: "Pakai bentuk ini",
+    shapeGuessUsing: "Dinilai sebagai",
+    shapeGuessNone: "Bentuknya belum bisa ditebak dari isi CV ini.",
+    shapeMismatch:
+      "CV yang dibandingkan berbeda bentuk portofolionya ({daftar}). Nilainya tetap dihitung dengan aturan yang sama, tapi bukti yang dituntut tiap bentuk memang berbeda - bandingkan dengan itu dalam pikiran.",
+    shapeMatched: "Seluruh CV yang dibandingkan berbentuk sama: {nama}.",
     metaTitle: "Cek dan Bandingkan CV",
     metaDescription:
       "Unggah beberapa CV sekaligus, lihat kelebihan dan kekurangan masing-masing, lalu ketahui mana yang paling siap dikirim. Berkasnya diperiksa langsung di perangkat Anda dan tidak pernah dikirim ke mana pun.",

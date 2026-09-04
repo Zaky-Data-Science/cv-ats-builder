@@ -654,6 +654,15 @@ export const en: Dictionary = {
   ],
 
   compare: {
+    shapeGuess: "Portfolio shape, guessed",
+    shapeGuessHint:
+      "Guessed from the words in the CV, not from structured fields - so this is an offer, not a verdict. The call is yours.",
+    shapeGuessAccept: "Use this shape",
+    shapeGuessUsing: "Read as",
+    shapeGuessNone: "The shape could not be guessed from this CV.",
+    shapeMismatch:
+      "The CVs you are comparing are of different portfolio shapes ({daftar}). They are still scored by the same rules, but each shape calls for different evidence - keep that in mind when reading the ranking.",
+    shapeMatched: "All the CVs compared share one shape: {nama}.",
     metaTitle: "Check and Compare CVs",
     metaDescription:
       "Upload several CVs at once, see the strengths and weaknesses of each, and find out which one is most ready to send. Files are read on your own device and never leave it.",

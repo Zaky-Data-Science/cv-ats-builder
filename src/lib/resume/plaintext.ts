@@ -271,6 +271,42 @@ export function groupSkills(data: ResumeData): [string, string[]][] {
   return [...groups.entries()];
 }
 
+/**
+ * Teks yang dipakai mencocokkan kata kunci lowongan.
+ *
+ * Berbeda dari teks yang dicetak, dan bedanya disengaja: slot detail tambahan
+ * hanya mencetak empat prioritas teratas, tetapi seluruhnya tetap milik
+ * penggunanya. Kata kunci yang ia tulis di detail kelima tidak berhenti
+ * menjadi keahliannya hanya karena tidak muat di atas kertas - dan pencarian
+ * kandidat berjalan atas seluruh teks, bukan atas empat baris teratas.
+ *
+ * Yang ditambahkan hanya isian yang memang ditulis penggunanya sendiri: detail
+ * tambahan dan kata kunci itemnya. Tidak ada satu pun kata yang dikarang di
+ * sini - menambahkan kata kunci yang tidak pernah ia tulis akan menaikkan
+ * angkanya atas sesuatu yang tidak ada di CV-nya.
+ */
+export function teksPencocokan(data: ResumeData): string {
+  const dasar = resumeToPlainText(data);
+  if (!data.portofolio.aktif) return dasar;
+
+  const tambahan: string[] = [];
+  for (const item of data.projects) {
+    for (const detail of item.detailTambahan) {
+      const baris = joinNonEmpty(
+        [detail.label, detail.nilai, detail.satuan],
+        " ",
+      );
+      if (baris.trim()) tambahan.push(baris);
+    }
+    for (const kata of item.kataKunci) {
+      if (kata.trim()) tambahan.push(kata.trim());
+    }
+  }
+
+  if (tambahan.length === 0) return dasar;
+  return [dasar, ...tambahan].join("\n");
+}
+
 /** Semua poin pencapaian dari seluruh section, untuk dianalisis ATS. */
 export function allBullets(data: ResumeData): string[] {
   const bullets: string[] = [];

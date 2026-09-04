@@ -3,7 +3,14 @@ import { nilaiBuktiKarya, type NilaiItem } from "./bukti-karya";
 import { EFEK_JENJANG } from "@/lib/portfolio/pola-schemas";
 import { skemaProfil } from "@/lib/portfolio/profil";
 import { portofolioAktif } from "@/lib/portfolio/render";
-import { allBullets, groupSkills, resumeToPlainText } from "@/lib/resume/plaintext";
+import { tebakBahasa } from "@/lib/portfolio/deteksi";
+import { kamusProfil } from "@/lib/portfolio/profil";
+import {
+  allBullets,
+  groupSkills,
+  resumeToPlainText,
+  teksPencocokan,
+} from "@/lib/resume/plaintext";
 import { paperSpec } from "@/lib/resume/paper";
 import { isSectionVisible } from "@/lib/resume/sections";
 import { resumeMargins } from "@/lib/resume/templates";
@@ -847,8 +854,25 @@ export function analyzeResume(
 ): AtsResult {
   const m = atsMessages(locale);
   const plainText = resumeToPlainText(data);
+
+  /*
+    Pencocokan lowongan memakai teks yang sedikit lebih luas daripada yang
+    tercetak: slot detail tambahan hanya mencetak empat baris teratas, tetapi
+    seluruhnya tetap keahlian penggunanya. Dimensi lain tetap membaca teks
+    cetaknya - yang dinilai di sana memang CV yang akan dibaca orang.
+
+    Kata kunci khas bidangnya sendiri diberi bobot lebih tinggi, karena
+    frekuensi kemunculan di iklan lowongan tidak dapat membedakan istilah yang
+    menentukan dari kata yang sekadar sering diulang.
+  */
+  const kamus = kamusProfil(data.profilPortofolio);
   const keywords = jobDescription.trim()
-    ? analyzeKeywords(plainText, jobDescription)
+    ? analyzeKeywords(teksPencocokan(data), jobDescription, 25, {
+        utama: kamus?.kataKunciATS ?? [],
+        sekunder: data.profilPortofolio.industriKBLI
+          ? [data.profilPortofolio.industriKBLI]
+          : [],
+      })
     : null;
 
   const pages = measuredPages ?? estimatePages(data);
@@ -903,6 +927,32 @@ export function analyzeResume(
   const strength =
     bobotKekuatan === 0 ? 0 : Math.round((nilaiKekuatan / bobotKekuatan) * 100);
 
+  /*
+    Bahasa CV melawan bahasa iklan lowongannya.
+
+    Alasannya mekanis, bukan selera: penemuan kandidat berjalan lewat
+    pencocokan kata kunci, sehingga CV berbahasa Inggris yang dilamarkan ke
+    iklan berbahasa Indonesia gagal pada pencarian "pengalaman", "keuangan",
+    "penjualan" - tiga kata yang tidak akan pernah ada di dalamnya. Istilah
+    teknis tidak termasuk; nama perkakas dan sertifikasi memang selalu Inggris
+    di kedua bahasa.
+  */
+  if (jobDescription.trim()) {
+    const bahasaIklan = tebakBahasa(jobDescription);
+    if (bahasaIklan && bahasaIklan !== data.language) {
+      const dimensi = dimensions.find((d) => d.key === "keywordMatch");
+      dimensi?.findings.push({
+        dimension: "keywordMatch",
+        severity: "warning",
+        message: m.bahasaBerbeda(
+          data.language === "ID" ? "Indonesia" : "Inggris",
+          bahasaIklan === "ID" ? "Indonesia" : "Inggris",
+        ),
+        fix: m.bahasaBerbedaFix,
+      });
+    }
+  }
+
   const dimensiKeyword = dimensions.find((d) => d.key === "keywordMatch");
   const match =
     dimensiKeyword && dimensiKeyword.applicable ? dimensiKeyword.percent : null;
@@ -938,6 +988,8 @@ export function analyzeResume(
     warning: 1,
     info: 2,
   };
+  // Dirakit setelah seluruh temuan terkumpul - termasuk temuan bahasa yang
+  // ditambahkan di atas.
   const suggestions = dimensions
     .flatMap((d) => d.findings)
     .sort((a, b) => severityRank[a.severity] - severityRank[b.severity]);
