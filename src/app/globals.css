@@ -924,6 +924,14 @@ body {
 */
 ::view-transition-new(root) {
   z-index: 1;
+  /*
+    Lapisan potretnya dipromosikan sebelum geraknya mulai. Tanpa ini peramban
+    baru mempromosikannya pada bingkai pertama animasi, dan promosi di tengah
+    gerak terlihat sebagai satu sentakan - tepat pada bingkai yang paling
+    diperhatikan orang, sebab di sanalah tetesan tintanya muncul.
+  */
+  will-change: clip-path;
+  backface-visibility: hidden;
 }
 
 ::view-transition-old(root) {

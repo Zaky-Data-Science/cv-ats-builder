@@ -112,7 +112,28 @@ export function setTheme(theme: Theme): void {
  * aplikasi, dan perubahan sebesar itu yang berlangsung terlalu cepat terbaca
  * sebagai kedipan - bukan sebagai peralihan.
  */
-export const THEME_SEBAR_MS = 560;
+export const THEME_SEBAR_MS = 720;
+
+/**
+ * Jari-jari titik pertama, dalam piksel.
+ *
+ * Kira-kira seukuran tombolnya sendiri. Ia harus cukup besar untuk terbaca
+ * sebagai setetes tinta yang jatuh di ikon itu, dan cukup kecil untuk tidak
+ * langsung terbaca sebagai sapuan yang sudah dimulai.
+ */
+const THEME_TITIK_PX = 22;
+
+/**
+ * Berapa bagian dari durasi yang dipakai titik itu untuk muncul.
+ *
+ * Bagian inilah yang sebelumnya tidak ada, dan ketiadaannya yang membuat
+ * peralihannya terasa berangkat entah dari mana. Kurva keluar yang dipakai
+ * semula menempuh sekitar delapan puluh persen jaraknya dalam sepertiga waktu
+ * pertama - sehingga pada bingkai pertama yang sempat dilihat mata,
+ * lingkarannya sudah selebar setengah layar. Titik di ikonnya secara teknis
+ * ada, tetapi tidak pernah benar-benar terlihat.
+ */
+const THEME_TITIK_OFFSET = 0.17;
 
 export function toggleTheme(): void {
   setTheme(getThemeSnapshot() === "dark" ? "light" : "dark");
@@ -194,16 +215,38 @@ export function toggleThemeDari(x: number, y: number): void {
         jarak(window.innerWidth - x, window.innerHeight - y),
       );
 
+      /*
+        Tiga tahap, bukan dua - dan pembagiannya yang menentukan rasanya.
+
+          1. Setetes tinta muncul di ikonnya. Melambat di ujung, seperti
+             tetesan yang mendarat lalu berhenti sesaat.
+          2. Tetesan itu menyebar menutupi layar. Berangkat pelan dari
+             keadaan diam tadi, melesat di tengah, lalu mengendap.
+
+        Satu kurva untuk seluruh perjalanan tidak dapat melakukan keduanya:
+        kurva yang cukup tajam untuk terasa bertenaga akan menelan tahap
+        pertama, dan kurva yang cukup lembut untuk memperlihatkan tahap
+        pertama membuat sisanya terasa lamban.
+      */
       document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${jariJari}px at ${x}px ${y}px)`,
-          ],
-        },
+        [
+          {
+            clipPath: `circle(0px at ${x}px ${y}px)`,
+            offset: 0,
+            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+          },
+          {
+            clipPath: `circle(${THEME_TITIK_PX}px at ${x}px ${y}px)`,
+            offset: THEME_TITIK_OFFSET,
+            easing: "cubic-bezier(0.5, 0, 0.2, 1)",
+          },
+          {
+            clipPath: `circle(${jariJari}px at ${x}px ${y}px)`,
+            offset: 1,
+          },
+        ],
         {
           duration: THEME_SEBAR_MS,
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
           // Yang disebar lapisan baru, bukan yang lama. Menyapu lapisan lama
           // ke arah sebaliknya akan membuat tema lama seolah terkelupas -
           // yang dituju adalah tinta baru yang menutupinya.
