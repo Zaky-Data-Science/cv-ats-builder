@@ -61,14 +61,14 @@ export const RECOMMENDED_PAPER: PaperSize = "A4";
  */
 export const PAPER_NOTE: Record<Locale, Record<PaperSize, string>> = {
   id: {
-    A4: "Disarankan. Ukuran standar di Indonesia dan hampir seluruh dunia.",
-    LETTER: "Pakai bila melamar ke perusahaan di Amerika Serikat atau Kanada.",
-    LEGAL: "Lebih panjang dari A4. Hanya untuk instansi yang memintanya.",
-    F4: "Ukuran folio yang masih dipakai sebagian kantor di Indonesia.",
+    A4: "Pilih ini kalau ragu. Ukuran standar di Indonesia dan hampir seluruh dunia.",
+    LETTER: "Pakai hanya kalau melamar ke perusahaan di Amerika Serikat atau Kanada.",
+    LEGAL: "Lebih panjang dari A4. Pakai hanya kalau instansinya memang meminta.",
+    F4: "Ukuran folio, masih dipakai sebagian kantor di Indonesia.",
   },
   en: {
-    A4: "Recommended. The standard almost everywhere outside North America.",
-    LETTER: "Use this when applying to companies in the US or Canada.",
+    A4: "Pick this if unsure. The standard almost everywhere outside North America.",
+    LETTER: "Only when applying to companies in the US or Canada.",
     LEGAL: "Longer than A4. Only when an institution specifically asks for it.",
     F4: "Folio size, still used by some Indonesian offices.",
   },

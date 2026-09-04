@@ -46,37 +46,37 @@ const id: AboutContent = {
   badge: "Tentang",
   title: "Kenapa aplikasi ini dibuat",
   intro:
-    "Sebuah pembuat CV yang menjaga hasilnya tetap terbaca mesin perekrut, menilainya secara terbuka, dan tidak mengunci datanya.",
+    "Pembuat CV yang menjaga hasilnya tetap terbaca mesin penyaring lamaran, menilainya secara terbuka, dan tidak mengunci data Anda di dalamnya.",
 
   problemTitle: "Masalah yang ingin diselesaikan",
   problemParagraphs: [
-    "Banyak perusahaan menerima lamaran melalui sistem yang lebih dulu mengurai berkas CV secara otomatis untuk mengambil datanya: nama, kontak, riwayat pekerjaan, dan keahlian. Proses ini berjalan sebelum berkas sampai ke tangan manusia.",
-    "Persoalannya, cara sebagian besar orang membuat CV justru menyulitkan proses tersebut. Templat yang beredar luas kerap memakai dua kolom, tabel, ikon sebagai pengganti teks, atau bahkan menyimpan seluruh isi CV sebagai gambar. Bentuk seperti itu terlihat rapi di layar, tetapi ketika teksnya diekstraksi mesin, urutan kalimatnya bisa tertukar dan sebagian isinya hilang sama sekali. Akibatnya, kualifikasi yang sebenarnya dimiliki pelamar tidak terbaca sistem.",
-    "Pembuat CV daring yang sudah ada umumnya menyerahkan sepenuhnya urusan tata letak kepada pengguna - termasuk kebebasan membuat susunan yang justru gagal diurai - dan menempatkan fitur evaluasi di balik langganan berbayar. Sebagian besar juga berbahasa Inggris dan memakai konvensi CV luar negeri.",
-    "Yang juga jarang tersedia: cara memeriksa CV yang sudah terlanjur dibuat di tempat lain. Orang biasanya memiliki dua atau tiga versi CV dan tidak punya dasar apa pun untuk memilih mana yang sebaiknya dikirim.",
+    "Banyak perusahaan menampung lamaran lewat aplikasi yang membaca berkas CV lebih dulu dan mencomot datanya sendiri: nama, kontak, riwayat kerja, keahlian. Semua itu terjadi sebelum berkasnya sampai ke tangan manusia.",
+    "Masalahnya, cara kebanyakan orang membuat CV justru menyulitkan pembacaan itu. Template yang beredar luas sering memakai dua kolom, tabel, ikon sebagai pengganti tulisan, atau bahkan menyimpan seluruh isi CV sebagai gambar. Bentuk begitu memang rapi dilihat mata, tapi ketika mesin membacanya, urutan kalimatnya bisa tertukar dan sebagian isinya hilang sama sekali. Akibatnya pengalaman yang sungguh-sungguh dimiliki pelamar tidak pernah terbaca - bukan karena ia kurang layak, tapi karena berkasnya tidak terbaca.",
+    "Pembuat CV daring yang sudah ada umumnya menyerahkan urusan susunan sepenuhnya kepada pengguna - termasuk kebebasan membuat bentuk yang justru gagal dibaca mesin - dan menaruh fitur penilaiannya di balik langganan berbayar. Kebanyakan juga berbahasa Inggris dan mengikuti kebiasaan CV luar negeri.",
+    "Yang juga jarang ada: cara memeriksa CV yang sudah terlanjur dibuat di tempat lain. Orang biasanya punya dua atau tiga versi CV, dan tidak punya dasar apa pun untuk memilih mana yang sebaiknya dikirim.",
   ],
 
   goalsTitle: "Yang dilakukan aplikasi ini",
   goals: [
     {
       title: "Menutup kemungkinan salah susun sejak awal",
-      body: "Pengguna mengisi field, bukan mengatur tata letak. Kesepuluh template dikunci pada satu kolom tanpa tabel maupun kotak teks, dan judul bagiannya memakai istilah baku yang dikenali pengurai.",
+      body: "Pengguna mengisi kotak isian, bukan mengatur susunan halaman. Kesepuluh desain dikunci pada satu kolom tanpa tabel maupun kotak teks, dan judul bagiannya memakai istilah baku yang dikenali mesin penyaring.",
     },
     {
       title: "Mengubah penilaian menjadi tindakan",
-      body: "Skor tidak berhenti sebagai angka. Setiap kekurangan disertai penjelasan cara memperbaikinya dan tautan yang melompat langsung ke field bersangkutan.",
+      body: "Nilainya tidak berhenti sebagai angka. Tiap kekurangan datang bersama cara membetulkannya, dan tautan yang melompat langsung ke kotak isian yang bermasalah.",
     },
     {
       title: "Menilai CV yang sudah ada, bukan hanya yang dibuat di sini",
-      body: "Berkas PDF atau Word dari mana pun dapat dipindai dan dibandingkan. Pembacaannya berjalan di dalam peramban pengguna, sehingga tidak ada berkas yang dikirim maupun disimpan di server.",
+      body: "Berkas PDF atau Word dari mana pun bisa diperiksa dan diadu. Pembacaannya terjadi di dalam perangkat penggunanya sendiri, jadi tidak ada berkas yang dikirim maupun disimpan di server.",
     },
     {
       title: "Membuat data dapat dipakai berulang",
-      body: "CV tersimpan permanen dan dapat diduplikasi untuk disesuaikan per lowongan - kebiasaan yang disarankan perekrut, tetapi jarang dilakukan karena merepotkan bila harus menyusun ulang dari awal.",
+      body: "CV tersimpan selamanya dan bisa digandakan untuk disesuaikan tiap lowongan - kebiasaan yang disarankan perekrut, tapi jarang dilakukan karena merepotkan kalau harus menyusun ulang dari awal.",
     },
     {
       title: "Menjaga data tetap milik penggunanya",
-      body: "Seluruh isi CV dapat diunduh sebagai berkas JSON dan diimpor kembali, sehingga pengguna tidak terkunci pada aplikasi ini.",
+      body: "Seluruh isi CV bisa diunduh sebagai berkas cadangan dan dibuka lagi kapan saja, jadi penggunanya tidak terkunci di dalam aplikasi ini.",
     },
   ],
 
@@ -90,7 +90,7 @@ const id: AboutContent = {
     },
     {
       title: "Basis data",
-      body: "PostgreSQL dengan ORM Prisma. Enam belas tabel, seluruh tabel anak memakai ON DELETE CASCADE, dan setiap perubahan skema tercatat sebagai berkas migrasi yang dapat ditelusuri.",
+      body: "PostgreSQL dengan ORM Prisma. Tujuh belas tabel, seluruh tabel anak memakai ON DELETE CASCADE, dan setiap perubahan skema tercatat sebagai berkas migrasi yang dapat ditelusuri.",
     },
     {
       title: "Autentikasi",
@@ -102,7 +102,7 @@ const id: AboutContent = {
     },
     {
       title: "Pembacaan berkas CV",
-      body: "PDF diurai dengan pdf.js, DOCX dibuka sebagai arsip zip lalu XML-nya dibaca. Keduanya berjalan di peramban, sehingga isi CV tidak pernah melintasi jaringan.",
+      body: "PDF dibaca dengan pdf.js, DOCX dibuka sebagai arsip zip lalu XML-nya dibaca. Keduanya berjalan di dalam peramban, sehingga isi CV tidak pernah melintasi jaringan.",
     },
     {
       title: "Efek kedalaman",
@@ -125,41 +125,41 @@ const id: AboutContent = {
     },
     {
       aspect: "Umpan balik",
-      others: "Umumnya hanya menyediakan templat; penilaian kerap fitur berbayar.",
-      ours: "Penilaian lima dimensi beserta saran perbaikan yang menunjuk ke field tertentu, tersedia tanpa biaya.",
+      others: "Umumnya hanya menyediakan template; penilaiannya kerap fitur berbayar.",
+      ours: "Dinilai dari lima sisi, lengkap dengan saran perbaikan yang menunjuk kotak isian tertentu - tanpa biaya.",
     },
     {
       aspect: "CV dari tempat lain",
       others: "Jarang dapat diperiksa; kalaupun bisa, berkasnya harus diunggah ke server.",
-      ours: "Dapat dipindai dan dibandingkan sampai lima berkas sekaligus, seluruhnya di dalam peramban.",
+      ours: "Bisa diperiksa dan diadu sampai lima berkas sekaligus, seluruhnya di dalam perangkat penggunanya.",
     },
     {
       aspect: "Kepemilikan data",
-      others: "Data tersimpan di layanan penyedia; ekspor mentah tidak selalu tersedia.",
-      ours: "Seluruh isi CV dapat diunduh sebagai berkas JSON dan diimpor kembali kapan saja.",
+      others: "Data tersimpan di layanan penyedianya; salinan mentahnya tidak selalu bisa diambil.",
+      ours: "Seluruh isi CV bisa diunduh sebagai berkas cadangan dan dibuka lagi kapan saja.",
     },
     {
       aspect: "Keluaran akhir",
-      others: "Sebagian menambahkan watermark pada versi gratis.",
-      ours: "Tanpa watermark, tanpa batas jumlah CV.",
+      others: "Sebagian menempelkan tulisan promosi pada versi gratisnya.",
+      ours: "Tanpa tulisan tempelan apa pun, tanpa batas jumlah CV.",
     },
     {
       aspect: "Bahasa dan konteks",
       others: "Mayoritas berbahasa Inggris dengan konvensi CV luar negeri.",
-      ours: "Dwibahasa Indonesia-Inggris, mengenali kata kerja aksi bahasa Indonesia, format IPK, dan istilah lowongan lokal.",
+      ours: "Dwibahasa Indonesia-Inggris, mengenali kata kerja bahasa Indonesia, penulisan IPK, dan istilah lowongan lokal.",
     },
   ],
 
   limitsTitle: "Batasan yang diakui",
   limitsIntro:
-    "Bagian ini sengaja ada. Aplikasi yang hanya menyebutkan kelebihannya membuat penggunanya salah menaksir seberapa jauh ia boleh bersandar padanya.",
+    "Bagian ini sengaja ada. Aplikasi yang cuma menyebutkan kelebihannya membuat penggunanya salah menaksir seberapa jauh ia boleh bersandar padanya.",
   limits: [
-    "Penilaian mensimulasikan kaidah umum ATS, bukan satu produk ATS tertentu. Tiap vendor memiliki pengurai sendiri yang tidak dipublikasikan, sehingga skor tinggi berarti memenuhi kaidah yang diperiksa - bukan jaminan lolos seleksi.",
-    "Penilaian membaca teks, bukan memahami maknanya. Ia dapat memastikan CV Anda terbaca mesin, tetapi tidak dapat menilai apakah pengalaman Anda cocok untuk sebuah jabatan.",
-    'Pencocokan kata kunci bersifat leksikal. Kata "frontend" dan "front-end" dikenali berbeda, dan sinonim belum dikenali. Pencocokan semantik menjadi arah pengembangan lanjutan.',
-    "Pada berkas yang dipindai, struktur CV ditebak dari teksnya. CV dengan judul bagian yang tidak lazim dapat dinilai lebih rendah daripada seharusnya - meski itu sendiri pertanda yang benar, karena pengurai ATS pun akan kesulitan yang sama.",
-    "Foto ditambahkan melalui tautan gambar, belum melalui unggahan berkas, karena aplikasi belum menyediakan penyimpanan berkas.",
-    "Pemulihan kata sandi lewat email belum tersedia, sebab memerlukan layanan pengirim surel. Pengguna yang lupa kata sandi dapat masuk lewat Google bila emailnya sama.",
+    "Penilaiannya menirukan aturan umum mesin penyaring lamaran, bukan satu produk tertentu. Tiap perusahaan memakai yang berbeda, dan tidak satu pun membuka cara kerjanya - jadi nilai tinggi berarti memenuhi yang kami periksa, bukan jaminan lolos seleksi.",
+    "Penilaiannya membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV Anda terbaca mesin, tapi tidak bisa menilai apakah pengalaman Anda cocok untuk suatu jabatan.",
+    'Kata dicocokkan apa adanya. "frontend" dan "front-end" sudah dianggap sama sejak sesi 6, tetapi kata berimbuhan belum - "mengembangkan" dan "pengembangan" masih dihitung berbeda. Menanganinya menuntut pemenggalan kata, dan itu akan mengorbankan sifat deterministik yang justru menjadi alasan mesin ini dibuat berbasis aturan.',
+    "Pada berkas yang diperiksa, susunan CV ditebak dari tulisannya. CV dengan judul bagian yang tidak lazim bisa dinilai lebih rendah daripada seharusnya - meski itu sendiri pertanda yang benar, sebab mesin penyaring pun akan tersandung hal yang sama.",
+    "Pas foto disimpan menyatu di dalam data CV, bukan di penyimpanan berkas tersendiri. Konsekuensinya, foto beresolusi sangat besar dikecilkan cukup agresif sebelum disimpan.",
+    "Pemulihan kata sandi lewat email sudah terpasang, tetapi baru menyala setelah kunci layanan pengirim surel diisi. Selama belum, halaman Lupa Kata Sandi mengarahkan pengguna masuk lewat Google dengan alamat yang sama, lalu membuat kata sandi baru di Pengaturan.",
   ],
 
   authorTitle: "Pembuat",
@@ -167,7 +167,7 @@ const id: AboutContent = {
 
   ctaTitle: "Coba sendiri",
   ctaBody:
-    "Gratis, tanpa batas jumlah CV, dan tanpa watermark pada berkas yang Anda unduh.",
+    "Gratis, tanpa batas jumlah CV, dan tidak ada satu pun tulisan tempelan di berkas yang Anda unduh.",
   ctaButton: "Mulai buat CV",
 };
 
@@ -189,23 +189,23 @@ const en: AboutContent = {
   goals: [
     {
       title: "Rules out bad structure from the start",
-      body: "Users fill fields rather than arrange layouts. All ten templates are locked to a single column with no tables or text boxes, and their section headings use the standard terms parsers recognise.",
+      body: "Users fill in boxes rather than arrange a page. All ten designs are locked to a single column with no tables or text boxes, and their section headings use the standard terms screening software recognises.",
     },
     {
       title: "Turns a score into an action",
-      body: "The score does not stop at a number. Every shortcoming comes with how to fix it and a link that jumps straight to the field at fault.",
+      body: "The score does not stop at a number. Every shortcoming comes with how to fix it, and a link that jumps straight to the box at fault.",
     },
     {
       title: "Scores CVs made elsewhere, not only ones built here",
-      body: "PDF or Word files from anywhere can be scanned and compared. The reading happens inside the user's browser, so no file is sent to, or stored on, a server.",
+      body: "PDF or Word files from anywhere can be checked and pitted against each other. The reading happens on the user's own device, so no file is sent to, or stored on, a server.",
     },
     {
       title: "Makes the data reusable",
-      body: "CVs are stored permanently and can be duplicated and tailored per job ad - the habit recruiters recommend, but which people rarely follow because rebuilding from scratch is tedious.",
+      body: "CVs are kept for good and can be duplicated and tailored per job ad - the habit recruiters recommend, but which people rarely follow because rebuilding from scratch is tedious.",
     },
     {
       title: "Keeps the data with its owner",
-      body: "The whole CV downloads as a JSON file and imports back again, so nobody is locked into this app.",
+      body: "The whole CV downloads as a backup file and opens again any time, so nobody is locked inside this app.",
     },
   ],
 
@@ -219,7 +219,7 @@ const en: AboutContent = {
     },
     {
       title: "Database",
-      body: "PostgreSQL with the Prisma ORM. Sixteen tables, every child table using ON DELETE CASCADE, and every schema change recorded as a migration file you can trace.",
+      body: "PostgreSQL with the Prisma ORM. Seventeen tables, every child table using ON DELETE CASCADE, and every schema change recorded as a migration file you can trace.",
     },
     {
       title: "Authentication",
@@ -269,8 +269,8 @@ const en: AboutContent = {
     },
     {
       aspect: "Final output",
-      others: "Some add a watermark on the free tier.",
-      ours: "No watermark, and no limit on how many CVs you keep.",
+      others: "Some stamp their own name onto the free tier's output.",
+      ours: "Nothing stamped on at all, and no limit on how many CVs you keep.",
     },
     {
       aspect: "Language and context",
@@ -285,10 +285,10 @@ const en: AboutContent = {
   limits: [
     "The scoring simulates general ATS conventions, not one specific ATS product. Each vendor has its own unpublished parser, so a high score means the checked rules are satisfied - not that you will pass screening.",
     "The scoring reads text; it does not understand meaning. It can tell you whether machines can read your CV, but not whether your experience fits a particular role.",
-    'Keyword matching is lexical. "frontend" and "front-end" count as different words, and synonyms are not recognised yet. Semantic matching is the obvious next step.',
-    "For uploaded files, the CV structure is inferred from the text. A CV with unusual section headings may score lower than it deserves - though that is itself a true signal, because an ATS parser would struggle in exactly the same way.",
-    "Photos are added by image link rather than file upload, because the app has no file storage yet.",
-    "Password recovery by email is not available, as it needs an email delivery service. Anyone who forgets their password can sign in with Google if the address matches.",
+    'Words are matched as written. "frontend" and "front-end" have counted as the same since session 6, but inflected forms have not - "develop" and "development" are still counted separately. Handling those needs word stemming, and that would cost the determinism which is the whole reason this engine is rule-based.',
+    "For uploaded files, the CV structure is inferred from the text. A CV with unusual section headings may score lower than it deserves - though that is itself a true signal, because screening software would trip on exactly the same thing.",
+    "Photos are stored inside the CV data itself rather than in separate file storage. The consequence: very large photos are compressed fairly aggressively before being saved.",
+    "Password recovery by email is built, but only comes alive once the mail service key is filled in. Until then, the Forgotten Password page points people to signing in with Google on the same address, then setting a new password in Settings.",
   ],
 
   authorTitle: "Built by",
@@ -296,7 +296,7 @@ const en: AboutContent = {
 
   ctaTitle: "Try it yourself",
   ctaBody:
-    "Free, no limit on how many CVs you keep, and no watermark on what you download.",
+    "Free, no limit on how many CVs you keep, and nothing stamped onto what you download.",
   ctaButton: "Start building",
 };
 

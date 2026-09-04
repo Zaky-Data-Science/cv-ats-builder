@@ -116,7 +116,7 @@ const id: DocMessages = {
   nameOk: "Nama pelamar terbaca jelas di bagian paling atas.",
   nameBad: "Nama pelamar tidak terbaca di bagian atas dokumen.",
   nameFix:
-    "Letakkan nama lengkap sebagai baris pertama, berdiri sendiri, tanpa label seperti \"Nama:\". Baris pertama itulah yang dianggap pengurai sebagai nama pelamar.",
+    "Taruh nama lengkap sebagai baris paling pertama, berdiri sendiri, tanpa label seperti \"Nama:\". Baris pertama itulah yang dianggap mesin penyaring sebagai nama pelamar.",
   emailOk: "Alamat email tercantum dan berformat sah.",
   emailBad: "Tidak ditemukan alamat email yang sah.",
   emailFix:
@@ -136,7 +136,7 @@ const id: DocMessages = {
   experienceOk: "Bagian pengalaman kerja ditemukan.",
   experienceBad: "Bagian pengalaman kerja tidak ditemukan.",
   experienceFix:
-    "Gunakan judul baku \"Pengalaman Kerja\" atau \"Work Experience\". Judul kreatif membuat seluruh isi bagian ini gagal dipetakan pengurai.",
+    "Pakai judul baku \"Pengalaman Kerja\" atau \"Work Experience\". Judul yang kreatif membuat seluruh isi bagian itu gagal dikenali mesin penyaring.",
   educationOk: "Bagian pendidikan ditemukan.",
   educationBad: "Bagian pendidikan tidak ditemukan.",
   educationFix:
@@ -163,7 +163,7 @@ const id: DocMessages = {
   noTableCharsOk: "Tidak ada karakter tabel atau pemisah kolom di dalam teks.",
   noTableCharsBad: "Ada karakter tabel atau pemisah kolom di dalam teks.",
   noTableCharsFix:
-    "Hapus karakter seperti | dan tab. Karakter itu membuat pengurai mengira ada struktur tabel lalu memecah kalimat di tempat yang salah.",
+    "Hapus tanda seperti | dan tab. Tanda itu membuat mesin penyaring mengira ada tabel, lalu memotong kalimat Anda di tempat yang salah.",
   noEmojiOk: "Tidak ada emoji atau ikon di dalam teks.",
   noEmojiBad: "Ada emoji atau simbol khusus di dalam teks.",
   noEmojiFix:
@@ -233,7 +233,7 @@ const id: DocMessages = {
   keywordFix:
     "Masukkan kata kunci yang relevan dan benar-benar dikuasai ke bagian Keahlian atau ke poin pencapaian.",
   keywordSkipped:
-    "Deskripsi lowongan belum ditempelkan, sehingga dimensi kecocokan kata kunci tidak ikut dihitung.",
+    "Iklan lowongannya belum ditempel, jadi kecocokan dengan lowongan tidak ikut dihitung ke nilai akhir.",
 
   verdictClear: (winner, margin) =>
     `${winner} unggul cukup jelas - selisihnya ${margin} poin.`,
@@ -368,7 +368,7 @@ const en: DocMessages = {
   keywordFix:
     "Work the relevant keywords you genuinely have into the Skills section or into your bullets.",
   keywordSkipped:
-    "No job description was pasted, so the keyword-match dimension is not counted.",
+    "The job ad has not been pasted in, so the match against it is left out of the final score.",
 
   verdictClear: (winner, margin) =>
     `${winner} wins clearly - ${margin} points ahead.`,

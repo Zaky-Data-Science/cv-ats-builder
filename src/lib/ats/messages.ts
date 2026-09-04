@@ -121,309 +121,311 @@ export interface AtsMessages {
 
 const id: AtsMessages = {
   dimensionLabel: {
-    completeness: "Kelengkapan Data",
-    parseability: "Keterbacaan Mesin",
-    contentQuality: "Kualitas Konten",
-    keywordMatch: "Kecocokan Kata Kunci",
-    structure: "Panjang & Struktur",
+    completeness: "Kelengkapan isi",
+    parseability: "Bisa dibaca mesin",
+    contentQuality: "Mutu kalimatnya",
+    keywordMatch: "Kecocokan dengan lowongan",
+    structure: "Panjang dan urutan",
   },
   dimensionDescription: {
     completeness:
-      "Apakah semua informasi yang dicari perekrut sudah ada di CV Anda.",
+      "Apakah semua yang dicari perekrut sudah ada di CV Anda - nama, kontak, pengalaman, pendidikan, keahlian.",
     parseability:
-      "Apakah CV Anda dapat diurai mesin dengan benar: format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, dan tanpa elemen yang menyulitkan parser.",
+      "Apakah mesin penyaring bisa membaca CV Anda tanpa tersandung: penulisan tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, dan tidak adanya hal yang membuatnya salah baca.",
     contentQuality:
-      "Apakah poin pencapaian ditulis dengan kata kerja aksi dan didukung angka, bukan sekadar daftar tugas.",
+      "Apakah poin-poin Anda ditulis sebagai pencapaian - diawali kata kerja dan menyebut angka - atau cuma daftar tugas harian.",
     keywordMatch:
-      "Seberapa banyak kata kunci penting dari iklan lowongan yang benar-benar muncul di CV Anda.",
+      "Berapa banyak kata penting dari iklan lowongan yang benar-benar muncul di CV Anda.",
     structure:
-      "Apakah panjang dan urutan CV wajar, serta tidak ada jeda waktu yang tidak dijelaskan.",
+      "Apakah panjang dan urutannya wajar, dan apakah ada jeda waktu yang belum dijelaskan.",
   },
 
   nameMissing: "Nama lengkap belum diisi.",
   nameMissingFix:
-    "Isi field Nama Lengkap di section Data Pribadi. Ini field pertama yang dibaca setiap parser ATS.",
-  emailInvalid: "Format email tidak valid.",
+    "Isi Nama Lengkap di bagian Data Pribadi. Ini yang pertama dicari setiap mesin penyaring.",
+  emailInvalid: "Penulisan emailnya belum benar.",
   emailMissing: "Alamat email belum diisi.",
   emailFix:
-    "Gunakan email aktif berformat nama@domain.com. Tanpa email yang terbaca, sistem rekrutmen tidak dapat menghubungi Anda meski CV lolos seleksi.",
+    "Pakai email aktif berbentuk nama@domain.com. Tanpa email yang terbaca, perusahaan tidak bisa menghubungi Anda - bahkan kalau CV-nya lolos.",
   phoneMissing: "Nomor telepon belum diisi atau terlalu pendek.",
   phoneFix:
     "Isi nomor telepon lengkap dengan kode negara, contoh: +62 812-3456-7890.",
   headlineMissing: "Jabatan/posisi yang dituju belum diisi.",
   headlineFix:
-    'Isi field Jabatan dengan posisi yang Anda lamar, mis. "Frontend Developer". Sesuaikan dengan judul lowongan agar cocok saat pencocokan kata kunci.',
+    'Isi Jabatan dengan posisi yang Anda lamar, misalnya "Frontend Developer". Samakan dengan judul lowongannya - itu salah satu yang paling cepat menaikkan kecocokan.',
   locationMissing: "Domisili belum diisi.",
   locationFix:
-    "Isi minimal kota tempat tinggal. Banyak perusahaan memfilter kandidat berdasarkan lokasi.",
+    "Isi kota tempat tinggal Anda, minimal itu. Banyak perusahaan menyaring pelamar berdasarkan lokasi lebih dulu.",
   summaryMissing: "Ringkasan profil belum diisi.",
   summaryTooShort: (w) => `Ringkasan profil terlalu singkat (${w} kata).`,
   summaryTooLong: (w) => `Ringkasan profil terlalu panjang (${w} kata).`,
   summaryFix:
-    "Tulis 30-120 kata yang memuat: peran Anda, lama pengalaman, keahlian utama, dan satu pencapaian berangka.",
+    "Tulis 30-120 kata yang memuat empat hal: peran Anda, sudah berapa lama, keahlian utama, dan satu pencapaian yang ada angkanya.",
   experienceMissing: "Belum ada pengalaman kerja maupun proyek yang cukup.",
   experienceMissingFix:
-    "Isi minimal satu Pengalaman Kerja. Jika Anda fresh graduate, isi minimal dua Proyek sebagai penggantinya.",
+    "Isi minimal satu Pengalaman Kerja. Kalau Anda baru lulus, isi minimal dua Proyek sebagai gantinya - itu dihitung setara.",
   educationMissing: "Riwayat pendidikan belum diisi.",
   educationMissingFix:
-    "Isi minimal jenjang pendidikan terakhir beserta tahunnya.",
-  skillsFew: (c) => `Jumlah keahlian masih sedikit (${c} dari minimal 5).`,
+    "Isi minimal pendidikan terakhir Anda beserta tahunnya.",
+  skillsFew: (c) => `Keahliannya masih sedikit - baru ${c}, sebaiknya minimal 5.`,
   skillsFewFix:
-    "Tambahkan keahlian teknis maupun perangkat yang Anda kuasai. Section Keahlian adalah tempat utama ATS mencari kecocokan kata kunci.",
-  linksMissing: "Belum ada tautan profil profesional.",
+    "Tambahkan keahlian dan perangkat yang Anda kuasai. Bagian Keahlian adalah tempat pertama mesin penyaring mencari kecocokan.",
+  linksMissing: "Belum ada tautan profil apa pun.",
   linksMissingFix:
-    "Tambahkan minimal satu tautan: LinkedIn, portofolio, atau GitHub.",
+    "Tambahkan minimal satu: LinkedIn, portofolio, atau GitHub.",
 
   photoUsed: "CV menampilkan pas foto.",
   photoUsedFix:
-    "Matikan opsi Tampilkan Foto. Sebagian besar parser ATS tidak dapat membaca gambar, dan tata letak di sekitar foto sering membuat teks terbaca berantakan. Aktifkan hanya bila lowongan secara eksplisit memintanya.",
-  fontUnsafe: (f) => `Jenis huruf "${f}" bukan huruf yang aman untuk ATS.`,
+    "Matikan pilihan Tampilkan Pas Foto. Mesin penyaring tidak bisa melihat gambar, dan susunan di sekitar foto sering membuat tulisannya terbaca acak-acakan. Nyalakan hanya kalau lowongannya memang minta.",
+  fontUnsafe: (f) => `Huruf "${f}" berisiko - belum tentu ada di komputer penerima.`,
   fontUnsafeFix: (safe) =>
-    `Gunakan salah satu dari: ${safe}. Huruf yang tidak tersedia di sistem penerima akan disubstitusi dan dapat merusak tata letak.`,
+    `Pakai salah satu dari: ${safe}. Huruf yang tidak ada di komputer penerima akan diganti sendiri oleh komputernya, dan susunan CV Anda bisa berantakan.`,
   fontSizeOutOfRange: (s) =>
-    `Ukuran huruf ${s}pt berada di luar rentang aman.`,
+    `Huruf ${s}pt terlalu kecil atau terlalu besar.`,
   fontSizeFix:
-    "Gunakan 10-11pt. Huruf di bawah 9pt sulit dibaca manusia maupun mesin OCR.",
-  dateFormatMixed: "Ada tanggal dengan format tidak baku.",
+    "Pakai 10-11pt. Di bawah 9pt sulit dibaca, baik oleh manusia maupun oleh mesin.",
+  dateFormatMixed: "Ada tanggal yang penulisannya berbeda sendiri.",
   dateFormatFix:
-    "Isi seluruh tanggal lewat pemilih bulan yang tersedia agar formatnya seragam. Format tanggal yang campur aduk membuat parser gagal menghitung lama pengalaman kerja.",
+    "Isi semua tanggal lewat pemilih bulan yang tersedia, supaya penulisannya seragam. Tanggal yang campur aduk membuat mesin gagal menghitung berapa lama Anda bekerja.",
   experienceIncomplete:
     "Ada pengalaman kerja tanpa jabatan atau tanpa nama perusahaan.",
   experienceIncompleteFix:
-    "Lengkapi kedua field tersebut pada setiap entri. Parser ATS memetakan pengalaman kerja berdasarkan pasangan jabatan-perusahaan; salah satu kosong membuat entri itu terbuang.",
-  experienceNoStart: "Ada pengalaman kerja tanpa tanggal mulai.",
+    "Lengkapi keduanya di setiap isian. Mesin penyaring mengenali pengalaman kerja dari pasangan jabatan-perusahaan; kalau salah satunya kosong, pengalaman itu ikut terbuang.",
+  experienceNoStart: "Ada pengalaman kerja yang belum ada tanggal mulainya.",
   experienceNoStartFix:
-    "Isi bulan dan tahun mulai pada setiap pengalaman. Tanpa itu, sistem tidak dapat menghitung total lama pengalaman Anda.",
+    "Isi bulan dan tahun mulai di setiap pengalaman. Tanpa itu, tidak ada yang bisa menghitung total lama pengalaman Anda.",
   educationIncomplete:
     "Ada riwayat pendidikan tanpa nama institusi atau jenjang.",
   educationIncompleteFix:
-    'Lengkapi nama institusi dan jenjang (mis. "S1", "SMA") pada setiap entri pendidikan.',
-  skillNoisy: "Ada nama keahlian yang disertai keterangan tingkat penguasaan.",
+    'Lengkapi nama sekolah/kampus dan jenjangnya (misalnya "S1", "SMA") di setiap isian pendidikan.',
+  skillNoisy: "Ada keahlian yang ditulis bersama tingkat penguasaannya.",
   skillNoisyFix:
-    'Tulis nama keahlian apa adanya, mis. "JavaScript" bukan "JavaScript (mahir)". ATS mencocokkan kata kunci secara harfiah, sehingga tambahan dalam kurung justru menurunkan kecocokan.',
-  tableChars: "Ada poin yang memuat karakter tabel atau pemisah kolom.",
+    'Tulis namanya apa adanya - "JavaScript", bukan "JavaScript (mahir)". Mesin penyaring mencocokkan kata demi kata, jadi tambahan di dalam kurung justru bikin tidak cocok.',
+  tableChars: "Ada poin yang memuat tanda pemisah kolom.",
   tableCharsFix:
-    "Hapus karakter seperti | atau tab dari isi poin. Karakter tersebut membuat parser mengira ada struktur tabel dan memecah kalimat Anda.",
-  emojiHeading: "Ada judul section tambahan yang memuat emoji.",
+    "Hapus tanda seperti | atau tab dari isi poin. Tanda itu membuat mesin mengira ada tabel, lalu memotong kalimat Anda di tengah.",
+  emojiHeading: "Ada judul bagian tambahan yang memakai emoji.",
   emojiHeadingFix:
-    "Gunakan judul berupa teks biasa. Emoji tidak dikenali parser dan dapat membuat seluruh isi section tersebut gagal dipetakan.",
+    "Pakai tulisan biasa untuk judulnya. Emoji tidak dikenali mesin penyaring, dan bisa membuat seluruh isi bagian itu ikut tidak terbaca.",
 
-  noBullets: "Belum ada poin pencapaian sama sekali.",
+  noBullets: "Belum ada satu pun poin pencapaian.",
   noBulletsFix:
-    "Tambahkan minimal 2-3 poin pada setiap pengalaman kerja atau proyek. Bagian inilah yang membedakan Anda dari pelamar lain.",
-  actionVerbLow: (p) => `Baru ${p}% poin yang diawali kata kerja aksi.`,
+    "Tambahkan 2-3 poin di setiap pengalaman kerja atau proyek. Justru bagian inilah yang membedakan Anda dari pelamar lain - sisanya hampir sama di semua CV.",
+  actionVerbLow: (p) => `Baru ${p}% poin yang diawali kata kerja.`,
   actionVerbFix:
-    'Mulai setiap poin dengan kata kerja aksi seperti Mengembangkan, Meningkatkan, Memimpin, atau Mengoptimasi. Hindari pembuka pasif seperti "Bertanggung jawab atas".',
-  quantifiedLow: (p) => `Baru ${p}% poin yang memuat angka terukur.`,
+    'Mulai tiap poin dengan kata kerja: Mengembangkan, Meningkatkan, Memimpin, Merapikan. Hindari pembuka pasif seperti "Bertanggung jawab atas".',
+  quantifiedLow: (p) => `Baru ${p}% poin yang menyebut angka.`,
   quantifiedFix:
-    'Sertakan angka pada minimal separuh poin: persentase, jumlah pengguna, nominal, atau durasi. Contoh: "Menurunkan waktu muat 45% (3,2 detik menjadi 1,8 detik)".',
-  bulletTooLong: "Ada poin yang terlalu panjang.",
+    'Sebutkan angka di minimal separuh poin - persen, jumlah orang, nominal, atau lamanya. Contoh: "Menurunkan waktu muat 45%, dari 3,2 detik jadi 1,8 detik".',
+  bulletTooLong: "Ada poin yang kepanjangan.",
   bulletTooLongFix:
-    "Pertahankan tiap poin dalam 1-2 baris (maksimal sekitar 220 karakter). Poin yang panjang cenderung dilewati saat perekrut memindai CV.",
-  bulletTooShort: "Ada poin yang terlalu singkat sehingga kurang informatif.",
+    "Jaga tiap poin tetap 1-2 baris, sekitar 220 huruf. Poin yang panjang biasanya dilewati begitu saja saat perekrut melirik CV.",
+  bulletTooShort: "Ada poin yang terlalu singkat, jadi kurang bercerita.",
   bulletTooShortFix:
-    "Kembangkan poin singkat dengan menambahkan konteks dan hasil, bukan sekadar nama tugas.",
-  clichesFound: (phrases) => `Terdapat frasa klise: ${phrases}.`,
+    "Kembangkan poin pendek itu: sebutkan keadaannya dan hasilnya, bukan cuma nama tugasnya.",
+  clichesFound: (phrases) => `Ada kalimat yang terlalu umum: ${phrases}.`,
   clichesFix:
-    'Ganti klaim umum dengan bukti. Alih-alih "pekerja keras", tulis pencapaian nyata yang menunjukkannya.',
-  firstPerson: "Ringkasan profil memakai kata ganti orang pertama.",
+    'Ganti klaim umum dengan bukti. Daripada menulis "pekerja keras", tulis pencapaian nyata yang membuktikannya - perekrut lebih percaya bukti.',
+  firstPerson: "Ringkasan profilnya memakai kata \"saya\".",
   firstPersonFix:
-    'Hilangkan kata "saya". Tulis "Frontend Developer dengan pengalaman 4 tahun..." alih-alih "Saya adalah seorang...". Ini konvensi baku penulisan CV.',
-  tooFewBullets: "Ada pengalaman kerja dengan kurang dari 2 poin pencapaian.",
+    'Hilangkan kata "saya". Tulis "Frontend Developer dengan pengalaman 4 tahun..." bukan "Saya adalah seorang...". Begitulah kebiasaan penulisan CV di mana-mana.',
+  tooFewBullets: "Ada pengalaman kerja yang poinnya kurang dari 2.",
   tooFewBulletsFix:
-    "Isi minimal 2 poin per pengalaman, idealnya 3-4 pada posisi terbaru.",
+    "Isi minimal 2 poin per pengalaman - idealnya 3-4 untuk posisi terbaru Anda.",
 
-  noJobDescription: "Deskripsi lowongan belum ditempelkan.",
+  noJobDescription: "Iklan lowongannya belum ditempel.",
   noJobDescriptionFix:
-    "Tempelkan teks lowongan yang Anda incar untuk mengetahui kata kunci apa saja yang belum muncul di CV. Dimensi ini belum dihitung ke dalam skor.",
+    "Tempel isi iklan lowongan yang Anda incar, lalu Anda bisa lihat kata penting mana yang belum ada di CV. Selama belum ditempel, bagian ini tidak ikut dihitung ke nilai akhir.",
   keywordCoverage: (percent, missing) =>
-    `Kecocokan kata kunci baru ${percent}%. Belum muncul di CV: ${missing}.`,
+    `Baru ${percent}% yang cocok. Belum ada di CV Anda: ${missing}.`,
   keywordCoverageFix:
-    "Masukkan kata kunci yang relevan dan benar-benar Anda kuasai ke section Keahlian atau ke poin pencapaian. Jangan menempelkan kata kunci yang tidak Anda kuasai - itu akan terbongkar saat wawancara.",
+    "Masukkan kata-kata itu ke bagian Keahlian atau ke poin pencapaian - tapi hanya yang benar-benar Anda kuasai. Menempel yang tidak Anda kuasai memang menaikkan angka di sini, dan akan ketahuan saat wawancara.",
 
-  lengthOnePage: "Panjang CV 1 halaman.",
-  lengthTwoPages: "Panjang CV 2 halaman.",
-  lengthTooLong: (p) => `Panjang CV ${p} halaman.`,
+  lengthOnePage: "CV Anda 1 halaman.",
+  lengthTwoPages: "CV Anda 2 halaman.",
+  lengthTooLong: (p) => `CV Anda ${p} halaman.`,
   lengthOnePageFix:
-    "Panjang yang ideal. Perekrut umumnya memindai satu CV dalam hitungan detik, dan satu halaman memastikan seluruh isinya benar-benar terlihat.",
+    "Panjangnya sudah pas. Perekrut melirik satu CV dalam hitungan detik, dan satu halaman memastikan semua isinya benar-benar sempat terlihat.",
   lengthTwoPagesFix:
-    "Satu halaman sudah cukup untuk hampir semua pelamar - termasuk yang berpengalaman. Coba pangkas pengalaman yang tidak relevan dengan lowongan yang dituju dan gabungkan poin yang mirip. Dua halaman baru sepadan bila Anda punya lebih dari lima tahun pengalaman yang seluruhnya relevan.",
+    "Satu halaman sudah cukup untuk hampir semua pelamar - yang sudah lama bekerja sekalipun. Coba buang pengalaman yang tidak nyambung dengan lowongan yang dituju, dan gabungkan poin yang mirip. Dua halaman baru sepadan kalau pengalaman Anda lebih dari lima tahun dan semuanya nyambung.",
   lengthTooLongFix:
-    "Pangkas menjadi satu halaman. Buang pengalaman lama yang tidak lagi relevan, gabungkan poin yang mirip, dan sisakan hanya pencapaian yang mendukung lowongan yang Anda tuju. Mengecilkan ukuran huruf bukan jalan keluar - yang perlu dikurangi isinya, bukan hurufnya.",
-  summaryAfterExperience: "Ringkasan profil berada setelah pengalaman kerja.",
+    "Pangkas jadi satu halaman. Buang pengalaman lama yang sudah tidak nyambung, gabungkan poin yang mirip, dan sisakan yang benar-benar mendukung lowongan ini. Mengecilkan huruf bukan jalan keluar - yang dikurangi isinya, bukan hurufnya.",
+  summaryAfterExperience: "Ringkasan profil Anda ada di bawah pengalaman kerja.",
   summaryAfterExperienceFix:
-    "Letakkan Ringkasan Profil di urutan teratas. Bagian ini berfungsi sebagai pembuka yang dibaca lebih dulu.",
+    "Naikkan Ringkasan Profil ke urutan paling atas. Bagian itu pembuka - kadang satu-satunya yang sempat dibaca.",
   experienceUnsorted: "Pengalaman kerja belum urut dari yang paling baru.",
   experienceUnsortedFix:
-    "Susun pengalaman secara kronologis terbalik - posisi terbaru di urutan pertama. Ini format yang diharapkan hampir semua perekrut dan ATS.",
-  employmentGap: (m) => `Terdapat jeda ${m} bulan antar-pengalaman kerja.`,
-  employmentGapUnknown: "Terdapat jeda antar-pengalaman kerja.",
+    "Susun terbalik: yang paling baru di urutan pertama. Hampir semua perekrut dan mesin penyaring mengharapkan urutan itu.",
+  employmentGap: (m) => `Ada jeda ${m} bulan di antara dua pengalaman kerja.`,
+  employmentGapUnknown: "Ada jeda di antara dua pengalaman kerja.",
   employmentGapFix:
-    "Jeda lebih dari 12 bulan sebaiknya dijelaskan - isi dengan proyek, kursus, atau kegiatan organisasi pada periode tersebut.",
+    "Jeda lebih dari 12 bulan sebaiknya dijelaskan - isi periode itu dengan proyek, kursus, atau kegiatan organisasi yang Anda jalani.",
 
-  notScorable: (dimension) => `${dimension} belum dapat dinilai.`,
+  notScorable: (dimension) => `${dimension} belum bisa dinilai.`,
   notScorableFix:
-    "Isi dulu ringkasan profil dan minimal satu pengalaman kerja atau proyek, lalu dimensi ini akan ikut dihitung.",
+    "Isi dulu ringkasan profil dan minimal satu pengalaman kerja atau proyek - setelah itu bagian ini ikut dihitung.",
   verdictExcellent: "CV Anda sudah sangat siap dikirim.",
-  verdictGood: "CV Anda sudah baik, tinggal beberapa perbaikan kecil.",
+  verdictGood: "CV Anda sudah bagus, tinggal beberapa perbaikan kecil.",
   verdictFair:
-    "CV Anda cukup, namun ada beberapa hal penting yang perlu diperbaiki.",
-  verdictPoor: "CV Anda berisiko tersaring sistem sebelum dibaca manusia.",
+    "CV Anda lumayan, tapi ada beberapa hal penting yang perlu dibetulkan dulu.",
+  verdictPoor:
+    "CV Anda berisiko tersaring mesin sebelum sempat dibaca manusia.",
   verdictNoJobSuffix:
-    " Skor ini belum memperhitungkan kecocokan dengan lowongan tertentu.",
+    " Nilai ini belum menghitung kecocokan dengan lowongan tertentu - tempel iklan lowongannya untuk melengkapi.",
 };
 
 const en: AtsMessages = {
   dimensionLabel: {
-    completeness: "Completeness",
-    parseability: "Machine readability",
-    contentQuality: "Content quality",
-    keywordMatch: "Keyword match",
-    structure: "Length & structure",
+    completeness: "How complete it is",
+    parseability: "Whether machines can read it",
+    contentQuality: "How well it is written",
+    keywordMatch: "How well it matches the job",
+    structure: "Length and ordering",
   },
   dimensionDescription: {
     completeness:
-      "Whether everything a recruiter looks for is actually present in your CV.",
+      "Whether everything a recruiter looks for is actually in your CV - name, contact, experience, education, skills.",
     parseability:
-      "Whether software can parse your CV correctly: date formats, complete job-title and employer pairs, the typeface, and the absence of anything that trips a parser up.",
+      "Whether screening software can read your CV without tripping: how dates are written, whether every job has both a title and an employer, the lettering, and the absence of anything that throws it off.",
     contentQuality:
-      "Whether your bullets are written as achievements with action verbs and numbers, rather than a list of duties.",
+      "Whether your bullets read as achievements - starting with a verb, naming a number - or as a list of daily duties.",
     keywordMatch:
-      "How many of the important keywords from the job ad genuinely appear in your CV.",
+      "How many of the words that matter in the job ad genuinely appear in your CV.",
     structure:
-      "Whether the length and ordering are sensible, and whether there are unexplained gaps.",
+      "Whether the length and ordering make sense, and whether any gap in time is left unexplained.",
   },
 
   nameMissing: "Your full name is missing.",
   nameMissingFix:
-    "Fill in the Full Name field under Personal Details. It is the first field every ATS parser reads.",
-  emailInvalid: "The email address is not a valid address.",
+    "Fill in Full Name under Personal Details. It is the first thing every screening system looks for.",
+  emailInvalid: "That email address is not written correctly.",
   emailMissing: "Your email address is missing.",
   emailFix:
-    "Use an address you actually check, in the form name@domain.com. Without a readable email, a recruiting system cannot contact you even when your CV passes screening.",
+    "Use an address you actually check, in the form name@domain.com. Without a readable email, an employer cannot reach you - even when your CV gets through.",
   phoneMissing: "Your phone number is missing or too short.",
   phoneFix:
     "Enter the full number including the country code, for example +62 812-3456-7890.",
   headlineMissing: "The job title you are targeting is missing.",
   headlineFix:
-    'Fill in the job title you are applying for, e.g. "Frontend Developer". Match the wording of the job ad so it lines up during keyword matching.',
+    'Fill in the job title you are applying for, such as "Frontend Developer". Match the wording of the job ad - it is one of the quickest ways to lift your match.',
   locationMissing: "Your location is missing.",
   locationFix:
-    "Enter at least the city you live in. Many employers filter candidates by location.",
+    "Enter at least the city you live in. Many employers filter applicants by location before anything else.",
   summaryMissing: "Your professional summary is empty.",
   summaryTooShort: (w) => `The professional summary is too short (${w} words).`,
   summaryTooLong: (w) => `The professional summary is too long (${w} words).`,
   summaryFix:
-    "Write 30-120 words covering your role, years of experience, core skills, and one achievement with a number in it.",
+    "Write 30-120 words covering four things: your role, how long you have done it, your core skills, and one achievement with a number in it.",
   experienceMissing: "There is not enough work experience or project work yet.",
   experienceMissingFix:
-    "Add at least one work experience entry. If you are a fresh graduate, add at least two projects instead.",
+    "Add at least one work experience entry. If you have just graduated, add at least two projects instead - they count the same.",
   educationMissing: "Your education history is empty.",
   educationMissingFix:
     "Add at least your most recent qualification and the year you finished it.",
   skillsFew: (c) => `Only ${c} skills listed - aim for at least 5.`,
   skillsFewFix:
-    "Add the technical skills and tools you actually use. The Skills section is the first place an ATS looks for keyword matches.",
-  linksMissing: "No professional profile link yet.",
+    "Add the skills and tools you actually use. The Skills section is the first place screening software goes looking for a match.",
+  linksMissing: "No profile link yet.",
   linksMissingFix: "Add at least one: LinkedIn, a portfolio, or GitHub.",
 
   photoUsed: "The CV includes a photo.",
   photoUsedFix:
-    "Turn the photo off. Most ATS parsers cannot read images, and the layout around a photo often scrambles the surrounding text. Only switch it on when the job ad explicitly asks for one.",
-  fontUnsafe: (f) => `The typeface "${f}" is not a safe choice for ATS.`,
+    "Turn the photo off. Screening software cannot see images, and the layout around a photo often scrambles the text beside it. Only switch it on when the job ad actually asks for one.",
+  fontUnsafe: (f) => `The lettering "${f}" is risky - the receiving computer may not have it.`,
   fontUnsafeFix: (safe) =>
-    `Use one of: ${safe}. A typeface the receiving system does not have will be substituted, which can break the layout.`,
-  fontSizeOutOfRange: (s) => `A ${s}pt font size is outside the safe range.`,
+    `Use one of: ${safe}. Lettering the receiving computer does not have gets swapped for something else, and your layout can fall apart.`,
+  fontSizeOutOfRange: (s) => `${s}pt is either too small or too large.`,
   fontSizeFix:
-    "Use 10-11pt. Anything below 9pt is hard to read for humans and for OCR alike.",
-  dateFormatMixed: "Some dates are not in a standard format.",
+    "Use 10-11pt. Below 9pt is hard to read, for people and machines alike.",
+  dateFormatMixed: "Some dates are written differently from the rest.",
   dateFormatFix:
-    "Enter every date through the month picker so the format is consistent. Mixed date formats stop a parser from calculating how long you have worked.",
+    "Enter every date through the month picker so they all match. Mixed date formats stop software from working out how long you have worked.",
   experienceIncomplete:
     "Some work experience entries are missing a job title or an employer.",
   experienceIncompleteFix:
-    "Fill in both fields on every entry. An ATS maps work history by the job-title and employer pair; if either is blank the entry is discarded.",
+    "Fill in both on every entry. Screening software recognises a job by the title-and-employer pair; if either is blank, that job is thrown away.",
   experienceNoStart: "Some work experience entries have no start date.",
   experienceNoStartFix:
-    "Add the starting month and year to every entry. Without it, the system cannot total up your years of experience.",
+    "Add the starting month and year to every entry. Without it, nothing can total up your years of experience.",
   educationIncomplete:
     "Some education entries are missing the institution or the qualification.",
   educationIncompleteFix:
-    'Fill in both the institution and the qualification (e.g. "Bachelor", "High School") on every entry.',
-  skillNoisy: "Some skills carry a proficiency label.",
+    'Fill in both the school or university and the qualification (such as "Bachelor" or "High School") on every entry.',
+  skillNoisy: "Some skills are written with a proficiency label attached.",
   skillNoisyFix:
-    'Write the skill exactly as it is named: "JavaScript", not "JavaScript (advanced)". ATS software matches keywords literally, so anything in brackets only lowers the match.',
-  tableChars: "Some bullets contain table or column separator characters.",
+    'Write the skill exactly as it is named: "JavaScript", not "JavaScript (advanced)". Screening software matches word for word, so anything in brackets simply stops it matching.',
+  tableChars: "Some bullets contain column separator characters.",
   tableCharsFix:
-    "Remove characters such as | or tabs from your bullets. They make a parser think there is a table and split your sentences apart.",
-  emojiHeading: "An additional section heading contains an emoji.",
+    "Remove characters such as | or tabs from your bullets. They make software think there is a table, and it cuts your sentences in half.",
+  emojiHeading: "One of your extra section headings contains an emoji.",
   emojiHeadingFix:
-    "Use plain text headings. Emoji are not recognised by parsers and can cause the whole section to go unmapped.",
+    "Use plain words for headings. Emoji are not recognised, and can take the whole section down with them.",
 
-  noBullets: "There are no achievement bullets at all yet.",
+  noBullets: "There is not a single achievement bullet yet.",
   noBulletsFix:
-    "Add at least 2-3 bullets to every job or project. This is the part that separates you from every other applicant.",
-  actionVerbLow: (p) => `Only ${p}% of your bullets start with an action verb.`,
+    "Add 2-3 bullets to every job or project. This is the part that sets you apart from every other applicant - the rest looks much the same on every CV.",
+  actionVerbLow: (p) => `Only ${p}% of your bullets start with a verb.`,
   actionVerbFix:
-    'Start every bullet with an action verb such as Built, Increased, Led, or Optimised. Avoid passive openings such as "Responsible for".',
-  quantifiedLow: (p) => `Only ${p}% of your bullets contain a number.`,
+    'Start each bullet with a verb: Built, Increased, Led, Streamlined. Avoid passive openings such as "Responsible for".',
+  quantifiedLow: (p) => `Only ${p}% of your bullets name a number.`,
   quantifiedFix:
-    'Put a number in at least half your bullets: a percentage, a user count, an amount, or a duration. For example: "Cut load time by 45% (3.2s to 1.8s)".',
-  bulletTooLong: "Some bullets are too long.",
+    'Name a number in at least half your bullets - a percentage, a headcount, an amount, a duration. For example: "Cut load time by 45%, from 3.2s to 1.8s".',
+  bulletTooLong: "Some bullets run too long.",
   bulletTooLongFix:
-    "Keep each bullet to 1-2 lines (about 220 characters). Long bullets tend to be skipped when a recruiter scans a CV.",
-  bulletTooShort: "Some bullets are too short to say anything useful.",
+    "Keep each bullet to 1-2 lines, around 220 characters. Long bullets tend to get skipped entirely when a recruiter glances at a CV.",
+  bulletTooShort: "Some bullets are too short to tell anyone much.",
   bulletTooShortFix:
-    "Expand short bullets with context and the result, rather than just naming the task.",
-  clichesFound: (phrases) => `Cliché phrases found: ${phrases}.`,
+    "Expand those short bullets: give the situation and the result, not just the name of the task.",
+  clichesFound: (phrases) => `Some phrasing is too generic: ${phrases}.`,
   clichesFix:
-    'Replace generic claims with evidence. Instead of "hard worker", write the achievement that proves it.',
-  firstPerson: "The professional summary uses first-person pronouns.",
+    'Replace generic claims with evidence. Rather than "hard worker", write the achievement that proves it - recruiters believe evidence.',
+  firstPerson: "Your professional summary uses \"I\".",
   firstPersonFix:
-    'Drop the "I". Write "Frontend Developer with 4 years of experience..." rather than "I am a...". This is the standard convention for CVs.',
+    'Drop the "I". Write "Frontend Developer with 4 years of experience..." rather than "I am a...". That is how CVs are written everywhere.',
   tooFewBullets: "Some work experience entries have fewer than 2 bullets.",
   tooFewBulletsFix:
-    "Write at least 2 bullets per role, ideally 3-4 for your most recent one.",
+    "Write at least 2 bullets per role - ideally 3-4 for your most recent one.",
 
-  noJobDescription: "No job description pasted yet.",
+  noJobDescription: "The job ad has not been pasted in yet.",
   noJobDescriptionFix:
-    "Paste the text of the job you are targeting to find out which keywords are missing from your CV. This dimension is not counted in the score yet.",
+    "Paste in the job ad you are targeting and you will see which of its words are missing from your CV. Until then, this part is left out of your final score.",
   keywordCoverage: (percent, missing) =>
-    `Keyword match is only ${percent}%. Not yet in your CV: ${missing}.`,
+    `Only ${percent}% matches so far. Not yet in your CV: ${missing}.`,
   keywordCoverageFix:
-    "Work the relevant keywords you genuinely have into your Skills section or your bullets. Do not paste in keywords you cannot back up - it will surface in the interview.",
+    "Work those words into your Skills section or your bullets - but only the ones you genuinely have. Pasting in what you cannot back up does lift the number here, and it comes apart in the interview.",
 
-  lengthOnePage: "The CV is 1 page long.",
-  lengthTwoPages: "The CV is 2 pages long.",
-  lengthTooLong: (p) => `The CV is ${p} pages long.`,
+  lengthOnePage: "Your CV is 1 page long.",
+  lengthTwoPages: "Your CV is 2 pages long.",
+  lengthTooLong: (p) => `Your CV is ${p} pages long.`,
   lengthOnePageFix:
-    "That is the ideal length. Recruiters scan a CV in seconds, and one page guarantees all of it is actually seen.",
+    "That is exactly right. Recruiters glance at a CV in seconds, and one page makes sure all of it is actually seen.",
   lengthTwoPagesFix:
-    "One page is enough for almost every applicant, experienced ones included. Try cutting experience that is not relevant to the role you are targeting and merging similar bullets. Two pages only earn their keep when you have more than five years of directly relevant experience.",
+    "One page is enough for almost every applicant, long-serving ones included. Try cutting the experience that does not speak to the role, and merging similar bullets. Two pages only earn their keep when you have more than five years and all of it is relevant.",
   lengthTooLongFix:
-    "Cut it down to one page. Drop older experience that is no longer relevant, merge similar bullets, and keep only the achievements that support the role you are applying for. Shrinking the font is not the answer - it is the content that needs cutting, not the type.",
+    "Cut it to one page. Drop older experience that no longer speaks to the role, merge similar bullets, and keep only what supports this application. Shrinking the lettering is not the answer - it is the content that needs cutting, not the type.",
   summaryAfterExperience:
-    "The professional summary sits after your work experience.",
+    "Your professional summary sits below your work experience.",
   summaryAfterExperienceFix:
-    "Move the Professional Summary to the top. It is meant to be the opening paragraph a recruiter reads first.",
-  experienceUnsorted: "Work experience is not in reverse-chronological order.",
+    "Move the Professional Summary to the very top. It is the opening - sometimes the only part anyone gets to.",
+  experienceUnsorted: "Work experience is not ordered newest first.",
   experienceUnsortedFix:
-    "Put the most recent role first. This is the order almost every recruiter and ATS expects.",
-  employmentGap: (m) => `There is a ${m}-month gap between roles.`,
-  employmentGapUnknown: "There is a gap between roles.",
+    "Put the most recent role first. Almost every recruiter and every screening system expects that order.",
+  employmentGap: (m) => `There is a ${m}-month gap between two roles.`,
+  employmentGapUnknown: "There is a gap between two roles.",
   employmentGapFix:
-    "Gaps longer than 12 months are worth explaining - fill the period with a project, a course, or organisational work.",
+    "Gaps longer than 12 months are worth explaining - fill the period with a project, a course, or organisational work you did.",
 
-  notScorable: (dimension) => `${dimension} cannot be scored yet.`,
+  notScorable: (dimension) => `${dimension} cannot be judged yet.`,
   notScorableFix:
-    "Fill in your professional summary and at least one job or project first, and this dimension will start counting.",
+    "Fill in your professional summary and at least one job or project first - after that, this part starts counting.",
   verdictExcellent: "Your CV is ready to send.",
   verdictGood: "Your CV is in good shape - only small fixes left.",
-  verdictFair: "Your CV is passable, but several important things need fixing.",
+  verdictFair:
+    "Your CV is decent, but a few important things need fixing first.",
   verdictPoor:
     "Your CV risks being filtered out by software before a person ever reads it.",
   verdictNoJobSuffix:
-    " This score does not yet account for how well you match a specific job ad.",
+    " This score does not yet count how well you match a particular job ad - paste one in to complete it.",
 };
 
 const MESSAGES: Record<Locale, AtsMessages> = { id, en };

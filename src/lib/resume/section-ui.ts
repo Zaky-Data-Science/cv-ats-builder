@@ -20,93 +20,93 @@ export const SECTION_UI: Record<Locale, Record<SectionKey, SectionUiText>> = {
   id: {
     summary: {
       label: "Ringkasan Profil",
-      hint: "2-4 kalimat: siapa Anda, keahlian utama, dan pencapaian terbesar. Ditempatkan paling atas karena bagian ini yang pertama dibaca perekrut.",
+      hint: "2-4 kalimat: siapa Anda, keahlian utama, dan pencapaian terbesar. Letaknya paling atas karena inilah yang pertama dibaca perekrut - kadang satu-satunya yang dibaca.",
     },
     experience: {
       label: "Pengalaman Kerja",
-      hint: "Urutkan dari yang paling baru. Isi poin pencapaian, bukan daftar tugas rutin.",
+      hint: "Yang paling baru ditaruh paling atas. Tulis apa yang Anda capai, bukan daftar tugas harian.",
     },
     education: {
       label: "Pendidikan",
-      hint: "Jenjang terakhir di urutan pertama. IPK sebaiknya dicantumkan bila 3.00 ke atas.",
+      hint: "Sekolah atau kuliah terakhir ditaruh paling atas. IPK sebaiknya ditulis kalau 3.00 ke atas - kalau di bawah itu, kosongkan saja.",
     },
     skill: {
       label: "Keahlian",
-      hint: 'Tulis nama teknologi/keahlian apa adanya (mis. "JavaScript", bukan "JS mahir"). ATS mencocokkan kata kunci secara harfiah.',
+      hint: 'Tulis namanya apa adanya - "JavaScript", bukan "JS mahir". Mesin penyaring mencocokkan kata demi kata, jadi tambahan apa pun justru bikin tidak cocok.',
     },
     project: {
       label: "Proyek",
-      hint: "Bagus untuk fresh graduate: menutup minimnya pengalaman kerja dengan bukti karya.",
+      hint: "Penolong utama kalau Anda baru lulus: karya nyata bisa menggantikan pengalaman kerja yang belum ada.",
     },
     certification: {
       label: "Sertifikasi",
-      hint: "Cantumkan penerbit dan tahun. ID kredensial memudahkan verifikasi perekrut.",
+      hint: "Tulis penerbit dan tahunnya. Nomor sertifikatnya juga, supaya perekrut bisa mengecek sendiri keasliannya.",
     },
     organization: {
       label: "Organisasi",
-      hint: "Tunjukkan peran dan dampak, bukan sekadar keanggotaan.",
+      hint: "Sebutkan apa yang Anda kerjakan di sana dan hasilnya - bukan cuma bahwa Anda anggotanya.",
     },
     award: {
       label: "Penghargaan",
-      hint: "Sebutkan tingkat kompetisi dan peringkat agar bobotnya terbaca.",
+      hint: "Sebutkan tingkat lombanya dan Anda juara berapa, supaya nilainya terbaca. \"Juara 2 tingkat provinsi\" jauh lebih jelas daripada \"pernah juara\".",
     },
     language: {
       label: "Bahasa",
-      hint: "Gunakan tingkat yang lazim (Native, Fluent, Intermediate), hindari diagram bintang.",
+      hint: "Pakai istilah yang lazim seperti Native, Fluent, atau Intermediate. Jangan pakai bintang atau diagram - mesin penyaring tidak bisa membacanya.",
     },
     publication: {
       label: "Publikasi",
-      hint: "Relevan untuk jalur akademik atau riset. Sertakan penerbit dan DOI bila ada.",
+      hint: "Berguna kalau Anda melamar ke jalur akademik atau penelitian. Sertakan penerbit dan nomor DOI-nya kalau ada.",
     },
     custom: {
-      label: "Section Tambahan",
-      hint: "Untuk kebutuhan khusus yang belum tercakup section lain.",
+      label: "Bagian Tambahan",
+      hint: "Untuk hal yang belum tercakup bagian mana pun - misalnya pelatihan, kursus, atau kegiatan sukarela.",
     },
   },
   en: {
     summary: {
       label: "Professional summary",
-      hint: "2-4 sentences: who you are, your core skills, and your biggest achievement. It sits at the top because it is what a recruiter reads first.",
+      hint: "2-4 sentences: who you are, your core skills, and your biggest achievement. It sits at the top because it is what a recruiter reads first - sometimes all they read.",
     },
     experience: {
       label: "Work experience",
-      hint: "Most recent first. Write achievements, not a list of routine duties.",
+      hint: "Most recent goes at the top. Write what you achieved, not a list of daily duties.",
     },
     education: {
       label: "Education",
-      hint: "Highest level first. Include your GPA when it is 3.00 or above.",
+      hint: "Your most recent school or degree goes at the top. Include your GPA when it is 3.00 or above - below that, leave it out.",
     },
     skill: {
       label: "Skills",
-      hint: 'Write the technology or skill exactly as it is named ("JavaScript", not "JS - advanced"). ATS software matches keywords literally.',
+      hint: 'Write the name exactly as it is - "JavaScript", not "JS - advanced". Screening software matches word for word, so any extra wording only stops it matching.',
     },
     project: {
       label: "Projects",
-      hint: "Valuable for fresh graduates: it replaces missing work experience with evidence of real work.",
+      hint: "The great rescue if you have just graduated: real work you have done can stand in for the job history you do not have yet.",
     },
     certification: {
       label: "Certifications",
-      hint: "Include the issuer and the year. A credential ID lets a recruiter verify it.",
+      hint: "Include who issued it and the year. Add the certificate number too, so a recruiter can check it is genuine.",
     },
     organization: {
       label: "Organisations",
-      hint: "Show your role and its impact, not just that you were a member.",
+      hint: "Say what you actually did there and what came of it - not merely that you were a member.",
     },
     award: {
       label: "Awards",
-      hint: "State the level of the competition and your placing so its weight is clear.",
+      hint: "State how big the competition was and where you placed, so its weight is clear. \"Second, province level\" says far more than \"won an award\".",
     },
     language: {
       label: "Languages",
-      hint: "Use conventional levels (Native, Fluent, Intermediate). Avoid star ratings.",
+      hint: "Use conventional levels such as Native, Fluent, or Intermediate. Avoid stars and bar charts - screening software cannot read them.",
     },
     publication: {
       label: "Publications",
-      hint: "Relevant for academic and research roles. Include the publisher and DOI when you have them.",
+      hint: "Useful when applying to academic or research roles. Include the publisher and the DOI number when you have them.",
     },
     custom: {
-      label: "Additional section",
-      hint: "For anything the other sections do not already cover.",
+      label: "Extra section",
+      hint: "For anything no other section covers - training, short courses, volunteering.",
     },
   },
 };
