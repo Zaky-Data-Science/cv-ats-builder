@@ -99,7 +99,7 @@ function PrivacyId() {
           </tr>
           <tr>
             <td>
-              <strong>Riwayat skor ATS</strong>
+              <strong>Riwayat penilaian CV</strong>
             </td>
             <td>Hanya saat Anda menekan &quot;Simpan Hasil ke Riwayat&quot;</td>
             <td>Menampilkan perkembangan skor CV Anda dari waktu ke waktu</td>
@@ -334,7 +334,7 @@ function PrivacyEn() {
           </tr>
           <tr>
             <td>
-              <strong>ATS score history</strong>
+              <strong>CV assessment history</strong>
             </td>
             <td>Only when you press &quot;Save this result&quot;</td>
             <td>To show how your CV score changes over time</td>

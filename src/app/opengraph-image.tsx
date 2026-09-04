@@ -87,7 +87,7 @@ export default function OpengraphImage() {
               marginTop: 24,
             }}
           >
-            Pratinjau langsung, skor ATS beserta sarannya, unduh PDF dan Word.
+            Pratinjau langsung, penilaian CV beserta sarannya, unduh PDF dan Word.
           </div>
         </div>
 

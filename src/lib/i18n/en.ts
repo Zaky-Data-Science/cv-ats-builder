@@ -239,6 +239,131 @@ export const en: Dictionary = {
     sectionMoveDown: "Move this section down",
   },
 
+  /* ------------------------------------------------- pattern-based folio */
+  portofolio: {
+    title: "The shape of your portfolio",
+    intro:
+      "Three short questions. Your answers decide which fields the work section offers you - and which ones it insists on.",
+    q1Label: "What did you study, or what do you do?",
+    q1Ph: "Civil Engineering, Nursing, Culinary Arts...",
+    q1Hint:
+      "Type the name of the course as it is. Common Indonesian abbreviations such as PWK or TKJ are found too.",
+    searchEmpty:
+      "Nothing matches yet. Try the full name of the course, or carry on without picking one.",
+    notFound: "My field is not on this list",
+    fieldLabel: "Field",
+    q2Label: "What is this CV for?",
+    q2Hint:
+      "Different purposes call for different evidence, even from the same person.",
+    q3Label: "How far along are you?",
+    q3Hint:
+      "This decides which fields are required. Coursework still counts - only the yardstick changes.",
+    chosenLabel: "Portfolio shape",
+    changeShape: "Not this one? Change the shape",
+    change: "Change",
+    done: "Save answers",
+    footnote:
+      "You can change this at any time. Switching shape deletes none of what you have already written.",
+
+    /* --- Phase 3: portfolio item form --- */
+    shapeToggle: "Use the portfolio shape",
+    shapeToggleHint:
+      "The fields follow your field of work. Switched off, this section goes back to a plain project list and the extra entries stay saved.",
+    headingLabel: "Section title on the CV",
+    headingHint:
+      "A conventional title is more likely to be recognised by automated readers. Other titles are still read, they are just not always mapped to the right column.",
+    mergeLabel: "Merge into Work Experience",
+    mergeHint:
+      "Some automated readers only recognise projects when they sit inside a job. Turn this on if your projects had an employer.",
+    mergeOffer:
+      "{n} of your {total} pieces name an employer that matches a work entry. Merge them?",
+    mergeBefore: "Before",
+    mergeAfter: "After",
+    mergePreviewSeparate: "A section of its own, under its own heading",
+    mergePreviewNested: "Nested inside the job it belonged to",
+    mergeAccept: "Merge",
+    mergeLater: "Not now",
+    parentLabel: "Sits inside",
+    parentNone: "Stands alone",
+    parentDateWarn:
+      "This item's dates fall outside the job it sits in. Fix the dates, or detach it.",
+    parentDetach: "Detach from the job",
+    coreBlock: "Field-specific details",
+    extraBlock: "Extra details",
+    privateBlock: "Verifier & reflection",
+    privateBlockHint: "Neither is ever printed on the CV or included in an export.",
+    addDetail: "Add a detail",
+    detailLabelPh: "What it is",
+    detailValuePh: "Its value",
+    detailUnitPh: "Unit",
+    detailNotPrinted: "{n} details are saved but not printed on the CV.",
+    detailMax: "Six at most. Only the four highest priorities are printed.",
+    linksLabel: "Links",
+    linksHint:
+      "Two at most. The readable text is printed and the link is attached to that same text - both, not one or the other.",
+    linkAdd: "Add a link",
+    linkLabelPh: "Label (optional)",
+    linkShortener:
+      "A shortened link carries no keywords and tells a human nothing. Use the real address.",
+    verifierName: "Name",
+    verifierRole: "Position",
+    verifierRelation: "How you know them",
+    verifierNotice:
+      "This is never printed on your CV and never sent anywhere. Only save it if you have asked that person first.",
+    reflectionLabel: "Reflection",
+    reflectionHint:
+      "What you learnt, what you would do differently. Not printed on the CV.",
+    summaryLabel: "Summary",
+    summaryHint: "One sentence, 160 characters at most.",
+    contextLabel: "Client / institution",
+    contextHint:
+      "Required. With no employer, write \"Personal project\", \"Freelance\", or the name of your university.",
+    locationLabel: "Location",
+    fillExample: "Fill with an example",
+    hasNumber: "has a number",
+    noNumber: "no number yet",
+    archiveTitle: "Kept from your previous portfolio shape",
+    archiveRestore: "Restore into extra details",
+    shapeChangeWarn:
+      "Changing the shape will hide these entries: {daftar}. Nothing is deleted - they come back if you pick the old shape again.",
+    itemRange: "The usual count for this shape: {min}-{max} items.",
+    itemRangeOpen: "For this shape, more is better. At least {min} items.",
+    addItem: "Add",
+    publicationExtra: "Credit & indexing",
+    credCategory: "Credential category",
+    credCategoryHint:
+      "Four categories, treated differently: a practice licence is a gate, a tiered credential decides which work you may take on, a sectoral certificate attaches to a post, a competency certificate rounds things off.",
+    credValidity: "Validity",
+    credValidityHint:
+      "Pick the shape first. Some credentials genuinely last for life, so an expiry date is never forced on you here.",
+    credLevel: "Tier",
+    credLevelPh: "Tier 7 - Junior Expert",
+    credClass: "Field classification",
+    credClassPh: "Architecture",
+    credSubType: "Issuer type",
+    credSubTypePh: "Global vendor / national body / bootcamp",
+    credSuggest: "Credentials common in your field",
+    aggTitle: "Progress against the official threshold",
+    aggChoose: "Profession",
+    aggChooseNone: "Not chosen yet",
+    aggTotal: "Collected so far",
+    aggOf: "of",
+    aggSource: "Source",
+    aggUpdated: "checked",
+    aggDomain: "By domain",
+    aggNoTotal: "The rule names no total figure.",
+    redactionLabel: "Redaction mode",
+    redactionHint:
+      "Replaces client names with a description of the field, and exact figures with a range that contains them. Applies to PDF, Word, and plain text.",
+    redactionNote:
+      "The JSON backup keeps the real figures - it is your own backup, not the file you send to an employer.",
+    langTitle: "Language check",
+    langRequired:
+      "This shape calls for first-person writing. Competency assessors use it to tell your work apart from your team's.",
+    langSuggest:
+      "Not required for this shape, but first-person sentences still read more clearly.",
+  },
+
   guest: {
     metaTitle: "Build a CV without an account",
     metaDescription:
@@ -304,6 +429,8 @@ export const en: Dictionary = {
     btnJson: "Backup",
     btnTextTitle: "Plain text, for copying into online application forms",
     btnJsonTitle: "A backup file, so this CV can be opened again later",
+    btnJsonNote:
+      "The backup holds everything you typed, except your verifiers' names - those belong to someone else, so they go into no file at all.",
     saveNotYet: "Not saved yet",
     saveAuto: "Saves automatically",
     untitled: "Unnamed CV",
@@ -320,7 +447,7 @@ export const en: Dictionary = {
     downloadTxt: "Download text (.txt)",
     downloadJson: "Save a backup file",
     tabPreview: "See the result",
-    tabScore: "CV score",
+    tabScore: "CV strength",
     paneForm: "Fill in",
     panePreview: "Result",
     paneScore: "Score",
@@ -527,6 +654,15 @@ export const en: Dictionary = {
   ],
 
   compare: {
+    shapeGuess: "Portfolio shape, guessed",
+    shapeGuessHint:
+      "Guessed from the words in the CV, not from structured fields - so this is an offer, not a verdict. The call is yours.",
+    shapeGuessAccept: "Use this shape",
+    shapeGuessUsing: "Read as",
+    shapeGuessNone: "The shape could not be guessed from this CV.",
+    shapeMismatch:
+      "The CVs you are comparing are of different portfolio shapes ({daftar}). They are still scored by the same rules, but each shape calls for different evidence - keep that in mind when reading the ranking.",
+    shapeMatched: "All the CVs compared share one shape: {nama}.",
     metaTitle: "Check and Compare CVs",
     metaDescription:
       "Upload several CVs at once, see the strengths and weaknesses of each, and find out which one is most ready to send. Files are read on your own device and never leave it.",
@@ -595,7 +731,7 @@ export const en: Dictionary = {
     statQuantified: "Bullets that name a number",
     breakdownTitle: "Score breakdown",
     breakdownHint:
-      "The final score comes from the five things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
+      "The final score comes from the things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
     weight: "counts for",
     notScored: "cannot be judged yet",
     keywordsTitle: "Important words from the job ad",
@@ -608,6 +744,24 @@ export const en: Dictionary = {
       "All clear. Your CV satisfies every rule we check.",
     openField: "Open the part that needs work",
     gradePrefix: "Grade",
+    strengthTitle: "Strength & Readability",
+    strengthHint:
+      "How complete the structure is, whether machines can read it, how it is written, and how strong your evidence is.",
+    matchTitle: "Job Match",
+    matchHint:
+      "What share of the words that matter in the job ad genuinely appear in your CV.",
+    matchEmpty: "Nothing pasted yet",
+    scoreDisclaimer:
+      "These numbers judge the structure and keyword match of your CV. They do not predict what any hiring system will decide - every employer tunes its own filters.",
+    weightChanged:
+      "The weighting changed because the portfolio section is on. Under the previous weighting: {n}.",
+    buktiTitle: "Evidence, piece by piece",
+    buktiHint:
+      "Each piece is marked on two things: your part in it (Q) and how demanding it was (R), 0-3 each.",
+    buktiQ: "Your part",
+    buktiR: "Demand",
+    buktiItems: "pieces marked",
+    buktiFew: "below the usual count, the score is cut proportionally",
     jobTitle: "Match against a job ad",
     jobIntro:
       "Paste in the job ad you are targeting. We pull out the words that matter and compare them against your CV.",

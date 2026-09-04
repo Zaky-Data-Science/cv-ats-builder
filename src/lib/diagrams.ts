@@ -163,10 +163,10 @@ const buildFlow: Diagram = {
       id: "skor",
       kind: "process",
       lane: 0,
-      label: { id: "Hitung skor ATS", en: "Compute the ATS score" },
+      label: { id: "Hitung nilai CV", en: "Compute the CV score" },
       note: {
-        id: "Lima dimensi berbobot, dihitung di peramban tanpa permintaan jaringan.",
-        en: "Five weighted dimensions, computed in the browser with no network request.",
+        id: "Enam hal berbobot, dihitung di peramban tanpa permintaan jaringan.",
+        en: "Six weighted dimensions, computed in the browser with no network request.",
       },
     },
     {
@@ -272,7 +272,10 @@ const compareFlow: Diagram = {
       id: "nilai",
       kind: "browser",
       lane: 0,
-      label: { id: "Nilai tiap CV - lima dimensi", en: "Score each CV - five dimensions" },
+      label: {
+        id: "Nilai tiap CV - lima hal yang dinilai",
+        en: "Score each CV - five things",
+      },
     },
     {
       id: "jumlah",
@@ -338,8 +341,8 @@ const architectureFlow: Diagram = {
       lane: 0,
       label: { id: "Peramban pengguna", en: "The user's browser" },
       note: {
-        id: "Editor, pratinjau, mesin skor ATS, dan pembaca berkas CV.",
-        en: "Editor, preview, ATS scoring engine, and the CV file reader.",
+        id: "Editor, pratinjau, mesin penilaian, dan pembaca berkas CV.",
+        en: "Editor, preview, scoring engine, and the CV file reader.",
       },
     },
     {

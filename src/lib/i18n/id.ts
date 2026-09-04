@@ -256,6 +256,131 @@ export const id = {
     sectionMoveDown: "Pindahkan bagian ini ke bawah",
   },
 
+  /* --------------------------------------------------- portofolio berpola */
+  portofolio: {
+    title: "Bentuk portofolio Anda",
+    intro:
+      "Tiga pertanyaan pendek. Jawabannya menentukan isian apa saja yang ditawarkan di bagian karya - dan isian mana yang wajib.",
+    q1Label: "Apa jurusan atau profesi Anda?",
+    q1Ph: "Teknik Sipil, Ahwal Syakhshiyyah, Tata Boga...",
+    q1Hint:
+      "Ketik nama jurusannya apa adanya. Singkatan yang lazim seperti PWK atau TKJ juga ditemukan.",
+    searchEmpty:
+      "Belum ada yang cocok. Coba nama jurusan lengkapnya, atau lanjut tanpa memilih.",
+    notFound: "Bidang saya tidak ada di daftar",
+    fieldLabel: "Bidang",
+    q2Label: "CV ini untuk apa?",
+    q2Hint:
+      "Keperluan yang berbeda menuntut bukti yang berbeda, meskipun orangnya sama.",
+    q3Label: "Sejauh mana pengalaman Anda?",
+    q3Hint:
+      "Menentukan isian mana yang diwajibkan. Tugas kuliah tetap dihitung - yang berubah hanya ukurannya.",
+    chosenLabel: "Bentuk portofolio",
+    changeShape: "Bukan ini? Ganti bentuknya",
+    change: "Ubah",
+    done: "Simpan jawaban",
+    footnote:
+      "Bisa diubah kapan saja. Mengganti bentuk tidak menghapus satu pun isian yang sudah Anda tulis.",
+
+    /* --- Fase 3: formulir item portofolio --- */
+    shapeToggle: "Pakai bentuk portofolio",
+    shapeToggleHint:
+      "Bentuk isian mengikuti bidang Anda. Dimatikan, bagian ini kembali menjadi daftar proyek sederhana dan isian tambahannya tetap tersimpan.",
+    headingLabel: "Judul bagian di CV",
+    headingHint:
+      "Judul baku lebih mungkin dikenali pembaca otomatis. Judul lain tetap terbaca, hanya tidak selalu terpetakan ke kolom yang benar.",
+    mergeLabel: "Gabung ke Pengalaman Kerja",
+    mergeHint:
+      "Sebagian pembaca otomatis hanya mengenali proyek jika menempel pada pengalaman kerja. Aktifkan ini kalau proyek Anda punya pemberi kerja.",
+    mergeOffer:
+      "{n} dari {total} karya Anda punya pemberi kerja yang cocok dengan entri pengalaman kerja. Gabungkan?",
+    mergeBefore: "Sebelum",
+    mergeAfter: "Sesudah",
+    mergePreviewSeparate: "Bagian tersendiri di bawah judulnya sendiri",
+    mergePreviewNested: "Menempel di dalam entri pengalaman kerjanya",
+    mergeAccept: "Gabungkan",
+    mergeLater: "Nanti saja",
+    parentLabel: "Menempel pada",
+    parentNone: "Berdiri sendiri",
+    parentDateWarn:
+      "Tanggal item ini di luar rentang entri induknya. Perbaiki tanggalnya, atau lepaskan dari induk.",
+    parentDetach: "Lepaskan dari induk",
+    coreBlock: "Detail khas bidang",
+    extraBlock: "Detail tambahan",
+    privateBlock: "Verifikator & refleksi",
+    privateBlockHint: "Keduanya tidak pernah dicetak di CV maupun ikut berkas ekspor.",
+    addDetail: "Tambah detail",
+    detailLabelPh: "Nama detail",
+    detailValuePh: "Isinya",
+    detailUnitPh: "Satuan",
+    detailNotPrinted: "{n} detail tersimpan tapi tidak dicetak di CV.",
+    detailMax: "Maksimal 6 detail. Yang dicetak hanya 4 prioritas teratas.",
+    linksLabel: "Tautan",
+    linksHint:
+      "Maksimal dua. Yang tercetak teks polosnya, dan pranalanya menempel pada teks itu - keduanya, bukan salah satunya.",
+    linkAdd: "Tambah tautan",
+    linkLabelPh: "Label (opsional)",
+    linkShortener:
+      "Pemendek tautan tidak membawa kata kunci apa pun dan tidak terbaca manusia. Pakai URL aslinya.",
+    verifierName: "Nama",
+    verifierRole: "Jabatan",
+    verifierRelation: "Hubungan dengan Anda",
+    verifierNotice:
+      "Data ini tidak dicetak di CV dan tidak dikirim ke mana pun. Simpan hanya bila Anda sudah izin ke orang tersebut.",
+    reflectionLabel: "Refleksi",
+    reflectionHint:
+      "Apa yang Anda pelajari, apa yang akan Anda lakukan berbeda. Tidak dicetak di CV.",
+    summaryLabel: "Ringkasan",
+    summaryHint: "Satu kalimat, maksimal 160 karakter.",
+    contextLabel: "Klien / institusi",
+    contextHint:
+      "Wajib. Tanpa pemberi kerja, tulis \"Proyek Mandiri\", \"Freelance\", atau nama kampusnya.",
+    locationLabel: "Lokasi",
+    fillExample: "Isi dengan contoh",
+    hasNumber: "sudah ada angka",
+    noNumber: "belum ada angka",
+    archiveTitle: "Data dari bentuk portofolio sebelumnya",
+    archiveRestore: "Pulihkan ke detail tambahan",
+    shapeChangeWarn:
+      "Mengganti bentuk akan menyembunyikan isian ini: {daftar}. Isinya tidak dihapus - ia kembali sendiri bila Anda memilih bentuk lamanya lagi.",
+    itemRange: "Jumlah yang lazim untuk bentuk ini: {min}-{max} item.",
+    itemRangeOpen: "Untuk bentuk ini, makin banyak makin baik. Minimal {min} item.",
+    addItem: "Tambah",
+    publicationExtra: "Kredit & indeksasi",
+    credCategory: "Kategori kredensial",
+    credCategoryHint:
+      "Empat kategori dengan perlakuan berbeda: lisensi praktik adalah gerbang, kredensial berjenjang menentukan kelayakan paket pekerjaan, sertifikasi sektoral menempel pada jabatan, sertifikasi kompetensi melengkapi.",
+    credValidity: "Masa berlaku",
+    credValidityHint:
+      "Pilih bentuknya dulu. Sebagian kredensial memang berlaku seumur hidup - STR Definitif salah satunya - jadi tanggal kedaluwarsa tidak pernah dipaksakan di sini.",
+    credLevel: "Jenjang",
+    credLevelPh: "Jenjang 7 - Ahli Muda",
+    credClass: "Klasifikasi bidang",
+    credClassPh: "Arsitektur",
+    credSubType: "Jenis penerbit",
+    credSubTypePh: "Vendor global / BNSP / bootcamp",
+    credSuggest: "Kredensial yang lazim di bidang Anda",
+    aggTitle: "Perolehan terhadap ambang resmi",
+    aggChoose: "Profesi",
+    aggChooseNone: "Belum dipilih",
+    aggTotal: "Total terkumpul",
+    aggOf: "dari",
+    aggSource: "Sumber",
+    aggUpdated: "diperiksa",
+    aggDomain: "Perolehan per ranah",
+    aggNoTotal: "Aturannya tidak menyebut angka total.",
+    redactionLabel: "Mode Redaksi",
+    redactionHint:
+      "Mengganti nama klien dengan deskriptor bidangnya, dan angka pasti dengan rentang yang memuatnya. Berlaku di PDF, Word, dan teks.",
+    redactionNote:
+      "Berkas cadangan JSON tetap menyimpan angka aslinya - ia cadangan milik Anda sendiri, bukan berkas yang dikirim ke perusahaan.",
+    langTitle: "Periksa bahasa",
+    langRequired:
+      "Bentuk ini menuntut bahasa orang pertama. Badan penilai kompetensi memakainya untuk memisahkan pekerjaan Anda dari pekerjaan tim Anda.",
+    langSuggest:
+      "Bukan keharusan untuk bentuk ini, tapi kalimat orang pertama tetap lebih jelas bagi pembacanya.",
+  },
+
   /* ------------------------------------------------------------ mode tamu */
   guest: {
     metaTitle: "Buat CV tanpa akun",
@@ -323,6 +448,8 @@ export const id = {
     btnJson: "Cadangan",
     btnTextTitle: "Teks polos, untuk disalin-tempel ke formulir lamaran online",
     btnJsonTitle: "Berkas cadangan, agar CV ini bisa dibuka lagi nanti",
+    btnJsonNote:
+      "Berkas cadangan memuat seluruh isian Anda, kecuali nama verifikator - itu data orang lain, jadi tidak ikut ke berkas mana pun.",
     saveNotYet: "Belum tersimpan",
     saveAuto: "Tersimpan otomatis",
     untitled: "CV Belum Diberi Nama",
@@ -339,7 +466,7 @@ export const id = {
     downloadTxt: "Unduh teks (.txt)",
     downloadJson: "Simpan berkas cadangan",
     tabPreview: "Lihat Hasil",
-    tabScore: "Nilai CV",
+    tabScore: "Kekuatan CV",
     paneForm: "Isi Data",
     panePreview: "Hasil",
     paneScore: "Nilai",
@@ -553,6 +680,15 @@ export const id = {
 
   /* ------------------------------------------------------- pembanding CV */
   compare: {
+    shapeGuess: "Tebakan bentuk portofolio",
+    shapeGuessHint:
+      "Tebakan dari kata-kata di CV-nya, bukan dari isian terstruktur - jadi ini tawaran, bukan penilaian. Anda yang memutuskan.",
+    shapeGuessAccept: "Pakai bentuk ini",
+    shapeGuessUsing: "Dinilai sebagai",
+    shapeGuessNone: "Bentuknya belum bisa ditebak dari isi CV ini.",
+    shapeMismatch:
+      "CV yang dibandingkan berbeda bentuk portofolionya ({daftar}). Nilainya tetap dihitung dengan aturan yang sama, tapi bukti yang dituntut tiap bentuk memang berbeda - bandingkan dengan itu dalam pikiran.",
+    shapeMatched: "Seluruh CV yang dibandingkan berbentuk sama: {nama}.",
     metaTitle: "Cek dan Bandingkan CV",
     metaDescription:
       "Unggah beberapa CV sekaligus, lihat kelebihan dan kekurangan masing-masing, lalu ketahui mana yang paling siap dikirim. Berkasnya diperiksa langsung di perangkat Anda dan tidak pernah dikirim ke mana pun.",
@@ -608,7 +744,7 @@ export const id = {
       "Jujur soal batasannya: penilaian ini membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV Anda terbaca mesin, tapi tidak bisa menilai apakah pengalaman Anda cocok untuk suatu jabatan. Yang itu tetap penilaian Anda sendiri.",
   },
 
-  /* ------------------------------------------------------- panel skor ATS */
+  /* -------------------------------------------------------- panel penilaian */
   ats: {
     severityError: "Harus dibetulkan",
     severityWarning: "Sebaiknya dibetulkan",
@@ -622,7 +758,7 @@ export const id = {
     statQuantified: "Poin yang menyebut angka",
     breakdownTitle: "Rincian penilaian",
     breakdownHint:
-      "Nilai akhir dihitung dari lima hal di bawah ini. Tidak semuanya berpengaruh sama besar - persentase di samping tiap baris menunjukkan seberapa besar pengaruhnya.",
+      "Nilai akhir dihitung dari hal-hal di bawah ini. Tidak semuanya berpengaruh sama besar - persentase di samping tiap baris menunjukkan seberapa besar pengaruhnya.",
     weight: "pengaruh",
     notScored: "belum bisa dinilai",
     keywordsTitle: "Kata penting dari iklan lowongan",
@@ -635,6 +771,24 @@ export const id = {
       "Bersih. CV Anda sudah memenuhi semua aturan yang kami periksa.",
     openField: "Buka bagian yang bermasalah",
     gradePrefix: "Nilai",
+    strengthTitle: "Kekuatan & Keterbacaan",
+    strengthHint:
+      "Kelengkapan struktur, keterbacaan mesin, mutu isi, dan kekuatan bukti karya.",
+    matchTitle: "Kecocokan Lowongan",
+    matchHint:
+      "Berapa persen kata penting dari iklan lowongan yang benar-benar ada di CV Anda.",
+    matchEmpty: "Belum ditempel",
+    scoreDisclaimer:
+      "Angka ini menilai struktur dan kecocokan kata kunci CV Anda. Ia tidak memprediksi keputusan sistem perekrutan mana pun - tiap perusahaan menyetel filternya sendiri.",
+    weightChanged:
+      "Bobot penilaian berubah karena bagian portofolio aktif. Nilai dengan bobot sebelumnya: {n}.",
+    buktiTitle: "Rincian kekuatan bukti",
+    buktiHint:
+      "Tiap karya dinilai dari dua hal: peranan Anda (Q) dan tingkat kesulitannya (R), masing-masing 0-3.",
+    buktiQ: "Peranan",
+    buktiR: "Kesulitan",
+    buktiItems: "karya dinilai",
+    buktiFew: "di bawah jumlah yang lazim, nilainya dipotong sebanding",
     jobTitle: "Cocokkan dengan iklan lowongan",
     jobIntro:
       "Salin-tempel isi iklan lowongan yang Anda incar. Kata-kata pentingnya kami ambil sendiri, lalu kami bandingkan dengan isi CV Anda.",

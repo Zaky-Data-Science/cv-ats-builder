@@ -1,5 +1,6 @@
 "use client";
 
+import { migrasiDokumenCV } from "@/lib/portfolio/migrasi";
 import { emptyResume } from "./factory";
 import { resumeDataSchema } from "./schema";
 import type { ResumeData } from "./types";
@@ -43,7 +44,12 @@ function read(key: string): ResumeData | null {
     // Skema yang sama dengan yang dipakai server. Isian yang hilang diisi
     // nilai bawaannya, sehingga CV yang disimpan versi aplikasi lama tetap
     // terbuka setelah field baru ditambahkan.
-    const parsed = resumeDataSchema.safeParse(JSON.parse(raw));
+    // Dinaikkan bentuknya lebih dulu, sama seperti jalur impor berkas: CV tamu
+    // dapat saja ditulis versi aplikasi yang lebih lama dan tersimpan di
+    // peramban selama berbulan-bulan.
+    const parsed = resumeDataSchema.safeParse(
+      migrasiDokumenCV(JSON.parse(raw)),
+    );
     if (!parsed.success) return null;
     return { ...parsed.data, id: GUEST_ID } as ResumeData;
   } catch {

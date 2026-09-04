@@ -1,5 +1,11 @@
 import type { Locale } from "@/lib/i18n/config";
 import { newId } from "@/lib/utils";
+import {
+  bagianPortofolioBawaan,
+  profilPortofolioBawaan,
+  VERSI_SKEMA_CV,
+} from "@/lib/portfolio/migrasi";
+import { emptyCertification, emptyProject, emptyPublication } from "./factory";
 import { DEFAULT_SECTION_ORDER } from "./sections";
 import type { ResumeData } from "./types";
 
@@ -300,6 +306,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
   return {
     id,
+    schemaVersion: VERSI_SKEMA_CV,
     title: text.title,
     template: "CLASSIC",
     accentColor: "#111827",
@@ -311,6 +318,8 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
     marginYMm: null,
     marginXMm: null,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
+    profilPortofolio: profilPortofolioBawaan(),
+    portofolio: bagianPortofolioBawaan(),
 
     personalInfo: {
       photoZoom: 1,
@@ -406,8 +415,17 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
       category: text.skillCategories[skill.group],
     })),
 
+    /*
+      Bagian portofolio dibiarkan pada bentuk bawaannya.
+
+      Contoh ini dipakai berkas uji sebagai masukan tetap bagi mesin penilaian,
+      jadi menyalakan bagian portofolio di sini akan menggeser skor contoh
+      tanpa ada yang memintanya - persis kejadian yang harus dicegah pada CV
+      pengguna sungguhan.
+    */
     projects: [
       {
+        ...emptyProject(),
         id: newId(),
         name: text.projectNames[0],
         role: text.projectRoles[0],
@@ -417,6 +435,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         bullets: text.projectBullets[0],
       },
       {
+        ...emptyProject(),
         id: newId(),
         name: text.projectNames[1],
         role: text.projectRoles[1],
@@ -429,6 +448,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
     certifications: [
       {
+        ...emptyCertification(),
         id: newId(),
         name: text.certNames[0],
         issuer: text.certIssuers[0],
@@ -438,6 +458,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         url: "coursera.org/verify/ABCD1234EFGH",
       },
       {
+        ...emptyCertification(),
         id: newId(),
         name: text.certNames[1],
         issuer: text.certIssuers[1],
@@ -447,6 +468,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         url: "dicoding.com/certificates/DCD-FE-2211",
       },
       {
+        ...emptyCertification(),
         id: newId(),
         name: text.certNames[2],
         issuer: text.certIssuers[2],
@@ -495,6 +517,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
     publications: [
       {
+        ...emptyPublication(),
         id: newId(),
         title: text.publicationTitle,
         publisher: text.publisher,

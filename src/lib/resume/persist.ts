@@ -59,6 +59,9 @@ export async function createResume(
       marginYMm: data.marginYMm,
       marginXMm: data.marginXMm,
       sectionOrder: normalizeSectionOrder(data.sectionOrder),
+      schemaVersion: data.schemaVersion,
+      profilPortofolio: data.profilPortofolio,
+      portofolio: data.portofolio,
       personalInfo: { create: { ...data.personalInfo } },
     },
     select: { id: true },
@@ -101,6 +104,9 @@ export async function saveResume(
       marginYMm: data.marginYMm,
       marginXMm: data.marginXMm,
         sectionOrder: normalizeSectionOrder(data.sectionOrder),
+        schemaVersion: data.schemaVersion,
+        profilPortofolio: data.profilPortofolio,
+        portofolio: data.portofolio,
       },
     });
 

@@ -1,7 +1,18 @@
 import * as React from "react";
 import { paperSpec } from "@/lib/resume/paper";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
-import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
+import {
+  keteranganKredensial,
+  masaBerlakuTeks,
+} from "@/lib/portfolio/kredensial";
+import {
+  bagiItemPortofolio,
+  itemTercetak,
+  portofolioAktif,
+  skemaItem,
+  PEMISAH_DETAIL,
+} from "@/lib/portfolio/render";
+import { isSectionVisible, sectionHeadingFor } from "@/lib/resume/sections";
 import { customEntryBase, customEntryPath } from "@/lib/resume/edit-path";
 import { customItemsSection } from "@/lib/resume/structure";
 import {
@@ -140,11 +151,125 @@ export function ResumeDocument({
 
   const heading = (key: SectionKey) => (
     <SectionHeading
-      title={sectionHeading(key, lang)}
+      title={sectionHeadingFor(data, key)}
       style={style}
       accent={accent}
     />
   );
+
+  /* ------------------------------------------------------------------ */
+  /* Item portofolio                                                     */
+  /* ------------------------------------------------------------------ */
+
+  const { mandiri, perInduk } = bagiItemPortofolio(data);
+
+  // Nomor urut asli tiap item, supaya jalur sunting tetap menunjuk entri yang
+  // benar meski daftarnya sedang terbagi antara bagian portofolio dan entri
+  // pengalaman kerja.
+  const nomorProyek = new Map(data.projects.map((p, i) => [p.id, i]));
+
+  /*
+    Satu item portofolio di atas kertas.
+
+    Susunannya sama persis dengan versi teks polos dan versi Word-nya; yang
+    berbeda hanya alatnya. `bersarang` menandai item yang sedang menempel pada
+    entri pengalaman kerja - konteksnya tidak ikut dicetak karena pemberi
+    kerjanya sudah tertulis di entri induknya, dan mencetaknya dua kali membuat
+    satu perusahaan tampak muncul dua kali di CV yang sama.
+  */
+  const itemPortofolio = (item: (typeof data.projects)[number], bersarang: boolean) => {
+    const i = nomorProyek.get(item.id) ?? 0;
+    const cetak = itemTercetak(data, item, lang);
+    const label = bersarang ? `${skemaItem(data, item).labelItem}: ` : "";
+    const kecil = { fontSize: `${data.fontSize - 0.5}pt` };
+
+    return (
+      <div
+        key={item.id}
+        data-field={`project:${item.id}`}
+        className={blockClass(`project:${item.id}`)}
+        style={entryStyle}
+      >
+        <EntryHeader
+          primary={[
+            {
+              text: `${label}${cetak.judul}`,
+              attrs: label ? {} : edit(`projects.${i}.name`),
+              ph: label ? "" : ph("name"),
+            },
+            {
+              text: cetak.peran,
+              attrs: edit(`projects.${i}.role`),
+              ph: ph("role"),
+            },
+          ]}
+          primarySep=" - "
+          secondary={
+            bersarang
+              ? [{ text: cetak.lokasi }]
+              : [
+                  {
+                    text: cetak.konteks,
+                    attrs: edit(`projects.${i}.konteks`),
+                    ph: ph("konteks"),
+                  },
+                  { text: cetak.lokasi },
+                ]
+          }
+          secondarySep=" | "
+          meta={cetak.periode}
+          metaPath={editable ? `projects.${i}` : undefined}
+          metaPh={ph("period")}
+          fontSize={data.fontSize}
+        />
+
+        {(cetak.ringkasan || ph("ringkasan")) && (
+          <p
+            {...edit(`projects.${i}.ringkasan`)}
+            {...(editable && !cetak.ringkasan
+              ? { className: "edit-kosong", "data-ph": ph("ringkasan") }
+              : {})}
+          >
+            {cetak.ringkasan}
+          </p>
+        )}
+
+        <Bullets
+          items={item.bullets}
+          fontSize={data.fontSize}
+          edit={edit}
+          basePath={`projects.${i}`}
+          ph={ph("bullet")}
+        />
+
+        {/* Field inti dan detail tambahan dirangkai jadi satu baris, dipisah
+            titik tengah - bukan tabel. Tabel adalah salah satu penyebab
+            tersering teks terbaca melompat-lompat oleh pengurai. */}
+        {cetak.detail && <p style={kecil}>Detail: {cetak.detail}</p>}
+
+        {cetak.tautan.length > 0 && (
+          <p style={kecil}>
+            {cetak.tautan.map((t, index) => (
+              <React.Fragment key={t.href}>
+                {index > 0 && PEMISAH_DETAIL}
+                {/* Teks polos yang terbaca, dan pranala dipasang pada teks
+                    polos itu sendiri. Bukan salah satunya: alamat tujuan di
+                    PDF tersimpan sebagai anotasi terpisah dari aliran teks,
+                    jadi teks tampilannyalah yang terbaca mesin - sementara
+                    rekruter membuka berkas aslinya, tempat pranalanya hidup. */}
+                <a
+                  href={t.href}
+                  style={{ color: "inherit", textDecoration: "none" }}
+                >
+                  {t.teks}
+                </a>
+              </React.Fragment>
+            ))}
+          </p>
+        )}
+      </div>
+    );
+  };
 
   const info = data.personalInfo;
   const contactLine = joinNonEmpty(
@@ -266,6 +391,9 @@ export function ResumeDocument({
                       basePath={`experiences.${i}`}
                       ph={ph("bullet")}
                     />
+                    {(perInduk.get(e.id) ?? []).map((item) =>
+                      itemPortofolio(item, true),
+                    )}
                   </div>
                 ))}
                 <TombolTambah section="experiences" label={ph("addEntry")} />
@@ -373,6 +501,16 @@ export function ResumeDocument({
             );
 
           case "project":
+            if (portofolioAktif(data)) {
+              return (
+                <section key={key} style={{ marginBottom: style.sectionGap }}>
+                  {heading(key)}
+                  {mandiri.map((item) => itemPortofolio(item, false))}
+                  <TombolTambah section="projects" label={ph("addEntry")} />
+                </section>
+              );
+            }
+            // Bentuk lama, untuk CV yang belum menyalakan bagian portofolio.
             return (
               <section key={key} style={{ marginBottom: style.sectionGap }}>
                 {heading(key)}
@@ -505,6 +643,17 @@ export function ResumeDocument({
                         ph={ph("period")}
                       />
                     </p>
+                    {joinNonEmpty(
+                      [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
+                      PEMISAH_DETAIL,
+                    ) && (
+                      <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
+                        {joinNonEmpty(
+                          [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
+                          PEMISAH_DETAIL,
+                        )}
+                      </p>
+                    )}
                     {(c.credentialId || c.url) && (
                       <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
                         {joinNonEmpty(
@@ -622,11 +771,28 @@ export function ResumeDocument({
                         ph={ph("period")}
                       />
                     </p>
-                    {(p.doi || p.url) && (
+                    {joinNonEmpty(
+                      [p.tipeLuaran, p.peranSaya, p.indeksasiTier],
+                      PEMISAH_DETAIL,
+                    ) && (
                       <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
                         {joinNonEmpty(
-                          [p.doi ? `DOI: ${p.doi}` : "", prettyUrl(p.url)],
-                          "  •  ",
+                          [p.tipeLuaran, p.peranSaya, p.indeksasiTier],
+                          PEMISAH_DETAIL,
+                        )}
+                      </p>
+                    )}
+                    {(p.doi || p.url) && (
+                      <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
+                        {p.doi ? `DOI: ${p.doi}` : ""}
+                        {p.doi && p.url ? "  •  " : ""}
+                        {p.url && (
+                          <a
+                            href={ensureHttp(p.url)}
+                            style={{ color: "inherit", textDecoration: "none" }}
+                          >
+                            {prettyUrl(p.url)}
+                          </a>
                         )}
                       </p>
                     )}
@@ -1099,6 +1265,8 @@ const PENAMPUNG: Record<ResumeLanguage, Record<string, string>> = {
     skill: "Keahlian",
     language: "Bahasa",
     period: "Periode",
+    konteks: "Klien / institusi",
+    ringkasan: "Ringkasan satu kalimat",
     addEntry: "+ Tambah isian",
   },
   EN: {
@@ -1119,6 +1287,8 @@ const PENAMPUNG: Record<ResumeLanguage, Record<string, string>> = {
     skill: "Skill",
     language: "Language",
     period: "Period",
+    konteks: "Client / institution",
+    ringkasan: "One-sentence summary",
     addEntry: "+ Add another",
   },
 };

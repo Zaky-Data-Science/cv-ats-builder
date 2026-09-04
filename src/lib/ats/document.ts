@@ -1,5 +1,8 @@
 import type { Locale } from "@/lib/i18n/config";
 import type { ExtractedDocument } from "@/lib/intake/extract";
+import { deteksiPola, kalimatTawaran, tebakBahasa } from "@/lib/portfolio/deteksi";
+import { polaSchema } from "@/lib/portfolio/pola-schemas";
+import type { PolaSlug } from "@/lib/portfolio/types";
 import { analyzeKeywords, tokenize, type KeywordAnalysis } from "./keywords";
 import { docMessages } from "./document-messages";
 import { atsMessages } from "./messages";
@@ -27,12 +30,22 @@ import { ACTION_VERBS, CLICHE_PHRASES } from "./vocabulary";
  * bahasa: masukan yang sama selalu menghasilkan angka dan saran yang sama.
  */
 
+/*
+  Penilai berkas unggahan tidak menilai kekuatan bukti karya, dan bobotnya
+  karena itu nol.
+
+  Alasannya bukan kemalasan: kekuatan bukti dihitung dari isian terstruktur -
+  peran, skala, standar, hasil terukur - dan berkas PDF atau Word yang diunggah
+  orang tidak punya satu pun di antaranya. Menebaknya dari teks berarti
+  memberi angka yang tidak dapat ditelusuri ke apa pun.
+*/
 export const DOC_WEIGHTS: Record<DimensionKey, number> = {
   completeness: 25,
   parseability: 25,
   contentQuality: 20,
   keywordMatch: 20,
   structure: 10,
+  buktiKarya: 0,
 };
 
 export interface DocFinding {
@@ -60,6 +73,21 @@ export interface DocumentAnalysis {
   /** Hal yang perlu diperbaiki, sudah terurut dari yang paling mendesak. */
   weaknesses: DocFinding[];
   keywords: KeywordAnalysis | null;
+  /**
+   * Tebakan bentuk portofolio dari isi CV-nya - **tawaran, bukan keputusan**.
+   *
+   * null bila tidak ada yang cukup meyakinkan. Berkas yang diunggah orang
+   * tidak punya satu pun field terstruktur, jadi yang dapat dibaca hanya
+   * kata-katanya; menjadikan tebakan itu keputusan berarti menilai CV
+   * seseorang dengan bentuk yang belum tentu miliknya.
+   */
+  tebakanPola: {
+    pola: PolaSlug;
+    namaPola: string;
+    namaBidang: string;
+    kalimat: string;
+    kataCocok: string[];
+  } | null;
   stats: {
     pageCount: number;
     wordCount: number;
@@ -476,12 +504,21 @@ export function analyzeDocument(
   {
     const s = new DocScorer("structure", labels.structure);
 
-    const lengthRatio = pageCount === 1 ? 1 : pageCount === 2 ? 0.75 : 0.25;
-    s.ratioRule(5, lengthRatio, 1, {
-      severity: pageCount > 2 ? "warning" : "info",
-      ok: m.lengthOk,
-      bad: pageCount === 2 ? m.lengthTwo : m.lengthBad(pageCount),
-      fix: pageCount === 2 ? m.lengthFixTwo : m.lengthFixLong,
+    /*
+      Panjang halaman tidak menghukum apa pun di sini juga.
+
+      Alasannya sama dengan di penilai CV yang disusun di aplikasi ini: tidak
+      ada dokumentasi pengurai mana pun yang menyebut batas halaman, dan
+      satu-satunya eksperimen terkontrol yang tersedia justru menemukan CV dua
+      halaman lebih disukai perekrut. Membiarkan aturan lama berlaku di sini
+      berarti satu orang memperoleh dua nilai berbeda untuk satu CV yang sama,
+      tergantung ia mengetiknya di aplikasi ini atau mengunggahnya.
+    */
+    s.rule(5, true, {
+      severity: "info",
+      ok: m.lengthNote(pageCount),
+      bad: m.lengthNote(pageCount),
+      fix: m.lengthNoteFix,
     });
 
     const summaryAt = sections.get("summary");
@@ -519,11 +556,47 @@ export function analyzeDocument(
   );
   const score = totalWeight === 0 ? 0 : Math.round((earned / totalWeight) * 100);
 
+  /*
+    Bahasa CV melawan bahasa iklan lowongannya - alasannya mekanis, bukan
+    selera. Pencarian kandidat mencocokkan kata demi kata.
+  */
+  if (jobDescription.trim()) {
+    const bahasaIklan = tebakBahasa(jobDescription);
+    const bahasaCv = tebakBahasa(doc.text);
+    if (bahasaIklan && bahasaCv && bahasaIklan !== bahasaCv) {
+      const nama = (kode: "ID" | "EN") =>
+        locale === "en"
+          ? kode === "ID"
+            ? "Indonesian"
+            : "English"
+          : kode === "ID"
+            ? "Indonesia"
+            : "Inggris";
+      findings.push({
+        dimension: "keywordMatch",
+        severity: "warning",
+        message: m.bahasaBerbeda(nama(bahasaCv), nama(bahasaIklan)),
+        fix: m.bahasaBerbedaFix,
+      });
+    }
+  }
+
   const rank: Record<Severity, number> = { error: 0, warning: 1, info: 2 };
   findings.sort((a, b) => rank[a.severity] - rank[b.severity]);
 
+  const tebakan = deteksiPola(doc.text);
+
   return {
     fileName: doc.fileName,
+    tebakanPola: tebakan
+      ? {
+          pola: tebakan.pola,
+          namaPola: polaSchema(tebakan.pola).nama,
+          namaBidang: tebakan.entri.nama,
+          kalimat: kalimatTawaran(tebakan, locale),
+          kataCocok: tebakan.cocok,
+        }
+      : null,
     score,
     grade: score >= 85 ? "A" : score >= 70 ? "B" : score >= 55 ? "C" : "D",
     dimensions,

@@ -40,7 +40,7 @@
 <text x="308" y="662" font-size="12.5" fill="#52525a">A gap splitting the page indicates a two-column layout.</text>
 <rect x="290" y="726" width="420" height="60" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
 <text x="308" y="750" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
-<text x="308" y="767" font-size="15" font-weight="600" fill="#0a0a0b">Score each CV - five dimensions</text>
+<text x="308" y="767" font-size="15" font-weight="600" fill="#0a0a0b">Score each CV - five things</text>
 <rect x="290" y="832" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
 <text x="308" y="856" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>
 <text x="308" y="873" font-size="15" font-weight="600" fill="#0a0a0b">How many files?</text>

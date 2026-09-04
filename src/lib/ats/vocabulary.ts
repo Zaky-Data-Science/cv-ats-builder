@@ -92,6 +92,21 @@ export const ACTION_VERBS_ID = new Set<string>([
   "melayani", "mengarsipkan", "menyalurkan", "mendistribusikan",
   "memproduksi", "merakit", "memasang", "mengoperasikan", "memelihara",
   "merawat", "menyupervisi", "mendigitalisasi", "mereplikasi", "menskalakan",
+  /*
+    Kata kerja yang selama ini terlewat.
+
+    Ditemukan saat menguji rubrik kekuatan bukti pada keenam pola: poin yang
+    dibuka "Melakukan anamnesis..." atau "Menjalankan 8 wawancara pengguna..."
+    terhitung sebagai poin pasif, padahal keduanya bentuk yang justru
+    dianjurkan - dan keduanya kata kerja paling lazim di bidang kesehatan,
+    pengajaran, dan riset pengguna. Cacatnya bukan hanya milik rubrik baru:
+    dimensi mutu kalimat sudah salah menilainya sejak dulu.
+  */
+  "melakukan", "menjalankan", "menangani", "mengerjakan", "menyiapkan",
+  "menghitung", "memilih", "memeriksa", "mendiagnosis", "mengajar",
+  "mengajarkan", "menyampaikan", "menulis", "menyunting", "mengumpulkan",
+  "mengatur", "mengevaluasi", "meninjau", "memverifikasi", "mengendalikan",
+  "merekrut", "menerjemahkan", "memandu", "menyeleksi", "merancangkan",
 ]);
 
 export const ACTION_VERBS_EN = new Set<string>([

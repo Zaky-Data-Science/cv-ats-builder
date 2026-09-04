@@ -429,6 +429,19 @@ export function CompareClient() {
             </div>
           )}
 
+          {/*
+            Bentuk portofolio yang berbeda antar-CV.
+
+            Peringatan, bukan penolakan: dua CV berbentuk berbeda tetap boleh
+            dibandingkan - orang memang kerap membandingkan versi lamaran yang
+            berbeda arah. Yang perlu ia tahu hanya bahwa bukti yang dituntut
+            tiap bentuk memang tidak sama, sehingga peringkatnya tidak boleh
+            dibaca sebagai "yang ini lebih baik".
+          */}
+          {analyses.length >= 2 && (
+            <BentukAntarCv analyses={analyses} />
+          )}
+
           {comparison && <ComparisonSummary comparison={comparison} />}
 
           {!jobDescription.trim() && (
@@ -600,6 +613,38 @@ const SEVERITY_ICON: Record<Severity, typeof CircleAlert> = {
   info: Info,
 };
 
+/**
+ * Bentuk portofolio yang terbaca dari CV-CV yang dibandingkan.
+ *
+ * Ditampilkan sebagai keterangan, bukan sebagai syarat. CV yang tidak dapat
+ * ditebak bentuknya tidak dihitung sebagai perbedaan - tidak tahu bukan sama
+ * dengan berbeda.
+ */
+function BentukAntarCv({ analyses }: { analyses: DocumentAnalysis[] }) {
+  const { t } = useI18n();
+  const bentuk = analyses
+    .map((a) => a.tebakanPola?.namaPola)
+    .filter((nama): nama is string => Boolean(nama));
+  const unik = [...new Set(bentuk)];
+  if (unik.length === 0) return null;
+
+  const berbeda = unik.length > 1;
+  return (
+    <p
+      className={cn(
+        "mt-4 rounded-lg px-3 py-2 text-[11px] leading-relaxed",
+        berbeda
+          ? "border border-amber-300 bg-amber-50 text-ink-800"
+          : "bg-ink-100 text-ink-600",
+      )}
+    >
+      {berbeda
+        ? t.compare.shapeMismatch.replace("{daftar}", unik.join(", "))
+        : t.compare.shapeMatched.replace("{nama}", unik[0])}
+    </p>
+  );
+}
+
 function AnalysisCard({
   analysis,
   rank,
@@ -608,9 +653,48 @@ function AnalysisCard({
   rank: number | null;
 }) {
   const { t } = useI18n();
+  const [pakaiBentuk, setPakaiBentuk] = React.useState(false);
 
   return (
     <Card className="overflow-hidden">
+      {/*
+        Tawaran bentuk portofolio.
+
+        Tebakannya berasal dari kata-kata di dalam CV itu sendiri, dan
+        ditampilkan sebagai pertanyaan. Memaksakannya berarti menilai CV
+        seseorang dengan bentuk yang belum tentu miliknya - dan ia tidak akan
+        pernah tahu mengapa angkanya turun.
+      */}
+      {analysis.tebakanPola && (
+        <div className="flex flex-wrap items-center gap-3 border-b border-ink-100 bg-brand-50/40 px-5 py-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
+              {t.compare.shapeGuess}
+            </p>
+            <p className="mt-0.5 text-xs text-ink-800">
+              {pakaiBentuk
+                ? `${t.compare.shapeGuessUsing} ${analysis.tebakanPola.namaPola} - ${analysis.tebakanPola.namaBidang}`
+                : analysis.tebakanPola.kalimat}
+            </p>
+            <p className="mt-0.5 text-[11px] leading-relaxed text-ink-500">
+              {pakaiBentuk
+                ? analysis.tebakanPola.kataCocok.slice(0, 6).join(" · ")
+                : t.compare.shapeGuessHint}
+            </p>
+          </div>
+          {!pakaiBentuk && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="press shrink-0"
+              onClick={() => setPakaiBentuk(true)}
+            >
+              {t.compare.shapeGuessAccept}
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Kepala kartu */}
       <div className="flex flex-wrap items-center gap-3 border-b border-ink-100 px-5 py-4">
         {rank !== null && (

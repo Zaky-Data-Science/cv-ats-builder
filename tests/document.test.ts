@@ -138,9 +138,26 @@ export function runDocumentTests(): void {
     "",
     "id",
   );
+  /*
+    Panjang halaman tidak lagi menghukum apa pun - di sini maupun di penilai
+    CV yang disusun di aplikasi ini. Kalau salah satunya masih menghukum, satu
+    orang memperoleh dua nilai berbeda untuk CV yang sama, tergantung ia
+    mengetiknya atau mengunggahnya.
+  */
   check(
-    "CV tiga halaman disarankan dipangkas jadi satu",
-    threePages.weaknesses.some((w) => /satu halaman/i.test(w.fix)),
+    "CV tiga halaman tidak lagi ditegur soal panjangnya",
+    !threePages.weaknesses.some((w) => /satu halaman/i.test(w.fix)),
+  );
+  check(
+    "panjangnya tetap diberi keterangan netral",
+    [...threePages.strengths, ...threePages.weaknesses.map((w) => w.message)].some(
+      (teks) => /3 halaman/i.test(teks),
+    ),
+  );
+  equal(
+    "nilai tidak bergerak karena jumlah halaman",
+    analyzeDocument(doc("satu.pdf", GOOD_CV, { pageCount: 1 }), "", "id").score,
+    threePages.score,
   );
 
   /* ------------------------------------------------------------------ */
