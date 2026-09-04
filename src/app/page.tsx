@@ -16,13 +16,14 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
+import { HeroStats } from "@/components/home/HeroStats";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { InkBackground } from "@/components/ink/InkBackground";
 import { InkWash } from "@/components/ink/InkWash";
 import { SamuraiIntro } from "@/components/ink/SamuraiIntro";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { CountUp, Interactive, Reveal, TiltCard } from "@/components/motion";
+import { Interactive, Reveal, TiltCard } from "@/components/motion";
 import { Badge, Button, Card } from "@/components/ui";
 import { auth } from "@/auth";
 import { getT } from "@/lib/i18n/server";
@@ -32,7 +33,6 @@ import {
   templateStyle,
 } from "@/lib/resume/templates";
 import { SITE, SITE_META } from "@/lib/site";
-import { cn } from "@/lib/utils";
 import type { TemplateId } from "@/lib/resume/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -282,46 +282,31 @@ export default async function LandingPage() {
                   </Link>
                 </div>
 
-                {/*
-                  Dua kolom di ponsel, empat mulai layar sedang.
-
-                  Empat kolom pada layar 320 piksel menyisakan sekitar 70
-                  piksel per kolom - cukup untuk angkanya, tidak cukup untuk
-                  keterangan di bawahnya, sehingga setiap keterangan pecah
-                  menjadi tiga baris dan barisan itu berubah menjadi blok teks
-                  yang tidak lagi terbaca sebagai angka.
-                */}
-                <dl className="mt-10 grid max-w-lg grid-cols-2 border-t border-ink-200 pt-6 sm:grid-cols-4">
-                  {[
-                    { to: 11, label: t.home.statSections },
-                    { to: 10, label: t.home.statTemplates },
-                    { to: 5, label: t.home.statDimensions },
-                    { to: 4, label: t.home.statFormats },
-                  ].map((stat, i) => (
-                    /*
-                      Garis pemisah dipasang per butir, bukan lewat `divide-x`
-                      pada wadahnya. Pada susunan 2x2, `divide-x` menaruh garis
-                      di kiri butir ketiga - yaitu di tepi luar kolom pertama,
-                      tempat yang tidak memisahkan apa pun. Nomor butirnya
-                      dibawa serta supaya garisnya hanya muncul di antara.
-                    */
-                    <div
-                      key={stat.label}
-                      className={cn(
-                        "px-4 py-1 first:pl-0 sm:px-5",
-                        i % 2 === 1 && "border-l border-ink-200",
-                        "sm:border-l sm:first:border-l-0",
-                      )}
-                    >
-                      <dt className="text-2xl font-bold text-ink-900 sm:text-3xl">
-                        <CountUp to={stat.to} />
-                      </dt>
-                      <dd className="mt-0.5 text-[11px] leading-tight text-ink-500">
-                        {stat.label}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+                <HeroStats
+                  prompt={t.home.statsPrompt}
+                  stats={[
+                    {
+                      to: 11,
+                      label: t.home.statSections,
+                      explain: t.home.statSectionsWhy,
+                    },
+                    {
+                      to: 10,
+                      label: t.home.statTemplates,
+                      explain: t.home.statTemplatesWhy,
+                    },
+                    {
+                      to: 5,
+                      label: t.home.statDimensions,
+                      explain: t.home.statDimensionsWhy,
+                    },
+                    {
+                      to: 4,
+                      label: t.home.statFormats,
+                      explain: t.home.statFormatsWhy,
+                    },
+                  ]}
+                />
               </Reveal>
             </div>
             </div>

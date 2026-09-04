@@ -25,16 +25,9 @@ import {
 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
 import { useI18n } from "@/components/i18n";
-import { Badge, Button, Callout, Field, Input, Select } from "@/components/ui";
+import { Badge, Button, Callout, Input } from "@/components/ui";
 import { analyzeResume } from "@/lib/ats/engine";
-import { ATS_SAFE_FONTS } from "@/lib/ats/vocabulary";
 import type { Dictionary, Locale } from "@/lib/i18n";
-import {
-  PAPER_NOTE,
-  PAPER_ORDER,
-  PAPER_SIZES,
-  RECOMMENDED_PAPER,
-} from "@/lib/resume/paper";
 import {
   downloadDocx,
   downloadJson,
@@ -59,14 +52,7 @@ import { resumeFileSchema } from "@/lib/resume/schema";
 import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
 import { sectionCount } from "@/lib/resume/sections";
-import {
-  MARGIN_MAX_MM,
-  MARGIN_MIN_MM,
-  resumeMargins,
-  TEMPLATE_INFO,
-  TEMPLATE_ORDER,
-  templateStyle,
-} from "@/lib/resume/templates";
+import { resumeMargins } from "@/lib/resume/templates";
 import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import { AUTHOR } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -74,6 +60,7 @@ import { EditorProvider, moveItem } from "./context";
 import { PersonalSection, SECTION_FORMS } from "./sections";
 import { SectionCard } from "./parts";
 import { PreviewPane } from "./PreviewPane";
+import { AppearanceDrawer } from "./AppearanceDrawer";
 
 type SaveState = "idle" | "dirty" | "saving" | "saved" | "error";
 
@@ -433,6 +420,23 @@ export function ResumeEditor({
     setConfirmSample(false);
   }
 
+  /*
+    Membuka laci Tampilan di layar sempit sekaligus memindahkan panel aktif ke
+    pratinjau. Laci itu dibuat justru supaya perubahan terlihat sambil diatur;
+    membukanya di atas formulir mengembalikan persis masalah yang hendak
+    diselesaikan. Di layar lebar kertas memang sudah terlihat, jadi tidak ada
+    yang perlu dipindahkan - dan `lg` di sini adalah titik henti yang sama
+    dengan yang dipakai tata letak dua panelnya.
+  */
+  function toggleSettings() {
+    setShowSettings((wasOpen) => {
+      if (!wasOpen && !window.matchMedia("(min-width: 64rem)").matches) {
+        setPane("preview");
+      }
+      return !wasOpen;
+    });
+  }
+
   const actions = (
     <>
       <ActionItem
@@ -445,7 +449,7 @@ export function ResumeEditor({
         icon={Settings2}
         label={t.editor.actionAppearanceLabel}
         hint={t.editor.actionAppearanceHint}
-        onClick={() => setShowSettings((v) => !v)}
+        onClick={toggleSettings}
       />
       <ActionItem
         icon={Printer}
@@ -577,7 +581,7 @@ export function ResumeEditor({
                 size="sm"
                 variant="outline"
                 className="press"
-                onClick={() => setShowSettings((v) => !v)}
+                onClick={toggleSettings}
                 aria-expanded={showSettings}
               >
                 <Settings2 size={14} />
@@ -638,242 +642,6 @@ export function ResumeEditor({
               {t.editor.matchJob}
             </Link>
           </div>
-
-          {/* ------------------------------------------------------------ */}
-          {/* Panel pengaturan tampilan CV                                   */}
-          {/* ------------------------------------------------------------ */}
-          {showSettings && (
-            <div className="mt-3 space-y-3 rounded-lg border border-ink-200 bg-ink-50 p-3">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <Field
-                  label={t.appearance.template}
-                  hint={TEMPLATE_INFO[locale][data.template].description}
-                >
-                  <Select
-                    value={data.template}
-                    onChange={(e) =>
-                      update({
-                        template: e.target.value as ResumeData["template"],
-                      })
-                    }
-                  >
-                    {/*
-                      Template dikelompokkan berdasarkan ada-tidaknya foto,
-                      karena itulah pertanyaan pertama yang muncul di benak
-                      pengguna saat memilih - bukan nama templatenya.
-                    */}
-                    <optgroup label={t.appearance.templateWithoutPhoto}>
-                      {TEMPLATE_ORDER.filter(
-                        (id) => templateStyle(id).photo === "none",
-                      ).map((id) => (
-                        <option key={id} value={id}>
-                          {TEMPLATE_INFO[locale][id].name}
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label={t.appearance.templateWithPhoto}>
-                      {TEMPLATE_ORDER.filter(
-                        (id) => templateStyle(id).photo !== "none",
-                      ).map((id) => (
-                        <option key={id} value={id}>
-                          {TEMPLATE_INFO[locale][id].name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  </Select>
-                </Field>
-
-                <Field
-                  label={t.appearance.paperSize}
-                  hint={PAPER_NOTE[locale][data.pageSize]}
-                >
-                  <Select
-                    value={data.pageSize}
-                    onChange={(e) =>
-                      update({
-                        pageSize: e.target.value as ResumeData["pageSize"],
-                      })
-                    }
-                  >
-                    {PAPER_ORDER.map((size) => (
-                      <option key={size} value={size}>
-                        {PAPER_SIZES[size].label}
-                        {size === RECOMMENDED_PAPER
-                          ? ` - ${t.preview.paperRecommended}`
-                          : ""}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-
-                <Field label={t.appearance.font} hint={t.appearance.fontHint}>
-                  <Select
-                    value={data.fontFamily}
-                    onChange={(e) => update({ fontFamily: e.target.value })}
-                  >
-                    {ATS_SAFE_FONTS.map((font) => (
-                      <option key={font} value={font}>
-                        {font}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-
-                <Field
-                  label={t.appearance.headingLanguage}
-                  hint={t.appearance.headingLanguageHint}
-                >
-                  <Select
-                    value={data.language}
-                    onChange={(e) =>
-                      update({
-                        language: e.target.value as ResumeData["language"],
-                      })
-                    }
-                  >
-                    <option value="ID">Indonesia</option>
-                    <option value="EN">English</option>
-                  </Select>
-                </Field>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <Field label={`${t.appearance.fontSize}: ${data.fontSize}pt`}>
-                  <input
-                    type="range"
-                    min={9}
-                    max={12}
-                    step={0.5}
-                    value={data.fontSize}
-                    onChange={(e) =>
-                      update({ fontSize: Number(e.target.value) })
-                    }
-                    className="w-full accent-ink-900"
-                    aria-label={t.appearance.fontSize}
-                  />
-                </Field>
-
-                <Field
-                  label={`${t.appearance.lineHeight}: ${data.lineHeight.toFixed(2)}`}
-                >
-                  <input
-                    type="range"
-                    min={1.1}
-                    max={1.6}
-                    step={0.05}
-                    value={data.lineHeight}
-                    onChange={(e) =>
-                      update({ lineHeight: Number(e.target.value) })
-                    }
-                    className="w-full accent-ink-900"
-                    aria-label={t.appearance.lineHeight}
-                  />
-                </Field>
-
-                {templateStyle(data.template).useAccent && (
-                  <Field label={t.appearance.accentColor}>
-                    <input
-                      type="color"
-                      value={data.accentColor}
-                      onChange={(e) => update({ accentColor: e.target.value })}
-                      className="h-9 w-full cursor-pointer rounded-lg border border-ink-300"
-                      aria-label={t.appearance.accentColor}
-                    />
-                  </Field>
-                )}
-              </div>
-
-              {/* ------------------------------------------------------- */}
-              {/* Margin halaman                                           */}
-              {/* ------------------------------------------------------- */}
-              <div className="rounded-lg border border-ink-200 bg-white p-3">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <span className="text-xs font-semibold tracking-wide text-ink-700">
-                    {t.appearance.margin}
-                  </span>
-                  {/*
-                    Tombol pengembali hanya muncul saat memang ada yang perlu
-                    dikembalikan. Tombol yang selalu tampak tetapi tidak
-                    melakukan apa-apa mengajari pengguna untuk mengabaikannya.
-                  */}
-                  {!usesTemplateMargin && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        update({ marginYMm: null, marginXMm: null })
-                      }
-                      className="text-[11px] font-medium text-ink-700 underline"
-                    >
-                      {t.appearance.marginReset}
-                    </button>
-                  )}
-                </div>
-
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <Field
-                    label={`${t.appearance.marginY}: ${margins.y} mm${
-                      data.marginYMm === null
-                        ? ` (${t.appearance.marginFollowTemplate})`
-                        : ""
-                    }`}
-                  >
-                    <input
-                      type="range"
-                      min={MARGIN_MIN_MM}
-                      max={MARGIN_MAX_MM}
-                      step={1}
-                      value={margins.y}
-                      onChange={(e) =>
-                        update({ marginYMm: Number(e.target.value) })
-                      }
-                      className="w-full accent-ink-900"
-                      aria-label={t.appearance.marginY}
-                    />
-                  </Field>
-
-                  <Field
-                    label={`${t.appearance.marginX}: ${margins.x} mm${
-                      data.marginXMm === null
-                        ? ` (${t.appearance.marginFollowTemplate})`
-                        : ""
-                    }`}
-                  >
-                    <input
-                      type="range"
-                      min={MARGIN_MIN_MM}
-                      max={MARGIN_MAX_MM}
-                      step={1}
-                      value={margins.x}
-                      onChange={(e) =>
-                        update({ marginXMm: Number(e.target.value) })
-                      }
-                      className="w-full accent-ink-900"
-                      aria-label={t.appearance.marginX}
-                    />
-                  </Field>
-                </div>
-
-                <p className="mt-2 text-[11px] leading-relaxed text-ink-500">
-                  {t.appearance.marginHint}
-                </p>
-              </div>
-
-              {/* Saran panjang CV. Ditempatkan di panel tampilan karena di
-                  sinilah pengguna mengubah ukuran huruf dan kertas - dua hal
-                  yang paling sering dipakai untuk memaksa CV muat, padahal
-                  yang seharusnya dipangkas adalah isinya. */}
-              <p className="text-[11px] leading-relaxed text-ink-500">
-                {t.preview.onePageAdvice}
-              </p>
-
-              {data.personalInfo.showPhoto &&
-                templateStyle(data.template).photo === "none" && (
-                  <Callout tone="warn">
-                    {t.appearance.photoUnsupported}
-                  </Callout>
-                )}
-            </div>
-          )}
 
           {confirmSample && (
             <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
@@ -1057,6 +825,15 @@ export function ResumeEditor({
         {/* ============================================================ */}
         {/* Navigasi bawah - hanya layar sempit                           */}
         {/* ============================================================ */}
+        <AppearanceDrawer
+          open={showSettings}
+          onClose={() => setShowSettings(false)}
+          data={data}
+          update={update}
+          margins={margins}
+          usesTemplateMargin={usesTemplateMargin}
+        />
+
         <nav
           aria-label={t.editor.panelNav}
           className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-ink-200 bg-white/95 backdrop-blur lg:hidden"
