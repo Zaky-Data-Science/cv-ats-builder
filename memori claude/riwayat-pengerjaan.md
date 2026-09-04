@@ -2028,24 +2028,152 @@ memuat peringatan usang itu.
 
 ---
 
+## Sesi 12 - 4 September 2026: portofolio berbasis pola, dan perapian dokumentasinya
+
+Fitur terbesar sejak aplikasi ini ada, dikerjakan di cabang `fitur-portofolio`
+lalu digabung ke `main` lewat `f4be769` (`--no-ff`, supaya tujuh fasenya tetap
+terbaca sebagai satu pekerjaan). Isi perubahannya ada di lima commit dan tidak
+diulang di sini:
+
+| Commit | Isi |
+|---|---|
+| `cc30eaa` | Fase 1-2: fondasi data dan kamus 21 bidang |
+| `bb0b16b` | Fase 3-4: formulir dinamis dan render ke seluruh keluaran |
+| `d87b4e2` | Fase 5: kekuatan bukti P x Q x R; skor berhenti mengaku sebagai ATS |
+| `9e8419c` | Perbaikan rubrik + Fase 6: kredensial, agregat, redaksi, validator bahasa |
+| `df0558b` | Fase 7: kamus menyumbang ke pencocokan lowongan, deteksi pola, uji penerimaan |
+| `cbe05c3` | Perapian dokumentasi |
+
+Pesan tiap commit sudah memuat rinciannya. Yang dicatat di sini hanya yang
+**tidak terbaca dari kode maupun diff** - empat keputusan yang, bila lupa
+alasannya, besar kemungkinan diputar balik oleh siapa pun yang menyentuh
+bagian ini nanti.
+
+### Kenapa bagian `project` diperluas, bukan dibuatkan bagian baru
+
+Godaannya jelas: fitur baru, bagian baru. Yang menahannya adalah kenyataan
+bahwa bagian `project` sudah ada sejak sesi 1 dan bentuknya nyaris sama persis
+dengan "field umum" portofolio - judul, peran, tautan, poin hasil.
+
+Membuat bagian kedua berarti dua bagian yang tumpang tindih di formulir, dua
+bagian di kertas, dan satu pertanyaan yang tidak punya jawaban benar bagi
+penggunanya: proyek saya ditulis di yang mana. Ia juga akan memaksa migrasi
+memindahkan data orang dari satu bagian ke bagian lain - pekerjaan berisiko
+demi hasil yang lebih buruk.
+
+Karena itu daftar itemnya tetap tinggal di `ResumeData.projects`, dan pola
+Publikasi & Kredit mengendalikan bagian `publication` yang juga sudah ada dan
+memang persis pola itu dalam bentuk sederhana.
+
+### Kenapa penanda rubrik R dibuat abstrak
+
+Ini koreksi terhadap Fase 5, dan cacatnya sempat tercatat terus terang di
+pesan commit-nya sendiri sebelum diperbaiki di `9e8419c`.
+
+Semula syarat R menyebut **nama field** - dan field yang disebutnya hanya ada
+di pola Proyek Teknis. Akibatnya kelima pola lain tidak dapat mencapai nilai
+penuh pada dimensi yang justru berbobot 20% bagi sebagian mereka, dan pola
+Publikasi & Kredit tertahan di R=0 selamanya. Sebuah sitasi tidak pernah punya
+"standar & kode", dan tidak akan pernah punya.
+
+Penandanya kini abstrak - skala, standar, hasil, tahap, peran - dan **tiap pola
+menyatakan sendiri field pemenuhnya**. Aturan yang sama dengan seluruh bagian
+lain fitur ini: percabangan per pola tinggal di registry, bukan di kode yang
+memakainya. Keenam pola kini dapat mencapai R=3.
+
+### Kenapa verifikator dikecualikan dari ekspor, tetapi refleksi tidak
+
+Keduanya sama-sama tidak pernah tercetak di CV, jadi sekilas keduanya pantas
+diperlakukan sama. Ternyata tidak, dan yang membedakan bukan sifat rahasianya
+melainkan **siapa pemiliknya**.
+
+Verifikator berisi nama, jabatan, dan hubungan seorang **pihak ketiga** yang
+tidak pernah menyetujui datanya berpindah ke mana-mana. Berkas ekspor dikirim,
+disalin, dan diunggah penggunanya ke tempat yang tidak dapat diketahui siapa
+pun. Menyimpan nama orang lain di basis data penggunanya sendiri adalah satu
+hal; ikut mengirimkannya adalah hal lain.
+
+Refleksi adalah catatan pengguna **untuk dirinya sendiri**, dan berkas ekspor
+adalah cadangan miliknya. Membuangnya diam-diam membuat janji "impor kembali
+kapan saja" bocor tanpa ada yang tahu - dan orang baru menemukannya persis
+pada saat terburuk, yaitu ketika ia memulihkan cadangannya.
+
+Pengecualian verifikator itu **dikatakan terus terang di antarmuka unduhan**,
+dengan alasan yang sama: pengecualian yang tidak diberitahukan akan ditemukan
+pengguna pada saat yang paling buruk.
+
+### Kenapa "Skor ATS" hanya diganti sebagai nama angka
+
+Penggantiannya sengaja dipersempit. Yang dibuang adalah **klaim**, bukan
+kata-katanya.
+
+Sebuah angka bernama "Skor ATS" berjanji sesuatu yang tidak dapat ditepati
+aplikasi mana pun: bahwa ia tahu apa yang akan dilakukan mesin penyaring
+sebuah perusahaan. Tiap perusahaan menyetel filternya sendiri dan tidak ada
+yang mempublikasikannya. Karena itu angkanya berganti nama menjadi **Kekuatan
+CV** dan **Kecocokan Lowongan** - keduanya menyebut persis apa yang mereka
+ukur - disertai sanggahan permanen yang tidak dapat ditutup.
+
+Tetapi "ATS" tetap dipakai sebagai **nama produk** dan **istilah kategori**,
+dan itu bukan kelalaian. Aplikasinya bernama CV ATS Builder; orang menemukannya
+dengan mengetik "ATS"; dan bagian 1 panduan memang harus menjelaskan apa itu
+ATS, sebab justru ketidaktahuan itulah yang membuat orang membuat CV dua kolom.
+Membuang katanya sekalian akan menghapus satu-satunya kata yang menghubungkan
+aplikasi ini dengan masalah yang dipecahkannya.
+
+### Perapian dokumentasi (`cbe05c3`)
+
+Tiga dokumen proyek masih menggambarkan satu "Skor ATS" dari lima dimensi.
+Diperbarui seluruhnya, diagram dibangkitkan ulang, dan `docs/uji-manual.md`
+disertakan setelah dicocokkan dengan aplikasi yang sebenarnya.
+
+Empat hal basi ditemukan di luar daftar dan ikut dibetulkan: aturan panjang
+halaman 100/75/25% yang sudah dicabut Fase 6 tetapi masih tertulis, tabel
+kalibrasi yang angkanya sudah bergeser, lima nama tombol yang sudah berganti,
+dan `breakdownHint` di kedua kamus i18n yang menyebut "lima hal di bawah ini"
+sementara daftar yang ditunjuknya berisi enam baris.
+
+Satu hal yang perlu diketahui untuk lain kali: `src/lib/diagrams.ts` ternyata
+**belum tuntas** disunting di Fase 5 - tiga sisa istilah lama masih ada di
+sana, dan tidak terlihat sampai berkas gambarnya dibaca satu per satu.
+Menjalankan `npm run diagram` saja tidak cukup; hasilnya harus dibuka.
+
+### Satu cacat yang ditemukan dan sengaja dibiarkan
+
+`samarkanAngka()` ikut menyamarkan angka yang berada **di dalam satuan** bila
+satuannya ditulis tanpa superskrip:
+
+```
+"8.400 m²"  ->  "8.000-9.000 m²"      benar
+"8.400 m2"  ->  "8.000-9.000 m2-3"    salah
+```
+
+Sebabnya `samarkan()` di `render.ts` dikenakan pada baris detail yang sudah
+menggabung nilai dengan satuannya. Sempit, tetapi nyata. Tidak diperbaiki
+karena sesi perapian ini memang tidak boleh menyentuh logika fitur.
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 10.
+Angka di bawah ini per akhir sesi 12.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 138 |
-| Baris kode termasuk berkas uji dan skrip | ~30.600 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 180 |
+| Baris kode termasuk berkas uji dan skrip | ~45.000 |
 | Tabel basis data | 17 |
-| Berkas migrasi | 7 |
-| Route aplikasi | 37 |
-| Dimensi penilaian ATS | 5 |
+| Berkas migrasi | 9 |
+| Route aplikasi | 36 |
+| Hal yang dinilai (dimensi) | 6 |
+| Pola pembuktian portofolio | 5 + 1 cadangan |
+| Bidang di kamus | 21 |
 | Bagian CV yang dapat diisi | 11 |
 | Template CV | 10 |
 | Ukuran kertas | 4 |
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 348 |
+| Pemeriksaan otomatis | 708 |
 
 ---

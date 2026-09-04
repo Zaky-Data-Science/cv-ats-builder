@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **4 September 2026** (sesi 11)
+Terakhir diperbarui: **4 September 2026** (sesi 12)
 
 ---
 
@@ -59,6 +59,15 @@ Dan panel hero di halaman depan kini penuh dari tepi ke tepi: jarak di kiri,
 kanan, dan atasnya membuatnya terbaca sebagai kartu yang mengambang, bukan
 sebagai pembuka halaman.
 
+Sesi 12 menambahkan bagian yang paling mengubah wujud aplikasi ini sejak awal:
+**portofolio berbasis pola**. Bagian Proyek tidak lagi satu formulir yang sama
+untuk semua orang - bentuknya mengikuti salah satu dari lima pola pembuktian,
+ditebak dari jurusan yang diketik penggunanya lewat kamus 21 bidang. Ikut
+dengannya: kredensial berkategori, penghitung SKP, Mode Redaksi bagi karya yang
+terikat kerahasiaan, dan penanda bahasa orang pertama. Angkanya pun berubah
+bentuk - satu "Skor ATS" digantikan **dua angka**, Kekuatan CV dan Kecocokan
+Lowongan, sebab keduanya mengukur hal yang berbeda.
+
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
 
@@ -70,7 +79,23 @@ Politeknik Negeri Samarinda.
 
 ---
 
-## 2. Status: sudah tayang
+## 2. Status: tayang, tetapi ada yang belum di-push
+
+> ### Pekerjaan pertama besok, sebelum apa pun yang lain
+>
+> Fitur portofolio sudah selesai dan **sudah tergabung ke `main`** (`f4be769`),
+> tetapi **belum di-push ke GitHub** - jadi yang tayang di production masih
+> versi sebelumnya. `main` unggul beberapa commit atas `origin/main`.
+>
+> Yang menahannya: **uji manual 1-4 di `docs/uji-manual.md` belum dikerjakan.**
+> Keempatnya menguji hal yang tidak dapat dibuktikan `npm test` - navigasi
+> papan ketik, alur utuh sampai berkasnya jadi, kebocoran Mode Redaksi, dan
+> rantai penghapusan akun. Dua di antaranya bertanda "perbaiki sekarang juga"
+> bila gagal, dan keduanya menyangkut data orang.
+>
+> Urutannya: kerjakan uji 1-4 (sekitar 35 menit) -> perbaiki bila ada yang
+> gagal -> baru `git push` -> lalu uji 5, yang memang hanya dapat dikerjakan
+> setelah deploy.
 
 | Hal | Nilai |
 |---|---|
@@ -81,12 +106,16 @@ Politeknik Negeri Samarinda.
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
-| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
+| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. **Belum dipicu untuk fitur portofolio** |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 
 **Hasil uji terakhir di production: 10 dari 10 poin lulus, 0 galat
-JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6.
+JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6. Angka itu
+berasal dari versi **sebelum** fitur portofolio.
+
+Gerbang kualitas pada `main` saat ini: `npm test` 708 lulus 0 gagal, typecheck
+bersih, lint bersih.
 
 ---
 
@@ -119,7 +148,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 348 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 708 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -193,7 +222,12 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | Lokasi | Isi |
 |---|---|
 | `prisma/schema.prisma` | 17 tabel beserta relasinya |
-| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 5 dimensi untuk CV terstruktur |
+| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 6 dimensi untuk CV terstruktur; menghasilkan dua angka terpisah, dan bobotnya bergeser saat portofolio aktif |
+| `src/lib/ats/bukti-karya.ts` | Rubrik P x Q x R untuk dimensi keenam. Pemetaan field ke syarat R dibaca dari penanda `rubrik` di pola-schemas.ts, bukan ditulis di sini |
+| `src/lib/portfolio/pola-schemas.ts` | Registry **bentuk** formulir - lima pola pembuktian plus satu cadangan. Kode perlu tahu isinya |
+| `src/lib/portfolio/kamus-bidang.ts` | Registry **isi** saran - 21 bidang. Kode tidak perlu tahu isinya. Menambah profesi = menambah satu entri di sini, bukan menulis skema baru |
+| `src/lib/portfolio/render.ts` | Item portofolio menjadi bentuk siap cetak. `verifikator` dan `refleksi` sengaja tidak punya tempat di sana, sehingga tidak ada penghasil keluaran yang **dapat** mencetaknya |
+| `src/lib/portfolio/redaksi.ts` | Mode Redaksi. Ada cacat sempit yang diketahui - lihat akhir sesi 12 di riwayat |
 | `src/lib/ats/messages.ts` | Seluruh kalimat keluaran mesin penilaian, dua bahasa. engine.ts tinggal berisi angka dan syarat |
 | `src/lib/ats/document.ts` | Penilai **berkas CV yang diunggah** - menebak strukturnya dari teks. Sengaja terpisah dari engine.ts; alasannya ada di komentar berkasnya |
 | `src/lib/ats/document-messages.ts` | Kalimat kelebihan/kekurangan untuk penilai berkas |
@@ -232,7 +266,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore), beserta peralihan tinta yang menyebar saat temanya berganti |
 | `src/lib/reveal-init.ts` | Skrip `<head>` yang menyalakan animasi "muncul saat tergulir" - dan menjamin isinya tetap terlihat bila animasinya tidak pernah berjalan |
 | `src/app/(app)/loading.tsx` | Kerangka pemuatan. **Sengaja tidak di root** - alasannya di kepala berkasnya |
-| `tests/` | 348 pemeriksaan; `npm test` |
+| `tests/` | 708 pemeriksaan; `npm test` |
 | `tests/kertas.test.ts` + `tests/fixtures/kertas-acuan.html` | Mengunci markup dokumen CV pada jalur cetak, 10 template x 2 bahasa. Rekam ulang acuannya **hanya** bila tampilannya memang sengaja diubah |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
@@ -413,6 +447,10 @@ Delapan butir pada daftar sesi 5 sudah ditimbang satu per satu di sesi 6.
 Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
 `riwayat-pengerjaan.md` sesi 6. Yang masih terbuka:
 
+0. **Uji manual 1-4 di `docs/uji-manual.md` - menahan `git push`.** Lihat
+   bagian 2. Ini yang paling mendesak dari seluruh daftar ini, dan satu-satunya
+   yang menahan pekerjaan lain.
+
 1. **Pemulihan kata sandi lewat surel sudah ada sejak sesi 10, tetapi belum
    menyala.** Seluruh alurnya terpasang - `/lupa-sandi`, `/atur-sandi`, dua
    titik akhir API, tabel tiket, batas laju, dan surel dua bahasa. Yang belum:
@@ -511,7 +549,7 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
     pengukuran cukup untuk memaksa satu bingkai berjalan; itulah cara angka di
     atas akhirnya diperoleh.
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 348
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 708
 pemeriksaan). Sejak sesi 5, jalur peramban diuji dengan menjalankan Chrome
 sungguhan lewat DevTools Protocol - termasuk memeriksa isi berkas PDF yang
 benar-benar dihasilkan, bukan sekadar keberadaannya.
@@ -525,7 +563,8 @@ Cukup sampaikan hal-hal ini:
 > Project di `D:\Website CV`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
-> basis data lokal. Sebelum menyatakan selesai, jalankan
+> basis data lokal. Ada pekerjaan yang menahan `git push` - lihat bagian 2.
+> Sebelum menyatakan selesai, jalankan
 > `npm run typecheck && npm run lint && npm test && npm run build`.
 
 Sejak sesi 10 ada satu hal lagi yang mudah terlewat:
