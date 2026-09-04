@@ -81,8 +81,9 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
     keluar dan akan menyangka aplikasinya rusak.
   */
   const sesiHabis = params.get("sesi") === "habis";
+  /* Baru saja mengganti kata sandi lewat tautan pemulihan. */
+  const sandiBaru = params.get("sandi") === "baru";
   const [busy, setBusy] = React.useState(false);
-  const [forgotOpen, setForgotOpen] = React.useState(false);
 
   const justRegistered = params.get("registered") === "1";
 
@@ -160,30 +161,27 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
         </Field>
 
         {/*
-          Jalan pulang bagi yang lupa kata sandinya sengaja dijelaskan di sini,
-          bukan disembunyikan di halaman bantuan. Halaman masuk adalah
-          satu-satunya tempat orang menyadari dirinya lupa - mengarahkannya ke
-          tempat lain berarti menuntut ia mencari sendiri jawaban yang muat
-          dalam satu paragraf.
+          Dulu tombol ini membuka satu paragraf penjelasan di tempat, karena
+          pemulihan lewat surel memang belum ada dan penjelasannya muat dalam
+          satu paragraf. Sekarang alurnya ada, jadi tautannya menuju alurnya.
+
+          Penjelasan lama tidak hilang: halaman tujuannya yang menampilkannya,
+          dan hanya bila pemasangan ini memang belum punya layanan surel.
+          Dengan begitu keadaan "belum aktif" diketahui dari server, bukan
+          ditebak dari ada-tidaknya tombol Google.
         */}
         <div className="-mt-1">
-          <button
-            type="button"
+          <Link
+            href="/lupa-sandi"
             className="text-xs text-ink-600 underline hover:text-ink-900"
-            aria-expanded={forgotOpen}
-            onClick={() => setForgotOpen((open) => !open)}
           >
             {t.auth.forgotPassword}
-          </button>
-          {forgotOpen && (
-            <div className="mt-2">
-              <Callout tone="info">
-                {googleEnabled ? t.auth.forgotViaGoogle : t.auth.forgotNoGoogle}
-              </Callout>
-            </div>
-          )}
+          </Link>
         </div>
 
+        {sandiBaru && !error && (
+          <Callout tone="good">{t.auth.resetDone}</Callout>
+        )}
         {sesiHabis && !error && (
           <Callout tone="warn">{t.auth.sessionStale}</Callout>
         )}

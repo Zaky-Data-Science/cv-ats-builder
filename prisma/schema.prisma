@@ -91,8 +91,9 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts Account[]
-  resumes  Resume[]
+  accounts    Account[]
+  resumes     Resume[]
+  resetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -374,6 +375,39 @@ model AtsAnalysis {
 
   @@index([resumeId, createdAt])
   @@map("ats_analyses")
+}
+
+// ----------------------------------------------------------------------------
+// PEMULIHAN KATA SANDI
+// ----------------------------------------------------------------------------
+
+/// Tiket sekali pakai untuk menyetel ulang kata sandi lewat tautan di surel.
+///
+/// Yang disimpan di sini **bukan** token yang dikirim ke pengguna, melainkan
+/// hasil SHA-256 atasnya. Tabel ini karena itu tidak berguna bagi siapa pun
+/// yang berhasil membacanya: dari hash tidak dapat disusun kembali tautan yang
+/// dapat dipakai masuk. Perlakuan yang sama seperti kata sandi itu sendiri,
+/// dan karena alasan yang sama - sebuah tiket reset yang bocor sama saja
+/// dengan kata sandi yang bocor.
+///
+/// Tiket lama tidak dihapus saat dipakai melainkan ditandai `usedAt`, supaya
+/// tautan yang sudah terpakai dapat dibedakan dari tautan yang tidak pernah
+/// ada - keduanya ditolak, tetapi hanya yang pertama pantas diberi tahu
+/// alasannya.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  /// SHA-256 dari token yang dikirim lewat surel, dalam heksadesimal.
+  tokenHash String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
 }
 
 // ----------------------------------------------------------------------------

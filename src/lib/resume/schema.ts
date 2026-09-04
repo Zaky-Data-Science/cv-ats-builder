@@ -236,6 +236,23 @@ export const registerSchema = z.object({
     .max(128, "Kata sandi terlalu panjang"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Format email tidak valid").max(160),
+  /** Bahasa surel yang dikirim - mengikuti bahasa antarmuka pemintanya. */
+  locale: z.enum(["id", "en"]).default("id"),
+});
+
+export const resetPasswordSchema = z.object({
+  // 64 karakter heksadesimal: bentuk yang dihasilkan createResetToken().
+  // Diperiksa di sini supaya masukan yang bahkan tidak berbentuk token tidak
+  // pernah sampai ke basis data.
+  token: z.string().regex(/^[0-9a-f]{64}$/, "Tautan tidak berlaku"),
+  password: z
+    .string()
+    .min(8, "Kata sandi minimal 8 karakter")
+    .max(128, "Kata sandi terlalu panjang"),
+});
+
 export const atsRequestSchema = z.object({
   jobDescription: z.string().max(20000).default(""),
   /** Simpan hasil ke riwayat AtsAnalysis (dimatikan saat pratinjau cepat). */

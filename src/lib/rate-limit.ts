@@ -117,4 +117,15 @@ export const LIMITS = {
   register: { limit: 5, windowSeconds: 60 * 60 },
   /** Percobaan masuk per alamat email. */
   login: { limit: 8, windowSeconds: 15 * 60 },
+  /**
+   * Permintaan tautan pemulihan per alamat email.
+   *
+   * Lebih ketat daripada masuk, dan sengaja. Yang dibatasi di sini bukan
+   * penebakan kata sandi melainkan pengiriman surel: tanpa batas, alamat
+   * surel orang lain dapat dibanjiri surel dari aplikasi ini - dan yang
+   * menanggung akibatnya adalah nama pengirimnya, yang akan ditandai spam.
+   */
+  forgot: { limit: 3, windowSeconds: 60 * 60 },
+  /** Percobaan memakai tautan pemulihan, per alamat IP. */
+  reset: { limit: 10, windowSeconds: 60 * 60 },
 } as const;
