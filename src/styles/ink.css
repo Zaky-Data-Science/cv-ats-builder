@@ -14,6 +14,26 @@
    1. Intro pembuka
    -------------------------------------------------------------------------- */
 
+/*
+  Susunan waktu seluruh adegan, dikumpulkan di satu tempat.
+
+  Sebelumnya tiap penundaan ditulis di aturannya masing-masing, dan itu yang
+  membuat adegannya terasa patah: setiap kali satu fase digeser, tumpang
+  tindihnya dengan fase tetangga berubah tanpa ada yang menyadarinya. Dengan
+  seluruh angkanya berdampingan, hubungan antar-fase dapat dibaca sekaligus -
+  dan hubungan itulah yang menentukan halus atau tidaknya.
+
+     0 ─────────────────────────────────────────────────────── 2200ms
+     kertas masuk   [ 80 ─── 780 ]
+     siluet              [ 540 ──────── 1520 ]
+     tebasan                   [1040 ─ 1480]
+     kertas terbelah            [1120 ────────────── 2100 ]
+     tinta                        [1160 ─────────────── 2160]
+     tirai memudar                     [1430 ──────────── 2200]
+
+  Tidak ada satu pun celah tanpa gerak. Celah itu - sekecil apa pun - yang
+  terbaca sebagai patahan, bukan kecepatan geraknya.
+*/
 .intro-akar {
   position: fixed;
   inset: 0;
@@ -25,6 +45,30 @@
   color: rgb(var(--ink));
 }
 
+/*
+  Adegan yang dilewati memudar sebagai satu kesatuan, bukan berhenti di
+  tempat. Yang diminta penggunanya "lanjutkan", dan lapisan yang lenyap
+  seketika terbaca sebagai kedipan yang salah - bukan sebagai jawaban.
+
+  `animation-play-state` ikut dihentikan supaya bagian yang sedang bergerak
+  tidak terus meluncur di balik lapisan yang memudar; yang terlihat kalau
+  tidak dihentikan adalah dua gerak sekaligus.
+*/
+.intro-akar[data-lewat] {
+  animation: intro-lewat var(--intro-lewat, 260ms) cubic-bezier(0.4, 0, 1, 1)
+    forwards;
+}
+
+.intro-akar[data-lewat] * {
+  animation-play-state: paused !important;
+}
+
+@keyframes intro-lewat {
+  to {
+    opacity: 0;
+  }
+}
+
 /* Latar seukuran kertas halaman - bukan hitam pekat, melainkan warna
    permukaan aplikasi, supaya peralihan ke halaman depan tidak terasa seperti
    pindah dari layar lain. */
@@ -32,12 +76,23 @@
   position: absolute;
   inset: 0;
   background: var(--color-ink-100);
-  animation: intro-tirai 2100ms ease-in forwards;
+  will-change: opacity;
+  /*
+    Dulu `ease-in`, dan itu kelirunya. Kurva masuk mulai lambat lalu
+    mempercepat di ujung - tepat kebalikan dari yang dibutuhkan sesuatu yang
+    sedang menghilang. Yang terasa: tirainya menggantung, lalu lenyap
+    mendadak di detik terakhir.
+
+    Kurva keluar yang lembut membuat sebagian besar perubahannya terjadi di
+    awal, lalu menipis pelan sampai nol - dan halaman di belakangnya seolah
+    menembus, bukan tiba-tiba tersingkap.
+  */
+  animation: intro-tirai 2200ms cubic-bezier(0.33, 0, 0.15, 1) forwards;
 }
 
 @keyframes intro-tirai {
   0%,
-  72% {
+  65% {
     opacity: 1;
   }
   100% {
@@ -73,6 +128,15 @@
   background: #ffffff;
   box-shadow: 0 18px 50px rgb(0 0 0 / 0.35);
   opacity: 0;
+  will-change: transform, opacity;
+  /*
+    Lapisan sendiri sejak awal. Tanpa ini peramban baru mempromosikannya saat
+    animasinya mulai berjalan, dan promosi di tengah gerak terlihat sebagai
+    satu sentakan di bingkai pertama - persis pada bingkai yang paling
+    diperhatikan orang.
+  */
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /*
@@ -91,49 +155,87 @@
 .intro-kertas-kiri {
   clip-path: polygon(0 0, 62.4% 0, 38.4% 100%, 0 100%);
   animation:
-    intro-kertas-masuk 620ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards,
-    intro-belah-kiri 900ms cubic-bezier(0.33, 0, 0.15, 1) 1080ms forwards;
+    intro-kertas-masuk 700ms cubic-bezier(0.16, 1, 0.3, 1) 80ms forwards,
+    intro-belah-kiri 980ms cubic-bezier(0.36, 0, 0.22, 1) 1120ms forwards;
 }
 
 .intro-kertas-kanan {
   clip-path: polygon(61.6% 0, 100% 0, 100% 100%, 37.6% 100%);
   animation:
-    intro-kertas-masuk 620ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards,
-    intro-belah-kanan 900ms cubic-bezier(0.33, 0, 0.15, 1) 1080ms forwards;
+    intro-kertas-masuk 700ms cubic-bezier(0.16, 1, 0.3, 1) 80ms forwards,
+    intro-belah-kanan 980ms cubic-bezier(0.36, 0, 0.22, 1) 1120ms forwards;
 }
 
+/*
+  Kertas mendarat, bukan muncul.
+
+  Opasitasnya sengaja penuh jauh sebelum geraknya selesai - pada 46%. Benda
+  yang masih menembus pandang sementara ia sudah hampir berhenti terbaca
+  sebagai gambar yang di-fade; benda yang sudah pekat sementara sisa geraknya
+  mengendap terbaca sebagai benda yang mendarat.
+*/
 @keyframes intro-kertas-masuk {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(14px) scale(0.94);
+    transform: translate3d(0, 16px, 0) scale(0.94);
   }
-  to {
+  46% {
     opacity: 1;
-    transform: none;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 /* Dua bagian saling menjauh sambil sedikit berputar dan tenggelam - kertas
    yang terbelah jatuh, bukan meledak. */
+/*
+  Dua bagian saling menjauh sambil sedikit berputar dan tenggelam - kertas
+  yang terbelah jatuh, bukan meledak.
+
+  Keduanya ditahan sesaat di 12% sebelum benar-benar berpisah. Jeda sekejap
+  itu yang membuat belahannya terbaca sebagai akibat dari tebasan; tanpa
+  jeda, kertasnya sudah berpisah sebelum sapuan kuasnya selesai lewat, dan
+  urutan sebab-akibatnya hilang.
+
+  Opasitasnya juga tidak ikut turun sejak awal. Bagian yang memudar sambil
+  bergerak menjauh terbaca sebagai asap; yang dituju adalah kertas yang jatuh
+  keluar bingkai, jadi ia baru menghilang setelah setengah perjalanan.
+*/
 @keyframes intro-belah-kiri {
-  from {
+  0% {
     opacity: 1;
-    transform: none;
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
-  to {
+  12% {
+    opacity: 1;
+    transform: translate3d(-1%, 0, 0) rotate(-0.6deg);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
     opacity: 0;
-    transform: translate3d(-26%, 16%, 0) rotate(-7deg);
+    transform: translate3d(-28%, 18%, 0) rotate(-7deg);
   }
 }
 
 @keyframes intro-belah-kanan {
-  from {
+  0% {
     opacity: 1;
-    transform: none;
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
-  to {
+  12% {
+    opacity: 1;
+    transform: translate3d(1%, 0, 0) rotate(0.6deg);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
     opacity: 0;
-    transform: translate3d(26%, 16%, 0) rotate(7deg);
+    transform: translate3d(28%, 18%, 0) rotate(7deg);
   }
 }
 
@@ -193,7 +295,15 @@
   opacity: 0;
   transform-origin: 24% 88%;
   filter: drop-shadow(0 0 18px rgb(var(--ink) / 0.28));
-  animation: intro-siluet 900ms cubic-bezier(0.4, 0, 0.2, 1) 560ms forwards;
+  will-change: transform, opacity;
+  /*
+    Kurvanya linear, dan itu disengaja: percepatan diatur di dalam
+    keyframe-nya lewat `animation-timing-function` per langkah. Satu kurva
+    untuk seluruh animasi memaksa masuk, tebasan, dan keluar memakai
+    percepatan yang sama - padahal ketiganya gerak yang berbeda sifatnya, dan
+    itulah yang membuat sosoknya terbaca seperti meluncur di atas rel.
+  */
+  animation: intro-siluet 980ms linear 540ms forwards;
 }
 
 /*
@@ -203,21 +313,32 @@
   tokoh halamannya berubah menjadi halaman bertema, bukan halaman produk.
 */
 @keyframes intro-siluet {
+  /* Masuk: cepat lalu mengendap, seperti benda yang berhenti pada tempatnya. */
   0% {
     opacity: 0;
-    transform: translateX(30px) scale(0.97) rotate(4deg);
+    transform: translate3d(30px, 0, 0) scale(0.97) rotate(4deg);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
-  24% {
+  26% {
     opacity: 0.78;
-    transform: translateX(0) scale(1) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    /* Menahan: nyaris diam, sekadar bernapas sebelum menebas. */
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
   }
-  52% {
+  44% {
     opacity: 0.78;
-    transform: translateX(-8px) scale(1.01) rotate(-5deg);
+    transform: translate3d(2px, 0, 0) scale(1) rotate(1.2deg);
+    /* Menebas: lambat sesaat, lalu melesat. */
+    animation-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+  }
+  62% {
+    opacity: 0.78;
+    transform: translate3d(-9px, 0, 0) scale(1.01) rotate(-5deg);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
   }
   100% {
     opacity: 0;
-    transform: translateX(-26px) scale(1.02) rotate(-7deg);
+    transform: translate3d(-28px, 0, 0) scale(1.02) rotate(-7deg);
   }
 }
 
@@ -270,24 +391,40 @@
     7% 78%
   );
   filter: blur(1.2px);
-  animation: intro-tebasan 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 1020ms forwards;
+  will-change: transform, opacity;
+  animation: intro-tebasan 440ms linear 1040ms forwards;
 }
 
+/*
+  Sapuannya tidak berhenti sebelum memudar.
+
+  Dulu ia mencapai panjang penuh pada 60%, lalu diam di tempat selama 40%
+  sisanya sambil menghilang - dan diam sekejap di puncak gerak adalah persis
+  yang membuat sesuatu terbaca patah. Sapuan kuas sungguhan tidak berhenti
+  di ujung goresan; ia terangkat sambil masih bergerak.
+
+  Karena itu skalanya terus melewati 1 sampai 1,06 selagi memudar, dan
+  titik tumpunya bergeser ke ujung yang ditinggalkan - sehingga yang lenyap
+  lebih dulu adalah pangkalnya, seperti tinta yang menipis di akhir goresan.
+*/
 @keyframes intro-tebasan {
   0% {
     opacity: 0;
     transform: rotate(-58deg) scaleX(0);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
   }
-  30% {
+  26% {
     opacity: 1;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  60% {
+  55% {
     opacity: 1;
     transform: rotate(-58deg) scaleX(1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.7, 1);
   }
   100% {
     opacity: 0;
-    transform: rotate(-58deg) scaleX(1);
+    transform: rotate(-58deg) scaleX(1.06);
   }
 }
 
@@ -316,16 +453,27 @@
     rgb(var(--ink) / 0.08) 72%,
     rgb(var(--ink) / 0) 100%
   );
-  animation: intro-tinta 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1120ms forwards;
+  will-change: transform, opacity;
+  animation: intro-tinta 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1160ms forwards;
 }
 
+/*
+  Tinta menyebar lalu meresap.
+
+  Puncak kepekatannya digeser lebih awal - ke 28% - dan turunnya diperpanjang
+  sampai akhir. Tinta sungguhan paling pekat justru sesaat setelah menyentuh
+  kertas, lalu memudar makin lambat seiring meresap; kurva yang naik dan turun
+  simetris terbaca sebagai denyut, bukan sebagai serapan.
+*/
 @keyframes intro-tinta {
   0% {
     opacity: 0;
     transform: scale(0.12) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
-  38% {
+  28% {
     opacity: 0.9;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1);
   }
   100% {
     opacity: 0;

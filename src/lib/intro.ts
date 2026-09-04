@@ -7,16 +7,63 @@
  * adalah pola yang memicu peringatan lint sekaligus satu render tambahan.
  * `useSyncExternalStore` memang dirancang untuk keadaan ini - nilai server
  * dan nilai peramban memang berbeda, dan perbedaan itu disengaja.
+ *
+ * ## Sekali per pemuatan halaman, bukan sekali per perangkat
+ *
+ * Sampai sesi 10 ini ditandai di localStorage, sehingga intronya hanya pernah
+ * terlihat satu kali seumur perangkat. Alasannya waktu itu: adegan pembuka
+ * yang diputar setiap kali halaman dimuat berubah dari kesan pertama menjadi
+ * penghalang.
+ *
+ * Diubah atas permintaan pemilik aplikasi - dan keberatan itu tidak dibuang,
+ * melainkan dijawab dari sisi lain: adegannya kini **dapat dilewati kapan
+ * saja** dengan satu ketukan, satu klik, atau tombol apa pun. Yang membuat
+ * sebuah pembuka menjadi penghalang bukan kemunculannya, melainkan
+ * ketidakmampuan melewatinya.
+ *
+ * Penandanya kini variabel di dalam modul ini, bukan localStorage. Bedanya
+ * persis yang dibutuhkan:
+ *
+ *  - **Muat ulang halaman** memuat ulang modul ini juga, penandanya kembali
+ *    ke nilai awal, dan intronya diputar lagi.
+ *  - **Berpindah halaman di dalam aplikasi** lalu kembali ke beranda tidak
+ *    memuat ulang modul apa pun, sehingga intronya tidak ikut terputar setiap
+ *    kali seseorang menekan tombol kembali.
  */
 
-export const INTRO_STORAGE_KEY = "atscv-intro-dilihat";
-
 /** Berapa lama seluruh adegan berlangsung, dari kertas muncul sampai memudar. */
-export const INTRO_DURASI_MS = 2100;
+export const INTRO_DURASI_MS = 2200;
 
+/**
+ * Berapa lama adegan yang dilewati memudar.
+ *
+ * Bukan nol. Lapisan yang lenyap seketika terbaca sebagai kedipan yang salah,
+ * sedangkan yang barusan diminta penggunanya adalah "lanjutkan" - bukan
+ * "hilangkan".
+ */
+export const INTRO_LEWAT_MS = 260;
+
+let sudahDiputar = false;
 let snapshot: boolean | null = null;
 
+/**
+ * Kunci yang dipakai versi sebelumnya untuk menandai "sudah pernah melihat".
+ *
+ * Tidak lagi dibaca, tetapi baris yang sudah terlanjur tertulis akan tetap
+ * duduk di localStorage setiap pengunjung lama selamanya. Menghapusnya sekali
+ * saat modul ini dimuat jauh lebih murah daripada meninggalkan sampah di
+ * perangkat orang - dan penyimpanan peramban punya batas yang, pada mode
+ * tanpa akun, justru dipakai untuk menyimpan CV pengguna.
+ */
+const KUNCI_LAMA = "atscv-intro-dilihat";
+
 function hitung(): boolean {
+  try {
+    localStorage.removeItem(KUNCI_LAMA);
+  } catch {
+    // Penyimpanan diblokir. Tidak ada yang perlu dibersihkan kalau begitu.
+  }
+
   // Pengguna yang meminta pengurangan gerak tidak menerima adegan ini sama
   // sekali. Bukan versi yang lebih singkat - permintaannya adalah gerak yang
   // berkurang, dan sebuah adegan sinematik selama dua detik tetaplah gerak.
@@ -24,14 +71,7 @@ function hitung(): boolean {
     return false;
   }
 
-  try {
-    return localStorage.getItem(INTRO_STORAGE_KEY) === null;
-  } catch {
-    // Penyimpanan diblokir. Intro tetap diputar sekali per pemuatan; itu
-    // lebih baik daripada tidak pernah muncul, dan pengguna yang memblokir
-    // penyimpanan memang sudah menerima keadaan yang tidak diingat.
-    return true;
-  }
+  return !sudahDiputar;
 }
 
 /**
@@ -50,8 +90,8 @@ export function getIntroSnapshot(): boolean {
 }
 
 /**
- * Di server tidak diketahui apakah pengunjung pernah melihat intronya, dan
- * menebak "belum" akan membuat setiap halaman terkirim bersama lapisan intro
+ * Di server tidak diketahui apakah pengunjung meminta pengurangan gerak, dan
+ * menebak "perlu" akan membuat setiap halaman terkirim bersama lapisan intro
  * yang lalu dibuang saat hidrasi - kedipan yang justru merusak kesan pertama
  * yang ingin dibangun. Karena itu jawabannya selalu "tidak perlu", dan
  * lapisannya baru muncul setelah peramban memutuskannya sendiri.
@@ -60,12 +100,14 @@ export function getIntroServerSnapshot(): boolean {
   return false;
 }
 
-/** Menandai bahwa intro sudah pernah dilihat di perangkat ini. */
+/**
+ * Menandai bahwa intronya sudah diputar pada pemuatan halaman ini.
+ *
+ * Snapshot-nya ikut disetel supaya komponen yang dipasang sesudah ini -
+ * misalnya saat pengguna kembali ke beranda dari halaman lain - membaca
+ * "tidak perlu" tanpa menghitung ulang.
+ */
 export function tandaiIntroDilihat(): void {
+  sudahDiputar = true;
   snapshot = false;
-  try {
-    localStorage.setItem(INTRO_STORAGE_KEY, "1");
-  } catch {
-    // Tidak apa-apa; intro hanya akan muncul lagi pada pemuatan berikutnya.
-  }
 }

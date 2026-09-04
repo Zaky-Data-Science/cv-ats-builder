@@ -5,6 +5,7 @@ import {
   getIntroServerSnapshot,
   getIntroSnapshot,
   INTRO_DURASI_MS,
+  INTRO_LEWAT_MS,
   subscribeIntro,
   tandaiIntroDilihat,
 } from "@/lib/intro";
@@ -36,9 +37,13 @@ import {
  * 3. **Hanya transform dan opacity yang dianimasikan**, sehingga seluruh
  *    kerjanya jatuh ke compositor dan tidak memicu perhitungan tata letak.
  *
- * 4. **Sekali per perangkat.** Ditandai di localStorage lewat store di
- *    `src/lib/intro.ts`. Animasi pembuka yang diputar setiap kali halaman
- *    dimuat berubah dari kesan pertama menjadi penghalang.
+ * 4. **Sekali per pemuatan halaman, dan selalu dapat dilewati.** Sesi 10
+ *    mengubahnya dari sekali-per-perangkat menjadi setiap kali halaman
+ *    dimuat ulang - lihat `src/lib/intro.ts` untuk alasannya. Keberatan
+ *    lamanya, bahwa pembuka yang berulang berubah menjadi penghalang,
+ *    dijawab di sini: satu ketukan, satu klik, atau tombol apa pun
+ *    melewatinya. Bukan tombol "lewati" yang harus dicari - seluruh layar
+ *    adalah tombolnya.
  */
 
 export function SamuraiIntro() {
@@ -55,23 +60,60 @@ export function SamuraiIntro() {
   );
 
   const [selesai, setSelesai] = React.useState(false);
+  /* Adegannya sedang dipercepat karena penggunanya meminta lanjut. */
+  const [dilewati, setDilewati] = React.useState(false);
 
   React.useEffect(() => {
     if (!perlu || selesai) return;
 
     // Ditandai saat adegannya dimulai, bukan saat berakhir. Pengunjung yang
-    // menutup tab di tengah adegan sudah melihat pembukanya; memutarnya lagi
-    // di kunjungan berikutnya akan terasa seperti aplikasi yang tidak ingat.
+    // berpindah halaman di tengah adegan sudah melihat pembukanya; memutarnya
+    // lagi saat ia kembali akan terasa seperti aplikasi yang tidak ingat.
     tandaiIntroDilihat();
 
     const timer = setTimeout(() => setSelesai(true), INTRO_DURASI_MS);
-    return () => clearTimeout(timer);
+
+    /*
+      Melewati adegannya.
+
+      Peristiwanya didengarkan di `window`, bukan pada lapisan intronya
+      sendiri: lapisan itu ber-`pointer-events: none` - dan memang harus,
+      supaya halaman di belakangnya tetap dapat disentuh selama adegan
+      berjalan. Menyalakan pointer-events demi menangkap ketukan justru akan
+      menghalangi hal yang sengaja dibiarkan tembus.
+
+      `pointerdown`, bukan `click`: ketukan yang berakhir menjadi gulir tidak
+      pernah menjadi klik, sementara maksud "lanjutkan" sudah jelas sejak
+      jarinya menyentuh layar.
+    */
+    const lewati = () => {
+      setDilewati(true);
+      clearTimeout(timer);
+      setTimeout(() => setSelesai(true), INTRO_LEWAT_MS);
+    };
+
+    window.addEventListener("pointerdown", lewati, { once: true, passive: true });
+    window.addEventListener("keydown", lewati, { once: true });
+    window.addEventListener("wheel", lewati, { once: true, passive: true });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("pointerdown", lewati);
+      window.removeEventListener("keydown", lewati);
+      window.removeEventListener("wheel", lewati);
+    };
   }, [perlu, selesai]);
 
   if (!perlu || selesai) return null;
 
   return (
-    <div className="intro-akar" aria-hidden data-intro>
+    <div
+      className="intro-akar"
+      aria-hidden
+      data-intro
+      data-lewat={dilewati ? "" : undefined}
+      style={{ "--intro-lewat": `${INTRO_LEWAT_MS}ms` } as React.CSSProperties}
+    >
       {/* Latar yang memudar di akhir, memperlihatkan halaman di belakangnya. */}
       <div className="intro-tirai" />
 

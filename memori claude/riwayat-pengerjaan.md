@@ -1499,6 +1499,108 @@ dan itulah cara angka pada tabel di atas akhirnya diperoleh.
 > hampir menjadi kesimpulan yang salah. Ketiganya berasal dari lingkungan
 > pengujian, bukan dari aplikasinya.
 
+### Putaran ketiga: intro pembuka
+
+Dua permintaan yang saling menarik ke arah berlawanan: geraknya dibuat lebih
+halus, dan adegannya diputar setiap kali halaman dimuat ulang - bukan lagi
+sekali seumur perangkat.
+
+Yang kedua membatalkan keputusan sesi 8. Keberatan lamanya tetap benar -
+pembuka yang berulang berubah dari kesan pertama menjadi penghalang - tetapi
+tidak perlu dijawab dengan menolak permintaannya. Ia dijawab dari sisi lain:
+adegannya kini **dapat dilewati kapan saja** oleh ketukan, klik, tombol apa
+pun, atau gulir. Bukan tombol "lewati" yang harus dicari di pojok layar;
+seluruh layar adalah tombolnya. Yang membuat sebuah pembuka menjadi
+penghalang bukan kemunculannya, melainkan ketidakmampuan melewatinya.
+
+Penandanya berpindah dari localStorage ke variabel di dalam modul. Bedanya
+persis dua perilaku yang dibutuhkan: muat ulang halaman memuat ulang
+modulnya juga sehingga intronya kembali, sementara berpindah halaman di
+dalam aplikasi tidak - jadi menekan tombol kembali ke beranda tidak
+memutarnya lagi. Kunci lama di localStorage ikut dibersihkan sekali saat
+modul dimuat; ia tidak lagi dibaca, tetapi akan duduk di perangkat setiap
+pengunjung lama selamanya kalau dibiarkan.
+
+#### Apa yang sebenarnya membuat gerak terasa kasar
+
+Bukan kecepatannya. Tiga hal yang ditemukan saat membacanya ulang:
+
+1. **Fase yang berhenti di puncak geraknya.** Sapuan tebasan mencapai panjang
+   penuh pada 60%, lalu diam di tempat selama 40% sisanya sambil memudar.
+   Sapuan kuas sungguhan tidak berhenti di ujung goresan - ia terangkat
+   sambil masih bergerak.
+
+2. **Kurva yang salah arah.** Tirai penutup memakai `ease-in`: mulai lambat,
+   mempercepat di ujung. Itu kebalikan dari yang dibutuhkan sesuatu yang
+   sedang menghilang, dan yang terasa adalah tirai yang menggantung lalu
+   lenyap mendadak di detik terakhir.
+
+3. **Satu kurva untuk beberapa gerak yang berbeda sifatnya.** Siluetnya masuk,
+   menahan, menebas, lalu keluar - empat gerak dengan percepatan yang
+   seharusnya berbeda, dijalankan dengan satu `cubic-bezier` untuk semuanya.
+   Hasilnya terbaca seperti sosok yang meluncur di atas rel.
+
+Ketiganya diperbaiki: gerak yang berlanjut sampai memudar, kurva keluar untuk
+yang menghilang, dan `animation-timing-function` per langkah keyframe.
+Ditambah `will-change` dan promosi lapisan sejak awal - tanpa itu peramban
+baru mempromosikan elemennya saat animasinya mulai, dan promosi di tengah
+gerak terlihat sebagai satu sentakan pada bingkai pertama.
+
+Susunan waktunya juga dikumpulkan menjadi satu komentar di kepala berkas.
+Sebelumnya tiap penundaan tersebar di aturannya masing-masing, dan itu yang
+membuat fase-fasenya renggang: menggeser satu angka mengubah tumpang tindih
+dengan fase tetangga tanpa ada yang menyadarinya.
+
+Susunan barunya, 2200 ms, tanpa satu pun celah tanpa gerak setelah 80 ms:
+
+```
+   0 ─────────────────────────────────────────────────────── 2200ms
+   kertas masuk   [ 80 ─── 780 ]
+   siluet              [ 540 ──────── 1520 ]
+   tebasan                   [1040 ─ 1480]
+   kertas terbelah            [1120 ────────────── 2100 ]
+   tinta                        [1160 ─────────────── 2160]
+   tirai memudar                     [1430 ──────────── 2200]
+```
+
+#### Cara memverifikasinya tanpa requestAnimationFrame
+
+Tab yang dipakai menguji tetap `hidden`, dan di sana animasi CSS tidak
+berjalan sama sekali. Jalan keluarnya bukan memaksa tab terlihat, melainkan
+**menggerakkan animasinya dengan tangan**: `element.getAnimations()`
+mengembalikan objek animasinya, dan `currentTime` dapat disetel ke titik mana
+pun lalu nilainya dibaca lewat `getComputedStyle`. Tidak satu bingkai pun
+dibutuhkan.
+
+Yang terukur dengan cara itu:
+
+| Waktu | scaleX tebasan | opacity |
+|---:|---:|---:|
+| 1040 ms | 0 | 0 |
+| 1150 ms | 0,795 | 1 |
+| 1250 ms | 0,992 | 1 |
+| 1350 ms | 1,014 | 0,77 |
+| 1450 ms | 1,055 | 0,08 |
+
+Tidak ada satu pun momen diam - yang dulu justru mengisi 40% terakhirnya.
+
+Tirai memudar dengan sebagian besar perubahan di awal lalu menipis pelan
+(1 → 0,968 → 0,399 → 0,098 → 0,009 → 0), kebalikan dari `ease-in` lama.
+Kertas terbelah menahan sekejap di 12% - bergeser hanya 2,3 piksel dalam 120
+ms pertama - sebelum meluncur keluar bingkai, sehingga belahannya terbaca
+sebagai akibat dari tebasan, bukan kejadian yang berdiri sendiri.
+
+Kemunculan ulang tiap muat ulang dibuktikan dengan `MutationObserver` yang
+dipasang sebelum `location.reload()`: lapisan intronya tercatat muncul lagi
+pada perangkat yang jelas-jelas sudah pernah melihatnya.
+
+Sisi CSS dari "lewati" ikut diuji - memasang `data-lewat` memunculkan animasi
+260 ms pada akarnya dan menjadikan **seluruh** animasi anaknya `paused`,
+sehingga tidak ada gerak yang terus meluncur di balik lapisan yang memudar.
+Perilaku waktu-nyatanya sendiri tidak dapat diukur dari tab tersembunyi:
+Chrome membatasi `setTimeout` di sana, dan angka apa pun yang keluar tidak
+berarti.
+
 ### Pengujian
 
 `npm test` naik dari **284 menjadi 348 pemeriksaan**, seluruhnya lulus -
