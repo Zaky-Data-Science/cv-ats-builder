@@ -281,6 +281,72 @@ export const id = {
     done: "Simpan jawaban",
     footnote:
       "Bisa diubah kapan saja. Mengganti bentuk tidak menghapus satu pun isian yang sudah Anda tulis.",
+
+    /* --- Fase 3: formulir item portofolio --- */
+    shapeToggle: "Pakai bentuk portofolio",
+    shapeToggleHint:
+      "Bentuk isian mengikuti bidang Anda. Dimatikan, bagian ini kembali menjadi daftar proyek sederhana dan isian tambahannya tetap tersimpan.",
+    headingLabel: "Judul bagian di CV",
+    headingHint:
+      "Judul baku lebih mungkin dikenali pembaca otomatis. Judul lain tetap terbaca, hanya tidak selalu terpetakan ke kolom yang benar.",
+    mergeLabel: "Gabung ke Pengalaman Kerja",
+    mergeHint:
+      "Sebagian pembaca otomatis hanya mengenali proyek jika menempel pada pengalaman kerja. Aktifkan ini kalau proyek Anda punya pemberi kerja.",
+    mergeOffer:
+      "{n} dari {total} karya Anda punya pemberi kerja yang cocok dengan entri pengalaman kerja. Gabungkan?",
+    mergeBefore: "Sebelum",
+    mergeAfter: "Sesudah",
+    mergePreviewSeparate: "Bagian tersendiri di bawah judulnya sendiri",
+    mergePreviewNested: "Menempel di dalam entri pengalaman kerjanya",
+    mergeAccept: "Gabungkan",
+    mergeLater: "Nanti saja",
+    parentLabel: "Menempel pada",
+    parentNone: "Berdiri sendiri",
+    parentDateWarn:
+      "Tanggal item ini di luar rentang entri induknya. Perbaiki tanggalnya, atau lepaskan dari induk.",
+    parentDetach: "Lepaskan dari induk",
+    coreBlock: "Detail khas bidang",
+    extraBlock: "Detail tambahan",
+    privateBlock: "Verifikator & refleksi",
+    privateBlockHint: "Keduanya tidak pernah dicetak di CV maupun ikut berkas ekspor.",
+    addDetail: "Tambah detail",
+    detailLabelPh: "Nama detail",
+    detailValuePh: "Isinya",
+    detailUnitPh: "Satuan",
+    detailNotPrinted: "{n} detail tersimpan tapi tidak dicetak di CV.",
+    detailMax: "Maksimal 6 detail. Yang dicetak hanya 4 prioritas teratas.",
+    linksLabel: "Tautan",
+    linksHint:
+      "Maksimal dua. Yang tercetak teks polosnya, dan pranalanya menempel pada teks itu - keduanya, bukan salah satunya.",
+    linkAdd: "Tambah tautan",
+    linkLabelPh: "Label (opsional)",
+    linkShortener:
+      "Pemendek tautan tidak membawa kata kunci apa pun dan tidak terbaca manusia. Pakai URL aslinya.",
+    verifierName: "Nama",
+    verifierRole: "Jabatan",
+    verifierRelation: "Hubungan dengan Anda",
+    verifierNotice:
+      "Data ini tidak dicetak di CV dan tidak dikirim ke mana pun. Simpan hanya bila Anda sudah izin ke orang tersebut.",
+    reflectionLabel: "Refleksi",
+    reflectionHint:
+      "Apa yang Anda pelajari, apa yang akan Anda lakukan berbeda. Tidak dicetak di CV.",
+    summaryLabel: "Ringkasan",
+    summaryHint: "Satu kalimat, maksimal 160 karakter.",
+    contextLabel: "Klien / institusi",
+    contextHint:
+      "Wajib. Tanpa pemberi kerja, tulis \"Proyek Mandiri\", \"Freelance\", atau nama kampusnya.",
+    locationLabel: "Lokasi",
+    fillExample: "Isi dengan contoh",
+    hasNumber: "sudah ada angka",
+    noNumber: "belum ada angka",
+    archiveTitle: "Data dari bentuk portofolio sebelumnya",
+    archiveRestore: "Pulihkan ke detail tambahan",
+    shapeChangeWarn:
+      "Mengganti bentuk akan menyembunyikan isian ini: {daftar}. Isinya tidak dihapus - ia kembali sendiri bila Anda memilih bentuk lamanya lagi.",
+    itemRange: "Jumlah yang lazim untuk bentuk ini: {min}-{max} item.",
+    itemRangeOpen: "Untuk bentuk ini, makin banyak makin baik. Minimal {min} item.",
+    addItem: "Tambah",
+    publicationExtra: "Kredit & indeksasi",
   },
 
   /* ------------------------------------------------------------ mode tamu */

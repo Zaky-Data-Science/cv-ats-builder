@@ -1,6 +1,14 @@
 import { formatDateRange, formatMonth, joinNonEmpty, prettyUrl } from "@/lib/utils";
-import { isSectionVisible, sectionHeading } from "./sections";
-import type { ResumeData, SectionKey } from "./types";
+import {
+  bagiItemPortofolio,
+  barisKepala,
+  itemTercetak,
+  portofolioAktif,
+  skemaItem,
+  PEMISAH_DETAIL,
+} from "@/lib/portfolio/render";
+import { isSectionVisible, sectionHeadingFor } from "./sections";
+import type { ProjectItem, ResumeData, SectionKey } from "./types";
 
 /**
  * Mengubah CV menjadi teks polos.
@@ -44,7 +52,41 @@ export function resumeToPlainText(data: ResumeData): string {
 
   const heading = (key: SectionKey) => {
     out.push("");
-    out.push(sectionHeading(key, lang));
+    out.push(sectionHeadingFor(data, key));
+  };
+
+  const { mandiri, perInduk } = bagiItemPortofolio(data);
+
+  /*
+    Satu item portofolio, dalam bentuk yang sama persis dengan versi cetak dan
+    versi Word-nya. Urutan barisnya bukan selera: kepala - ringkasan - poin -
+    detail - tautan adalah urutan yang dibaca pengurai dari atas ke bawah, dan
+    yang paling menentukan diletakkan paling dulu.
+
+    `bersarang` menandai item yang sedang menempel pada entri pengalaman kerja.
+    Dalam keadaan itu konteksnya tidak ikut dicetak: pemberi kerjanya sudah
+    tertulis pada entri induknya, dan mencetaknya dua kali membuat satu
+    perusahaan tampak muncul dua kali di CV yang sama.
+  */
+  const tulisItem = (item: ProjectItem, bersarang: boolean) => {
+    const cetak = itemTercetak(data, item, lang);
+    const kepala = barisKepala(cetak);
+    const label = bersarang ? `${skemaItem(data, item).labelItem}: ` : "";
+    const bagianKedua = bersarang ? cetak.lokasi : kepala.kedua;
+
+    out.push(
+      label +
+        joinNonEmpty([kepala.utama, bagianKedua], " | ") +
+        (cetak.periode ? ` (${cetak.periode})` : ""),
+    );
+    if (cetak.ringkasan) out.push(cetak.ringkasan);
+    for (const b of cetak.poin) out.push(`- ${b}`);
+    if (cetak.detail) out.push(`Detail: ${cetak.detail}`);
+    // Teks polos tidak dapat membawa pranala, jadi yang ditulis alamat
+    // penuhnya - inilah satu-satunya keluaran yang memang harus memilih.
+    if (cetak.tautan.length > 0) {
+      out.push(cetak.tautan.map((t) => t.href).join(PEMISAH_DETAIL));
+    }
   };
 
   for (const key of data.sectionOrder) {
@@ -66,6 +108,7 @@ export function resumeToPlainText(data: ResumeData): string {
           const loc = joinNonEmpty([e.city, e.country]);
           if (loc) out.push(loc);
           for (const b of e.bullets.filter(Boolean)) out.push(`- ${b}`);
+          for (const item of perInduk.get(e.id) ?? []) tulisItem(item, true);
         }
         break;
 
@@ -91,6 +134,12 @@ export function resumeToPlainText(data: ResumeData): string {
       }
 
       case "project":
+        if (portofolioAktif(data)) {
+          heading(key);
+          for (const item of mandiri) tulisItem(item, false);
+          break;
+        }
+        // Bentuk lama, untuk CV yang belum menyalakan bagian portofolio.
         heading(key);
         for (const p of data.projects) {
           out.push(
@@ -149,6 +198,11 @@ export function resumeToPlainText(data: ResumeData): string {
             joinNonEmpty([p.title, p.publisher], ". ") +
               (p.date ? ` (${formatMonth(p.date, lang)})` : ""),
           );
+          const kredit = joinNonEmpty(
+            [p.tipeLuaran, p.peranSaya, p.indeksasiTier],
+            PEMISAH_DETAIL,
+          );
+          if (kredit) out.push(kredit);
           if (p.doi) out.push(`DOI: ${p.doi}`);
         }
         break;

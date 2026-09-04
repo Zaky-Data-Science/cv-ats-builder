@@ -259,6 +259,24 @@ export type SkorRule =
   | { jenis: "refleksi-terisi"; minKarakter: 80; nilai: 4 }
   | { jenis: "tanpa-tautan-valid"; nilai: -15 };
 
+/**
+ * Satu item contoh yang dapat langsung disunting pengguna.
+ *
+ * Ditaruh pada pola, bukan pada tiap entri kamus, karena yang membedakan
+ * bentuk sebuah contoh adalah polanya - bukan bidangnya. Bagian yang memang
+ * khas bidang datang dari tempatnya sendiri: nilai field inti dari
+ * `placeholder` tiap FieldDef, dan slot detail dari `saranDetailTambahan`
+ * kamus. Menuliskan contoh utuh untuk 21 bidang akan menyalin isi yang sama
+ * dua puluh satu kali.
+ */
+export interface ContohItem {
+  judul: string;
+  peran: string;
+  konteks: string;
+  ringkasan: string;
+  poin: string[];
+}
+
 /** Blok ringkasan yang meniru cara regulator menilai (hanya `praktik-jam`). */
 export interface AgregatDef {
   /** Entri di ambang-profesi.ts yang boleh dipilih pengguna. */
@@ -301,6 +319,8 @@ export interface PolaSchema {
   /** Catatan tetap di antarmuka. Angkanya dari riset, jangan diubah sembarangan. */
   catatanUI: string[];
   peringatan: string[];
+  /** Isian tombol "Isi dengan contoh". */
+  contoh: ContohItem;
   /** Pola ini tidak memakai indikator panjang halaman sama sekali. */
   tanpaIndikatorPanjang?: boolean;
 }

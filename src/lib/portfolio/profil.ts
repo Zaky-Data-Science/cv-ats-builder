@@ -100,6 +100,24 @@ export function skemaProfil(profil: ProfilPortofolio): PolaSchema {
   return polaSchema(profil.pola);
 }
 
+/**
+ * Skema yang mengendalikan sebuah bagian CV.
+ *
+ * Pola menentukan bagian mana yang aktif: Publikasi & Kredit bekerja pada
+ * bagian `publication`, lima pola lainnya pada bagian `project`. Bagian yang
+ * bukan miliknya tetap ada dan tetap dapat diisi - tetapi memakai bentuk
+ * umum, bukan bentuk pola yang tidak berlaku baginya. Tanpa aturan ini,
+ * seorang dosen akan menemukan bagian Proyek yang meminta sitasi lengkap dan
+ * indeksasi Scopus.
+ */
+export function skemaBagian(
+  profil: ProfilPortofolio,
+  bagian: "project" | "publication",
+): PolaSchema {
+  const schema = polaSchema(profil.pola);
+  return schema.bagian === bagian ? schema : polaSchema("umum");
+}
+
 /** Entri kamus yang sedang dipakai, bila ada. */
 export function kamusProfil(profil: ProfilPortofolio): EntriKamus | null {
   return (profil.bidangKamus && entriKamus(profil.bidangKamus)) || null;

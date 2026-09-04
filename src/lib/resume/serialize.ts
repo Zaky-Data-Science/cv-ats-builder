@@ -343,16 +343,22 @@ export function regenerateIds(data: ResumeData): ResumeData {
 /**
  * Berkas ekspor JSON, lengkap dengan metadata versi skema.
  *
- * Data `verifikator` sengaja tidak ikut. Isinya nama, jabatan, dan hubungan
- * seorang **pihak ketiga** yang tidak pernah menyetujui datanya berpindah ke
- * mana-mana; berkas ekspor adalah berkas yang dikirim, disalin, dan diunggah
- * pengguna ke tempat-tempat yang tidak dapat kita ketahui. Menyimpannya di
- * basis data pengguna sendiri adalah satu hal, ikut mengirimkannya adalah hal
- * lain.
+ * Data `verifikator` dan `refleksi` sengaja tidak ikut.
+ *
+ * Yang pertama berisi nama, jabatan, dan hubungan seorang **pihak ketiga**
+ * yang tidak pernah menyetujui datanya berpindah ke mana-mana. Yang kedua
+ * adalah catatan pengguna untuk dirinya sendiri - apa yang ia pelajari, apa
+ * yang akan ia lakukan berbeda - yang ditulis dengan asumsi tidak ada
+ * perekrut yang membacanya.
+ *
+ * Berkas ekspor adalah berkas yang dikirim, disalin, dan diunggah pengguna ke
+ * tempat-tempat yang tidak dapat kita ketahui. Menyimpan kedua hal itu di
+ * basis data penggunanya sendiri adalah satu hal; ikut mengirimkannya adalah
+ * hal lain.
  *
  * Akibatnya memang ada dan disengaja: mengimpor kembali berkas ini tidak
- * memulihkan isian verifikator. Itu harga yang lebih murah daripada
- * menyebarkan data pribadi orang lain tanpa sepengetahuannya.
+ * memulihkan keduanya. Itu harga yang lebih murah daripada menyebarkan data
+ * pribadi orang lain, atau catatan pribadi seseorang, tanpa ia sadari.
  */
 export function toExportFile(data: ResumeData) {
   const { id: _ignored, ...rest } = data;
@@ -367,6 +373,7 @@ export function toExportFile(data: ResumeData) {
       projects: rest.projects.map((item) => ({
         ...item,
         verifikator: verifikatorKosong(),
+        refleksi: "",
       })),
     },
   };

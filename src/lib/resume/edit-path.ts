@@ -53,7 +53,12 @@ const EDITABLE: Record<string, readonly string[]> = {
   personalInfo: ["fullName", "headline", "summary"],
   experiences: ["jobTitle", "company", "city", "country"],
   educations: ["degree", "fieldOfStudy", "institution", "city"],
-  projects: ["name", "role"],
+  // Konteks dan ringkasan ikut dapat diketik di atas kertas: keduanya teks
+  // apa adanya, tanpa perapian bentuk sebelum dicetak. Baris "Detail" dan
+  // alamat tautan tidak - keduanya sudah dirangkai ulang dari beberapa field,
+  // dan menulis balik apa yang terlihat akan menyimpan hasil rangkaian itu
+  // sebagai satu untai teks lalu kehilangan bagian-bagiannya.
+  projects: ["name", "role", "konteks", "ringkasan"],
   organizations: ["name", "role", "city"],
   certifications: ["name", "issuer"],
   awards: ["title", "issuer", "description"],

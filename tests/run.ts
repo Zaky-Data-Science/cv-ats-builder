@@ -8,6 +8,7 @@ import { runKeywordTests } from "./keywords.test";
 import { runPasswordResetTests } from "./password-reset.test";
 import { runPdfTests } from "./pdf.test";
 import { runPortofolioTests } from "./portofolio.test";
+import { runPortofolioRenderTests } from "./portofolio-render.test";
 import { runPhotoTests } from "./photo.test";
 import { runStaleSessionTests } from "./stale-session.test";
 import { runStructureTests } from "./structure.test";
@@ -34,6 +35,7 @@ async function main() {
   runTemplateTests();
   runKertasTests();
   runDocumentTests();
+  await runPortofolioRenderTests();
   await runPhotoTests();
   await runPdfTests();
   summary();

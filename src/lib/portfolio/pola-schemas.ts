@@ -188,6 +188,17 @@ const KARYA_VISUAL: PolaSchema = {
     "Software. 3-5 repo terdokumentasi baik mengalahkan puluhan repo setengah jadi. README harus terbaca non-engineer. Muat: masalah, pengguna sasaran, keputusan teknis kunci, screenshot/demo, keterbatasan yang diketahui, pelajaran.",
     "Semua bidang visual. Berkas portofolio dikirim terpisah; di CV cukup tautan + ringkasan.",
   ],
+  contoh: {
+    judul: "Redesain Alur Checkout Aplikasi Belanja",
+    peran: "Perancang UX",
+    konteks: "PT Ritel Nusantara",
+    ringkasan:
+      "Menyusun ulang checkout empat langkah menjadi dua langkah setelah menemukan titik henti pengguna.",
+    poin: [
+      "Menjalankan 8 wawancara pengguna dan menemukan 62% berhenti di langkah ketiga.",
+      "Konversi checkout naik dari 2,1% menjadi 3,4% dalam 6 minggu setelah rilis.",
+    ],
+  },
   peringatan: [
     "Karya kantor atau klien perlu izin tayang, dan wajib menyebut peran pribadi Anda di dalamnya.",
     "Karya spekulatif atau latihan wajib diberi label agar tidak menyesatkan.",
@@ -347,6 +358,17 @@ const PROYEK_TEKNIS: PolaSchema = {
     "Untuk keperluan sertifikasi (STRI/SKK/IPP), badan penilai memakai tiga faktor: banyaknya pengalaman, peranan Anda, dan tingkat kesulitan. Isi ketiganya - bukan hanya nama proyek.",
     "Tulis apa yang Anda kerjakan sendiri: \"saya merancang\", \"saya menghitung\", \"saya menguji\". \"Kami membangun sistem\" tidak memberi tahu perekrut bagian mana yang Anda kerjakan.",
   ],
+  contoh: {
+    judul: "Panel Kendali Instrumentasi Lapangan",
+    peran: "Perancang Elektronik",
+    konteks: "PT Energi Kaltim",
+    ringkasan:
+      "Merancang catu daya 3 A untuk instrumentasi lapangan beserta pengujian pembebanannya.",
+    poin: [
+      "Saya menghitung disipasi daya dan memilih topologi buck sinkron untuk menekan panas.",
+      "Saya menguji efisiensi 92% pada beban 3 A dengan ripple 40 mV.",
+    ],
+  },
   peringatan: [
     "Nilai kontrak, skematik, BOM, nomor part, nama vendor, dan data produksi atau cadangan sering terikat NDA. Aktifkan Mode Redaksi dan pakai rentang (\"Rp 10-25 M\") atau persentase relatif.",
     "Gambar kerja milik pemberi kerja tidak boleh diunggah.",
@@ -452,6 +474,17 @@ const PRAKTIK_JAM: PolaSchema = {
     "Sebutkan lembaga dan periode agar bisa diverifikasi; hindari klaim otoritas keilmuan tanpa sanad atau institusi.",
     "Sejak UU 17/2023, portofolio SKP bukan lagi syarat memperpanjang STR (STR Definitif berlaku seumur hidup), melainkan syarat memperpanjang SIP.",
   ],
+  contoh: {
+    judul: "Rotasi Klinis Penyakit Dalam",
+    peran: "Dokter Internsip",
+    konteks: "RSUD Taman Husada Bontang",
+    ringkasan:
+      "Menangani rata-rata 120 pasien per bulan di bangsal penyakit dalam selama enam bulan.",
+    poin: [
+      "Melakukan anamnesis dan pemeriksaan fisik rata-rata 20 pasien per hari jaga.",
+      "Menyusun materi edukasi pasien yang kemudian dipakai rutin di bangsal.",
+    ],
+  },
   peringatan: [
     "Dilarang menulis identitas pasien, nomor rekam medis, foto luka atau pasien, atau data apa pun yang bisa mengidentifikasi orang. Tulis jumlah dan jenis kasus, bukan kasusnya.",
     "Hasil asesmen psikologis dan data responden juga bersifat rahasia.",
@@ -604,6 +637,14 @@ const KARYA_TERKREDIT: PolaSchema = {
     "Urutkan menurun berdasarkan tahun, dikelompokkan menurut tipe luaran.",
     "Cantumkan profil peneliti Anda sekali saja di bagian identitas: ORCID, Google Scholar, SINTA, Scopus ID. Perekrut akademik hampir selalu membukanya.",
   ],
+  contoh: {
+    judul:
+      "Santoso, B., & Wijaya, R. (2025). Optimasi jadwal produksi dengan algoritma genetika. Jurnal Teknik Industri, 26(1), 44-58.",
+    peran: "Penulis pertama",
+    konteks: "Jurnal Teknik Industri, Vol 26(1)",
+    ringkasan: "Artikel jurnal terindeks SINTA 2 dengan DOI aktif.",
+    poin: [],
+  },
   peringatan: [
     "Manuskrip yang masih dalam review wajib diberi label apa adanya, jangan ditulis seolah sudah terbit.",
   ],
@@ -738,6 +779,17 @@ const DAMPAK_PROGRAM: PolaSchema = {
     "Situation pada struktur STAR sudah diserap ke header (perusahaan, jabatan, periode) - jangan ditulis ulang. Isi Task (tanggung jawab inti), Action (kata kerja spesifik: bagaimana), Result (angka + penerima manfaat).",
     "Jangan menulis STAR berurutan. Pola yang lebih baik: Task+Result, lalu Action+Action+Result.",
   ],
+  contoh: {
+    judul: "Percepatan Rekrutmen Divisi Penjualan",
+    peran: "Analis SDM",
+    konteks: "PT Solusi Talenta",
+    ringkasan:
+      "Merancang ulang alur seleksi sehingga waktu pengisian posisi turun dari 41 menjadi 24 hari.",
+    poin: [
+      "Memetakan 6 tahap seleksi dan memangkas dua tahap yang tidak menambah informasi.",
+      "Time-to-hire turun dari 41 hari menjadi 24 hari dalam 6 bulan.",
+    ],
+  },
   peringatan: [
     "Hukum: hormati kerahasiaan klien. Nama pihak dan nomor perkara diganti deskriptor generik (\"perusahaan energi nasional\", \"sengketa ketenagakerjaan di PN Jakarta Pusat\"). Contoh tulisan yang ditautkan wajib sudah dianonimkan.",
     "Keuangan: angka perusahaan sering rahasia - pakai rentang atau persentase relatif.",
@@ -807,6 +859,17 @@ const UMUM: PolaSchema = {
   catatanUI: [
     "Belum menemukan bidang Anda di daftar? Pakai bentuk ini dulu - seluruh isian tetap tersimpan dan dapat dipindahkan begitu bentuk yang lebih pas tersedia.",
   ],
+  contoh: {
+    judul: "Aplikasi Pencatat Keuangan Pribadi",
+    peran: "Pengembang",
+    konteks: "Proyek Mandiri",
+    ringkasan:
+      "Membangun aplikasi pencatat pengeluaran harian yang dipakai 120 pengguna dalam tiga bulan pertama.",
+    poin: [
+      "Merancang basis data dan antarmuka pencatatan cepat berbasis kategori.",
+      "Dipakai 120 pengguna dalam 3 bulan pertama tanpa biaya promosi.",
+    ],
+  },
   peringatan: [],
 };
 

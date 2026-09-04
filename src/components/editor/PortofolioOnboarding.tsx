@@ -4,6 +4,7 @@ import * as React from "react";
 import { Check, ChevronDown, Search, Sparkles } from "lucide-react";
 import { useI18n } from "@/components/i18n";
 import { Button, Field, Input } from "@/components/ui";
+import { fieldTersembunyi, gantiPolaItem } from "@/lib/portfolio/arsip";
 import { cariBidang } from "@/lib/portfolio/pencarian";
 import {
   LABEL_JENJANG,
@@ -26,6 +27,7 @@ import {
   SEMUA_TUJUAN,
   type JenjangPengalaman,
   type PolaSlug,
+  type ProfilPortofolio,
   type TujuanCV,
 } from "@/lib/portfolio/types";
 import { cn } from "@/lib/utils";
@@ -63,6 +65,15 @@ export function PortofolioOnboarding() {
   const [kueri, setKueri] = React.useState(profil.jurusan);
   const [pilihPolaTerbuka, setPilihPolaTerbuka] = React.useState(false);
 
+  // Perubahan yang menunggu persetujuan, karena ia akan menyembunyikan isian
+  // yang sudah diketik. Isinya profil barunya beserta daftar label yang akan
+  // disembunyikan - pengguna berhak tahu apa yang hilang dari layar sebelum
+  // ia menyetujuinya, meski tidak ada satu pun yang benar-benar terhapus.
+  const [menunggu, setMenunggu] = React.useState<{
+    profil: ProfilPortofolio;
+    label: string[];
+  } | null>(null);
+
   const hasil = React.useMemo(() => cariBidang(kueri), [kueri]);
 
   // Apakah polanya pernah diganti sendiri oleh pengguna. Diturunkan, bukan
@@ -71,31 +82,73 @@ export function PortofolioOnboarding() {
   // keputusan itu tidak boleh ditimpa diam-diam saat ia mengganti tujuan.
   const polaManual = profil.pola !== polaUntuk(entri, profil.tujuan);
 
+  /**
+   * Menerapkan profil baru, sekaligus memindahkan isian yang tidak dikenal
+   * bentuk barunya ke arsip.
+   *
+   * Bila ada isian yang akan tersembunyi, perubahannya ditahan dulu dan
+   * ditawarkan - bukan dikerjakan lalu diberitahukan.
+   */
+  const terapkanProfil = (baru: ProfilPortofolio, langsung = false) => {
+    if (baru.pola === profil.pola) {
+      update({ profilPortofolio: baru });
+      return;
+    }
+
+    const label = Array.from(
+      new Set(
+        data.projects.flatMap((item) =>
+          fieldTersembunyi(item, baru.pola, profil.pola),
+        ),
+      ),
+    );
+
+    if (label.length > 0 && !langsung) {
+      setMenunggu({ profil: baru, label });
+      return;
+    }
+
+    setMenunggu(null);
+    update({
+      profilPortofolio: baru,
+      projects: data.projects.map((item) => gantiPolaItem(item, baru.pola)),
+    });
+  };
+
   const setProfil = (patch: Partial<typeof profil>) =>
-    update({ profilPortofolio: { ...profil, ...patch } });
+    terapkanProfil({ ...profil, ...patch });
 
   const pilihBidang = (slug: string, jurusanDiketik: string) => {
     const cocok = hasil.find((h) => h.entri.slug === slug);
     if (!cocok) return;
     setKueri(jurusanDiketik);
-    update({
-      profilPortofolio: terapkanBidang(profil, cocok.entri, jurusanDiketik),
-    });
+    terapkanProfil(terapkanBidang(profil, cocok.entri, jurusanDiketik));
   };
 
   const pilihTujuan = (tujuan: TujuanCV) =>
-    update({ profilPortofolio: terapkanTujuan(profil, tujuan, polaManual) });
+    terapkanProfil(terapkanTujuan(profil, tujuan, polaManual));
 
   const pilihJenjang = (jenjang: JenjangPengalaman) =>
-    update({ profilPortofolio: terapkanJenjang(profil, jenjang) });
+    terapkanProfil(terapkanJenjang(profil, jenjang));
 
   const pilihPola = (pola: PolaSlug) => {
     setPilihPolaTerbuka(false);
     setProfil({ pola });
   };
 
+  /*
+    Menyimpan jawaban sekaligus menyalakan bagian portofolio.
+
+    Menyalakannya di sini, bukan diam-diam saat CV dibuka, adalah bedanya:
+    yang menyalakan adalah orang yang baru saja menjawab tiga pertanyaan
+    tentang bentuk portofolionya sendiri. CV lama yang tidak pernah menjawab
+    tidak pernah ikut berubah.
+  */
   const selesai = () => {
-    setProfil({ sudahDitanya: true });
+    update({
+      profilPortofolio: { ...profil, sudahDitanya: true },
+      portofolio: { ...data.portofolio, aktif: true },
+    });
     setBuka(false);
   };
 
@@ -333,6 +386,33 @@ export function PortofolioOnboarding() {
           </div>
         )}
       </div>
+
+      {/* Persetujuan sebelum isian disembunyikan. Tidak ada yang terhapus:
+          isinya pindah ke arsip dan kembali sendiri bila bentuk lamanya
+          dipilih lagi - tapi pengguna tetap berhak tahu sebelum layarnya
+          berubah. */}
+      {menunggu && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3">
+          <p className="text-[11px] leading-relaxed text-ink-800">
+            {teks.shapeChangeWarn.replace("{daftar}", menunggu.label.join(", "))}
+          </p>
+          <div className="mt-2 flex gap-2">
+            <Button
+              size="sm"
+              onClick={() => terapkanProfil(menunggu.profil, true)}
+            >
+              {teks.mergeAccept}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setMenunggu(null)}
+            >
+              {teks.mergeLater}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center justify-between gap-3">
         <p className="text-[11px] leading-relaxed text-ink-500">

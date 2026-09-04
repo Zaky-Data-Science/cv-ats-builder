@@ -264,6 +264,72 @@ export const en: Dictionary = {
     done: "Save answers",
     footnote:
       "You can change this at any time. Switching shape deletes none of what you have already written.",
+
+    /* --- Phase 3: portfolio item form --- */
+    shapeToggle: "Use the portfolio shape",
+    shapeToggleHint:
+      "The fields follow your field of work. Switched off, this section goes back to a plain project list and the extra entries stay saved.",
+    headingLabel: "Section title on the CV",
+    headingHint:
+      "A conventional title is more likely to be recognised by automated readers. Other titles are still read, they are just not always mapped to the right column.",
+    mergeLabel: "Merge into Work Experience",
+    mergeHint:
+      "Some automated readers only recognise projects when they sit inside a job. Turn this on if your projects had an employer.",
+    mergeOffer:
+      "{n} of your {total} pieces name an employer that matches a work entry. Merge them?",
+    mergeBefore: "Before",
+    mergeAfter: "After",
+    mergePreviewSeparate: "A section of its own, under its own heading",
+    mergePreviewNested: "Nested inside the job it belonged to",
+    mergeAccept: "Merge",
+    mergeLater: "Not now",
+    parentLabel: "Sits inside",
+    parentNone: "Stands alone",
+    parentDateWarn:
+      "This item's dates fall outside the job it sits in. Fix the dates, or detach it.",
+    parentDetach: "Detach from the job",
+    coreBlock: "Field-specific details",
+    extraBlock: "Extra details",
+    privateBlock: "Verifier & reflection",
+    privateBlockHint: "Neither is ever printed on the CV or included in an export.",
+    addDetail: "Add a detail",
+    detailLabelPh: "What it is",
+    detailValuePh: "Its value",
+    detailUnitPh: "Unit",
+    detailNotPrinted: "{n} details are saved but not printed on the CV.",
+    detailMax: "Six at most. Only the four highest priorities are printed.",
+    linksLabel: "Links",
+    linksHint:
+      "Two at most. The readable text is printed and the link is attached to that same text - both, not one or the other.",
+    linkAdd: "Add a link",
+    linkLabelPh: "Label (optional)",
+    linkShortener:
+      "A shortened link carries no keywords and tells a human nothing. Use the real address.",
+    verifierName: "Name",
+    verifierRole: "Position",
+    verifierRelation: "How you know them",
+    verifierNotice:
+      "This is never printed on your CV and never sent anywhere. Only save it if you have asked that person first.",
+    reflectionLabel: "Reflection",
+    reflectionHint:
+      "What you learnt, what you would do differently. Not printed on the CV.",
+    summaryLabel: "Summary",
+    summaryHint: "One sentence, 160 characters at most.",
+    contextLabel: "Client / institution",
+    contextHint:
+      "Required. With no employer, write \"Personal project\", \"Freelance\", or the name of your university.",
+    locationLabel: "Location",
+    fillExample: "Fill with an example",
+    hasNumber: "has a number",
+    noNumber: "no number yet",
+    archiveTitle: "Kept from your previous portfolio shape",
+    archiveRestore: "Restore into extra details",
+    shapeChangeWarn:
+      "Changing the shape will hide these entries: {daftar}. Nothing is deleted - they come back if you pick the old shape again.",
+    itemRange: "The usual count for this shape: {min}-{max} items.",
+    itemRangeOpen: "For this shape, more is better. At least {min} items.",
+    addItem: "Add",
+    publicationExtra: "Credit & indexing",
   },
 
   guest: {
