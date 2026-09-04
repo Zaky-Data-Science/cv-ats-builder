@@ -74,6 +74,7 @@ export function bagianPortofolioBawaan(): BagianPortofolio {
     gabungKePengalaman: false,
     maksItem: 6,
     modeRedaksi: false,
+    agregat: { ambangSlug: "", perRanah: {} },
   };
 }
 

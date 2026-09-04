@@ -347,6 +347,38 @@ export const id = {
     itemRangeOpen: "Untuk bentuk ini, makin banyak makin baik. Minimal {min} item.",
     addItem: "Tambah",
     publicationExtra: "Kredit & indeksasi",
+    credCategory: "Kategori kredensial",
+    credCategoryHint:
+      "Empat kategori dengan perlakuan berbeda: lisensi praktik adalah gerbang, kredensial berjenjang menentukan kelayakan paket pekerjaan, sertifikasi sektoral menempel pada jabatan, sertifikasi kompetensi melengkapi.",
+    credValidity: "Masa berlaku",
+    credValidityHint:
+      "Pilih bentuknya dulu. Sebagian kredensial memang berlaku seumur hidup - STR Definitif salah satunya - jadi tanggal kedaluwarsa tidak pernah dipaksakan di sini.",
+    credLevel: "Jenjang",
+    credLevelPh: "Jenjang 7 - Ahli Muda",
+    credClass: "Klasifikasi bidang",
+    credClassPh: "Arsitektur",
+    credSubType: "Jenis penerbit",
+    credSubTypePh: "Vendor global / BNSP / bootcamp",
+    credSuggest: "Kredensial yang lazim di bidang Anda",
+    aggTitle: "Perolehan terhadap ambang resmi",
+    aggChoose: "Profesi",
+    aggChooseNone: "Belum dipilih",
+    aggTotal: "Total terkumpul",
+    aggOf: "dari",
+    aggSource: "Sumber",
+    aggUpdated: "diperiksa",
+    aggDomain: "Perolehan per ranah",
+    aggNoTotal: "Aturannya tidak menyebut angka total.",
+    redactionLabel: "Mode Redaksi",
+    redactionHint:
+      "Mengganti nama klien dengan deskriptor bidangnya, dan angka pasti dengan rentang yang memuatnya. Berlaku di PDF, Word, dan teks.",
+    redactionNote:
+      "Berkas cadangan JSON tetap menyimpan angka aslinya - ia cadangan milik Anda sendiri, bukan berkas yang dikirim ke perusahaan.",
+    langTitle: "Periksa bahasa",
+    langRequired:
+      "Bentuk ini menuntut bahasa orang pertama. Badan penilai kompetensi memakainya untuk memisahkan pekerjaan Anda dari pekerjaan tim Anda.",
+    langSuggest:
+      "Bukan keharusan untuk bentuk ini, tapi kalimat orang pertama tetap lebih jelas bagi pembacanya.",
   },
 
   /* ------------------------------------------------------------ mode tamu */

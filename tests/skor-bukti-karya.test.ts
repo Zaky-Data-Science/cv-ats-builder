@@ -6,7 +6,7 @@ import {
   pengaliP,
 } from "../src/lib/ats/bukti-karya";
 import { analyzeResume, DIMENSION_WEIGHTS, dimensionWeights } from "../src/lib/ats/engine";
-import { POLA_SCHEMAS } from "../src/lib/portfolio/pola-schemas";
+import { POLA_SCHEMAS, URUTAN_POLA } from "../src/lib/portfolio/pola-schemas";
 import { bagianPortofolioBawaan } from "../src/lib/portfolio/migrasi";
 import { sampleResume } from "../src/lib/resume/sample";
 import type { ProjectItem, ResumeData } from "../src/lib/resume/types";
@@ -146,9 +146,16 @@ export function runSkorBuktiKaryaTests(): void {
     nilaiR(item({ inti: { skalaProyek: "8.400 m2" } }), TEKNIS),
     1,
   );
+  // Syaratnya "terisi memadai", dan untuk field bertipe angka_satuan yang
+  // memadai adalah adanya angka - satuannya tidak dituntut.
   equal(
-    "angka tanpa satuan belum memenuhi syarat skala",
+    "angka tanpa satuan sudah memenuhi syarat skala",
     nilaiR(item({ inti: { skalaProyek: "8400" } }), TEKNIS),
+    1,
+  );
+  equal(
+    "field skala tanpa angka sama sekali belum memenuhinya",
+    nilaiR(item({ inti: { skalaProyek: "besar sekali" } }), TEKNIS),
     0,
   );
   equal(
@@ -356,94 +363,239 @@ export function runSkorBuktiKaryaTests(): void {
 
   /* ---------------------------------------------------------------- */
 
-  section("Uji penerimaan rubrik");
+  section("Uji penerimaan rubrik - keenam pola");
 
-  // Ambang FAIP tidak dipakai sebagai skala: nilai tertinggi satu item adalah
-  // 100, bukan 600 atau 6.000.
-  const tigaLengkap = cv({
-    projects: [
-      itemPenuh({
-        id: "a",
-        verifikator: { nama: "Ir. Sari", jabatan: "Manajer", hubungan: "Atasan" },
-      }),
-      itemPenuh({
-        id: "b",
-        verifikator: { nama: "Ir. Budi", jabatan: "Manajer", hubungan: "Atasan" },
-      }),
-      itemPenuh({
-        id: "c",
-        verifikator: { nama: "Ir. Cita", jabatan: "Manajer", hubungan: "Atasan" },
-      }),
-    ],
+  /*
+    Item terisi sempurna untuk tiap pola.
+
+    Ditulis satu per satu, bukan dibangkitkan dari penanda rubriknya, dan itu
+    memang disengaja: fixture yang dibangun dari tabel yang sedang diuji hanya
+    akan membuktikan tabelnya konsisten dengan dirinya sendiri. Yang ditulis di
+    bawah adalah isian yang wajar ditulis orang di bidangnya masing-masing.
+  */
+  const SEMPURNA: Record<string, ProjectItem> = {
+    "proyek-teknis": itemPenuh(),
+    "dampak-program": item({
+      role: "Analis SDM",
+      bullets: ["Merancang ulang alur seleksi enam tahap."],
+      inti: {
+        lingkupProgram: "Rekrutmen divisi penjualan",
+        skalaDikelola: "Tim 8 orang",
+        metodeStandar: ["Lean", "Six Sigma DMAIC"],
+        metrikDampak: ["Time-to-hire", "41 hari", "24 hari", "6 bulan"],
+        penerimaManfaat: "Tim penjualan 40 orang",
+      },
+    }),
+    "praktik-jam": item({
+      role: "Dokter Internsip",
+      bullets: ["Melakukan anamnesis rata-rata 20 pasien per hari jaga."],
+      inti: {
+        jenisKegiatan: "Rotasi klinis penyakit dalam",
+        institusi: "RSUD Taman Husada Bontang",
+        volume: "±120 pasien/bulan",
+        kredensialTerkait: ["STR", "SIP"],
+        luaran: "Angka infeksi luka operasi turun 4,1% menjadi 1,8%",
+      },
+    }),
+    "karya-visual": item({
+      role: "Perancang UX",
+      bullets: ["Menjalankan 8 wawancara pengguna."],
+      tautan: [{ label: "", url: "https://behance.net/nama/proyek" }],
+      inti: {
+        masalah: "Pengguna gagal menyelesaikan checkout empat langkah.",
+        prosesKeputusan: [
+          "Riset: 8 wawancara - temuan drop di langkah 3",
+          "Satukan empat langkah jadi dua",
+        ],
+        bentukKarya: ["wireframe", "prototipe", "render 3D"],
+        hasil: "Konversi naik 2,1% menjadi 3,4% dalam 6 minggu",
+        statusKarya: "dirilis ke publik",
+      },
+    }),
+    umum: item({
+      role: "Pengembang",
+      bullets: ["Merancang basis data pencatatan berbasis kategori."],
+      tautan: [{ label: "", url: "https://github.com/nama/repo" }],
+      inti: {
+        jenisKarya: "Aplikasi pencatat keuangan pribadi",
+        alatMetode: ["React", "wawancara pengguna"],
+        hasil: "Dipakai 120 pengguna dalam 3 bulan pertama",
+      },
+    }),
+  };
+
+  /** Satu karya terbit yang lengkap - bentuk item pola Publikasi & Kredit. */
+  const publikasiSempurna = (i: number) => ({
+    id: `pub-${i}`,
+    title:
+      "Santoso, B., & Wijaya, R. (2025). Optimasi jadwal produksi dengan algoritma genetika. Jurnal Teknik Industri, 26(1), 44-58.",
+    publisher: "Jurnal Teknik Industri, Vol 26(1)",
+    date: "2025-03",
+    url: "https://doi.org/10.30872/jti.v26i1.1234",
+    doi: "10.30872/jti.v26i1.1234",
+    tipeLuaran: "artikel jurnal",
+    peranSaya: "penulis pertama",
+    indeksasiTier: "Scopus Q2",
   });
-  const skorLengkap = nilaiBuktiKarya(tigaLengkap).skor;
+
+  /** CV berisi sejumlah item sempurna pada pola tertentu. */
+  function cvPola(pola: string, jumlah: number, patch: Partial<ProjectItem> = {}) {
+    const dasar = cv({
+      profilPortofolio: { ...cv().profilPortofolio, pola: pola as never },
+    });
+    if (pola === "karya-terkredit") {
+      return {
+        ...dasar,
+        projects: [],
+        publications: Array.from({ length: jumlah }, (_, i) => publikasiSempurna(i)),
+      };
+    }
+    return {
+      ...dasar,
+      publications: [],
+      projects: Array.from({ length: jumlah }, (_, i) => ({
+        ...SEMPURNA[pola],
+        ...patch,
+        id: `${pola}-${i}`,
+      })),
+    };
+  }
+
+  /*
+    Aturan keras: setiap pola wajib dapat mencapai R = 3/3 dan Q = 3/3.
+
+    Kalau ada satu pola yang secara struktur tidak bisa, angkanya berhenti
+    sebanding antar-pola - dan penggunanya dihukum karena bidangnya, bukan
+    karena karyanya. Inilah uji yang menjaganya, dan ia harus tetap ada
+    selama masih ada pola yang ditambahkan.
+  */
+  for (const slug of URUTAN_POLA) {
+    const dataPola = cvPola(slug, 1);
+    const nilai = nilaiBuktiKarya(dataPola);
+    const satu = nilai.item[0];
+    equal(`${slug}: item sempurna mencapai R = 3`, satu?.r, 3);
+    equal(`${slug}: item sempurna mencapai Q = 3`, satu?.q, 3);
+    equal(`${slug}: skor itemnya 100`, satu?.skor, 100);
+  }
+
+  /*
+    Uji penerimaan rubrik, dijalankan pada keenam pola - bukan hanya pada pola
+    tempat rubriknya paling mudah terwujud.
+  */
+  for (const slug of URUTAN_POLA) {
+    const lengkap = cvPola(slug, 3, {
+      verifikator: { nama: "Ir. Sari", jabatan: "Manajer", hubungan: "Atasan" },
+    });
+    const skor = nilaiBuktiKarya(lengkap).skor;
+    check(
+      `${slug}: tiga item lengkap memperoleh 85 ke atas`,
+      skor >= 85,
+      String(Math.round(skor)),
+    );
+    check(
+      `${slug}: skalanya tetap 0-100`,
+      skor <= 100,
+      String(Math.round(skor)),
+    );
+  }
+
+  for (const slug of URUTAN_POLA) {
+    const kosong = cv({
+      profilPortofolio: { ...cv().profilPortofolio, pola: slug as never },
+      publications: [],
+      projects: [
+        item({ id: "a", role: "Anggota Tim" }),
+        item({ id: "b", role: "Anggota Tim" }),
+        item({ id: "c", role: "Anggota Tim" }),
+      ],
+    });
+    const skor = nilaiBuktiKarya(kosong).skor;
+    check(
+      `${slug}: tiga item tanpa angka dan tanpa tautan berada di bawah 50`,
+      skor < 50,
+      String(Math.round(skor)),
+    );
+  }
+
+  /*
+    Kasus yang diminta secara khusus: seorang dosen dengan tiga artikel Scopus
+    Q2 lengkap DOI. Sebelum pemetaan rubrik ini diperbaiki, ia memperoleh nol -
+    bukan karena karyanya lemah, melainkan karena tidak satu pun field polanya
+    tertandai sebagai pemenuh syarat.
+  */
+  const dosen = cvPola("karya-terkredit", 3);
+  const nilaiDosen = nilaiBuktiKarya(dosen);
   check(
-    "tiga item lengkap dengan verifikator memperoleh 85 ke atas",
-    skorLengkap >= 85,
-    String(Math.round(skorLengkap)),
+    "dosen dengan 3 artikel Scopus Q2 lengkap DOI memperoleh nilai tinggi",
+    nilaiDosen.skor >= 85,
+    `${Math.round(nilaiDosen.skor)} (Q ${nilaiDosen.item[0].q}, R ${nilaiDosen.item[0].r})`,
   );
   check(
-    "skalanya 0-100, bukan ambang akumulasi karier",
-    skorLengkap <= 100,
-    String(Math.round(skorLengkap)),
-  );
-
-  const tigaKosong = cv({
-    projects: [
-      item({ id: "a", role: "Anggota Tim" }),
-      item({ id: "b", role: "Anggota Tim" }),
-      item({ id: "c", role: "Anggota Tim" }),
-    ],
-  });
-  check(
-    "tiga item tanpa angka dan tanpa tautan berada di bawah 50",
-    nilaiBuktiKarya(tigaKosong).skor < 50,
-    String(Math.round(nilaiBuktiKarya(tigaKosong).skor)),
+    "artikel yang belum terbit dan belum terindeks jatuh jauh di bawahnya",
+    nilaiBuktiKarya({
+      ...dosen,
+      publications: dosen.publications.map((p) => ({
+        ...p,
+        tipeLuaran: "manuskrip dalam review",
+        indeksasiTier: "tidak terindeks",
+      })),
+    }).skor < nilaiDosen.skor,
   );
 
   /* ---------------------------------------------------------------- */
 
-  section("Penyesuaian jenjang");
+  section("Penyesuaian jenjang - keenam pola");
 
   /*
-    Mahasiswa dengan dua tugas kuliah yang terisi lengkap, tanpa verifikator.
-    Batas bawah jumlah itemnya turun jadi 2, sehingga P tetap penuh - dan
-    itulah yang mencegah pemula dinilai dengan ambang senior lalu memperoleh
-    angka rendah tanpa jalan keluar.
+    Mahasiswa dengan dua karya yang terisi lengkap, tanpa verifikator. Batas
+    bawah jumlah itemnya turun jadi 2 sehingga P tetap penuh - dan itulah yang
+    mencegah pemula dinilai dengan ambang senior lalu memperoleh angka rendah
+    tanpa jalan keluar.
   */
-  const mahasiswa = cv({
-    profilPortofolio: { ...cv().profilPortofolio, jenjang: "mahasiswa" },
-    projects: [
-      itemPenuh({ id: "a", inti: { ...itemPenuh().inti, statusKarya: "tugas kuliah" } }),
-      itemPenuh({ id: "b", inti: { ...itemPenuh().inti, statusKarya: "tugas kuliah" } }),
-    ],
-  });
-  const skorMahasiswa = nilaiBuktiKarya(mahasiswa).skor;
-  check(
-    "mahasiswa dengan dua tugas kuliah lengkap tanpa verifikator mencapai 70 ke atas",
-    skorMahasiswa >= 70,
-    String(Math.round(skorMahasiswa)),
+  for (const slug of URUTAN_POLA) {
+    const dasarPola = cvPola(slug, 2);
+    const mahasiswaPola = {
+      ...dasarPola,
+      profilPortofolio: { ...dasarPola.profilPortofolio, jenjang: "mahasiswa" as const },
+    };
+    const skor = nilaiBuktiKarya(mahasiswaPola).skor;
+    check(
+      `${slug}: mahasiswa dengan dua karya lengkap tanpa verifikator mencapai 70 ke atas`,
+      skor >= 70,
+      String(Math.round(skor)),
+    );
+  }
+
+  const mahasiswaVisual = (() => {
+    const dasarPola = cvPola("karya-visual", 2);
+    return {
+      ...dasarPola,
+      profilPortofolio: { ...dasarPola.profilPortofolio, jenjang: "mahasiswa" as const },
+    };
+  })();
+  equal(
+    "status \"tugas kuliah\" tidak menurunkan skor",
+    nilaiBuktiKarya({
+      ...mahasiswaVisual,
+      projects: mahasiswaVisual.projects.map((p) => ({
+        ...p,
+        inti: { ...p.inti, statusKarya: "tugas kuliah" },
+      })),
+    }).skor,
+    nilaiBuktiKarya(mahasiswaVisual).skor,
   );
   equal(
     "pada jenjang senior, dua item saja dipotong karena di bawah ideal",
     Math.round(
       nilaiBuktiKarya({
-        ...mahasiswa,
-        profilPortofolio: { ...mahasiswa.profilPortofolio, jenjang: "4-8-tahun" },
+        ...mahasiswaVisual,
+        profilPortofolio: {
+          ...mahasiswaVisual.profilPortofolio,
+          jenjang: "4-8-tahun",
+        },
       }).skor,
     ),
     Math.round(100 * (2 / 3)),
-  );
-  equal(
-    "status \"tugas kuliah\" tidak menurunkan skor",
-    nilaiBuktiKarya(mahasiswa).skor,
-    nilaiBuktiKarya({
-      ...mahasiswa,
-      projects: mahasiswa.projects.map((p) => ({
-        ...p,
-        inti: { ...p.inti, statusKarya: "dirilis ke publik" },
-      })),
-    }).skor,
   );
 
   /* ---------------------------------------------------------------- */

@@ -315,6 +315,13 @@ model Project {
   @@map("projects")
 }
 
+/// Satu kredensial: lisensi praktik, kredensial berjenjang, sertifikasi
+/// sektoral, atau sertifikasi kompetensi.
+///
+/// Kolom masaBerlaku menyimpan **bentuknya**, bukan tanggalnya - "seumur
+/// hidup" berdiri sejajar dengan tanggal tertentu. Sejak UU 17/2023, STR
+/// Definitif memang berlaku seumur hidup, dan kolom yang hanya menerima
+/// tanggal akan memaksa penggunanya mengarang tanggal yang tidak ada.
 model Certification {
   id           String @id @default(cuid())
   resumeId     String
@@ -325,6 +332,17 @@ model Certification {
   credentialId String @default("")
   url          String @default("")
   order        Int    @default(0)
+
+  /// "", lisensi-praktik, berjenjang, sektoral, atau kompetensi.
+  kategori    String @default("")
+  /// "", seumur-hidup, tanggal, atau tidak-berlaku.
+  masaBerlaku String @default("")
+  /// Jenjang kredensial berjenjang, mis. "Jenjang 7 - Ahli Muda".
+  jenjang     String @default("")
+  /// Klasifikasi bidangnya, mis. "Arsitektur" pada SKK Konstruksi.
+  klasifikasi String @default("")
+  /// Vendor global, BNSP, atau bootcamp - hanya untuk sertifikasi kompetensi.
+  subTipe     String @default("")
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 

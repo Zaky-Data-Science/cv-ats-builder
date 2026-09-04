@@ -197,6 +197,11 @@ export function toResumeData(row: any): ResumeData {
       expiryDate: c.expiryDate,
       credentialId: c.credentialId,
       url: c.url,
+      kategori: c.kategori ?? "",
+      masaBerlaku: c.masaBerlaku ?? "",
+      jenjang: c.jenjang ?? "",
+      klasifikasi: c.klasifikasi ?? "",
+      subTipe: c.subTipe ?? "",
     })),
     organizations: (row.organizations ?? []).map((o: any) => ({
       id: o.id,

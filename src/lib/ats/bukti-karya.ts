@@ -1,4 +1,4 @@
-import { EFEK_JENJANG, TAHAP_EKSEKUSI } from "@/lib/portfolio/pola-schemas";
+import { EFEK_JENJANG } from "@/lib/portfolio/pola-schemas";
 import { kamusProfil, skemaProfil } from "@/lib/portfolio/profil";
 import { portofolioAktif, tautanTercetak } from "@/lib/portfolio/render";
 import type { FieldDef, IntiValue, PolaSchema } from "@/lib/portfolio/types";
@@ -82,16 +82,33 @@ export interface NilaiBuktiKarya {
 /* Pembacaan isian                                                            */
 /* -------------------------------------------------------------------------- */
 
-function teksNilai(nilai: IntiValue | undefined): string {
-  if (nilai === undefined || nilai === null) return "";
-  if (Array.isArray(nilai)) return nilai.join(" ");
-  return String(nilai);
+function sebagaiDaftar(nilai: IntiValue | undefined): string[] {
+  if (nilai === undefined || nilai === null) return [];
+  if (Array.isArray(nilai)) return nilai.map((v) => String(v));
+  return [String(nilai)];
 }
 
-function daftarNilai(nilai: IntiValue | undefined): string[] {
-  if (Array.isArray(nilai)) return nilai.filter((v) => v.trim());
-  const teks = teksNilai(nilai).trim();
-  return teks ? [teks] : [];
+/**
+ * Membaca isian sebuah field, di mana pun ia sebenarnya disimpan.
+ *
+ * Sebagian field pola punya rumah sendiri di model data lama - venue tinggal
+ * di kolom `publisher`, tautan karya di daftar `tautan`. Penanda `simpanDi`
+ * yang mengatakannya, dan pembacaan rubrik harus mengikutinya; kalau tidak,
+ * field yang jelas-jelas terisi akan terbaca kosong.
+ */
+function bacaField(item: ProjectItem, field: FieldDef): string[] {
+  if (field.simpanDi === "tautan") {
+    return tautanTercetak(item).map((t) => t.href);
+  }
+
+  const diInti = item.inti[field.key];
+  if (diInti !== undefined) return sebagaiDaftar(diInti);
+
+  if (field.simpanDi) {
+    const bawaan = (item as unknown as Record<string, unknown>)[field.simpanDi];
+    if (typeof bawaan === "string") return [bawaan];
+  }
+  return [];
 }
 
 /** Field pola yang mengemban peran tertentu di dalam rubrik. */
@@ -101,6 +118,55 @@ function fieldRubrik(schema: PolaSchema, peran: FieldDef["rubrik"]): FieldDef[] 
 
 function adaAngka(teks: string): boolean {
   return /\d/.test(teks);
+}
+
+function samaAtauMemuat(a: string, b: string): boolean {
+  const x = a.trim().toLowerCase();
+  const y = b.trim().toLowerCase();
+  return x === y || x.includes(y) || y.includes(x);
+}
+
+/**
+ * Apakah sebuah field memenuhi syarat rubriknya.
+ *
+ * "Terisi memadai", dan apa yang memadai ditentukan bentuk fieldnya sendiri:
+ *
+ *   angka_satuan  wajib memuat angka
+ *   multi         minimal `rubrikMin` entri yang sah (bawaan satu)
+ *   selebihnya    tidak kosong
+ *
+ * Dua saringan tambahan datang dari registry, bukan dari sini:
+ * `rubrikNilaiSah` membatasi nilai mana yang dihitung, `rubrikKecuali`
+ * membatalkan nilai yang justru menunjukkan pekerjaannya belum selesai.
+ */
+export function syaratTerpenuhi(item: ProjectItem, field: FieldDef): boolean {
+  let sah = bacaField(item, field)
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+  if (field.rubrikKecuali) {
+    sah = sah.filter(
+      (nilai) => !field.rubrikKecuali!.some((buruk) => samaAtauMemuat(nilai, buruk)),
+    );
+  }
+  if (field.rubrikNilaiSah) {
+    sah = sah.filter((nilai) =>
+      field.rubrikNilaiSah!.some((baik) => samaAtauMemuat(nilai, baik)),
+    );
+  }
+
+  if (field.tipe === "angka_satuan" && !sah.some(adaAngka)) return false;
+
+  return sah.length >= (field.rubrikMin ?? 1);
+}
+
+/** Apakah salah satu field pengemban peran ini memenuhi syaratnya. */
+function peranTerpenuhi(
+  item: ProjectItem,
+  schema: PolaSchema,
+  peran: FieldDef["rubrik"],
+): boolean {
+  return fieldRubrik(schema, peran).some((field) => syaratTerpenuhi(item, field));
 }
 
 /**
@@ -128,12 +194,18 @@ export function adaKataKerjaOrangPertama(teks: string): boolean {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Q, nilai 0-3, dibaca dari peran, poin, dan tahap keterlibatan.
+ * Q, nilai 0-3.
  *
  *   0  peran kosong, atau hanya kata generik
- *   1  peran spesifik disebut, tapi tanpa kata kerja apa pun
- *   2  peran spesifik dan minimal satu kata kerja orang pertama
- *   3  nilai 2, dan tahap keterlibatannya mencapai tahap eksekusi
+ *   1  peran spesifik disebut, tapi kontribusi pribadinya belum terbaca
+ *   2  peran spesifik dan kontribusi pribadinya terbaca
+ *   3  nilai 2, dan ada bukti pekerjaannya sampai dikerjakan
+ *
+ * Kontribusi pribadi terbaca dari kata kerja orang pertama pada poin - atau,
+ * bila polanya menyatakan sendiri field pengembannya lewat penanda `peran`,
+ * dari field itu. Pola Publikasi & Kredit memakai jalur kedua: sitasi memang
+ * tidak pernah memuat kata kerja, dan menuntutnya di sana berarti menghukum
+ * seluruh bidang akademik karena bentuk buktinya bukan narasi.
  */
 export function nilaiQ(item: ProjectItem, schema: PolaSchema): number {
   const peran = item.role.trim().toLowerCase();
@@ -143,22 +215,14 @@ export function nilaiQ(item: ProjectItem, schema: PolaSchema): number {
   const kalimat = [
     ...item.bullets,
     item.ringkasan,
-    ...Object.values(item.inti).map(teksNilai),
+    ...Object.values(item.inti).map((nilai) => sebagaiDaftar(nilai).join(" ")),
   ];
-  if (!kalimat.some(adaKataKerjaOrangPertama)) return 1;
+  const kontribusiTerbaca =
+    kalimat.some(adaKataKerjaOrangPertama) ||
+    peranTerpenuhi(item, schema, "peran");
+  if (!kontribusiTerbaca) return 1;
 
-  // Tahap eksekusi: dibaca dari field yang ditandai berperan "tahap" pada pola
-  // ini. Pola yang tidak punya padanannya berhenti di nilai 2 - dan itu memang
-  // arti rubriknya, bukan kelalaian pemetaan.
-  const tahap = fieldRubrik(schema, "tahap").flatMap((field) =>
-    daftarNilai(item.inti[field.key]),
-  );
-  const sampaiEksekusi = tahap.some((nilai) =>
-    TAHAP_EKSEKUSI.some((eksekusi) =>
-      nilai.toLowerCase().includes(eksekusi.toLowerCase()),
-    ),
-  );
-  return sampaiEksekusi ? 3 : 2;
+  return peranTerpenuhi(item, schema, "tahap") ? 3 : 2;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -168,9 +232,14 @@ export function nilaiQ(item: ProjectItem, schema: PolaSchema): number {
 /**
  * R, nilai 0-3 - jumlah syarat yang terpenuhi:
  *
- *   (a) skala terisi dengan angka dan satuan
- *   (b) standar atau metode memuat minimal satu entri
- *   (c) hasil memuat angka
+ *   (a) besaran atau kompleksitasnya dinyatakan
+ *   (b) ada kerangka luar yang menilainya
+ *   (c) hasilnya terukur
+ *
+ * Ketiganya abstrak; tiap pola menyatakan sendiri field pengembannya. Aturan
+ * yang dijaga uji: **setiap pola wajib dapat mencapai 3**. Pola yang secara
+ * struktur tidak bisa akan membuat angkanya tidak sebanding antar-pola, dan
+ * penggunanya dihukum karena bidangnya - bukan karena karyanya.
  *
  * `detailTambahan` sengaja tidak ikut. Isinya memang milik penggunanya dan
  * tetap dihitung di Kecocokan Lowongan, tetapi membiarkannya menaikkan R akan
@@ -180,22 +249,15 @@ export function nilaiQ(item: ProjectItem, schema: PolaSchema): number {
 export function nilaiR(item: ProjectItem, schema: PolaSchema): number {
   let r = 0;
 
-  const skala = fieldRubrik(schema, "skala").map((field) =>
-    teksNilai(item.inti[field.key]),
-  );
-  // "Angka dan satuan": ada digitnya, dan ada sesuatu selain digit -
-  // "8.400 m2" lolos, "8400" saja tidak.
-  if (skala.some((nilai) => adaAngka(nilai) && /[a-z%]/i.test(nilai))) r += 1;
+  if (peranTerpenuhi(item, schema, "skala")) r += 1;
+  if (peranTerpenuhi(item, schema, "standar")) r += 1;
 
-  const standar = fieldRubrik(schema, "standar").flatMap((field) =>
-    daftarNilai(item.inti[field.key]),
-  );
-  if (standar.length > 0) r += 1;
-
-  const hasil = fieldRubrik(schema, "hasil").map((field) =>
-    teksNilai(item.inti[field.key]),
-  );
-  if (hasil.some(adaAngka)) r += 1;
+  const hasilTerpenuhi = fieldRubrik(schema, "hasil").some((field) => {
+    if (!syaratTerpenuhi(item, field)) return false;
+    if (field.rubrikButuhAngka === false) return true;
+    return bacaField(item, field).some(adaAngka);
+  });
+  if (hasilTerpenuhi) r += 1;
 
   return r;
 }

@@ -2,6 +2,10 @@ import * as React from "react";
 import { paperSpec } from "@/lib/resume/paper";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import {
+  keteranganKredensial,
+  masaBerlakuTeks,
+} from "@/lib/portfolio/kredensial";
+import {
   bagiItemPortofolio,
   itemTercetak,
   portofolioAktif,
@@ -639,6 +643,17 @@ export function ResumeDocument({
                         ph={ph("period")}
                       />
                     </p>
+                    {joinNonEmpty(
+                      [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
+                      PEMISAH_DETAIL,
+                    ) && (
+                      <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
+                        {joinNonEmpty(
+                          [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
+                          PEMISAH_DETAIL,
+                        )}
+                      </p>
+                    )}
                     {(c.credentialId || c.url) && (
                       <p style={{ fontSize: `${data.fontSize - 0.5}pt` }}>
                         {joinNonEmpty(

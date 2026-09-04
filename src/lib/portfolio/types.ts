@@ -158,6 +158,22 @@ export interface BagianPortofolio {
   maksItem: number;
   /** Mengganti nama klien dengan deskriptor generik dan angka pasti dengan rentang. */
   modeRedaksi: boolean;
+  /**
+   * Perolehan terhadap ambang resmi profesinya - hanya untuk pola yang punya
+   * blok agregat.
+   *
+   * Tidak pernah ikut tercetak di CV. Ini alat hitung untuk penggunanya
+   * sendiri, dan angkanya ditulis sendiri olehnya: aplikasi ini tidak punya
+   * cara membaca catatan resmi siapa pun.
+   */
+  agregat: AgregatIsi;
+}
+
+export interface AgregatIsi {
+  /** Slug entri di ambang-profesi.ts. "" berarti belum dipilih. */
+  ambangSlug: string;
+  /** Perolehan per ranah, dikunci nama ranahnya. */
+  perRanah: Record<string, number>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -245,17 +261,49 @@ export interface FieldDef {
   /**
    * Peran field ini di dalam rubrik penilaian kekuatan bukti.
    *
-   * Rubriknya menyebut nama field per pola - `skalaProyek` / `volume` /
-   * `skalaDikelola` untuk satu peran yang sama, dan seterusnya. Pemetaannya
-   * ditaruh di sini, bukan di dalam mesin skor, karena alasan yang sama dengan
-   * seluruh bagian lain fitur ini: menambah pola berarti menyunting registry,
-   * bukan menyunting kode yang membacanya.
+   * Syaratnya bersifat **abstrak**, bukan nama field tertentu:
    *
-   * Pola yang tidak punya padanan untuk sebuah peran memang tidak menandainya.
-   * Itu bukan kelalaian pemetaan melainkan arti rubriknya - dan akibatnya pada
-   * angka harus dibaca apa adanya, bukan ditambal.
+   *   skala    besaran atau kompleksitas pekerjaannya
+   *   standar  kerangka luar yang menilainya - standar, metode, indeksasi
+   *   hasil    hasil yang terukur
+   *   tahap    bukti pekerjaannya benar-benar sampai dikerjakan
+   *   peran    field yang menyatakan kontribusi pribadi, bila polanya memang
+   *            tidak menyatakannya lewat kata kerja pada poin
+   *
+   * Tiap pola menyatakan sendiri field mana yang memenuhinya. Aturan
+   * kerasnya: **setiap pola wajib dapat mencapai R = 3/3** - kalau ada pola
+   * yang secara struktur tidak bisa, angkanya tidak sebanding antar-pola, dan
+   * pengguna bidang itu dihukum karena bidangnya, bukan karena karyanya.
    */
-  rubrik?: "skala" | "standar" | "hasil" | "tahap";
+  rubrik?: "skala" | "standar" | "hasil" | "tahap" | "peran";
+  /** Jumlah entri minimum agar syarat rubriknya terpenuhi. Bawaan 1. */
+  rubrikMin?: number;
+  /**
+   * Hanya nilai-nilai ini yang dihitung memenuhi syarat rubriknya.
+   *
+   * Dipakai saat sebagian isian memang tidak membuktikan apa pun untuk syarat
+   * itu - "denah" membuktikan kemampuan teknis, "render 3D" belum tentu.
+   */
+  rubrikNilaiSah?: string[];
+  /** Nilai yang justru membatalkan syaratnya, mis. "manuskrip dalam review". */
+  rubrikKecuali?: string[];
+  /**
+   * Apakah syarat `hasil` menuntut adanya angka pada field ini.
+   *
+   * Bawaannya ya - "hasil terukur" memang berarti terukur. Dimatikan hanya
+   * bila yang memenuhi syarat itu memang bukan besaran: DOI dan ISBN
+   * membuktikan hasilnya ada dan dapat diperiksa siapa pun, dan menuntut
+   * angka di sana hanya akan menghukum bentuk bukti yang justru paling kuat.
+   */
+  rubrikButuhAngka?: boolean;
+  /**
+   * Isian field ini adalah **nama** - klien, institusi, atau pemberi kerja.
+   *
+   * Ditandai supaya Mode Redaksi ikut menggantinya. Tanpa penanda ini, nama
+   * rumah sakit yang tersimpan di field inti tetap tercetak meski nama klien
+   * di kolom konteks sudah disamarkan - dan penggunanya mengira sudah aman.
+   */
+  redaksi?: "nama";
   /**
    * Kolom bawaan tempat nilainya disimpan, bila field ini memang sudah punya
    * rumah sendiri di model data lama (mis. `publisher` pada publikasi).

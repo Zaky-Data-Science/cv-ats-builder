@@ -112,6 +112,12 @@ export const bagianPortofolioSchema = z.object({
   gabungKePengalaman: z.boolean().default(false),
   maksItem: z.number().int().min(1).max(50).default(6),
   modeRedaksi: z.boolean().default(false),
+  agregat: z
+    .object({
+      ambangSlug: str(60),
+      perRanah: z.record(z.string().max(60), z.number().min(0).max(100000)).default({}),
+    })
+    .default({ ambangSlug: "", perRanah: {} }),
 });
 
 const tautanSchema = z.object({
@@ -259,6 +265,18 @@ export const certificationSchema = z.object({
   expiryDate: monthStr,
   credentialId: str(120),
   url: str(300),
+
+  // Empat kategori kredensial, dan bentuk masa berlakunya. Keduanya bernilai
+  // bawaan "" supaya kredensial yang ditulis sebelum fitur ini tetap sah.
+  kategori: z
+    .enum(["", "lisensi-praktik", "berjenjang", "sektoral", "kompetensi"])
+    .default(""),
+  masaBerlaku: z
+    .enum(["", "seumur-hidup", "tanggal", "tidak-berlaku"])
+    .default(""),
+  jenjang: str(120),
+  klasifikasi: str(120),
+  subTipe: str(60),
 });
 
 export const organizationSchema = z.object({
@@ -357,6 +375,7 @@ export const resumeDataSchema = z.object({
     gabungKePengalaman: false,
     maksItem: 6,
     modeRedaksi: false,
+    agregat: { ambangSlug: "", perRanah: {} },
   }),
   personalInfo: personalInfoSchema,
   experiences: z.array(experienceSchema).max(40).default([]),

@@ -1,5 +1,9 @@
 import { formatDateRange, formatMonth, joinNonEmpty, prettyUrl } from "@/lib/utils";
 import {
+  keteranganKredensial,
+  masaBerlakuTeks,
+} from "@/lib/portfolio/kredensial";
+import {
   bagiItemPortofolio,
   barisKepala,
   itemTercetak,
@@ -158,6 +162,11 @@ export function resumeToPlainText(data: ResumeData): string {
             joinNonEmpty([c.name, c.issuer], " - ") +
               (c.issueDate ? ` (${formatMonth(c.issueDate, lang)})` : ""),
           );
+          const keterangan = joinNonEmpty(
+            [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
+            PEMISAH_DETAIL,
+          );
+          if (keterangan) out.push(keterangan);
           if (c.credentialId) out.push(`ID: ${c.credentialId}`);
         }
         break;

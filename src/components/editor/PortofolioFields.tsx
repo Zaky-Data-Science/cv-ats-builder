@@ -4,9 +4,13 @@ import * as React from "react";
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import { useI18n } from "@/components/i18n";
 import { Button, Field, Input, Select, Textarea } from "@/components/ui";
+import { ambangProfesi } from "@/lib/portfolio/ambang-profesi";
+import { periksaBahasaBanyak } from "@/lib/portfolio/bahasa";
 import { entriKamus } from "@/lib/portfolio/kamus-bidang";
 import { MAKS_TAUTAN } from "@/lib/portfolio/render";
 import type {
+  AgregatDef,
+  AgregatIsi,
   DetailTambahan,
   EntriKamus,
   FieldDef,
@@ -590,4 +594,181 @@ export function adaAngka(teks: string): boolean {
 
 export function saranKamus(slug: string): EntriKamus | undefined {
   return slug ? entriKamus(slug) : undefined;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blok agregat - perolehan terhadap ambang resmi                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Progres terhadap ambang resmi profesinya.
+ *
+ * Seluruh angkanya dibaca dari `ambang-profesi.ts`, tidak satu pun ditulis di
+ * komponen ini - dan itu bukan soal kerapian. Begitu layar ini menampilkan
+ * "180 dari 250 SKP", penggunanya akan memakainya untuk memutuskan kapan
+ * mengurus perpanjangan izin praktiknya. Kalau angkanya usang, kerugiannya
+ * nyata dan menimpa orang yang tidak punya cara mengeceknya dari dalam
+ * aplikasi. Karena itu sumber dan tanggal pemeriksaannya ikut ditampilkan,
+ * dan sanggahannya tidak dapat ditutup.
+ */
+export function BlokAgregat({
+  def,
+  isi,
+  onChange,
+}: {
+  def: AgregatDef;
+  isi: AgregatIsi;
+  onChange: (isi: AgregatIsi) => void;
+}) {
+  const { t } = useI18n();
+  const teks = t.portofolio;
+  const ambang = isi.ambangSlug ? ambangProfesi(isi.ambangSlug) : undefined;
+
+  const total = Object.values(isi.perRanah).reduce((a, b) => a + (b || 0), 0);
+  const persen =
+    ambang?.total && ambang.total > 0
+      ? Math.min(100, Math.round((total / ambang.total) * 100))
+      : null;
+
+  return (
+    <div className="space-y-3 rounded-lg border border-ink-200 bg-white p-3">
+      <p className="text-xs font-semibold text-ink-900">{teks.aggTitle}</p>
+
+      <Field label={teks.aggChoose}>
+        <Select
+          value={isi.ambangSlug}
+          onChange={(e) =>
+            onChange({ ambangSlug: e.target.value, perRanah: {} })
+          }
+        >
+          <option value="">{teks.aggChooseNone}</option>
+          {def.ambangSlugs.map((slug) => {
+            const entri = ambangProfesi(slug);
+            return entri ? (
+              <option key={slug} value={slug}>
+                {entri.nama}
+              </option>
+            ) : null;
+          })}
+        </Select>
+      </Field>
+
+      {ambang && (
+        <>
+          {ambang.ranah.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-[11px] font-medium text-ink-700">
+                {teks.aggDomain}
+              </p>
+              {ambang.ranah.map((ranah) => (
+                <div key={ranah.nama} className="flex items-center gap-2">
+                  <span className="min-w-0 flex-1 truncate text-[11px] text-ink-600">
+                    {ranah.nama}
+                    {ranah.minPersen !== undefined && ` (min ${ranah.minPersen}%)`}
+                    {ranah.poin !== undefined && ` (${ranah.poin} poin)`}
+                  </span>
+                  <Input
+                    className="w-24"
+                    type="number"
+                    min={0}
+                    aria-label={ranah.nama}
+                    value={String(isi.perRanah[ranah.nama] ?? "")}
+                    onChange={(e) =>
+                      onChange({
+                        ...isi,
+                        perRanah: {
+                          ...isi.perRanah,
+                          [ranah.nama]: Number(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div>
+            <div className="flex items-baseline justify-between text-[11px]">
+              <span className="text-ink-700">{teks.aggTotal}</span>
+              <span className="font-semibold tabular-nums text-ink-900">
+                {total}
+                {ambang.total !== null
+                  ? ` ${teks.aggOf} ${ambang.total} ${ambang.satuan}`
+                  : ` ${ambang.satuan}`}
+              </span>
+            </div>
+            {persen !== null ? (
+              <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-ink-200">
+                <div
+                  className="h-full rounded-full bg-brand-500 transition-[width] duration-500"
+                  style={{ width: `${persen}%` }}
+                />
+              </div>
+            ) : (
+              <p className="mt-1 text-[11px] text-ink-500">{teks.aggNoTotal}</p>
+            )}
+          </div>
+
+          {/* Sanggahan yang tidak dapat ditutup, tepat di bawah progress bar. */}
+          <p className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] leading-relaxed text-ink-700">
+            {def.sanggahan}
+          </p>
+
+          <p className="text-[11px] text-ink-500">
+            {teks.aggSource}: {ambang.sumber} · {teks.aggUpdated} {ambang.diperbarui}
+            {ambang.catatan ? ` · ${ambang.catatan}` : ""}
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Periksa bahasa orang pertama                                               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Temuan bahasa untuk sekumpulan kalimat.
+ *
+ * Ditampilkan tepat di bawah kalimat yang menyebabkannya, bukan sebagai
+ * daftar terpisah: penanda yang jauh dari kalimatnya menuntut pembacanya
+ * mencocokkan sendiri, dan yang terjadi kemudian ia mengabaikannya.
+ */
+export function PeriksaBahasa({
+  kalimat,
+  wajib,
+}: {
+  kalimat: string[];
+  wajib: boolean;
+}) {
+  const { t } = useI18n();
+  const teks = t.portofolio;
+  const temuan = periksaBahasaBanyak(kalimat);
+  if (temuan.length === 0) return null;
+
+  return (
+    <div
+      className={cn(
+        "rounded-md border px-2.5 py-2",
+        wajib ? "border-amber-300 bg-amber-50" : "border-ink-200 bg-ink-50",
+      )}
+    >
+      <p className="text-[11px] font-semibold text-ink-800">{teks.langTitle}</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-ink-600">
+        {wajib ? teks.langRequired : teks.langSuggest}
+      </p>
+      <ul className="mt-1.5 space-y-1">
+        {temuan.map((item) => (
+          <li key={item.kata} className="text-[11px] leading-relaxed text-ink-700">
+            <span className="rounded bg-amber-200/60 px-1 font-medium">
+              {item.kata}
+            </span>{" "}
+            {item.usul}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }

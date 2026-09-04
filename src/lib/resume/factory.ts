@@ -120,6 +120,11 @@ export function emptyCertification(): CertificationItem {
     expiryDate: "",
     credentialId: "",
     url: "",
+    kategori: "",
+    masaBerlaku: "",
+    jenjang: "",
+    klasifikasi: "",
+    subTipe: "",
   };
 }
 

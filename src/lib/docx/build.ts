@@ -13,6 +13,10 @@ import {
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import { parseEmbeddedPhoto } from "@/lib/resume/photo";
 import {
+  keteranganKredensial,
+  masaBerlakuTeks,
+} from "@/lib/portfolio/kredensial";
+import {
   bagiItemPortofolio,
   barisKepala,
   itemTercetak,
@@ -373,6 +377,11 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
               ],
             }),
           );
+          const keterangan = joinNonEmpty(
+            [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
+            PEMISAH_DETAIL,
+          );
+          if (keterangan) children.push(body(keterangan, smallSize));
           const detail = joinNonEmpty(
             [c.credentialId ? `ID: ${c.credentialId}` : "", prettyUrl(c.url)],
             "  |  ",

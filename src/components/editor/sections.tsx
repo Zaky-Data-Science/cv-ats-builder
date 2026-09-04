@@ -37,13 +37,20 @@ import { moveItem, removeAt, replaceAt, useEditor } from "./context";
 import { AddButton, BulletEditor, EntryCard, MonthInput, Row } from "./parts";
 import {
   adaAngka,
+  BlokAgregat,
   BlokPribadi,
   DetailTambahanEditor,
   FieldIntiInput,
   Lipat,
+  PeriksaBahasa,
   saranKamus,
   TautanEditor,
 } from "./PortofolioFields";
+import {
+  LABEL_KATEGORI_KREDENSIAL,
+  MASA_BERLAKU_LABEL,
+} from "@/lib/portfolio/kredensial";
+import type { KategoriKredensial, MasaBerlakuJenis } from "@/lib/resume/types";
 import { PhotoInput } from "./PhotoInput";
 
 /**
@@ -852,6 +859,20 @@ export function ProjectSection() {
         )}
 
         <Switch
+          checked={bagian.modeRedaksi}
+          onChange={(checked) =>
+            update({ portofolio: { ...bagian, modeRedaksi: checked } })
+          }
+          label={teks.redactionLabel}
+          hint={teks.redactionHint}
+        />
+        {bagian.modeRedaksi && (
+          <p className="rounded-md bg-ink-100 px-2.5 py-1.5 text-[11px] leading-relaxed text-ink-600">
+            {teks.redactionNote}
+          </p>
+        )}
+
+        <Switch
           checked
           onChange={() => update({ portofolio: { ...bagian, aktif: false } })}
           label={teks.shapeToggle}
@@ -880,6 +901,15 @@ export function ProjectSection() {
             ))}
           </ul>
         </Callout>
+      )}
+
+      {/* ---------------- Blok agregat ---------------- */}
+      {schema.blokAgregat && (
+        <BlokAgregat
+          def={schema.blokAgregat}
+          isi={bagian.agregat}
+          onChange={(agregat) => update({ portofolio: { ...bagian, agregat } })}
+        />
       )}
 
       {/* ---------------- Daftar item ---------------- */}
@@ -1015,6 +1045,12 @@ export function ProjectSection() {
                     </span>
                   ))}
               </div>
+              <div className="mt-2">
+                <PeriksaBahasa
+                  kalimat={[...item.bullets, item.ringkasan]}
+                  wajib={schema.aturanBahasa === "orang-pertama-wajib"}
+                />
+              </div>
             </div>
 
             <TautanEditor
@@ -1121,7 +1157,9 @@ export function ProjectSection() {
 export function CertificationSection() {
   const { data, update, setHighlight } = useEditor();
   const { t } = useI18n();
+  const teks = t.portofolio;
   const items = data.certifications;
+  const kamus = saranKamus(data.profilPortofolio.bidangKamus);
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
     update({
@@ -1160,6 +1198,84 @@ export function CertificationSection() {
               placeholder={t.form.certIssuerPh}
             />
           </Field>
+
+          {/*
+            Empat kategori kredensial, dan bentuk masa berlakunya.
+
+            Yang paling menentukan justru pilihan "seumur hidup": sejak
+            UU 17/2023, STR Definitif memang tidak lagi punya tanggal
+            kedaluwarsa, dan formulir yang hanya menerima tanggal menuntut
+            penggunanya mengarang tanggal yang tidak ada.
+          */}
+          <Row>
+            <Field label={teks.credCategory} hint={teks.credCategoryHint}>
+              <Select
+                value={item.kategori}
+                onChange={(e) =>
+                  set(index, {
+                    kategori: e.target.value as KategoriKredensial | "",
+                  })
+                }
+              >
+                <option value="">-</option>
+                {(
+                  Object.keys(LABEL_KATEGORI_KREDENSIAL) as KategoriKredensial[]
+                ).map((kategori) => (
+                  <option key={kategori} value={kategori}>
+                    {LABEL_KATEGORI_KREDENSIAL[kategori]}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label={teks.credValidity} hint={teks.credValidityHint}>
+              <Select
+                value={item.masaBerlaku}
+                onChange={(e) =>
+                  set(index, {
+                    masaBerlaku: e.target.value as MasaBerlakuJenis | "",
+                  })
+                }
+              >
+                <option value="">-</option>
+                {(Object.keys(MASA_BERLAKU_LABEL) as MasaBerlakuJenis[]).map(
+                  (jenis) => (
+                    <option key={jenis} value={jenis}>
+                      {MASA_BERLAKU_LABEL[jenis]}
+                    </option>
+                  ),
+                )}
+              </Select>
+            </Field>
+          </Row>
+
+          {item.kategori === "berjenjang" && (
+            <Row>
+              <Field label={teks.credLevel}>
+                <Input
+                  value={item.jenjang}
+                  placeholder={teks.credLevelPh}
+                  onChange={(e) => set(index, { jenjang: e.target.value })}
+                />
+              </Field>
+              <Field label={teks.credClass}>
+                <Input
+                  value={item.klasifikasi}
+                  placeholder={teks.credClassPh}
+                  onChange={(e) => set(index, { klasifikasi: e.target.value })}
+                />
+              </Field>
+            </Row>
+          )}
+
+          {item.kategori === "kompetensi" && (
+            <Field label={teks.credSubType}>
+              <Input
+                value={item.subTipe}
+                placeholder={teks.credSubTypePh}
+                onChange={(e) => set(index, { subTipe: e.target.value })}
+              />
+            </Field>
+          )}
 
           <Row>
             <MonthInput
@@ -1200,6 +1316,54 @@ export function CertificationSection() {
           update({ certifications: [...items, emptyCertification()] })
         }
       />
+
+      {/*
+        Kredensial yang lazim di bidangnya, langsung dari kamus.
+
+        Keterangan masa berlakunya ikut apa adanya - termasuk yang berbunyi
+        "ditetapkan per skema oleh masing-masing LSP", karena itu memang
+        jawabannya. Menuliskan "3 tahun" untuk seluruh sertifikat BNSP akan
+        salah pada sebagian besar di antaranya.
+      */}
+      {(kamus?.kredensial ?? []).length > 0 && (
+        <div>
+          <p className="mb-1.5 text-[11px] font-medium text-ink-700">
+            {teks.credSuggest}
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {(kamus?.kredensial ?? []).map((k) => (
+              <button
+                key={k.nama}
+                type="button"
+                title={`${k.penerbit} - ${k.masaBerlaku}`}
+                onClick={() =>
+                  update({
+                    certifications: [
+                      ...items,
+                      {
+                        ...emptyCertification(),
+                        name: k.nama,
+                        issuer: k.penerbit,
+                        kategori: k.kategori,
+                        masaBerlaku: /seumur hidup/i.test(k.masaBerlaku)
+                          ? "seumur-hidup"
+                          : /tidak punya masa berlaku|tanpa masa berlaku/i.test(
+                                k.masaBerlaku,
+                              )
+                            ? "tidak-berlaku"
+                            : "",
+                      },
+                    ],
+                  })
+                }
+                className="max-w-full truncate rounded-full border border-ink-200 px-2 py-0.5 text-[11px] text-ink-600 transition-colors hover:bg-ink-50"
+              >
+                + {k.nama}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

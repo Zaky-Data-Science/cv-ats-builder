@@ -34,15 +34,19 @@ import type {
   BagianPortofolio,
   DetailTambahan,
   IntiValue,
+  KategoriKredensial,
   PolaSlug,
   ProfilPortofolio,
   TautanPortofolio,
   Verifikator,
 } from "@/lib/portfolio/types";
+import type { MasaBerlakuJenis } from "@/lib/portfolio/ambang-profesi";
 export type {
   BagianPortofolio,
   DetailTambahan,
   IntiValue,
+  KategoriKredensial,
+  MasaBerlakuJenis,
   PolaSlug,
   ProfilPortofolio,
   TautanPortofolio,
@@ -219,6 +223,15 @@ export interface ProjectItem {
 /** Nama yang dipakai dokumen rancangan fitur untuk bentuk data yang sama. */
 export type ItemPortofolio = ProjectItem;
 
+/**
+ * Satu kredensial.
+ *
+ * Empat kategori dengan perlakuan berbeda - lihat KategoriKredensial di
+ * lib/portfolio/types.ts. Yang membuat bagian ini tidak sekadar "sertifikasi"
+ * adalah kolom masa berlakunya: sejak UU 17/2023, STR Definitif berlaku
+ * **seumur hidup**, dan formulir yang memaksa pengisian tanggal kedaluwarsa
+ * menuntut ratusan ribu tenaga kesehatan mengarang tanggal yang tidak ada.
+ */
 export interface CertificationItem {
   id: string;
   name: string;
@@ -227,6 +240,21 @@ export interface CertificationItem {
   expiryDate: string;
   credentialId: string;
   url: string;
+
+  /** "" berarti belum dikategorikan - bentuk kredensial sebelum fitur ini. */
+  kategori: KategoriKredensial | "";
+  /**
+   * Bentuk masa berlakunya, bukan tanggalnya.
+   *
+   * "" pada kredensial lama berarti mengikuti isian `expiryDate` apa adanya.
+   */
+  masaBerlaku: MasaBerlakuJenis | "";
+  /** Jenjang untuk kredensial berjenjang, mis. "Jenjang 7 - Ahli Muda". */
+  jenjang: string;
+  /** Klasifikasi bidangnya, mis. "Arsitektur" pada SKK Konstruksi. */
+  klasifikasi: string;
+  /** Untuk sertifikasi kompetensi: vendor global, BNSP, atau bootcamp. */
+  subTipe: string;
 }
 
 export interface OrganizationItem {

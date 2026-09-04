@@ -5,7 +5,7 @@ import {
   profilPortofolioBawaan,
   VERSI_SKEMA_CV,
 } from "@/lib/portfolio/migrasi";
-import { emptyProject, emptyPublication } from "./factory";
+import { emptyCertification, emptyProject, emptyPublication } from "./factory";
 import { DEFAULT_SECTION_ORDER } from "./sections";
 import type { ResumeData } from "./types";
 
@@ -448,6 +448,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
     certifications: [
       {
+        ...emptyCertification(),
         id: newId(),
         name: text.certNames[0],
         issuer: text.certIssuers[0],
@@ -457,6 +458,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         url: "coursera.org/verify/ABCD1234EFGH",
       },
       {
+        ...emptyCertification(),
         id: newId(),
         name: text.certNames[1],
         issuer: text.certIssuers[1],
@@ -466,6 +468,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         url: "dicoding.com/certificates/DCD-FE-2211",
       },
       {
+        ...emptyCertification(),
         id: newId(),
         name: text.certNames[2],
         issuer: text.certIssuers[2],

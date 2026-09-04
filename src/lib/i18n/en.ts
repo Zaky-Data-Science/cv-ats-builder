@@ -330,6 +330,38 @@ export const en: Dictionary = {
     itemRangeOpen: "For this shape, more is better. At least {min} items.",
     addItem: "Add",
     publicationExtra: "Credit & indexing",
+    credCategory: "Credential category",
+    credCategoryHint:
+      "Four categories, treated differently: a practice licence is a gate, a tiered credential decides which work you may take on, a sectoral certificate attaches to a post, a competency certificate rounds things off.",
+    credValidity: "Validity",
+    credValidityHint:
+      "Pick the shape first. Some credentials genuinely last for life, so an expiry date is never forced on you here.",
+    credLevel: "Tier",
+    credLevelPh: "Tier 7 - Junior Expert",
+    credClass: "Field classification",
+    credClassPh: "Architecture",
+    credSubType: "Issuer type",
+    credSubTypePh: "Global vendor / national body / bootcamp",
+    credSuggest: "Credentials common in your field",
+    aggTitle: "Progress against the official threshold",
+    aggChoose: "Profession",
+    aggChooseNone: "Not chosen yet",
+    aggTotal: "Collected so far",
+    aggOf: "of",
+    aggSource: "Source",
+    aggUpdated: "checked",
+    aggDomain: "By domain",
+    aggNoTotal: "The rule names no total figure.",
+    redactionLabel: "Redaction mode",
+    redactionHint:
+      "Replaces client names with a description of the field, and exact figures with a range that contains them. Applies to PDF, Word, and plain text.",
+    redactionNote:
+      "The JSON backup keeps the real figures - it is your own backup, not the file you send to an employer.",
+    langTitle: "Language check",
+    langRequired:
+      "This shape calls for first-person writing. Competency assessors use it to tell your work apart from your team's.",
+    langSuggest:
+      "Not required for this shape, but first-person sentences still read more clearly.",
   },
 
   guest: {

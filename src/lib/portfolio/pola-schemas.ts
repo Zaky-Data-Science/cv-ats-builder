@@ -77,6 +77,10 @@ const KARYA_VISUAL: PolaSchema = {
       label: "Proses & keputusan",
       tipe: "multi",
       komponen: ["Masalah", "Solusi"],
+      // Besaran pekerjaan pada pola ini bukan luas atau nilai kontrak,
+      // melainkan berapa banyak keputusan yang benar-benar diambil.
+      rubrik: "skala",
+      rubrikMin: 2,
       placeholder:
         "Riset: 8 wawancara -> temuan drop di langkah 3 -> satukan jadi 2 langkah",
       bantuan: "Struktur baku studi kasus: 2-5 pasangan masalah-solusi.",
@@ -87,6 +91,30 @@ const KARYA_VISUAL: PolaSchema = {
       key: "bentukKarya",
       label: "Bentuk karya",
       tipe: "multi",
+      /*
+        Kerangka luar pada pola ini adalah artefak teknisnya sendiri: gambar
+        dan berkas yang menuntut kaidah, bukan yang menuntut selera. Daftarnya
+        diturunkan dari kalimat bantuan field ini - "minimal satu gambar
+        teknis (denah/potongan/detail), bukan hanya render" - lalu diperluas
+        ke padanan yang setara di luar arsitektur.
+      */
+      rubrik: "standar",
+      rubrikNilaiSah: [
+        "denah",
+        "potongan",
+        "tampak",
+        "detail",
+        "aksonometri",
+        "site plan",
+        "wireframe",
+        "prototipe",
+        "design system",
+        "user flow",
+        "repo",
+        "demo",
+        "dieline kemasan",
+        "storyboard",
+      ],
       opsi: [
         "denah",
         "potongan",
@@ -266,6 +294,9 @@ const PROYEK_TEKNIS: PolaSchema = {
       label: "Tahap keterlibatan",
       tipe: "multi",
       rubrik: "tahap",
+      // Hanya tahap eksekusi yang membuktikan pekerjaannya benar-benar
+      // dikerjakan; studi kelayakan dan tender berhenti sebelum itu.
+      rubrikNilaiSah: TAHAP_EKSEKUSI,
       opsi: [
         "studi kelayakan",
         "DED/desain",
@@ -446,6 +477,10 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "institusi",
       label: "Institusi / fasilitas",
       tipe: "teks",
+      // Institusi tempat kegiatannya berlangsung adalah bukti bahwa ia
+      // memang terjadi - dan bahwa orang lain dapat memeriksanya.
+      rubrik: "tahap",
+      redaksi: "nama",
       placeholder: "RSUD Taman Husada Bontang (tipe B)",
       bantuan: "Institusi membuat pengalaman bisa diverifikasi.",
       wajib: true,
@@ -483,6 +518,9 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "kredensialTerkait",
       label: "Kredensial terkait",
       tipe: "multi",
+      // Kerangka luar pada pola ini adalah lisensinya: yang menilai bukan
+      // standar teknis melainkan lembaga yang memberi izin praktik.
+      rubrik: "standar",
       placeholder: "STR, SIP",
       bantuan:
         "Gerbang wajib untuk pola ini. Perekrut mengecek lisensi sebelum mengecek pengalaman.",
@@ -571,6 +609,10 @@ const KARYA_TERKREDIT: PolaSchema = {
       label: "Tipe luaran",
       tipe: "pilihan",
       simpanDi: "tipeLuaran",
+      // Karya yang sudah terbit sudah selesai dikerjakan; manuskrip yang
+      // masih dalam review belum.
+      rubrik: "tahap",
+      rubrikKecuali: ["manuskrip dalam review"],
       opsi: [
         "artikel jurnal",
         "prosiding",
@@ -604,6 +646,9 @@ const KARYA_TERKREDIT: PolaSchema = {
       label: "Venue / penerbit / panggung",
       tipe: "teks",
       simpanDi: "publisher",
+      // Besaran pada pola ini adalah tempat terbitnya: jurnal, penerbit, atau
+      // panggung yang menampungnya.
+      rubrik: "skala",
       placeholder: "Jurnal Teknik Industri, Vol 26(1)",
       bantuan: "Tempat terbit inilah yang memvalidasi karya Anda.",
       wajib: true,
@@ -614,6 +659,14 @@ const KARYA_TERKREDIT: PolaSchema = {
       label: "Peran",
       tipe: "pilihan",
       simpanDi: "peranSaya",
+      /*
+        Kontribusi pribadi pada pola ini dinyatakan lewat field ini, bukan
+        lewat kata kerja pada poin. Sitasi memang tidak punya kata kerja -
+        "Santoso, B. (2025). Optimasi jadwal produksi..." tidak akan pernah
+        memuat "saya merancang" - dan menuntutnya di sini berarti menghukum
+        seluruh bidang akademik karena bentuk buktinya memang bukan narasi.
+      */
+      rubrik: "peran",
       opsi: [
         "penulis pertama",
         "korespondensi",
@@ -633,6 +686,10 @@ const KARYA_TERKREDIT: PolaSchema = {
       label: "Indeksasi / tingkat",
       tipe: "pilihan",
       simpanDi: "indeksasiTier",
+      // Indeksasi adalah kerangka luar yang menilai karya ini - persis peran
+      // yang dipegang standar dan kode pada pola teknis.
+      rubrik: "standar",
+      rubrikKecuali: ["tidak terindeks"],
       opsi: [
         "Scopus Q1",
         "Scopus Q2",
@@ -660,6 +717,10 @@ const KARYA_TERKREDIT: PolaSchema = {
       label: "DOI / ISBN / tautan rekaman",
       tipe: "url",
       simpanDi: "url",
+      // Hasil yang dapat diperiksa siapa pun, kapan pun. Tidak menuntut
+      // angka: yang membuktikan di sini keberadaannya, bukan besarannya.
+      rubrik: "hasil",
+      rubrikButuhAngka: false,
       placeholder: "doi.org/10.xxxx/yyyy",
       bantuan:
         "Pengenal yang tidak berubah membuat karya Anda dapat ditemukan bertahun-tahun kemudian.",
@@ -816,6 +877,9 @@ const DAMPAK_PROGRAM: PolaSchema = {
       key: "penerimaManfaat",
       label: "Penerima manfaat",
       tipe: "teks",
+      // Adanya penerima manfaat yang disebut namanya adalah bukti programnya
+      // sampai dijalankan, bukan berhenti sebagai rencana.
+      rubrik: "tahap",
       placeholder: "Tim penjualan 40 orang",
       bantuan: "Hasil tanpa penerima manfaat terdengar abstrak.",
       prioritas: 6,
@@ -878,6 +942,7 @@ const UMUM: PolaSchema = {
       key: "jenisKarya",
       label: "Jenis karya",
       tipe: "teks",
+      rubrik: "skala",
       placeholder: "Aplikasi pencatat keuangan pribadi",
       bantuan: "Sebutkan bendanya dengan bahasa yang dimengerti orang luar bidang.",
       prioritas: 1,
@@ -895,6 +960,7 @@ const UMUM: PolaSchema = {
       key: "alatMetode",
       label: "Alat & metode",
       tipe: "multi",
+      rubrik: "standar",
       placeholder: "React, Figma, wawancara pengguna",
       bantuan: "Alat dan cara kerja yang Anda pakai sendiri.",
       prioritas: 3,
@@ -904,6 +970,8 @@ const UMUM: PolaSchema = {
       label: "Tautan karya",
       tipe: "url",
       simpanDi: "tautan",
+      // Karya yang dapat dibuka adalah bukti ia benar-benar jadi.
+      rubrik: "tahap",
       placeholder: "github.com/nama/repo",
       bantuan: "Maksimal dua, dan pastikan benar-benar bisa dibuka.",
       prioritas: 4,

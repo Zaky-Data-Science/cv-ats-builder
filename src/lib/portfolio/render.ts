@@ -1,6 +1,7 @@
 import { formatDateRange, joinNonEmpty, prettyUrl, ensureHttp } from "@/lib/utils";
 import type { ProjectItem, ResumeData, ResumeLanguage } from "@/lib/resume/types";
 import { judulBagian, polaSchema } from "./pola-schemas";
+import { deskriptorGenerik, samarkanAngka, samarkanKonteks } from "./redaksi";
 import type { FieldDef, IntiValue, PolaSchema, TautanPortofolio } from "./types";
 
 /**
@@ -252,6 +253,7 @@ export function nilaiIntiTeks(field: FieldDef, nilai: IntiValue): DetailTercetak
 export function detailTercetak(
   item: ProjectItem,
   schema: PolaSchema,
+  deskriptorRedaksi?: string,
 ): DetailTercetak[] {
   const hasil: DetailTercetak[] = [];
 
@@ -262,6 +264,17 @@ export function detailTercetak(
     if (field.simpanDi) continue;
     const nilai = item.inti[field.key];
     if (nilai === undefined) continue;
+
+    // Field yang isinya nama ikut disamarkan. Nama rumah sakit yang tersimpan
+    // di field inti sama rahasianya dengan nama klien di kolom konteks -
+    // menyamarkan satu dan membiarkan yang lain justru lebih berbahaya
+    // daripada tidak menyamarkan sama sekali, karena penggunanya mengira
+    // sudah aman.
+    if (deskriptorRedaksi && field.redaksi === "nama") {
+      hasil.push({ label: field.label, nilai: deskriptorRedaksi });
+      continue;
+    }
+
     const baris = nilaiIntiTeks(field, nilai);
     if (baris) hasil.push(baris);
   }
@@ -288,8 +301,12 @@ export function detailTidakDicetak(item: ProjectItem): number {
   return Math.max(0, terisi - MAKS_DETAIL_DICETAK);
 }
 
-export function barisDetail(item: ProjectItem, schema: PolaSchema): string {
-  return detailTercetak(item, schema)
+export function barisDetail(
+  item: ProjectItem,
+  schema: PolaSchema,
+  deskriptorRedaksi?: string,
+): string {
+  return detailTercetak(item, schema, deskriptorRedaksi)
     .map((d) => `${d.label}: ${d.nilai}`)
     .join(PEMISAH_DETAIL);
 }
@@ -331,16 +348,38 @@ export function itemTercetak(
   const schema = skemaItem(data, item);
   const aktif = portofolioAktif(data);
 
+  /*
+    Mode Redaksi bekerja di sini, satu tempat untuk ketiga keluaran.
+
+    Menaruhnya di masing-masing penghasil keluaran berarti tiga tempat yang
+    harus benar - dan satu saja yang terlewat sudah cukup untuk membuat nama
+    klien yang dirahasiakan tercetak di berkas yang dikirim pelamar.
+  */
+  const redaksi = aktif && data.portofolio.modeRedaksi;
+  const samarkan = (teks: string) => (redaksi ? samarkanAngka(teks) : teks);
+
   return {
     id: item.id,
-    judul: item.name,
+    judul: samarkan(item.name),
     peran: item.role,
-    konteks: aktif ? item.konteks : "",
+    konteks: aktif
+      ? redaksi
+        ? samarkanKonteks(item.konteks, data.profilPortofolio)
+        : item.konteks
+      : "",
     lokasi: aktif ? item.lokasi : "",
     periode: formatDateRange(item.startDate, item.endDate, false, lang),
-    ringkasan: aktif ? item.ringkasan : "",
-    poin: item.bullets.filter((b) => b.trim()),
-    detail: aktif ? barisDetail(item, schema) : "",
+    ringkasan: aktif ? samarkan(item.ringkasan) : "",
+    poin: item.bullets.filter((b) => b.trim()).map(samarkan),
+    detail: aktif
+      ? samarkan(
+          barisDetail(
+            item,
+            schema,
+            redaksi ? deskriptorGenerik(data.profilPortofolio) : undefined,
+          ),
+        )
+      : "",
     tautan: aktif
       ? tautanTercetak(item)
       : (item.url ?? "").trim()
