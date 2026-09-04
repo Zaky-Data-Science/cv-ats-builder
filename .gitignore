@@ -47,3 +47,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# log server lokal yang berjalan terus (scripts/dev-24jam.ps1)
+/logs

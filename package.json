@@ -15,6 +15,7 @@
     "db:studio": "prisma studio",
     "postinstall": "prisma generate && node scripts/copy-pdf-worker.mjs",
     "diagram": "tsx scripts/render-diagrams.ts",
+    "mail:test": "tsx scripts/uji-surel.ts",
     "test": "tsx tests/run.ts"
   },
   "dependencies": {
