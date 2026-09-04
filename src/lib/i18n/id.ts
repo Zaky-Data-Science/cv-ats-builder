@@ -758,7 +758,7 @@ export const id = {
     statQuantified: "Poin yang menyebut angka",
     breakdownTitle: "Rincian penilaian",
     breakdownHint:
-      "Nilai akhir dihitung dari lima hal di bawah ini. Tidak semuanya berpengaruh sama besar - persentase di samping tiap baris menunjukkan seberapa besar pengaruhnya.",
+      "Nilai akhir dihitung dari hal-hal di bawah ini. Tidak semuanya berpengaruh sama besar - persentase di samping tiap baris menunjukkan seberapa besar pengaruhnya.",
     weight: "pengaruh",
     notScored: "belum bisa dinilai",
     keywordsTitle: "Kata penting dari iklan lowongan",

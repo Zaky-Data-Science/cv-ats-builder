@@ -58,9 +58,9 @@
 <text x="308" y="1124" font-size="12.5" fill="#52525a">terpotong per halaman.</text>
 <rect x="290" y="1188" width="420" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
 <text x="308" y="1212" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
-<text x="308" y="1229" font-size="15" font-weight="600" fill="#0a0a0b">Hitung skor ATS</text>
-<text x="308" y="1252" font-size="12.5" fill="#52525a">Lima dimensi berbobot, dihitung di peramban tanpa</text>
-<text x="308" y="1268" font-size="12.5" fill="#52525a">permintaan jaringan.</text>
+<text x="308" y="1229" font-size="15" font-weight="600" fill="#0a0a0b">Hitung nilai CV</text>
+<text x="308" y="1252" font-size="12.5" fill="#52525a">Enam hal berbobot, dihitung di peramban tanpa permintaan</text>
+<text x="308" y="1268" font-size="12.5" fill="#52525a">jaringan.</text>
 <rect x="290" y="1332" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
 <text x="308" y="1356" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
 <text x="308" y="1373" font-size="15" font-weight="600" fill="#0a0a0b">Skor sudah memadai?</text>

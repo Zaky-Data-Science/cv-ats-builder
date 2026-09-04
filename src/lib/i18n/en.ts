@@ -731,7 +731,7 @@ export const en: Dictionary = {
     statQuantified: "Bullets that name a number",
     breakdownTitle: "Score breakdown",
     breakdownHint:
-      "The final score comes from the five things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
+      "The final score comes from the things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
     weight: "counts for",
     notScored: "cannot be judged yet",
     keywordsTitle: "Important words from the job ad",
