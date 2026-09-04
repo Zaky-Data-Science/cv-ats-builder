@@ -8,6 +8,25 @@ import { useI18n } from "@/components/i18n";
  * Memakai kerangka bentuk (skeleton), bukan pemutar berputar, karena bentuk
  * yang menyerupai isi halaman membuat perpindahan terasa lebih singkat dan
  * tidak menimbulkan lompatan tata letak saat isinya muncul.
+ *
+ * ## Kenapa berkas ini pindah ke sini pada sesi 10
+ *
+ * Sebelumnya ia berada di `src/app/`, dan di sana ia berlaku bagi **seluruh**
+ * halaman - termasuk halaman depan, panduan, dan tentang.
+ *
+ * Sebuah `loading.tsx` membuat Next.js membungkus halamannya dalam batas
+ * Suspense, dan halaman yang dibungkus dikirim dalam dua bagian: kerangka ini
+ * lebih dulu, lalu isi sesungguhnya menyusul di dalam `<div hidden>` yang
+ * ditukar oleh sepotong skrip. Tanpa JavaScript, penukaran itu tidak pernah
+ * terjadi - dan yang tersisa di layar selamanya adalah kerangka ini.
+ *
+ * Dilaporkan dari sebuah ponsel sebagai "halamannya hitam, tidak ada isinya".
+ * Terjadi di production juga, bukan hanya di server lokal.
+ *
+ * Di dalam kelompok `(app)` konsekuensi itu dapat diterima: dashboard, editor,
+ * dan pengaturan memang menuntut JavaScript untuk berfungsi sama sekali.
+ * Halaman publik tidak, dan justru merekalah yang dibuka orang di jaringan
+ * seluler yang lambat - pengguna yang persis dituju aplikasi ini.
  */
 export default function Loading() {
   const { t } = useI18n();

@@ -706,15 +706,32 @@ body {
 }
 
 /* Muncul perlahan saat tergulir ke dalam layar. */
+/*
+  Isi halaman terlihat secara bawaan; animasinya yang ditambahkan, bukan
+  keterlihatannya yang diberikan.
+
+  Arahnya dibalik pada sesi 10 setelah halaman depan dilaporkan tampak hitam
+  kosong di sebuah ponsel. Sebelumnya `.reveal` bermula pada `opacity: 0`,
+  dan satu-satunya yang dapat memunculkannya adalah IntersectionObserver
+  setelah React hidrasi - sehingga 41 elemen dikirim tak terlihat, dan
+  JavaScript yang lambat, gagal, atau diblokir meninggalkan halaman kosong.
+
+  `data-anim` dituliskan skrip sinkron di dalam <head> sebelum halaman
+  digambar - lihat `src/lib/reveal-init.ts`. Tanpa JavaScript atributnya tidak
+  pernah ada, dan seluruh isi tampil apa adanya.
+*/
 .reveal {
-  opacity: 0;
-  transform: translateY(22px);
   transition:
     opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.reveal[data-shown="true"] {
+[data-anim] .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+[data-anim] .reveal[data-shown="true"] {
   opacity: 1;
   transform: none;
 }

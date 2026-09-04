@@ -7,6 +7,7 @@ import { I18nProvider } from "@/components/i18n";
 import { getDictionary, LOCALE_HTML_LANG } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
 import { AUTHOR, SITE, SITE_META, baseUrl } from "@/lib/site";
+import { REVEAL_INIT_SCRIPT } from "@/lib/reveal-init";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const inter = Inter({
@@ -97,6 +98,12 @@ export default async function RootLayout({
           karena server tidak mengetahui pilihan yang tersimpan di peramban.
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {/*
+          Menyalakan animasi "muncul saat tergulir masuk" - dan, yang lebih
+          penting, menjamin isinya tetap terlihat bila animasinya tidak pernah
+          berjalan. Alasan lengkapnya di src/lib/reveal-init.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
       </head>
       <body
         className="min-h-full antialiased"

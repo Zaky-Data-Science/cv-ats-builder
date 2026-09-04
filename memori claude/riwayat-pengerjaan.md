@@ -1601,6 +1601,82 @@ Perilaku waktu-nyatanya sendiri tidak dapat diukur dari tab tersembunyi:
 Chrome membatasi `setTimeout` di sana, dan angka apa pun yang keluar tidak
 berarti.
 
+### Putaran keempat: halaman depan yang hitam kosong di ponsel
+
+Dilaporkan pendek: alamat lokal itu "hitam doang gk ada isinya".
+
+Gejala yang sama sebenarnya sudah terlihat sepanjang sesi ini pada tangkapan
+layar - panel hero yang kosong hitam - dan **berulang kali disimpulkan sebagai
+artefak tab tersembunyi.** Kesimpulan itu masuk akal setiap kalinya, sebab tab
+tersembunyi memang menghasilkan gejala yang mirip. Yang membedakannya cuma
+satu hal, dan hal itu baru datang dari luar: laporan dari perangkat sungguhan.
+
+> Pelajaran yang lebih tajam daripada tiga pengukuran palsu sebelumnya:
+> penjelasan yang benar untuk lingkungan pengujian **tidak otomatis menjadi
+> penjelasan untuk gejala yang sama di tempat lain.**
+
+#### Dua sebab yang bertumpuk
+
+**Pertama, dan yang terbesar: `loading.tsx` berada di `src/app/`.**
+
+Sebuah `loading.tsx` membuat Next.js membungkus halamannya dalam batas
+Suspense, dan halaman yang dibungkus dikirim dalam dua bagian - kerangka
+pemuatan lebih dulu, lalu isi sesungguhnya menyusul di dalam `<div hidden>`
+yang ditukar oleh sepotong skrip. Tanpa JavaScript penukaran itu tidak pernah
+terjadi, dan yang tersisa di layar selamanya adalah kerangkanya.
+
+Karena berkasnya ada di akar, itu berlaku bagi **seluruh** halaman - termasuk
+halaman depan, panduan, dan tentang.
+
+Terjadi **di production juga**, bukan hanya di server lokal. Diperiksa dengan
+mengambil HTML dari cv-ats-builder-henna.vercel.app: sebelas elemen kerangka
+pemuatan, dan isi halamannya duduk di dalam `<div hidden>`.
+
+Diperbaiki dengan memindahkannya ke `src/app/(app)/`. Dashboard dan editor
+memang mustahil tanpa JavaScript; halaman publik tidak, dan justru merekalah
+yang dibuka orang di jaringan seluler yang lambat.
+
+**Kedua: `.reveal` bermula pada `opacity: 0`.**
+
+Empat puluh satu elemen dikirim tak terlihat, dan satu-satunya yang dapat
+memunculkannya adalah IntersectionObserver setelah React hidrasi.
+
+Yang membuat cacat ini bertahan sekian lama: komentar di komponennya sendiri
+sudah menjanjikan isinya "tetap ada di DOM sejak awal sehingga tetap terbaca
+pembaca layar dan mesin pencari meskipun JavaScript gagal dimuat". Janjinya
+benar - dan tidak cukup. Terbaca pembaca layar bukan berarti terlihat mata.
+
+Arahnya dibalik: `.reveal` kini terlihat secara bawaan, dan baru disembunyikan
+bila `<html>` membawa `data-anim` - atribut yang dituliskan skrip sinkron di
+dalam `<head>`, pola yang sama persis dengan skrip tema. Tanpa JavaScript
+atributnya tidak pernah ada, dan seluruh isi tampil apa adanya.
+
+Ditambah jaring pengaman: bila setelah 2,5 detik tidak satu pun elemen sempat
+ditandai muncul - misalnya karena bundel React gagal dimuat sesudah skrip
+`<head>` terlanjur berjalan - atributnya dilepas dan isinya ditampilkan.
+Ambangnya diperiksa lewat keadaan yang sebenarnya, ada-tidaknya satu
+`[data-shown="true"]`, bukan lewat "apakah React sudah hidrasi": yang perlu
+dijamin bukan React-nya hidup, melainkan isinya terlihat.
+
+#### Cara memverifikasinya
+
+Bukan dengan mematikan JavaScript di peramban, melainkan dengan memuat
+halamannya di dalam `<iframe sandbox="allow-same-origin">` - tanpa
+`allow-scripts`. Halamannya dimuat persis seperti pada peramban yang
+JavaScript-nya mati, gagal, atau diblokir, dan DOM-nya tetap dapat dibaca dari
+luar.
+
+| | sebelum | sesudah |
+|---|---|---|
+| judul terlihat | tidak (0 x 0 px) | ya (342 x 138 px) |
+| elemen kerangka pemuatan | 11 | 0 |
+| `.reveal` dengan opacity 1 | 0 dari 41 | 41 dari 41 |
+| tinggi dokumen | 757 px | 12.807 px |
+
+Seluruh halaman publik ikut diperiksa lewat HTML mentahnya - beranda,
+bandingkan, panduan, tentang, alur, login, dan coba - dan tidak satu pun masih
+menyisakan kerangka pemuatan.
+
 ### Pengujian
 
 `npm test` naik dari **284 menjadi 348 pemeriksaan**, seluruhnya lulus -
