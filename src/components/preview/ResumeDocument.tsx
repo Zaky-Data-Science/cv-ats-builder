@@ -7,6 +7,7 @@ import { customItemsSection } from "@/lib/resume/structure";
 import {
   paperPadding,
   resumeMargins,
+  resumePhotoSize,
   templateStyle,
   type PaddingMode,
   type TemplateStyle,
@@ -792,6 +793,10 @@ function ResumeHeader({
 
   const centred = style.photo === "circle" || style.nameAlign === "center";
 
+  // Ukuran yang benar-benar dipakai: pilihan pengguna bila ada, kalau tidak
+  // bawaan template. Tingginya selalu mengikuti perbandingan templatenya.
+  const photoSize = resumePhotoSize(data.template, info.photoWidthMm);
+
   /*
     Bingkainya berukuran tetap, dan gambarnya bergerak di dalamnya.
 
@@ -814,8 +819,8 @@ function ResumeHeader({
     <span
       style={{
         display: "block",
-        width: `${style.photoWidthMm}mm`,
-        height: `${style.photoHeightMm}mm`,
+        width: `${photoSize.widthMm}mm`,
+        height: `${photoSize.heightMm}mm`,
         overflow: "hidden",
         flexShrink: 0,
         borderRadius: style.photo === "circle" ? "9999px" : "1pt",

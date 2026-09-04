@@ -83,6 +83,20 @@ export interface PersonalInfoData {
   photoOffsetX: number;
   /** Geseran tegak pas foto, -100 sampai 100 persen. */
   photoOffsetY: number;
+  /**
+   * Lebar pas foto dalam milimeter, bila pengguna menyetelnya sendiri.
+   *
+   * null berarti mengikuti bawaan template - pola yang sama dengan margin
+   * halaman, dan karena alasan yang sama: menyalin angka template ke kolomnya
+   * akan mengunci CV pada ukuran template lama tanpa pengguna pernah
+   * memintanya, dan foto tidak akan ikut menyesuaikan saat templatenya
+   * diganti.
+   *
+   * Tingginya tidak disimpan. Ia dihitung dari perbandingan milik template -
+   * 3:4 pada template berfoto formal, 1:1 pada yang berfoto bulat - sehingga
+   * pas foto tidak pernah dapat menjadi lonjong.
+   */
+  photoWidthMm: number | null;
   summary: string;
 }
 

@@ -17,6 +17,7 @@ import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import { paperSpec } from "@/lib/resume/paper";
 import {
   resumeMargins,
+  resumePhotoSize,
   templateStyle,
   templateSupportsPhoto,
 } from "@/lib/resume/templates";
@@ -99,6 +100,7 @@ function photoParagraph(data: ResumeData): Paragraph | null {
   if (!type) return null;
 
   const style = templateStyle(data.template);
+  const ukuran = resumePhotoSize(data.template, info.photoWidthMm);
   return new Paragraph({
     alignment:
       style.photo === "beside" ? AlignmentType.RIGHT : AlignmentType.CENTER,
@@ -108,8 +110,8 @@ function photoParagraph(data: ResumeData): Paragraph | null {
         type,
         data: Buffer.from(embedded.base64, "base64"),
         transformation: {
-          width: Math.round(style.photoWidthMm * MM_TO_PX),
-          height: Math.round(style.photoHeightMm * MM_TO_PX),
+          width: Math.round(ukuran.widthMm * MM_TO_PX),
+          height: Math.round(ukuran.heightMm * MM_TO_PX),
         },
         altText: {
           name: info.fullName || "Pas foto",

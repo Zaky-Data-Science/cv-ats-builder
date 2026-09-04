@@ -316,6 +316,7 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
       photoZoom: 1,
       photoOffsetX: 0,
       photoOffsetY: 0,
+      photoWidthMm: null,
       fullName: "Budi Santoso",
       headline: text.headline,
       email: "budi.santoso@email.com",

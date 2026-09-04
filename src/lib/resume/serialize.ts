@@ -63,6 +63,7 @@ export function toResumeData(row: any): ResumeData {
           photoZoom: info.photoZoom ?? 1,
           photoOffsetX: info.photoOffsetX ?? 0,
           photoOffsetY: info.photoOffsetY ?? 0,
+          photoWidthMm: info.photoWidthMm ?? null,
           summary: info.summary,
         }
       : emptyPersonalInfo(),

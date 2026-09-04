@@ -300,6 +300,8 @@ export const id = {
     backAria: "Kembali ke daftar CV saya",
     titleAria: "Judul CV",
     actionsMenu: "Menu lainnya",
+    undo: "Kembalikan perubahan terakhir",
+    redo: "Ulangi lagi perubahannya",
     panelNav: "Pindah panel",
     actionSampleLabel: "Isi dengan contoh",
     actionSampleHint: "Lihat bentuk CV yang sudah jadi",
@@ -373,6 +375,7 @@ export const id = {
     headingLanguageHint:
       "Menentukan CV Anda tertulis \"PENGALAMAN KERJA\" atau \"WORK EXPERIENCE\". Tidak ada hubungannya dengan bahasa tampilan aplikasi ini.",
     accentColor: "Warna Garis dan Judul",
+    photoWidth: "Ukuran Pas Foto",
     margin: "Jarak Tepi Kertas",
     marginY: "Jarak Tepi Atas-Bawah",
     marginX: "Jarak Tepi Kiri-Kanan",

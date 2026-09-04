@@ -38,6 +38,7 @@ export function emptyPersonalInfo(): PersonalInfoData {
     photoZoom: 1,
     photoOffsetX: 0,
     photoOffsetY: 0,
+    photoWidthMm: null,
     summary: "",
   };
 }

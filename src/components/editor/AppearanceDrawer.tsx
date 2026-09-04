@@ -44,6 +44,9 @@ import {
 import {
   MARGIN_MAX_MM,
   MARGIN_MIN_MM,
+  PHOTO_WIDTH_MAX_MM,
+  PHOTO_WIDTH_MIN_MM,
+  resumePhotoSize,
   TEMPLATE_INFO,
   TEMPLATE_ORDER,
   templateStyle,
@@ -96,6 +99,7 @@ export function AppearanceDrawer({
   if (!open) return null;
 
   const style = templateStyle(data.template);
+  const ukuranFoto = resumePhotoSize(data.template, data.personalInfo.photoWidthMm);
 
   return createPortal(
     <div
@@ -187,6 +191,33 @@ export function AppearanceDrawer({
                 aria-label={t.appearance.accentColor}
               />
             </Field>
+          )}
+
+          {/*
+            Ukuran pas foto ditaruh di sini, bukan di formulir Data Pribadi.
+            Yang diatur di sana isinya - siapa Anda; yang diatur di sini
+            rupanya - seberapa besar ia tampil di kertas. Menyelipkan
+            penggeser ukuran di antara nama dan nomor telepon mencampur
+            keduanya.
+          */}
+          {data.personalInfo.showPhoto && style.photo !== "none" && (
+            <Slider
+              label={t.appearance.photoWidth}
+              value={`${ukuranFoto.widthMm.toFixed(0)} x ${ukuranFoto.heightMm.toFixed(0)} mm${
+                data.personalInfo.photoWidthMm === null
+                  ? ` (${t.appearance.marginFollowTemplate})`
+                  : ""
+              }`}
+              min={PHOTO_WIDTH_MIN_MM}
+              max={PHOTO_WIDTH_MAX_MM}
+              step={1}
+              current={ukuranFoto.widthMm}
+              onChange={(v) =>
+                update({
+                  personalInfo: { ...data.personalInfo, photoWidthMm: v },
+                })
+              }
+            />
           )}
 
           {data.personalInfo.showPhoto && style.photo === "none" && (

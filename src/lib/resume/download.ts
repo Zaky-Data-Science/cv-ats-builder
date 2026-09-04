@@ -82,8 +82,8 @@ async function bakeForDocx(data: ResumeData): Promise<ResumeData> {
   const { isEmbeddedPhoto, bakePhotoCrop } = await import("@/lib/resume/photo");
   if (!isEmbeddedPhoto(info.photoUrl)) return data;
 
-  const { templateStyle } = await import("@/lib/resume/templates");
-  const style = templateStyle(data.template);
+  const { resumePhotoSize } = await import("@/lib/resume/templates");
+  const ukuran = resumePhotoSize(data.template, info.photoWidthMm);
 
   try {
     const photoUrl = await bakePhotoCrop(
@@ -93,7 +93,7 @@ async function bakeForDocx(data: ResumeData): Promise<ResumeData> {
         offsetX: info.photoOffsetX,
         offsetY: info.photoOffsetY,
       },
-      { widthMm: style.photoWidthMm, heightMm: style.photoHeightMm },
+      { widthMm: ukuran.widthMm, heightMm: ukuran.heightMm },
     );
     return { ...data, personalInfo: { ...info, photoUrl } };
   } catch {

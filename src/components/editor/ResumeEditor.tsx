@@ -17,11 +17,13 @@ import {
   Loader2,
   MoreHorizontal,
   Printer,
+  Redo2,
   ScanSearch,
   Settings2,
   Sparkles,
   ExternalLink,
   TriangleAlert,
+  Undo2,
 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
 import { useI18n } from "@/components/i18n";
@@ -49,6 +51,7 @@ import {
   type StructureAction,
 } from "@/lib/resume/structure";
 import { resumeFileSchema } from "@/lib/resume/schema";
+import { useRiwayat } from "@/lib/resume/history";
 import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
 import { sectionCount } from "@/lib/resume/sections";
@@ -89,6 +92,7 @@ export function ResumeEditor({
   const { locale, t } = useI18n();
   const router = useRouter();
   const [data, setData] = React.useState<ResumeData>(initial);
+  const riwayat = useRiwayat(initial);
   const [highlight, setHighlight] = React.useState<string | null>(null);
   const [saveState, setSaveState] = React.useState<SaveState>("idle");
   const [savedAt, setSavedAt] = React.useState<Date | null>(null);
@@ -214,11 +218,73 @@ export function ResumeEditor({
     setData((prev) => applyStructure(prev, action));
   }, []);
 
-  const update = React.useCallback((patch: Partial<ResumeData>) => {
+  const update = React.useCallback(
+    (patch: Partial<ResumeData>) => {
+      dirtyRef.current = true;
+      setSaveState("dirty");
+      setData((prev) => {
+        const next = { ...prev, ...patch };
+        riwayat.catat(next);
+        return next;
+      });
+    },
+    [riwayat],
+  );
+
+  /*
+    Kembali dan maju.
+
+    Keduanya menempuh jalur yang berbeda dari `update`: yang dikembalikan
+    adalah keadaan utuh dari riwayat, bukan sebuah tambalan - dan mencatatnya
+    lagi ke riwayat akan membuat "kembali" menjadi langkah baru yang dapat
+    dikembalikan, yaitu gelung yang tidak pernah membawa pengguna ke mana pun.
+  */
+  const kembali = React.useCallback(() => {
+    const sebelumnya = riwayat.kembali();
+    if (!sebelumnya) return;
     dirtyRef.current = true;
     setSaveState("dirty");
-    setData((prev) => ({ ...prev, ...patch }));
-  }, []);
+    setData(sebelumnya);
+  }, [riwayat]);
+
+  const maju = React.useCallback(() => {
+    const berikutnya = riwayat.maju();
+    if (!berikutnya) return;
+    dirtyRef.current = true;
+    setSaveState("dirty");
+    setData(berikutnya);
+  }, [riwayat]);
+
+  /*
+    Ctrl+Z dan Ctrl+Shift+Z, dipasang di tingkat dokumen.
+
+    Sengaja tidak disaring terhadap elemen yang sedang difokus. Peramban punya
+    pembatalan bawaannya sendiri di dalam sebuah kotak teks, dan pada aplikasi
+    seperti ini keduanya justru bertabrakan: pengguna menekan Ctrl+Z untuk
+    membatalkan "hapus entri" dan yang terjadi malah satu huruf kembali di
+    kotak yang kebetulan sedang difokus. Yang diharapkan dari sebuah aplikasi
+    penyusun dokumen adalah satu riwayat untuk seluruh dokumen.
+
+    Ctrl+Y ikut diterima sebagai "maju" karena itu kebiasaan Windows, dan
+    penggunanya di sini mayoritas memakai Windows.
+  */
+  React.useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return;
+      const kunci = event.key.toLowerCase();
+
+      if (kunci === "z" && !event.shiftKey) {
+        event.preventDefault();
+        kembali();
+      } else if ((kunci === "z" && event.shiftKey) || kunci === "y") {
+        event.preventDefault();
+        maju();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [kembali, maju]);
 
   React.useEffect(() => {
     if (!dirtyRef.current) return;
@@ -507,7 +573,28 @@ export function ResumeEditor({
 
   return (
     <EditorProvider value={{ data, update, highlight, setHighlight }}>
-      <div className="flex min-h-0 flex-1 flex-col">
+      {/*
+        Tinggi editor dikunci ke tinggi layar, dan itu bukan soal rupa.
+
+        Sebelumnya seluruh rantainya memakai `min-h-full`, yang berarti
+        "sekurang-kurangnya setinggi layar" - dan panel yang boleh tumbuh
+        akan tumbuh setinggi isinya. Akibatnya bukan dua panel yang menggulir
+        sendiri-sendiri melainkan satu halaman panjang yang menggulir
+        seluruhnya: mengisi formulir di bagian bawah menggeser kertasnya ikut
+        keluar layar, dan pratinjau yang seharusnya mengikuti field justru
+        tidak terlihat sama sekali.
+
+        Dilaporkan begitu: "gk lucu isi field tapi gk keliatan di layar".
+
+        `100dvh`, bukan `100vh`: pada peramban ponsel bilah alamatnya menyusut
+        saat digulir, dan `100vh` yang mengabaikan itu menyisakan sepotong
+        editor di bawah layar yang tidak pernah dapat dijangkau.
+
+        3,5rem yang dikurangkan adalah tinggi bilah atas halaman - `h-14` pada
+        kedua kerangka yang memuat editor ini, baik jalur tanpa akun maupun
+        jalur berakun.
+      */}
+      <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden">
         {/* ============================================================ */}
         {/* Bilah alat                                                    */}
         {/* ============================================================ */}
@@ -583,8 +670,33 @@ export function ResumeEditor({
               />
             </div>
 
+            {/*
+              Kembali dan maju, terlihat di semua ukuran layar.
+
+              Ctrl+Z saja tidak cukup: pengguna ponsel tidak punya papan ketik
+              yang membawanya, dan justru di ponsel salah tekan paling sering
+              terjadi. Ditaruh di sebelah kiri kelompok aksi lain karena
+              urutannya memang begitu - membatalkan mendahului mengunduh.
+            */}
+            <div className="ml-auto flex items-center gap-0.5">
+              <IkonAksi
+                label={t.editor.undo}
+                onClick={kembali}
+                disabled={!riwayat.dapatKembali}
+              >
+                <Undo2 size={15} />
+              </IkonAksi>
+              <IkonAksi
+                label={t.editor.redo}
+                onClick={maju}
+                disabled={!riwayat.dapatMaju}
+              >
+                <Redo2 size={15} />
+              </IkonAksi>
+            </div>
+
             {/* Aksi lengkap di layar lebar */}
-            <div className="ml-auto hidden items-center gap-1.5 lg:flex">
+            <div className="hidden items-center gap-1.5 lg:flex">
               <Button
                 size="sm"
                 variant="outline"
@@ -643,7 +755,7 @@ export function ResumeEditor({
             </div>
 
             {/* Aksi diringkas jadi satu menu di layar sempit */}
-            <div className="ml-auto lg:hidden">
+            <div className="lg:hidden">
               <ActionsMenu>{actions}</ActionsMenu>
             </div>
           </div>
@@ -958,6 +1070,32 @@ function PaneButton({
         )}
       </span>
       {label}
+    </button>
+  );
+}
+
+/** Tombol ikon di bilah alat - sasaran sentuhnya 44 piksel lewat tap-target. */
+function IkonAksi({
+  label,
+  onClick,
+  disabled,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={label}
+      aria-label={label}
+      className="tap-target grid h-8 w-8 shrink-0 place-items-center rounded-lg text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900 disabled:pointer-events-none disabled:opacity-30"
+    >
+      {children}
     </button>
   );
 }

@@ -281,6 +281,8 @@ export const en: Dictionary = {
     backAria: "Back to my CVs",
     titleAria: "CV name",
     actionsMenu: "More options",
+    undo: "Undo the last change",
+    redo: "Redo that change",
     panelNav: "Switch panel",
     actionSampleLabel: "Fill with an example",
     actionSampleHint: "See what a finished CV looks like",
@@ -353,6 +355,7 @@ export const en: Dictionary = {
     headingLanguageHint:
       "Decides whether your CV reads \"WORK EXPERIENCE\" or \"PENGALAMAN KERJA\". Nothing to do with the language this app is shown in.",
     accentColor: "Colour of rules and headings",
+    photoWidth: "Photo size",
     margin: "Space around the edges",
     marginY: "Space at top and bottom",
     marginX: "Space at left and right",

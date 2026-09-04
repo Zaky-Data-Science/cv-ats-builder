@@ -185,6 +185,8 @@ model PersonalInfo {
   photoZoom    Float   @default(1)
   photoOffsetX Float   @default(0)
   photoOffsetY Float   @default(0)
+  /// Lebar pas foto dalam milimeter. NULL berarti mengikuti bawaan template.
+  photoWidthMm Float?
   summary      String  @default("")
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)

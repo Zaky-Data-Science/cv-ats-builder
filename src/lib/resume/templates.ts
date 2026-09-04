@@ -452,6 +452,32 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
 };
 
 /** Apakah template ini menampilkan foto sama sekali. */
+/**
+ * Ukuran pas foto yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan
+ * template.
+ *
+ * Pola dan alasannya sama persis dengan `resumeMargins()`. Yang berbeda hanya
+ * satu hal, dan itu yang menjaga pas foto tetap berbentuk pas foto: hanya
+ * lebarnya yang boleh dipilih. Tingginya selalu dihitung dari perbandingan
+ * milik template - 3:4 pada yang formal, 1:1 pada yang bulat - sehingga tidak
+ * ada kombinasi angka yang dapat membuatnya lonjong.
+ */
+export function resumePhotoSize(
+  template: TemplateId,
+  widthMm: number | null,
+): { widthMm: number; heightMm: number } {
+  const style = templateStyle(template);
+  if (style.photoWidthMm === 0) return { widthMm: 0, heightMm: 0 };
+
+  const rasio = style.photoHeightMm / style.photoWidthMm;
+  const lebar = widthMm ?? style.photoWidthMm;
+  return { widthMm: lebar, heightMm: lebar * rasio };
+}
+
+/** Rentang lebar pas foto yang boleh dipilih, dalam milimeter. */
+export const PHOTO_WIDTH_MIN_MM = 18;
+export const PHOTO_WIDTH_MAX_MM = 45;
+
 export function templateSupportsPhoto(template: TemplateId): boolean {
   return TEMPLATE_STYLES[template].photo !== "none";
 }

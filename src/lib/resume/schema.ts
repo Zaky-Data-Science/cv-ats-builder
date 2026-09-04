@@ -86,6 +86,9 @@ export const personalInfoSchema = z.object({
   photoZoom: z.number().min(1).max(3).default(1),
   photoOffsetX: z.number().min(-100).max(100).default(0),
   photoOffsetY: z.number().min(-100).max(100).default(0),
+  // Batas bawahnya bukan selera: di bawah 18 mm pas foto berhenti terbaca
+  // sebagai wajah pada hasil cetak, dan yang tersisa hanya bercak berwarna.
+  photoWidthMm: z.number().min(18).max(45).nullable().default(null),
   summary: z.string().max(3000).default(""),
 });
 

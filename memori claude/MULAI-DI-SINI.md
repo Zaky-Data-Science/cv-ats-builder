@@ -131,6 +131,20 @@ Bila nomor port `prisma dev` berubah, sesuaikan `DATABASE_URL` dan
 > beserta tabel `_prisma_migrations`**. Sudah terjadi dua kali selama
 > pengembangan.
 >
+> Sesi 10 menemukan gejala serupa yang **bukan** disebabkan perintah itu:
+> tabel `_prisma_migrations` hilang dua kali sementara seluruh tabel lain
+> beserta isinya tetap utuh, tampaknya saat server `prisma dev` dinyalakan
+> ulang. Cirinya khas - `migrate deploy` menjawab P3005 "database schema is
+> not empty" padahal skemanya jelas sudah benar.
+>
+> Pemulihannya tidak menyentuh data sama sekali:
+>
+> ```bash
+> # tandai setiap migrasi yang skemanya memang sudah ada di basis data
+> npx prisma migrate resolve --applied <nama_migrasi>
+> npx prisma migrate deploy   # lalu yang benar-benar baru dijalankan
+> ```
+>
 > Bila `schema.prisma` diubah, buat berkas migrasinya secara manual:
 >
 > ```bash
@@ -181,6 +195,8 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/ats/aliases.ts` | Kelompok padanan kata kunci - singkatan lawan kepanjangannya. Murni data; alasan apa yang sengaja tidak dimasukkan ada di kepala berkasnya |
 | `src/lib/resume/photo.ts` | Kompresi pas foto di peramban, batas ukurannya, dan `bakePhotoCrop()` yang memanggang potongan menjadi piksel untuk ekspor Word |
 | `src/components/editor/PhotoFrame.tsx` | Penyunting potongan pas foto - bingkai 3:4 tetap, seret untuk menggeser, penggeser untuk memperbesar |
+| `src/lib/resume/history.ts` | Riwayat kembali/maju. Perubahan berdekatan digabung; seluruh CV disimpan, bukan selisihnya - alasannya di kepala berkasnya |
+| `resumePhotoSize()` di `templates.ts` | Ukuran pas foto yang berlaku: pilihan pengguna bila ada, kalau tidak bawaan template. **Hanya lebarnya** yang boleh dipilih |
 | `photoTransform()` di `ResumeDocument.tsx` | Satu-satunya tempat susunan transform pas foto dihitung; dipakai bersama oleh dokumen CV dan penyuntingnya |
 | `src/lib/resume/edit-path.ts` | Menulis balik teks yang diketik di atas kertas, **dan** tanggal yang dipilih lewat pemilih bulan (`applyDateEdit`). Hanya jalur terdaftar yang boleh ditulis |
 | `src/lib/resume/structure.ts` | Menambah/menghapus entri dan poin dari kertas. Terpisah dari edit-path.ts karena mengubah panjang larik, bukan isi untaian |
@@ -277,6 +293,11 @@ supaya tidak perlu diingat-ingat lagi.
 | **Gambar sumber dinaikkan ke 1200x1600, batas berkas ke 1 MB** | Pas foto 3x4 cm pada 300 DPI butuh sekitar 354x472 piksel, dan 400x533 sudah cukup selama gambarnya hanya ditampilkan apa adanya. Begitu boleh diperbesar tiga kali, yang mengisi bingkai tinggal sepertiga sisinya - dari 400 piksel tersisa 133, dan cetaknya pecah. Pada 1200x1600, perbesaran tiga kali masih menyisakan 400x533. |
 | **Ekspor Word memanggang potongannya menjadi piksel** | Word tidak dapat memotong gambar sebaris - ia selalu tampil utuh, diregangkan ke ukuran yang diminta - dan pustaka `docx` tidak mengekspos `srcRect`, satu-satunya cara memotong yang dikenal OOXML. Karena itu jalur Word kini selalu berjalan di peramban, juga bagi pengguna berakun: memanggang potongan menuntut kanvas, dan membiarkan sebagian pengguna memakai jalur server berarti dua CV yang sama menghasilkan berkas Word yang berbeda. |
 | **`bakePhotoCrop()` menguraikan base64 sendiri, tidak memakai `fetch(dataUri)`** | `connect-src 'self'` pada kebijakan keamanan isinya tidak memuat `data:`, sehingga `fetch` terhadap data URI diblokir peramban sebelum sempat berjalan. Gejalanya akan berupa ekspor Word yang gagal hanya pada CV yang fotonya diatur, dan hanya di production. Melonggarkan kebijakan demi satu pemanggilan jelas tidak sepadan dengan sepuluh baris penguraian. |
+| **Tinggi editor dikunci ke `100dvh`, bukan `min-h-full`** | `min-h-full` berarti "sekurang-kurangnya setinggi layar", dan panel yang boleh tumbuh akan tumbuh setinggi isinya. Akibatnya bukan dua panel yang menggulir sendiri-sendiri melainkan satu halaman panjang: mengisi formulir di bagian bawah menggeser kertasnya ikut keluar layar, dan pratinjau yang seharusnya mengikuti field justru tidak terlihat. `dvh`, bukan `vh`: bilah alamat ponsel menyusut saat digulir, dan `vh` menyisakan sepotong editor yang tidak pernah terjangkau. |
+| **Pratinjau menggulir ke kemunculan blok yang terlihat, bukan ke lembarnya** | Pada mode per halaman dokumen dirender ulang di dalam tiap lembar, jadi satu bagian CV punya satu elemen per lembar dan hanya satu yang terlihat. Versi lama menghitung lembar keberapa lalu menggulirkan lembar itu ke tengah - dan lembar A4 jauh lebih tinggi daripada daerah pratinjaunya, sehingga blok di bagian bawah lembar tetap di luar pandangan. |
+| **Hanya lebar pas foto yang dapat dipilih; tingginya dihitung** | Perbandingannya milik template - 3:4 pada yang formal, 1:1 pada yang bulat - sehingga tidak ada kombinasi angka yang dapat membuat pas foto menjadi lonjong. Diukur pada 22, 30, dan 45 mm: rasionya tetap 0,75 di ketiganya. |
+| **Riwayat menyimpan seluruh CV, bukan selisihnya** | Menyimpan selisih menuntut penerapan mundur yang benar untuk setiap bentuk perubahan - termasuk penambahan entri, penukaran urutan bagian, dan penyuntingan di atas kertas. Kesalahan sekecil apa pun menghasilkan CV yang rusak setelah beberapa kali "kembali", tepat pada pengguna yang sedang panik membatalkan sesuatu. Lima puluh langkah CV utuh hanya beberapa megabyte, dan data URI fotonya dibagi antar-salinan, bukan digandakan. |
+| **Ctrl+Z tidak disaring terhadap elemen yang sedang difokus** | Peramban punya pembatalan bawaannya sendiri di dalam kotak teks, dan keduanya bertabrakan: pengguna menekan Ctrl+Z untuk membatalkan "hapus entri" dan yang terjadi malah satu huruf kembali di kotak yang kebetulan difokus. Yang diharapkan dari penyusun dokumen adalah satu riwayat untuk seluruh dokumen. |
 | **Pas foto disimpan sebagai data URI, bukan di penyimpanan objek** | Mode tanpa akun menyimpan seluruh CV di localStorage dan tidak pernah menyentuh server; penyimpanan berkas akan memaksanya punya id sesi anonim beserta pembersihan berkas yatim. Satu jalur kode melayani kedua mode, dan tidak ada berkas yang bisa tertinggal setelah CV-nya dihapus. |
 | **Foto pada DOCX diletakkan setelah blok identitas, bukan berdampingan** | Satu-satunya cara meletakkan gambar berdampingan teks di Word adalah tabel atau kotak teks - dua penyebab tersering kegagalan pengurai ATS yang sejak awal dihindari berkas itu. |
 | **Menyunting di kertas disimpan saat lepas fokus, bukan tiap ketukan tombol** | Elemen contentEditable menyimpan teksnya sendiri di DOM; menulis ke state React tiap huruf membuat React menggambar ulang elemennya di tengah pengguna mengetik, dan kursor melompat ke awal paragraf. |

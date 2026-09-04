@@ -459,35 +459,49 @@ export function PreviewPane({
     return () => observer.disconnect();
   }, [data, mode, marginTopPx, usableHeight, onPageCountChange]);
 
-  // Menggulirkan pratinjau ke blok yang sedang disorot.
+  /*
+    Menggulirkan pratinjau ke blok yang sedang disorot.
+
+    Yang dicari **setiap kemunculan** blok itu, bukan yang pertama. Pada mode
+    per halaman dokumennya dirender ulang di dalam tiap lembar, masing-masing
+    tergeser sejauh satu halaman - jadi satu bagian CV punya satu elemen per
+    lembar, dan hanya satu di antaranya yang benar-benar terlihat. Yang lain
+    berada di luar daerah potong lembarnya.
+
+    Versi sebelumnya mengambil kemunculan pertama lalu menghitung lembar
+    keberapa ia jatuh, dan menggulirkan lembar itu ke tengah. Dua hal meleset
+    di sana: lembar A4 jauh lebih tinggi daripada daerah pratinjaunya,
+    sehingga blok yang jatuh di bagian bawah lembar tetap berada di luar
+    pandangan meski lembarnya sudah di tengah - dan perhitungan lembarnya
+    sendiri bergantung pada tinggi terpakai yang baru diketahui setelah
+    pengukuran selesai.
+
+    Memilih kemunculan yang terlihat menghapus keduanya sekaligus: tidak ada
+    lembar yang perlu dihitung, dan yang digulirkan blok itu sendiri.
+  */
   React.useEffect(() => {
     if (!highlight) return;
     const root = documentRef.current;
-    const target = root?.querySelector(`[data-field="${CSS.escape(highlight)}"]`);
-    if (!root || !target) return;
+    if (!root) return;
 
-    if (mode === "continuous") {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
+    const semua = [
+      ...root.querySelectorAll<HTMLElement>(
+        `[data-field="${CSS.escape(highlight)}"]`,
+      ),
+    ];
+    if (semua.length === 0) return;
 
-    // Pada mode per halaman, blok yang dituju bisa berada di bagian dokumen
-    // yang terpangkas oleh lembar pertama. Yang perlu ditemukan karena itu
-    // adalah lembar keberapa ia jatuh, lalu lembar itulah yang digulirkan.
-    const article = root.querySelector("[data-resume-document]");
-    if (!article) return;
-    const offset =
-      target.getBoundingClientRect().top -
-      article.getBoundingClientRect().top;
-    const index = Math.max(0, Math.floor(offset / usableHeight));
-    sheetRefs.current[index]?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-    // `mode` tidak ikut: yang menentukan bentuk tampilan adalah `viewMode`,
-    // dan sepanjang mengetik nilainya tetap "continuous" berapa pun isi `mode`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [highlight, viewMode, usableHeight]);
+    // Kemunculan yang punya tinggi sungguhan adalah yang tidak terpotong
+    // habis oleh lembarnya. Bila entah bagaimana tidak ada, yang pertama
+    // tetap lebih baik daripada tidak menggulir sama sekali.
+    const target = semua.find((el) => el.getBoundingClientRect().height > 1)
+      ?? semua[0];
+
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    // `mode` sengaja tidak ikut: yang menentukan bentuk tampilan adalah
+    // `viewMode`, dan sepanjang mengetik nilainya tetap "continuous" berapa
+    // pun isi `mode`.
+  }, [highlight, viewMode]);
 
   const currentZoom = zoom ?? 0.72;
 

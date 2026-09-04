@@ -1827,6 +1827,110 @@ bentuk galat P2025 yang selama ini hanya diuji pada satu bentuknya saja.
 `npm run typecheck`, `npm run lint`, dan `npm run build` seluruhnya bersih.
 
 
+### Putaran ketujuh: pas foto yang tidak kebesaran, dan tombol kembali
+
+Empat permintaan yang datang bersamaan, dan tiga di antaranya ternyata satu
+akar yang sama.
+
+#### Pas foto: hanya lebarnya yang boleh dipilih
+
+Fotonya "kegedean jadi banyak space". Yang salah bukan potongannya - itu sudah
+diperbaiki putaran sebelumnya - melainkan ukuran bingkainya, yang selama ini
+dipatok template tanpa cara mengubahnya.
+
+Yang menarik adalah bagaimana kebebasannya dibatasi. Memberi dua penggeser,
+lebar dan tinggi, adalah bentuk paling jujur dari "atur sendiri" dan juga
+paling merusak: pas foto lonjong tidak pernah menjadi CV yang lebih baik, dan
+tidak ada satu pun pengguna yang menginginkannya - itu hanya akibat dari
+tergelincirnya satu penggeser. Karena itu yang dapat dipilih hanya lebarnya,
+18 sampai 45 mm, dan tingginya selalu dihitung dari perbandingan milik
+template: 3:4 pada yang formal, 1:1 pada yang bulat.
+
+Diukur di peramban pada tiga nilai - 22 mm menghasilkan 62x83 piksel, 30 mm
+menghasilkan 85x113, 45 mm menghasilkan 128x170 - dan rasionya tetap 0,75 di
+ketiganya.
+
+Nilainya `null` bila mengikuti template, sama seperti margin halaman. Bukan
+angka bawaan yang disalin: CV yang dibuat hari ini lalu templatenya diganti
+besok tetap ikut ukuran template barunya, bukan tersangkut di angka template
+lama yang sudah tidak dipakainya.
+
+#### "Isi field tapi gk keliatan": satu akar, bukan tiga
+
+Keluhannya terdengar seperti permintaan fitur - pratinjau yang mengikuti field
+yang sedang diisi. Mekanisme itu sebenarnya sudah ada sejak lama: dua belas
+bagian formulir menyalakan penanda lewat `onFocusCapture`, dan pratinjaunya
+menggulir ke penanda itu.
+
+Yang membuatnya tidak terasa ada adalah `min-h-full` pada kerangka penyunting.
+Artinya "sekurang-kurangnya setinggi layar", dan panel yang boleh tumbuh akan
+tumbuh setinggi isinya. Akibatnya bukan dua panel yang menggulir sendiri-
+sendiri melainkan satu halaman panjang: menggulir ke formulir bagian bawah
+ikut menggeser kertasnya keluar layar, dan pratinjau yang setia mengikuti
+field pun tidak ada gunanya karena kertasnya sendiri sudah tidak terlihat.
+
+Tangkapan layarnya memperlihatkan persis itu - formulir sedang di Pendidikan,
+sementara kertasnya menampilkan halaman dua: Sertifikasi, Penghargaan,
+Publikasi. Setelah tingginya dikunci ke `calc(100dvh - 3.5rem)` dengan
+`overflow-hidden`, pratinjaunya punya daerah gulirnya sendiri (tinggi tampak
+388 piksel, tinggi isi 1753).
+
+`dvh`, bukan `vh`: bilah alamat ponsel menyusut saat halaman digulir, dan
+`vh` yang menghitung layar penuh akan menyisakan sepotong penyunting yang
+tidak pernah terjangkau.
+
+Satu kelemahan sungguhan ditemukan dalam perjalanannya. Pada mode per halaman,
+dokumen dirender ulang di dalam setiap lembar, sehingga satu bagian CV punya
+satu elemen per lembar dan hanya satu yang benar-benar terlihat. Versi lama
+mengambil kemunculan pertama lalu menggulirkan **lembarnya** ke tengah - dan
+lembar A4 jauh lebih tinggi daripada daerah pratinjaunya, sehingga blok yang
+letaknya di bagian bawah lembar tetap di luar pandangan meskipun lembarnya
+sudah di tengah. Sekarang yang dicari kemunculan yang tingginya nyata, dan
+yang digulirkan bloknya sendiri.
+
+#### Kembali dan maju
+
+Dua keputusan yang menentukan rasanya.
+
+**Perubahan berdekatan digabung.** Mengetik satu kata menghasilkan belasan
+pembaruan state; mencatat seluruhnya berarti satu kali "kembali" hanya
+menghapus satu huruf. Ambangnya waktu - 600 ms - bukan jumlah karakter, sebab
+jeda mengetik adalah tanda paling jujur bahwa seseorang sudah selesai dengan
+satu pikiran. Angkanya sedikit lebih pendek daripada jeda simpan otomatis,
+supaya sebuah langkah selalu selesai terbentuk sebelum perubahannya dikirim.
+
+**Ctrl+Z tidak disaring terhadap elemen yang sedang difokus.** Peramban punya
+pembatalan bawaannya sendiri di dalam kotak teks, dan membiarkan keduanya
+hidup bersama menghasilkan kebingungan yang tidak dapat diperbaiki pengguna:
+menekan Ctrl+Z untuk membatalkan "hapus entri" dan yang kembali malah satu
+huruf di kotak yang kebetulan difokus. Yang diharapkan orang dari penyusun
+dokumen adalah satu riwayat untuk seluruh dokumen.
+
+Seluruh CV disimpan, bukan selisihnya - alasannya lengkap di kepala
+`src/lib/resume/history.ts`. Intinya: menyimpan selisih menuntut penerapan
+mundur yang benar untuk setiap bentuk perubahan, dan kesalahan sekecil apa pun
+di sana menghasilkan CV yang rusak setelah beberapa kali "kembali", tepat pada
+pengguna yang sedang panik membatalkan sesuatu.
+
+Diuji di peramban: BBB, kembali, AAA, kembali, "Nama Pertama"; maju, AAA,
+maju, BBB. Kertasnya ikut di setiap langkah, tombol maju meredup saat habis,
+dan Ctrl+Z, Ctrl+Shift+Z, serta Ctrl+Y ketiganya bekerja.
+
+#### Tabel `_prisma_migrations` hilang lagi
+
+Untuk kedua kalinya dalam sesi ini, `migrate deploy` menjawab P3005 "database
+schema is not empty" pada basis data lokal. Kali ini terbukti bukan `prisma
+migrate dev` penyebabnya - kolom pas foto yang dibuat sebelumnya masih ada
+beserta isinya, jadi basis datanya tidak dibuat ulang; hanya tabel riwayat
+migrasinya yang lenyap, tampaknya saat server `prisma dev` dinyalakan ulang.
+
+Pemulihannya tidak menyentuh data sama sekali: `prisma migrate resolve
+--applied` untuk setiap migrasi yang skemanya memang sudah ada, lalu `migrate
+deploy` untuk yang benar-benar baru. Urutannya penting - satu migrasi sempat
+ditandai "applied" sebelum SQL-nya dijalankan, dan kolomnya harus ditambahkan
+manual sesudahnya.
+
+
 ---
 
 ## Rangkuman angka
@@ -1835,8 +1939,8 @@ Angka di bawah ini per akhir sesi 10.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 133 |
-| Baris kode termasuk berkas uji dan skrip | ~26.100 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 138 |
+| Baris kode termasuk berkas uji dan skrip | ~30.600 |
 | Tabel basis data | 17 |
 | Berkas migrasi | 7 |
 | Route aplikasi | 37 |
