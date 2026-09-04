@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -77,4 +78,22 @@ export function errorResponse(error: unknown) {
     { error: "Terjadi kesalahan pada server." },
     { status: 500 },
   );
+}
+
+/**
+ * Padanan `errorResponse()` untuk halaman, bukan untuk titik akhir API.
+ *
+ * Halaman tidak mengembalikan JSON - yang benar baginya adalah mengantar
+ * pengguna ke halaman masuk beserta penjelasan mengapa. Tanpa ini, sesi yang
+ * menunjuk pengguna terhapus berakhir sebagai "Ada yang tidak beres", pesan
+ * yang tidak memberi tahu apa pun dan menyesatkan: servernya bekerja dengan
+ * benar, sesinyalah yang sudah tidak berlaku.
+ *
+ * Galat lain dilempar ulang apa adanya, supaya batas galat Next.js tetap
+ * menanganinya seperti biasa. Menelan semuanya di sini akan menyembunyikan
+ * kerusakan sungguhan di balik halaman masuk.
+ */
+export function redirectIfStaleSession(error: unknown): never {
+  if (isStaleSessionError(error)) redirect("/login?sesi=habis");
+  throw error;
 }

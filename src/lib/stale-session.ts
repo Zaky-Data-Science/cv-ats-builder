@@ -40,7 +40,32 @@ export function isStaleSessionError(error: unknown): boolean {
   // tidak ikut disalahartikan sebagai sesi kedaluwarsa.
   if (code === FOREIGN_KEY_VIOLATION) return /userid/i.test(message);
 
-  if (code === RECORD_NOT_FOUND) return /\buser\b/i.test(message);
+  /*
+    P2025 dilempar saat baris yang dituju tidak ada. Nama modelnya dicari di
+    dua tempat, dan yang kedua ditambahkan setelah cacat berikut ditemukan:
+
+    `update` dan `delete` menyebutkan modelnya di dalam pesan ("No User record
+    was found"), tetapi **`findUniqueOrThrow` tidak** - pesannya hanya "An
+    operation failed because it depends on one or more records that were
+    required but not found. No record was found for a query." Nama modelnya
+    ada di `meta.modelName`.
+
+    Akibatnya halaman Pengaturan, satu-satunya yang memakai
+    `findUniqueOrThrow`, tetap berakhir sebagai "Ada yang tidak beres" -
+    keadaan yang justru sudah punya penanganannya sendiri di seluruh
+    aplikasi. Ditemukan sesi 10, dan bukan lewat pemeriksaan otomatis:
+    contoh galat di berkas ujinya semuanya berasal dari `update` dan
+    `delete`, sehingga cabang ini selalu lulus.
+  */
+  if (code === RECORD_NOT_FOUND) {
+    if (/\buser\b/i.test(message)) return true;
+
+    const meta = (error as { meta?: unknown }).meta;
+    if (typeof meta === "object" && meta !== null) {
+      const modelName = (meta as { modelName?: unknown }).modelName;
+      return typeof modelName === "string" && /^user$/i.test(modelName);
+    }
+  }
 
   return false;
 }

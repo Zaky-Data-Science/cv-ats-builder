@@ -18,8 +18,16 @@ import { check, section } from "./harness";
  */
 
 /** Bentuk galat Prisma seperti yang benar-benar diterima penangan API. */
-function prismaError(code: string, message: string) {
-  return Object.assign(new Error(message), { code, name: "PrismaClientKnownRequestError" });
+function prismaError(
+  code: string,
+  message: string,
+  meta?: Record<string, unknown>,
+) {
+  return Object.assign(new Error(message), {
+    code,
+    name: "PrismaClientKnownRequestError",
+    ...(meta ? { meta } : {}),
+  });
 }
 
 export function runStaleSessionTests(): void {
@@ -37,6 +45,41 @@ export function runStaleSessionTests(): void {
   check(
     "baris pengguna yang tidak ditemukan dikenali",
     isStaleSessionError(prismaError("P2025", "No User record was found")),
+  );
+
+  /*
+    Bentuk kedua P2025, dan yang membuat cacat ini luput sekian lama: pesan
+    `findUniqueOrThrow` sama sekali tidak menyebut model apa pun. Nama modelnya
+    hanya ada di `meta.modelName`.
+
+    Contoh di bawah disalin apa adanya dari log server saat halaman Pengaturan
+    dibuka dengan sesi yang menunjuk pengguna terhapus.
+  */
+  check(
+    "findUniqueOrThrow yang tidak menyebut model di pesannya tetap dikenali",
+    isStaleSessionError(
+      prismaError(
+        "P2025",
+        "An operation failed because it depends on one or more records that were required but not found. No record was found for a query.",
+        { modelName: "User", operation: "a query" },
+      ),
+    ),
+  );
+  check(
+    "P2025 pada model lain tidak disalahartikan sebagai sesi kedaluwarsa",
+    !isStaleSessionError(
+      prismaError(
+        "P2025",
+        "An operation failed because it depends on one or more records that were required but not found. No record was found for a query.",
+        { modelName: "Resume", operation: "a query" },
+      ),
+    ),
+  );
+  check(
+    "P2025 tanpa meta maupun nama model tetap ditolak",
+    !isStaleSessionError(
+      prismaError("P2025", "No record was found for a query."),
+    ),
   );
 
   section("Yang tidak boleh disalahartikan sebagai sesi kedaluwarsa");
