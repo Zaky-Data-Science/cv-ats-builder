@@ -7,7 +7,7 @@ import {
   getThemeServerSnapshot,
   getThemeSnapshot,
   subscribeTheme,
-  toggleTheme,
+  toggleThemeDari,
 } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,12 @@ import { cn } from "@/lib/utils";
  * Kedua ikon dirender bersamaan lalu disilangkan animasinya, bukan
  * ditukar-tukar. Ikon yang muncul-hilang membuat lebar tombol berkedip;
  * ikon yang berputar dan memudar terasa seperti satu benda yang berbalik.
+ *
+ * Pergantian temanya sendiri menyebar sebagai lingkaran tinta dari tombol
+ * ini - lihat `toggleThemeDari()` di lib/theme.ts. Titik pusatnya diambil
+ * dari tombolnya, bukan dari posisi kursor: papan ketik tidak punya posisi
+ * kursor, dan pengguna yang menekannya lewat Tab tetap berhak melihat
+ * peralihan yang berasal dari tempat yang masuk akal.
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { t } = useI18n();
@@ -39,7 +45,13 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      onClick={toggleTheme}
+      onClick={(event) => {
+        const kotak = event.currentTarget.getBoundingClientRect();
+        toggleThemeDari(
+          kotak.left + kotak.width / 2,
+          kotak.top + kotak.height / 2,
+        );
+      }}
       title={label}
       aria-label={label}
       // Tombolnya adalah sakelar dua keadaan, jadi keadaannya disampaikan

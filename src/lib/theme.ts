@@ -104,6 +104,114 @@ export function setTheme(theme: Theme): void {
   for (const listener of listeners) listener();
 }
 
+/**
+ * Lamanya tinta menyebar menutupi layar saat tema berganti.
+ *
+ * Sedikit lebih panjang daripada transisi antarmuka pada umumnya, dan itu
+ * disengaja: yang berubah bukan satu tombol melainkan seluruh permukaan
+ * aplikasi, dan perubahan sebesar itu yang berlangsung terlalu cepat terbaca
+ * sebagai kedipan - bukan sebagai peralihan.
+ */
+export const THEME_SEBAR_MS = 560;
+
 export function toggleTheme(): void {
   setTheme(getThemeSnapshot() === "dark" ? "light" : "dark");
+}
+
+/**
+ * Mengganti tema sambil menyebarkan tinta dari titik yang ditekan.
+ *
+ * ## Kenapa View Transitions, bukan `transition` pada warnanya
+ *
+ * Menganimasikan warnanya sendiri berarti memasang `transition` pada
+ * `background-color`, `color`, dan `border-color` di seluruh aplikasi. Tiga
+ * masalah sekaligus: setiap elemen bertransisi menurut jadwalnya masing-
+ * masing sehingga halaman terlihat berganti sepotong-sepotong, warna yang
+ * bertransisi memaksa pengecatan ulang terus-menerus selama animasinya, dan
+ * pemilih yang cukup luas untuk menjangkau semuanya juga akan menjangkau
+ * hal-hal yang justru tidak boleh ikut - kertas CV, misalnya.
+ *
+ * View Transitions memotret halaman sebelum dan sesudah, lalu menyilangkan
+ * keduanya sebagai dua gambar. Yang dianimasikan karena itu hanya `clip-path`
+ * pada satu lapisan - bukan warna pada ratusan elemen.
+ *
+ * ## Kenapa lingkaran dari titik yang ditekan
+ *
+ * Bentuknya sama dengan bercak tinta yang muncul di setiap sentuhan, dan
+ * sumbernya tombol yang barusan ditekan. Peralihan yang menyebar dari tempat
+ * jari berada terbaca sebagai akibat dari tindakan itu; peredupan yang
+ * merata di seluruh layar terbaca sebagai sesuatu yang kebetulan terjadi.
+ *
+ * ## Bila tidak didukung
+ *
+ * Peramban tanpa `startViewTransition`, dan pengguna yang meminta pengurangan
+ * gerak, memperoleh pergantian seketika. Itu memang keadaan yang benar bagi
+ * keduanya - dan tidak ada satu pun cabang tambahan yang perlu dipelihara,
+ * sebab jalur cepatnya persis `toggleTheme()` yang sudah ada.
+ */
+export function toggleThemeDari(x: number, y: number): void {
+  const doc = document as Document & {
+    startViewTransition?: (callback: () => void) => { ready: Promise<void> };
+  };
+
+  const kurangiGerak = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  if (kurangiGerak || typeof doc.startViewTransition !== "function") {
+    toggleTheme();
+    return;
+  }
+
+  const transisi = doc.startViewTransition(() => toggleTheme());
+
+  /*
+    Kegagalan transisinya ditelan, dan itu memang perlakuan yang benar.
+
+    `ready` ditolak setiap kali peramban memutuskan melewati potretnya -
+    tab berpindah ke latar di tengah pergantian, transisi lain menyusul
+    sebelum yang ini selesai, atau dokumen sedang tidak terlihat. Chrome
+    melaporkannya sebagai `InvalidStateError: Transition was aborted`.
+
+    Tak satu pun dari itu merugikan: temanya sudah berganti di dalam callback
+    di atas, dan yang hilang hanya geraknya. Tanpa `catch` di sini,
+    penolakannya muncul di konsol pengguna sebagai galat yang tampak serius
+    padahal aplikasinya bekerja persis sebagaimana mestinya.
+  */
+  void transisi.ready
+    .then(() => {
+      /*
+        Jari-jari diambil dari sudut terjauh, bukan dari lebar layar. Titik
+        tekannya bisa di mana saja - pada tombol di pojok kanan atas, sudut
+        terjauhnya adalah kiri bawah - dan lingkaran yang hanya selebar layar
+        akan meninggalkan sepotong sudut yang tidak pernah tersapu.
+      */
+      const jarak = (dx: number, dy: number) => Math.hypot(dx, dy);
+      const jariJari = Math.max(
+        jarak(x, y),
+        jarak(window.innerWidth - x, y),
+        jarak(x, window.innerHeight - y),
+        jarak(window.innerWidth - x, window.innerHeight - y),
+      );
+
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${jariJari}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: THEME_SEBAR_MS,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          // Yang disebar lapisan baru, bukan yang lama. Menyapu lapisan lama
+          // ke arah sebaliknya akan membuat tema lama seolah terkelupas -
+          // yang dituju adalah tinta baru yang menutupinya.
+          pseudoElement: "::view-transition-new(root)",
+        },
+      );
+    })
+    .catch(() => {
+      // Lihat komentar di atas: peralihannya dilewati, temanya tetap berganti.
+    });
 }

@@ -894,3 +894,51 @@ body {
 .thin-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* --------------------------------------------------------------------------
+   Peralihan tema - tinta yang menyebar
+   --------------------------------------------------------------------------
+   Geraknya sendiri dijalankan dari JavaScript lewat Web Animations, sebab
+   titik pusat lingkarannya baru diketahui saat tombolnya ditekan. Yang ada di
+   sini hanya menyiapkan panggungnya - lihat toggleThemeDari() di lib/theme.ts.
+   -------------------------------------------------------------------------- */
+
+/*
+  Crossfade bawaan dimatikan pada keduanya.
+
+  Tanpa ini, lapisan lama ikut memudar selagi lapisan baru disapu masuk - dan
+  dua gerak yang berlangsung bersamaan pada bidang yang sama saling
+  membatalkan: yang terlihat bukan tinta yang menyebar di atas tema lama,
+  melainkan kabut yang berganti warna.
+*/
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/*
+  Tema baru berada di atas tema lama, dan disapu masuk menutupinya. Urutan
+  ini yang membuat lingkarannya terbaca sebagai tinta yang menutup, bukan
+  sebagai lubang yang terbuka di tengah halaman.
+*/
+::view-transition-new(root) {
+  z-index: 1;
+}
+
+::view-transition-old(root) {
+  z-index: 0;
+}
+
+/*
+  Halaman cetak tidak pernah menyimpan potret peralihan. Bila dialog cetak
+  kebetulan terbuka saat temanya berganti, lapisan potret itu akan ikut
+  tercetak sebagai gambar di atas CV.
+*/
+@media print {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    display: none !important;
+  }
+}
