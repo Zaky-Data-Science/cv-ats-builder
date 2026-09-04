@@ -34,7 +34,23 @@
   Tidak ada satu pun celah tanpa gerak. Celah itu - sekecil apa pun - yang
   terbaca sebagai patahan, bukan kecepatan geraknya.
 */
+/*
+  Lapisan intronya ikut terkirim dari server, dan **tersembunyi secara
+  bawaan**. Yang menyalakannya atribut `data-intro` pada elemen <html>,
+  dituliskan skrip sinkron di dalam <head> - lihat `src/lib/intro.ts`.
+
+  Arah itu penting, dan dipilih setelah dua cacat yang saling melengkapi.
+  Tersembunyi secara bawaan berarti peramban tanpa JavaScript tidak pernah
+  melihat tirai yang tidak akan pernah terangkat; sementara markup yang sudah
+  ada di HTML berarti adegannya mulai pada bingkai pertama, bukan setelah
+  seluruh bundel React dimuat.
+*/
 .intro-akar {
+  display: none;
+}
+
+[data-intro] .intro-akar {
+  display: block;
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -54,12 +70,11 @@
   tidak terus meluncur di balik lapisan yang memudar; yang terlihat kalau
   tidak dihentikan adalah dua gerak sekaligus.
 */
-.intro-akar[data-lewat] {
-  animation: intro-lewat var(--intro-lewat, 260ms) cubic-bezier(0.4, 0, 1, 1)
-    forwards;
+[data-intro-lewat] .intro-akar {
+  animation: intro-lewat 260ms cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-.intro-akar[data-lewat] * {
+[data-intro-lewat] .intro-akar * {
   animation-play-state: paused !important;
 }
 

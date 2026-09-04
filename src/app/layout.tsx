@@ -7,6 +7,7 @@ import { I18nProvider } from "@/components/i18n";
 import { getDictionary, LOCALE_HTML_LANG } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
 import { AUTHOR, SITE, SITE_META, baseUrl } from "@/lib/site";
+import { INTRO_INIT_SCRIPT } from "@/lib/intro";
 import { REVEAL_INIT_SCRIPT } from "@/lib/reveal-init";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
@@ -104,6 +105,12 @@ export default async function RootLayout({
           berjalan. Alasan lengkapnya di src/lib/reveal-init.ts.
         */}
         <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
+        {/*
+          Memutuskan apakah adegan pembuka diputar, dan menanganinya sampai
+          selesai - seluruhnya tanpa menunggu React. Alasannya di
+          src/lib/intro.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_INIT_SCRIPT }} />
       </head>
       <body
         className="min-h-full antialiased"

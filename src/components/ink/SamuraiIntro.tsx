@@ -1,119 +1,56 @@
-"use client";
-
-import * as React from "react";
-import {
-  getIntroServerSnapshot,
-  getIntroSnapshot,
-  INTRO_DURASI_MS,
-  INTRO_LEWAT_MS,
-  subscribeIntro,
-  tandaiIntroDilihat,
-} from "@/lib/intro";
-
 /**
  * ============================================================================
  *  INTRO PEMBUKA - SATU TEBASAN
  * ============================================================================
  *
  * Selembar CV muncul, sebuah siluet melintas, satu tebasan membelahnya, dan
- * tintanya menyebar menjadi halaman depan. Seluruhnya 2,1 detik.
+ * tintanya menyebar menjadi halaman depan. Seluruhnya 2,2 detik.
  *
  * ---------------------------------------------------------------------------
  * Yang menentukan bentuk kode ini
  * ---------------------------------------------------------------------------
  *
- * 1. **Halaman tidak boleh menunggu animasinya.** Intro digambar sebagai
- *    lapisan di atas halaman yang sudah utuh di belakangnya - bukan sebagai
- *    gerbang yang menahan isinya. Bila JavaScript gagal, animasinya tidak
- *    pernah muncul dan pengunjung langsung melihat halaman depan; tidak ada
- *    keadaan "layar tersangkut di pembuka".
+ * 1. **Bukan komponen klien, dan tidak menunggu React sama sekali.** Sampai
+ *    sesi 10 lapisan ini baru dirender setelah hidrasi selesai, dan di sebuah
+ *    ponsel itu berarti adegan pembukanya datang beberapa detik setelah
+ *    halamannya sudah terbaca utuh - pembuka yang datang belakangan bukan
+ *    lagi pembuka. Sekarang markup-nya ikut terkirim dari server, animasinya
+ *    seluruhnya CSS, dan yang memutuskan diputar atau tidak adalah skrip
+ *    sinkron di `<head>` lewat atribut `data-intro`. Lihat `src/lib/intro.ts`.
  *
- * 2. **Tidak ada gambar, tidak ada pustaka.** Siluetnya SVG sebaris yang
+ * 2. **Halaman tidak boleh menunggu animasinya.** Intro digambar sebagai
+ *    lapisan di atas halaman yang sudah utuh di belakangnya - bukan sebagai
+ *    gerbang yang menahan isinya. Tanpa JavaScript, `data-intro` tidak pernah
+ *    ada, CSS menyembunyikan lapisan ini sepenuhnya, dan pengunjung langsung
+ *    melihat halaman depan; tidak ada keadaan "layar tersangkut di pembuka".
+ *
+ * 3. **Tidak ada gambar, tidak ada pustaka.** Siluetnya SVG sebaris yang
  *    mewarisi `currentColor`, sehingga ia otomatis berlawanan dengan tema
  *    tanpa satu pun cabang kode. Menambah berkas gambar akan mengembalikan
  *    beban yang baru saja dipangkas dari halaman depan - dan halaman depan
  *    itulah yang paling menentukan kesan pertama di jaringan seluler.
  *
- * 3. **Hanya transform dan opacity yang dianimasikan**, sehingga seluruh
+ * 4. **Hanya transform dan opacity yang dianimasikan**, sehingga seluruh
  *    kerjanya jatuh ke compositor dan tidak memicu perhitungan tata letak.
  *
- * 4. **Sekali per pemuatan halaman, dan selalu dapat dilewati.** Sesi 10
- *    mengubahnya dari sekali-per-perangkat menjadi setiap kali halaman
- *    dimuat ulang - lihat `src/lib/intro.ts` untuk alasannya. Keberatan
- *    lamanya, bahwa pembuka yang berulang berubah menjadi penghalang,
- *    dijawab di sini: satu ketukan, satu klik, atau tombol apa pun
- *    melewatinya. Bukan tombol "lewati" yang harus dicari - seluruh layar
- *    adalah tombolnya.
+ * 5. **Sekali per pemuatan halaman, dan selalu dapat dilewati.** Satu
+ *    ketukan, klik, tombol, atau gulir melewatinya - bukan tombol "lewati"
+ *    yang harus dicari; seluruh layar adalah tombolnya. Sesudah jeda pendek
+ *    di awal, supaya sisa sentuhan dari tarik-untuk-muat-ulang tidak langsung
+ *    menghabiskan adegannya.
  */
 
 export function SamuraiIntro() {
   /*
-    Keputusan diambil store di luar React - lihat src/lib/intro.ts untuk
-    alasannya. Di server jawabannya selalu "tidak perlu", sehingga HTML yang
-    dikirim tidak pernah memuat lapisan ini dan tidak ada ketidakcocokan
-    hidrasi yang harus dibungkam.
+    Dirender tanpa syarat, di server maupun di peramban.
+
+    Tidak ada keputusan apa pun di sini - dan justru itu yang membuat markup
+    server dan markup klien pasti sama, sehingga tidak ada ketidakcocokan
+    hidrasi yang perlu dibungkam. Keputusannya sepenuhnya milik CSS dan
+    atribut `data-intro` pada elemen <html>.
   */
-  const perlu = React.useSyncExternalStore(
-    subscribeIntro,
-    getIntroSnapshot,
-    getIntroServerSnapshot,
-  );
-
-  const [selesai, setSelesai] = React.useState(false);
-  /* Adegannya sedang dipercepat karena penggunanya meminta lanjut. */
-  const [dilewati, setDilewati] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!perlu || selesai) return;
-
-    // Ditandai saat adegannya dimulai, bukan saat berakhir. Pengunjung yang
-    // berpindah halaman di tengah adegan sudah melihat pembukanya; memutarnya
-    // lagi saat ia kembali akan terasa seperti aplikasi yang tidak ingat.
-    tandaiIntroDilihat();
-
-    const timer = setTimeout(() => setSelesai(true), INTRO_DURASI_MS);
-
-    /*
-      Melewati adegannya.
-
-      Peristiwanya didengarkan di `window`, bukan pada lapisan intronya
-      sendiri: lapisan itu ber-`pointer-events: none` - dan memang harus,
-      supaya halaman di belakangnya tetap dapat disentuh selama adegan
-      berjalan. Menyalakan pointer-events demi menangkap ketukan justru akan
-      menghalangi hal yang sengaja dibiarkan tembus.
-
-      `pointerdown`, bukan `click`: ketukan yang berakhir menjadi gulir tidak
-      pernah menjadi klik, sementara maksud "lanjutkan" sudah jelas sejak
-      jarinya menyentuh layar.
-    */
-    const lewati = () => {
-      setDilewati(true);
-      clearTimeout(timer);
-      setTimeout(() => setSelesai(true), INTRO_LEWAT_MS);
-    };
-
-    window.addEventListener("pointerdown", lewati, { once: true, passive: true });
-    window.addEventListener("keydown", lewati, { once: true });
-    window.addEventListener("wheel", lewati, { once: true, passive: true });
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("pointerdown", lewati);
-      window.removeEventListener("keydown", lewati);
-      window.removeEventListener("wheel", lewati);
-    };
-  }, [perlu, selesai]);
-
-  if (!perlu || selesai) return null;
-
   return (
-    <div
-      className="intro-akar"
-      aria-hidden
-      data-intro
-      data-lewat={dilewati ? "" : undefined}
-      style={{ "--intro-lewat": `${INTRO_LEWAT_MS}ms` } as React.CSSProperties}
-    >
+    <div className="intro-akar" aria-hidden>
       {/* Latar yang memudar di akhir, memperlihatkan halaman di belakangnya. */}
       <div className="intro-tirai" />
 

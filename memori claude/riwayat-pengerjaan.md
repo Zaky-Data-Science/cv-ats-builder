@@ -1677,6 +1677,64 @@ Seluruh halaman publik ikut diperiksa lewat HTML mentahnya - beranda,
 bandingkan, panduan, tentang, alur, login, dan coba - dan tidak satu pun masih
 menyisakan kerangka pemuatan.
 
+### Putaran kelima: intro yang tidak pernah sempat muncul
+
+Setelah halaman depan tidak lagi kosong, laporan berikutnya: "animasinya pas
+refresh gk muncul".
+
+Sebabnya justru akibat samping dari perbaikan sebelumnya, dan pantas
+diperhatikan sebagai pola. Lapisan intro baru dirender **setelah React
+selesai hidrasi**. Selama halaman depan juga baru terlihat setelah hidrasi,
+keduanya datang bersamaan dan urutannya benar. Begitu halamannya diperbaiki
+agar tampil dari HTML, intronya tertinggal sendirian di belakang - dan yang
+terlihat di ponsel adalah halaman yang sudah terbaca utuh beberapa detik
+sebelum adegan pembukanya sempat mulai.
+
+Diukur pada tab uji: lapisan intronya muncul **11,9 detik** setelah pemuatan.
+Di ponsel jaraknya lebih pendek, tetapi tetap cukup untuk membuat sebuah
+pembuka datang terlambat - dan pembuka yang datang setelah halamannya
+terbaca bukan lagi pembuka.
+
+Ditambah satu sebab kedua yang memperburuk: "lewati" yang ditambahkan pada
+putaran ketiga menangkap sentuhan sejak milidetik pertama. Menarik layar ke
+bawah untuk memuat ulang meninggalkan jari di atas kaca, dan sentuhan yang
+sama langsung menghabiskan adegannya.
+
+#### Perbaikannya: keluarkan intro dari jalur React sepenuhnya
+
+- Markup-nya ikut terkirim dari server. `SamuraiIntro` kini komponen server
+  tanpa `"use client"`, tanpa satu pun hook, tanpa satu pun impor.
+- Yang menyalakannya skrip sinkron di `<head>` lewat atribut `data-intro` -
+  pola yang sama dengan skrip tema dan skrip animasi gulir.
+- CSS menyembunyikan lapisannya secara bawaan. Tanpa JavaScript atributnya
+  tidak pernah ada, dan pengunjung tidak pernah melihat tirai yang tidak akan
+  terangkat.
+- Seluruh siklusnya - menutup adegan, melewatinya, membersihkan atribut -
+  ditangani skrip yang sama.
+- "Lewati" diberi jeda setengah detik di awal.
+
+Penandanya pun tidak lagi berupa nilai yang disimpan. Atribut `data-intro`
+dilepas sendiri begitu adegannya usai: muat ulang menjalankan skripnya dari
+awal sehingga intronya kembali, sementara berpindah halaman di dalam aplikasi
+tidak. Dua perilaku yang dibutuhkan, tanpa satu pun nilai yang perlu disimpan.
+
+#### Batas verifikasi yang jujur
+
+Bahwa intronya kini mulai sebelum hidrasi tidak berhasil diukur langsung:
+pada tab tersembunyi, iframe uji memuat terlalu cepat dan sampelnya melompat
+dari "dokumen kosong" ke "React sudah hidrasi" tanpa satu pun titik di
+antaranya.
+
+Yang dapat ditegakkan bukan pengukuran melainkan bentuk kodenya: tidak ada
+satu pun bagian React di jalur intro - diperiksa dengan mencari `"use
+client"`, hook, dan impor di komponennya, ketiganya nol. Sesuatu yang tidak
+menyentuh React tidak dapat menunggu React.
+
+> Pelajaran yang bukan tentang intro: **memperbaiki satu hal yang tertahan
+> dapat membuat hal lain yang tertahan pada penyebab yang sama menjadi
+> terlihat sendirian.** Halaman dan intro sama-sama menunggu hidrasi; selama
+> keduanya menunggu, tidak ada yang janggal.
+
 ### Pengujian
 
 `npm test` naik dari **284 menjadi 348 pemeriksaan**, seluruhnya lulus -
