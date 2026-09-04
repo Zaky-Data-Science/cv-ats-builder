@@ -13,14 +13,14 @@ export const TERMS_META: Record<
     badge: "Ketentuan Layanan",
     title: "Aturan pemakaian aplikasi ini",
     intro:
-      "Ringkasnya: aplikasi ini gratis dan disediakan apa adanya, isi CV sepenuhnya tanggung jawab Anda, dan skor ATS bukan jaminan diterima kerja.",
+      "Ringkasnya: aplikasi ini gratis dan disediakan apa adanya, isi CV sepenuhnya tanggung jawab Anda, dan nilai yang ditampilkan bukan jaminan diterima kerja.",
     updatedAt: "2 September 2026",
   },
   en: {
     badge: "Terms of Service",
     title: "The rules for using this app",
     intro:
-      "In short: this app is free and provided as-is, the content of your CV is entirely your responsibility, and the ATS score is not a guarantee of being hired.",
+      "In short: this app is free and provided as-is, the content of your CV is entirely your responsibility, and the numbers shown are not a guarantee of being hired.",
     updatedAt: "2 September 2026",
   },
 };
@@ -131,7 +131,7 @@ function TermsId() {
         pemberitahuan terlebih dahulu.
       </p>
 
-      <h2>7. Skor ATS bukan jaminan</h2>
+      <h2>7. Nilai yang ditampilkan bukan jaminan</h2>
       <p>
         Penilaian di aplikasi ini memeriksa apakah CV Anda memenuhi kaidah yang
         umum berlaku pada sistem pembaca lamaran: satu kolom, tanpa tabel, judul
@@ -294,7 +294,7 @@ function TermsEn() {
         Accounts that breach the above may be terminated without prior notice.
       </p>
 
-      <h2>7. The ATS score is not a guarantee</h2>
+      <h2>7. The numbers shown are not a guarantee</h2>
       <p>
         The scoring in this app checks whether your CV follows the conventions
         that hold generally across applicant screening systems: one column, no

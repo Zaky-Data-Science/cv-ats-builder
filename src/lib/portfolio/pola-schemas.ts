@@ -143,6 +143,7 @@ const KARYA_VISUAL: PolaSchema = {
       key: "hasil",
       label: "Hasil",
       tipe: "teks",
+      rubrik: "hasil",
       placeholder: "Konversi naik 2,1% -> 3,4% dalam 6 minggu",
       bantuan: "Satu angka mengubah galeri jadi studi kasus.",
       wajib: true,
@@ -152,6 +153,10 @@ const KARYA_VISUAL: PolaSchema = {
       key: "statusKarya",
       label: "Status",
       tipe: "pilihan",
+      // Padanan "tahap keterlibatan" untuk pola ini: pilihannya memuat
+      // "dirilis ke publik", dan rilis memang salah satu tahap eksekusi yang
+      // disebut rubrik.
+      rubrik: "tahap",
       opsi: [
         "terbangun",
         "dalam konstruksi",
@@ -199,6 +204,14 @@ const KARYA_VISUAL: PolaSchema = {
       "Konversi checkout naik dari 2,1% menjadi 3,4% dalam 6 minggu setelah rilis.",
     ],
   },
+  saranSkor: {
+    hasil:
+      "Karya ini belum menyebut hasil. Tambahkan satu angka: konversi, waktu penyelesaian tugas, atau kepuasan pengguna.",
+    peran:
+      "Portofolio hanya berisi hasil akhir. Tambahkan 2-3 langkah keputusan - inilah yang dinilai perekrut, bukan visualnya.",
+    tautan:
+      "Belum ada tautan yang bisa dibuka. Untuk bentuk ini, karyanya sendiri yang jadi buktinya.",
+  },
   peringatan: [
     "Karya kantor atau klien perlu izin tayang, dan wajib menyebut peran pribadi Anda di dalamnya.",
     "Karya spekulatif atau latihan wajib diberi label agar tidak menyesatkan.",
@@ -242,6 +255,7 @@ const PROYEK_TEKNIS: PolaSchema = {
       key: "skalaProyek",
       label: "Skala",
       tipe: "angka_satuan",
+      rubrik: "skala",
       placeholder: "8.400 m2",
       bantuan:
         "Skala adalah proksi kompleksitas. Boleh rentang jika angka pastinya rahasia.",
@@ -251,6 +265,7 @@ const PROYEK_TEKNIS: PolaSchema = {
       key: "tahapKeterlibatan",
       label: "Tahap keterlibatan",
       tipe: "multi",
+      rubrik: "tahap",
       opsi: [
         "studi kelayakan",
         "DED/desain",
@@ -274,6 +289,7 @@ const PROYEK_TEKNIS: PolaSchema = {
       key: "standarKode",
       label: "Standar & kode",
       tipe: "multi",
+      rubrik: "standar",
       opsi: [
         "SNI 2847",
         "SNI 1726",
@@ -341,6 +357,7 @@ const PROYEK_TEKNIS: PolaSchema = {
       key: "hasilTerukur",
       label: "Hasil terukur",
       tipe: "delta",
+      rubrik: "hasil",
       komponen: ["Yang diukur", "Sebelum", "Sesudah", "Rentang waktu"],
       placeholder: "Efisiensi 92% pada beban 3 A; ripple 40 mV",
       bantuan:
@@ -368,6 +385,18 @@ const PROYEK_TEKNIS: PolaSchema = {
       "Saya menghitung disipasi daya dan memilih topologi buck sinkron untuk menekan panas.",
       "Saya menguji efisiensi 92% pada beban 3 A dengan ripple 40 mV.",
     ],
+  },
+  saranSkor: {
+    skala:
+      "Proyek ini belum menyebut skala. Tambahkan bentang, luas, atau rentang nilai proyek.",
+    standar:
+      "Belum ada standar atau kode yang disebut. Menyebutnya menunjukkan Anda bekerja dalam kerangka, bukan improvisasi.",
+    hasil:
+      "Belum ada hasil pengukuran. Tambahkan angka hasil uji (efisiensi, ripple, konsumsi arus) - inilah yang membedakan perancang dari perakit.",
+    peran:
+      "Tulis apa yang Anda kerjakan sendiri: \"saya menghitung...\", \"saya menguji...\". \"Kami membangun sistem\" tidak memberi tahu perekrut bagian mana yang Anda kerjakan.",
+    verifikator:
+      "Verifikator belum diisi. Badan sertifikasi dan perekrut teknis sama-sama menanyakannya.",
   },
   peringatan: [
     "Nilai kontrak, skematik, BOM, nomor part, nama vendor, dan data produksi atau cadangan sering terikat NDA. Aktifkan Mode Redaksi dan pakai rentang (\"Rp 10-25 M\") atau persentase relatif.",
@@ -426,6 +455,7 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "volume",
       label: "Volume",
       tipe: "angka_satuan",
+      rubrik: "skala",
       placeholder: "±120 pasien/bulan",
       bantuan:
         "Angka membuat pengabdian jadi terukur. Ini field pembeda pola ini.",
@@ -444,6 +474,7 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "luaran",
       label: "Hasil / luaran",
       tipe: "teks",
+      rubrik: "hasil",
       placeholder: "Angka infeksi luka operasi turun 4,1% -> 1,8%",
       bantuan: "Satu angka membedakan laporan kegiatan dari daftar hadir.",
       prioritas: 5,
@@ -484,6 +515,14 @@ const PRAKTIK_JAM: PolaSchema = {
       "Melakukan anamnesis dan pemeriksaan fisik rata-rata 20 pasien per hari jaga.",
       "Menyusun materi edukasi pasien yang kemudian dipakai rutin di bangsal.",
     ],
+  },
+  saranSkor: {
+    skala:
+      "Kegiatan ini belum menyebut jumlah orang yang dilayani atau jam per pekan. Angka membuat pengabdian jadi terukur.",
+    hasil:
+      "Luaran kegiatan belum berisi angka. Tulis jenis tindakan dan volumenya, tanpa identitas siapa pun.",
+    peran:
+      "Sebutkan peran Anda sendiri di kegiatan ini, bukan peran timnya.",
   },
   peringatan: [
     "Dilarang menulis identitas pasien, nomor rekam medis, foto luka atau pasien, atau data apa pun yang bisa mengidentifikasi orang. Tulis jumlah dan jenis kasus, bukan kasusnya.",
@@ -645,6 +684,12 @@ const KARYA_TERKREDIT: PolaSchema = {
     ringkasan: "Artikel jurnal terindeks SINTA 2 dengan DOI aktif.",
     poin: [],
   },
+  saranSkor: {
+    peran:
+      "Peran penulis belum diisi. Penulis pertama dan anggota dinilai berbeda.",
+    tautan:
+      "Belum ada DOI atau tautan rekaman. Tambahkan pengenal yang tidak berubah agar karya Anda dapat ditemukan bertahun-tahun kemudian.",
+  },
   peringatan: [
     "Manuskrip yang masih dalam review wajib diberi label apa adanya, jangan ditulis seolah sudah terbit.",
   ],
@@ -689,6 +734,7 @@ const DAMPAK_PROGRAM: PolaSchema = {
       key: "skalaDikelola",
       label: "Skala yang dikelola",
       tipe: "teks",
+      rubrik: "skala",
       placeholder: "Portofolio kredit Rp 42 M",
       bantuan: "Skala adalah proksi tanggung jawab.",
       wajib: true,
@@ -698,6 +744,7 @@ const DAMPAK_PROGRAM: PolaSchema = {
       key: "metrikDampak",
       label: "Metrik dampak",
       tipe: "delta",
+      rubrik: "hasil",
       komponen: ["Metrik", "Sebelum", "Sesudah", "Rentang waktu"],
       placeholder: "Time-to-hire | 41 hari | 24 hari | 6 bulan",
       bantuan:
@@ -709,6 +756,7 @@ const DAMPAK_PROGRAM: PolaSchema = {
       key: "metodeStandar",
       label: "Metode & standar",
       tipe: "multi",
+      rubrik: "standar",
       opsi: [
         "Lean",
         "Six Sigma DMAIC",
@@ -790,6 +838,16 @@ const DAMPAK_PROGRAM: PolaSchema = {
       "Time-to-hire turun dari 41 hari menjadi 24 hari dalam 6 bulan.",
     ],
   },
+  saranSkor: {
+    skala:
+      "Program ini belum menyebut skala yang dikelola. Tambahkan nilai portofolio, ukuran tim, atau populasi yang dilayani.",
+    standar:
+      "Belum ada metode atau standar yang disebut. Metode menunjukkan hasilnya berulang, bukan kebetulan.",
+    hasil:
+      "Metrik dampaknya belum punya nilai sebelum dan sesudah. Perekrut membaca \"12% -> 8%\" berbeda dari \"lebih efisien\".",
+    peran:
+      "Sebutkan tindakan Anda sendiri, bukan tanggung jawab divisinya.",
+  },
   peringatan: [
     "Hukum: hormati kerahasiaan klien. Nama pihak dan nomor perkara diganti deskriptor generik (\"perusahaan energi nasional\", \"sengketa ketenagakerjaan di PN Jakarta Pusat\"). Contoh tulisan yang ditautkan wajib sudah dianonimkan.",
     "Keuangan: angka perusahaan sering rahasia - pakai rentang atau persentase relatif.",
@@ -828,6 +886,7 @@ const UMUM: PolaSchema = {
       key: "hasil",
       label: "Hasil",
       tipe: "teks",
+      rubrik: "hasil",
       placeholder: "Dipakai 120 pengguna dalam 3 bulan pertama",
       bantuan: "Satu angka mengubah daftar karya jadi bukti.",
       prioritas: 2,
@@ -869,6 +928,12 @@ const UMUM: PolaSchema = {
       "Merancang basis data dan antarmuka pencatatan cepat berbasis kategori.",
       "Dipakai 120 pengguna dalam 3 bulan pertama tanpa biaya promosi.",
     ],
+  },
+  saranSkor: {
+    hasil:
+      "Karya ini belum menyebut hasil. Satu angka - berapa orang memakainya, berapa lama selesai - sudah cukup mengubahnya jadi bukti.",
+    peran:
+      "Sebutkan peran Anda sendiri di karya ini, dan mulai poinnya dengan kata kerja.",
   },
   peringatan: [],
 };

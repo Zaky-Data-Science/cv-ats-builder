@@ -9,7 +9,7 @@ import { atsRequestSchema } from "@/lib/resume/schema";
 type Params = { params: Promise<{ id: string }> };
 
 /**
- * Menghitung skor ATS sebuah CV.
+ * Menghitung penilaian sebuah CV.
  *
  * Hasil disimpan ke tabel ats_analyses hanya bila diminta secara eksplisit
  * (persist = true). Pemanggilan cepat dari editor tidak menyimpan apa-apa,

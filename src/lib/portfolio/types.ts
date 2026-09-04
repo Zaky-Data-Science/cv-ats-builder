@@ -243,6 +243,20 @@ export interface FieldDef {
    */
   komponen?: string[];
   /**
+   * Peran field ini di dalam rubrik penilaian kekuatan bukti.
+   *
+   * Rubriknya menyebut nama field per pola - `skalaProyek` / `volume` /
+   * `skalaDikelola` untuk satu peran yang sama, dan seterusnya. Pemetaannya
+   * ditaruh di sini, bukan di dalam mesin skor, karena alasan yang sama dengan
+   * seluruh bagian lain fitur ini: menambah pola berarti menyunting registry,
+   * bukan menyunting kode yang membacanya.
+   *
+   * Pola yang tidak punya padanan untuk sebuah peran memang tidak menandainya.
+   * Itu bukan kelalaian pemetaan melainkan arti rubriknya - dan akibatnya pada
+   * angka harus dibaca apa adanya, bukan ditambal.
+   */
+  rubrik?: "skala" | "standar" | "hasil" | "tahap";
+  /**
    * Kolom bawaan tempat nilainya disimpan, bila field ini memang sudah punya
    * rumah sendiri di model data lama (mis. `publisher` pada publikasi).
    * Kosong berarti nilainya tinggal di `inti`.
@@ -321,6 +335,23 @@ export interface PolaSchema {
   peringatan: string[];
   /** Isian tombol "Isi dengan contoh". */
   contoh: ContohItem;
+  /**
+   * Saran perbaikan bila syarat rubrik penilaian belum terpenuhi.
+   *
+   * Lima set kalimat untuk lima pola, bukan satu set untuk dua puluh satu
+   * bidang. Kalimatnya menyebut hal yang khas pola itu - "bentang, luas, atau
+   * rentang nilai proyek" untuk proyek teknis, "jumlah santri atau jam per
+   * pekan" untuk pengajaran - karena saran yang generik tidak memberi tahu
+   * pembacanya apa yang harus ia tulis.
+   */
+  saranSkor: {
+    skala?: string;
+    standar?: string;
+    hasil?: string;
+    peran?: string;
+    verifikator?: string;
+    tautan?: string;
+  };
   /** Pola ini tidak memakai indikator panjang halaman sama sekali. */
   tanpaIndikatorPanjang?: boolean;
 }

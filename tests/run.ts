@@ -9,6 +9,7 @@ import { runPasswordResetTests } from "./password-reset.test";
 import { runPdfTests } from "./pdf.test";
 import { runPortofolioTests } from "./portofolio.test";
 import { runPortofolioRenderTests } from "./portofolio-render.test";
+import { runSkorBuktiKaryaTests } from "./skor-bukti-karya.test";
 import { runPhotoTests } from "./photo.test";
 import { runStaleSessionTests } from "./stale-session.test";
 import { runStructureTests } from "./structure.test";
@@ -32,6 +33,7 @@ async function main() {
   runStaleSessionTests();
   runCetakTests();
   runAtsEngineTests();
+  runSkorBuktiKaryaTests();
   runTemplateTests();
   runKertasTests();
   runDocumentTests();

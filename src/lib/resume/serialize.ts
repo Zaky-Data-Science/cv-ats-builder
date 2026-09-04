@@ -343,22 +343,21 @@ export function regenerateIds(data: ResumeData): ResumeData {
 /**
  * Berkas ekspor JSON, lengkap dengan metadata versi skema.
  *
- * Data `verifikator` dan `refleksi` sengaja tidak ikut.
+ * Satu-satunya yang tidak ikut: `verifikator`.
  *
- * Yang pertama berisi nama, jabatan, dan hubungan seorang **pihak ketiga**
- * yang tidak pernah menyetujui datanya berpindah ke mana-mana. Yang kedua
- * adalah catatan pengguna untuk dirinya sendiri - apa yang ia pelajari, apa
- * yang akan ia lakukan berbeda - yang ditulis dengan asumsi tidak ada
- * perekrut yang membacanya.
+ * Isinya nama, jabatan, dan hubungan seorang **pihak ketiga** yang tidak
+ * pernah menyetujui datanya berpindah ke mana-mana. Berkas ini dikirim,
+ * disalin, dan diunggah penggunanya ke tempat-tempat yang tidak dapat kita
+ * ketahui; menyimpan nama orang lain di basis data penggunanya sendiri adalah
+ * satu hal, ikut mengirimkannya adalah hal lain. Antarmuka unduhan
+ * mengatakannya terus terang, karena pengecualian yang tidak diberitahukan
+ * akan ditemukan pengguna pada saat yang paling buruk - ketika ia mengimpor
+ * kembali cadangannya.
  *
- * Berkas ekspor adalah berkas yang dikirim, disalin, dan diunggah pengguna ke
- * tempat-tempat yang tidak dapat kita ketahui. Menyimpan kedua hal itu di
- * basis data penggunanya sendiri adalah satu hal; ikut mengirimkannya adalah
- * hal lain.
- *
- * Akibatnya memang ada dan disengaja: mengimpor kembali berkas ini tidak
- * memulihkan keduanya. Itu harga yang lebih murah daripada menyebarkan data
- * pribadi orang lain, atau catatan pribadi seseorang, tanpa ia sadari.
+ * `refleksi` justru ikut, meski juga tidak pernah dicetak di CV. Ia catatan
+ * pengguna untuk dirinya sendiri, dan berkas ini adalah cadangan miliknya:
+ * membuangnya diam-diam membuat janji "impor kembali kapan saja" bocor tanpa
+ * ada yang tahu.
  */
 export function toExportFile(data: ResumeData) {
   const { id: _ignored, ...rest } = data;
@@ -373,7 +372,6 @@ export function toExportFile(data: ResumeData) {
       projects: rest.projects.map((item) => ({
         ...item,
         verifikator: verifikatorKosong(),
-        refleksi: "",
       })),
     },
   };

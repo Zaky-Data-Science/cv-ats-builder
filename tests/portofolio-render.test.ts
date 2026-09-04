@@ -23,8 +23,9 @@ import { check, equal, section } from "./harness";
  *  2. Berkas Word tidak menaruh satu pun isi di header/footer dokumen, tempat
  *     isinya hilang total dari ekstraksi teks.
  *  3. Bagian portofolio yang menyala tanpa item tidak mencetak judul kosong.
- *  4. `verifikator` dan `refleksi` tidak pernah muncul di berkas ekspor mana
- *     pun - keduanya bukan untuk dibaca perekrut.
+ *  4. `verifikator` dan `refleksi` tidak pernah tercetak di CV; `verifikator`
+ *     juga tidak pernah masuk berkas ekspor mana pun, sementara `refleksi`
+ *     tetap ada di berkas cadangan JSON milik penggunanya sendiri.
  *  5. Sakelar penggabungan tidak pernah menyala sendiri.
  */
 
@@ -219,7 +220,10 @@ export async function runPortofolioRenderTests(): Promise<void> {
 
   const json = JSON.stringify(toExportFile(cv));
   check("tidak muncul di berkas JSON", !json.includes(NAMA_VERIFIKATOR));
-  check("refleksi tidak muncul di berkas JSON", !json.includes("Kalau mengulang"));
+  // Refleksi justru harus ada di JSON: berkas itu cadangan milik penggunanya
+  // sendiri, dan membuang catatannya diam-diam membuat janji "impor kembali
+  // kapan saja" bocor tanpa ada yang tahu.
+  check("refleksi tetap ada di berkas JSON, karena itu cadangan miliknya sendiri", json.includes("Kalau mengulang"));
   check(
     "isi CV selebihnya tetap ada di berkas JSON",
     json.includes("Panel Kendali Instrumentasi"),

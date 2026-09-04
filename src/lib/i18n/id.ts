@@ -416,6 +416,8 @@ export const id = {
     btnJson: "Cadangan",
     btnTextTitle: "Teks polos, untuk disalin-tempel ke formulir lamaran online",
     btnJsonTitle: "Berkas cadangan, agar CV ini bisa dibuka lagi nanti",
+    btnJsonNote:
+      "Berkas cadangan memuat seluruh isian Anda, kecuali nama verifikator - itu data orang lain, jadi tidak ikut ke berkas mana pun.",
     saveNotYet: "Belum tersimpan",
     saveAuto: "Tersimpan otomatis",
     untitled: "CV Belum Diberi Nama",
@@ -432,7 +434,7 @@ export const id = {
     downloadTxt: "Unduh teks (.txt)",
     downloadJson: "Simpan berkas cadangan",
     tabPreview: "Lihat Hasil",
-    tabScore: "Nilai CV",
+    tabScore: "Kekuatan CV",
     paneForm: "Isi Data",
     panePreview: "Hasil",
     paneScore: "Nilai",
@@ -701,7 +703,7 @@ export const id = {
       "Jujur soal batasannya: penilaian ini membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV Anda terbaca mesin, tapi tidak bisa menilai apakah pengalaman Anda cocok untuk suatu jabatan. Yang itu tetap penilaian Anda sendiri.",
   },
 
-  /* ------------------------------------------------------- panel skor ATS */
+  /* -------------------------------------------------------- panel penilaian */
   ats: {
     severityError: "Harus dibetulkan",
     severityWarning: "Sebaiknya dibetulkan",
@@ -728,6 +730,24 @@ export const id = {
       "Bersih. CV Anda sudah memenuhi semua aturan yang kami periksa.",
     openField: "Buka bagian yang bermasalah",
     gradePrefix: "Nilai",
+    strengthTitle: "Kekuatan & Keterbacaan",
+    strengthHint:
+      "Kelengkapan struktur, keterbacaan mesin, mutu isi, dan kekuatan bukti karya.",
+    matchTitle: "Kecocokan Lowongan",
+    matchHint:
+      "Berapa persen kata penting dari iklan lowongan yang benar-benar ada di CV Anda.",
+    matchEmpty: "Belum ditempel",
+    scoreDisclaimer:
+      "Angka ini menilai struktur dan kecocokan kata kunci CV Anda. Ia tidak memprediksi keputusan sistem perekrutan mana pun - tiap perusahaan menyetel filternya sendiri.",
+    weightChanged:
+      "Bobot penilaian berubah karena bagian portofolio aktif. Nilai dengan bobot sebelumnya: {n}.",
+    buktiTitle: "Rincian kekuatan bukti",
+    buktiHint:
+      "Tiap karya dinilai dari dua hal: peranan Anda (Q) dan tingkat kesulitannya (R), masing-masing 0-3.",
+    buktiQ: "Peranan",
+    buktiR: "Kesulitan",
+    buktiItems: "karya dinilai",
+    buktiFew: "di bawah jumlah yang lazim, nilainya dipotong sebanding",
     jobTitle: "Cocokkan dengan iklan lowongan",
     jobIntro:
       "Salin-tempel isi iklan lowongan yang Anda incar. Kata-kata pentingnya kami ambil sendiri, lalu kami bandingkan dengan isi CV Anda.",

@@ -765,6 +765,16 @@ export function ResumeEditor({
             </div>
           </div>
 
+          {/*
+            Satu pengecualian yang harus disebut, bukan didiamkan: nama
+            verifikator tidak ikut ke berkas mana pun. Pengguna yang
+            mengandalkan berkas cadangan berhak tahu apa yang tidak ada di
+            dalamnya sebelum ia membutuhkannya kembali.
+          */}
+          <p className="mt-1.5 hidden text-[11px] leading-relaxed text-ink-500 lg:block">
+            {t.editor.btnJsonNote}
+          </p>
+
           {/* Status simpan di layar sempit - diberi baris sendiri agar tidak
               menekan lebar kolom judul. */}
           <div className="mt-1.5 flex items-center justify-between gap-3 lg:hidden">

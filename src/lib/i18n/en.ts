@@ -397,6 +397,8 @@ export const en: Dictionary = {
     btnJson: "Backup",
     btnTextTitle: "Plain text, for copying into online application forms",
     btnJsonTitle: "A backup file, so this CV can be opened again later",
+    btnJsonNote:
+      "The backup holds everything you typed, except your verifiers' names - those belong to someone else, so they go into no file at all.",
     saveNotYet: "Not saved yet",
     saveAuto: "Saves automatically",
     untitled: "Unnamed CV",
@@ -413,7 +415,7 @@ export const en: Dictionary = {
     downloadTxt: "Download text (.txt)",
     downloadJson: "Save a backup file",
     tabPreview: "See the result",
-    tabScore: "CV score",
+    tabScore: "CV strength",
     paneForm: "Fill in",
     panePreview: "Result",
     paneScore: "Score",
@@ -701,6 +703,24 @@ export const en: Dictionary = {
       "All clear. Your CV satisfies every rule we check.",
     openField: "Open the part that needs work",
     gradePrefix: "Grade",
+    strengthTitle: "Strength & Readability",
+    strengthHint:
+      "How complete the structure is, whether machines can read it, how it is written, and how strong your evidence is.",
+    matchTitle: "Job Match",
+    matchHint:
+      "What share of the words that matter in the job ad genuinely appear in your CV.",
+    matchEmpty: "Nothing pasted yet",
+    scoreDisclaimer:
+      "These numbers judge the structure and keyword match of your CV. They do not predict what any hiring system will decide - every employer tunes its own filters.",
+    weightChanged:
+      "The weighting changed because the portfolio section is on. Under the previous weighting: {n}.",
+    buktiTitle: "Evidence, piece by piece",
+    buktiHint:
+      "Each piece is marked on two things: your part in it (Q) and how demanding it was (R), 0-3 each.",
+    buktiQ: "Your part",
+    buktiR: "Demand",
+    buktiItems: "pieces marked",
+    buktiFew: "below the usual count, the score is cut proportionally",
     jobTitle: "Match against a job ad",
     jobIntro:
       "Paste in the job ad you are targeting. We pull out the words that matter and compare them against your CV.",

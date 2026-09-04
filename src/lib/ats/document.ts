@@ -27,12 +27,22 @@ import { ACTION_VERBS, CLICHE_PHRASES } from "./vocabulary";
  * bahasa: masukan yang sama selalu menghasilkan angka dan saran yang sama.
  */
 
+/*
+  Penilai berkas unggahan tidak menilai kekuatan bukti karya, dan bobotnya
+  karena itu nol.
+
+  Alasannya bukan kemalasan: kekuatan bukti dihitung dari isian terstruktur -
+  peran, skala, standar, hasil terukur - dan berkas PDF atau Word yang diunggah
+  orang tidak punya satu pun di antaranya. Menebaknya dari teks berarti
+  memberi angka yang tidak dapat ditelusuri ke apa pun.
+*/
 export const DOC_WEIGHTS: Record<DimensionKey, number> = {
   completeness: 25,
   parseability: 25,
   contentQuality: 20,
   keywordMatch: 20,
   structure: 10,
+  buktiKarya: 0,
 };
 
 export interface DocFinding {
