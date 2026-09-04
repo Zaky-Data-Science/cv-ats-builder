@@ -62,11 +62,30 @@ export const personalInfoSchema = z.object({
   linkedinUrl: str(300),
   portfolioUrl: str(300),
   githubUrl: str(300),
-  // Data URI pas foto tersimpan di kolom ini. Batasnya mengikuti
-  // PHOTO_MAX_BYTES (200 KB) setelah dikodekan base64, ditambah kelonggaran
-  // untuk awalan "data:image/jpeg;base64,".
-  photoUrl: str(300_000),
+  /*
+    Data URI pas foto tersimpan di kolom ini.
+
+    Batasnya mengikuti PHOTO_MAX_BYTES **setelah** dikodekan base64 - dan
+    perkalian itu yang mudah terlewat: base64 menumbuhkan 1 MB menjadi sekitar
+    1,37 MB karakter. Batas lama 300.000 sudah benar untuk foto 200 KB; begitu
+    ukurannya dinaikkan, batas yang sama justru menolak foto yang baru saja
+    berhasil dikompresi - dan galatnya muncul di penyimpan otomatis, jauh dari
+    tempat fotonya dipilih.
+  */
+  photoUrl: str(1_500_000),
   showPhoto: z.boolean().default(false),
+  /*
+    Perbesaran dan geseran pas foto.
+
+    Rentangnya dijaga di sini, bukan hanya di antarmuka: nilainya ikut ke
+    server lewat penyimpanan otomatis maupun lewat berkas cadangan yang dapat
+    disunting siapa pun. Perbesaran 500 kali tidak merusak apa pun kecuali
+    tampilan CV-nya sendiri, tetapi menolaknya di sini jauh lebih murah
+    daripada menjelaskannya kemudian.
+  */
+  photoZoom: z.number().min(1).max(3).default(1),
+  photoOffsetX: z.number().min(-100).max(100).default(0),
+  photoOffsetY: z.number().min(-100).max(100).default(0),
   summary: z.string().max(3000).default(""),
 });
 

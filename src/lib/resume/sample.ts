@@ -313,6 +313,9 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
     sectionOrder: [...DEFAULT_SECTION_ORDER],
 
     personalInfo: {
+      photoZoom: 1,
+      photoOffsetX: 0,
+      photoOffsetY: 0,
       fullName: "Budi Santoso",
       headline: text.headline,
       email: "budi.santoso@email.com",

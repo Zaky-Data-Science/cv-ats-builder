@@ -67,18 +67,28 @@ export const en: Dictionary = {
       "Best left off. Screening software cannot see images, and the layout around a photo often scrambles the text beside it. Only switch it on if the job ad actually asks for a photo.",
     photo: "Photo",
     photoHint:
-      "JPG, PNG, or WebP. The photo is resized automatically to 3:4 print size, so a large file straight from a phone camera is fine. A plain background gives the best result.",
+      "JPG, PNG, or WebP. Photos from a phone camera are shrunk automatically, so a large file is fine - what gets stored is at most 1 MB. A plain background gives the best result.",
     photoChoose: "Choose a photo file",
     photoReplace: "Replace photo",
     photoRemove: "Remove photo",
     photoWorking: "Processing...",
+    photoZoom: "Photo zoom",
+    photoZoomIn: "Zoom in",
+    photoZoomOut: "Zoom out",
+    photoReset: "Put it back how it was",
+    photoDragHint:
+      "Drag the photo to choose which part shows. The frame stays 3:4, so your CV layout never shifts.",
+    photoZoomHint:
+      "Zoom in first if you want to reposition it. The frame stays 3:4, so your CV layout never shifts.",
     photoLinked:
       "This photo is still an image link from a CV built earlier. The link keeps working; choose a file if you would rather store the photo inside the CV itself.",
     photoErrorType: "That file is not an image. Choose a JPG, PNG, or WebP file.",
     photoErrorRead:
       "The image could not be read. The file may be damaged - try another one.",
+    photoErrorSourceTooBig:
+      "That file is over 12 MB, and something that large can lock the browser up before it finishes processing. Pick an ordinary photo from your gallery - a passport photo is never that big.",
     photoErrorTooBig:
-      "The image is still too large after resizing. A photo on a plain background is far lighter than one on a busy background.",
+      "It was compressed as far as it goes and still comes out over 1 MB, so it cannot be stored. That usually happens with a very busy background; a plain one is far lighter.",
 
     summary: "Professional summary",
     summaryHint:

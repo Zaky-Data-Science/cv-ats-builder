@@ -1735,6 +1735,82 @@ menyentuh React tidak dapat menunggu React.
 > terlihat sendirian.** Halaman dan intro sama-sama menunggu hidrasi; selama
 > keduanya menunggu, tidak ada yang janggal.
 
+### Putaran keenam: pas foto yang dapat diatur sendiri
+
+Permintaannya empat hal sekaligus: bingkai foto dipatok supaya tidak merusak
+tata letak, ditambah perbesaran, potongan, dan janji agar tidak pecah saat
+diperbesar.
+
+Yang pertama ternyata sudah benar sejak awal - bingkainya memang berukuran
+tetap dan memakai `object-fit: cover`, jadi bentuk foto apa pun tidak pernah
+menggeser apa pun di sekitarnya. Yang tidak ada adalah **kendali**: bagian
+yang tampil selalu bagian tengah gambar, dan pada pas foto yang wajahnya
+tidak persis di tengah, yang terpotong justru kepalanya.
+
+#### Empat keputusan yang menentukan bentuknya
+
+**Parameter, bukan gambar hasil potongan.** Memotong lalu menyimpan hasilnya
+terasa lebih sederhana, dan itu jebakannya: penyuntingan berikutnya bekerja di
+atas gambar yang sudah kehilangan piksel. Seseorang yang memperbesar hari ini
+lalu ingin memperkecil lagi besok tidak akan pernah memperoleh kembali bagian
+yang terpotong. Dengan menyimpan perbesaran dan geserannya saja, gambar
+sumbernya utuh selamanya.
+
+**Gambar sumber dinaikkan ke 1200x1600, batas berkas ke 1 MB.** Pas foto 3x4
+cm pada 300 DPI membutuhkan sekitar 354x472 piksel, dan 400x533 yang lama
+sudah cukup - selama gambarnya hanya ditampilkan apa adanya. Pada perbesaran
+tiga kali, yang mengisi bingkai tinggal sepertiga sisinya: dari 400 piksel
+tersisa 133, dan hasil cetaknya pecah. Pada 1200x1600, perbesaran tiga kali
+masih menyisakan 400x533 - tetap di atas kebutuhan cetak.
+
+**Menggeser dengan seretan, bukan dua penggeser.** Arah mendatar dan tegak
+pada sebuah foto bukan dua pengaturan yang dipikirkan terpisah; yang dicari
+orang adalah satu tempat, dan tangan tahu ke mana memindahkannya jauh sebelum
+kepala menghitung berapa persen.
+
+**Ekspor Word memanggang potongannya.** Word tidak dapat memotong gambar
+sebaris - ia selalu tampil utuh - dan pustaka `docx` tidak mengekspos
+`srcRect`, satu-satunya cara memotong yang dikenal OOXML. Jalur Word karena
+itu kini selalu berjalan di peramban, juga bagi pengguna berakun: memanggang
+potongan menuntut kanvas, dan membiarkan sebagian pengguna memakai jalur
+server berarti dua CV yang sama menghasilkan berkas Word yang berbeda -
+berbeda pada bagian yang barusan mereka atur sendiri.
+
+#### Dua cacat yang ketahuan sebelum sampai ke pengguna
+
+**Batas panjang `photoUrl` menolak foto yang baru saja berhasil dikompresi.**
+Batasnya 300.000 karakter - benar untuk foto 200 KB. Begitu ukurannya
+dinaikkan, base64 menumbuhkan 1 MB menjadi sekitar 1,37 MB karakter. Galatnya
+akan muncul di penyimpan otomatis, jauh dari tempat fotonya dipilih.
+
+**`fetch(dataUri)` diblokir kebijakan keamanan isinya.** Cara paling lazim
+mengubah data URI menjadi gambar, dan di aplikasi ini ia tidak bekerja:
+`connect-src 'self'` tidak memuat `data:`. Gejalanya akan berupa ekspor Word
+yang gagal hanya pada CV yang fotonya diatur, dan hanya di production.
+Diganti penguraian base64 sepuluh baris; kebijakannya tetap seketat sebelumnya.
+
+#### Membuktikan potongannya benar
+
+Bagian yang paling rawan salah pada fitur semacam ini adalah interaksi antara
+perbesaran dan geseran: rumus yang keliru urutannya tampak benar pada
+perbesaran satu, lalu meleset makin jauh seiring perbesarannya naik.
+
+Diuji dengan gambar bergradien mendatar 0..255, sehingga nilai piksel di suatu
+titik langsung memberi tahu bagian mana dari sumber yang sedang tampil - jauh
+lebih peka daripada gambar berkuadran, yang percobaan pertamanya justru
+memberi hasil sama untuk semua kasus.
+
+| kasus | terukur | seharusnya |
+|---|---:|---:|
+| perbesaran 2, lebar bagian yang tampil | 93 unit | 93,5 |
+| perbesaran 3, lebar bagian yang tampil | 63 unit | 62,3 |
+| perbesaran 2, geser 20% | pusat bergeser 20 | 19,2 |
+| perbesaran 3, geser 15% | pusat bergeser 10 | 9,6 |
+
+Di layar, foto uji bertanda ATAS/TENGAH/BAWAH memperlihatkan bingkai yang
+**tidak bergeser satu piksel pun** antara perbesaran 1 dan 2,2 - hanya isinya
+yang berubah.
+
 ### Pengujian
 
 `npm test` naik dari **284 menjadi 348 pemeriksaan**, seluruhnya lulus -
@@ -1762,7 +1838,7 @@ Angka di bawah ini per akhir sesi 10.
 | Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 133 |
 | Baris kode termasuk berkas uji dan skrip | ~26.100 |
 | Tabel basis data | 17 |
-| Berkas migrasi | 6 |
+| Berkas migrasi | 7 |
 | Route aplikasi | 37 |
 | Dimensi penilaian ATS | 5 |
 | Bagian CV yang dapat diisi | 11 |

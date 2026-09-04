@@ -246,7 +246,22 @@ export function PersonalSection() {
             <Field label={t.form.photo} htmlFor="photoFile">
               <PhotoInput
                 value={info.photoUrl}
-                onChange={(photoUrl) => set({ photoUrl })}
+                zoom={info.photoZoom}
+                offsetX={info.photoOffsetX}
+                offsetY={info.photoOffsetY}
+                onChange={(photoUrl) =>
+                  // Foto baru selalu berangkat dari potongan yang netral.
+                  // Mewarisi perbesaran foto sebelumnya berarti gambar yang
+                  // baru saja dipilih muncul sudah terpotong, dan sebabnya
+                  // tidak terlihat di mana pun.
+                  set({
+                    photoUrl,
+                    photoZoom: 1,
+                    photoOffsetX: 0,
+                    photoOffsetY: 0,
+                  })
+                }
+                onCropChange={set}
               />
             </Field>
           </div>

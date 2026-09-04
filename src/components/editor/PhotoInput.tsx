@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useI18n } from "@/components/i18n";
 import { Button, Callout } from "@/components/ui";
+import { PhotoFrame } from "./PhotoFrame";
 import {
   PHOTO_ACCEPT,
   PhotoError,
@@ -24,10 +25,22 @@ import {
  */
 export function PhotoInput({
   value,
+  zoom,
+  offsetX,
+  offsetY,
   onChange,
+  onCropChange,
 }: {
   value: string;
+  zoom: number;
+  offsetX: number;
+  offsetY: number;
   onChange: (next: string) => void;
+  onCropChange: (next: {
+    photoZoom: number;
+    photoOffsetX: number;
+    photoOffsetY: number;
+  }) => void;
 }) {
   const { t } = useI18n();
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -53,9 +66,11 @@ export function PhotoInput({
       setError(
         reason === "type"
           ? t.form.photoErrorType
-          : reason === "tooBig"
-            ? t.form.photoErrorTooBig
-            : t.form.photoErrorRead,
+          : reason === "sourceTooBig"
+            ? t.form.photoErrorSourceTooBig
+            : reason === "tooBig"
+              ? t.form.photoErrorTooBig
+              : t.form.photoErrorRead,
       );
     } finally {
       setBusy(false);
@@ -65,17 +80,18 @@ export function PhotoInput({
   return (
     <div className="space-y-2">
       <div className="flex items-start gap-3">
+        {/*
+          Pratinjaunya sekaligus penyuntingnya. Dulu hanya gambar kecil yang
+          tidak dapat disentuh - dan bagian mana dari foto yang tampil di CV
+          tidak pernah dapat diatur, hanya diterima apa adanya.
+        */}
         {hasPhoto && (
-          // Pratinjau memakai <img> biasa, sama seperti dokumen CV-nya:
-          // sumbernya data URI atau tautan pengguna, keduanya di luar jangkauan
-          // pengoptimal gambar Next.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <PhotoFrame
             src={value}
-            alt=""
-            className="h-20 shrink-0 rounded border border-ink-200 object-cover"
-            // Perbandingan 3:4, sama dengan pas foto yang dicetak.
-            style={{ width: "3.75rem" }}
+            zoom={zoom}
+            offsetX={offsetX}
+            offsetY={offsetY}
+            onChange={onCropChange}
           />
         )}
 
@@ -119,7 +135,10 @@ export function PhotoInput({
       </div>
 
       {linked && <Callout tone="info">{t.form.photoLinked}</Callout>}
-      {error && <Callout tone="warn">{error}</Callout>}
+      {/* Nada "bad", bukan "warn": fotonya benar-benar tidak masuk, dan
+          peringatan yang terlihat seperti saran akan dibaca sebagai catatan
+          yang boleh diabaikan. */}
+      {error && <Callout tone="bad">{error}</Callout>}
     </div>
   );
 }

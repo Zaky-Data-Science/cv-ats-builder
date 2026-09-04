@@ -57,6 +57,12 @@ export function toResumeData(row: any): ResumeData {
           githubUrl: info.githubUrl,
           photoUrl: info.photoUrl,
           showPhoto: info.showPhoto,
+          // Nilai bawaan dipakai untuk baris yang ditulis sebelum kolomnya
+          // ada. Basis data memang memberinya default, tetapi CV yang datang
+          // dari berkas cadangan lama tidak lewat basis data sama sekali.
+          photoZoom: info.photoZoom ?? 1,
+          photoOffsetX: info.photoOffsetX ?? 0,
+          photoOffsetY: info.photoOffsetY ?? 0,
           summary: info.summary,
         }
       : emptyPersonalInfo(),

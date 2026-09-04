@@ -52,9 +52,51 @@ export function downloadText(data: ResumeData): void {
 
 export async function downloadDocx(data: ResumeData): Promise<void> {
   const { buildDocx } = await import("@/lib/docx/build");
-  const buffer = await buildDocx(data);
+  const buffer = await buildDocx(await bakeForDocx(data));
   const blob = new Blob([new Uint8Array(buffer)], {
     type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   });
   saveBlob(blob, downloadName(data.personalInfo.fullName, data.title, "docx"));
+}
+
+/**
+ * Memanggang potongan pas foto sebelum berkas Word dibangun.
+ *
+ * Halaman cetak tidak membutuhkan ini - ia HTML, sehingga bingkai
+ * ber-`overflow: hidden` memotong sendiri. Word tidak punya padanannya:
+ * gambar sebaris di dalam .docx selalu tampil utuh. Lihat `bakePhotoCrop()`
+ * di lib/resume/photo.ts.
+ *
+ * Kegagalannya sengaja tidak menggagalkan unduhan. Berkas Word tanpa
+ * potongan masih berisi seluruh CV dan tetap berguna; membatalkannya justru
+ * meninggalkan pengguna tanpa apa-apa demi satu gambar yang tidak terpotong
+ * sesuai keinginan.
+ */
+async function bakeForDocx(data: ResumeData): Promise<ResumeData> {
+  const info = data.personalInfo;
+  if (!info.showPhoto) return data;
+  if (info.photoZoom === 1 && info.photoOffsetX === 0 && info.photoOffsetY === 0) {
+    return data;
+  }
+
+  const { isEmbeddedPhoto, bakePhotoCrop } = await import("@/lib/resume/photo");
+  if (!isEmbeddedPhoto(info.photoUrl)) return data;
+
+  const { templateStyle } = await import("@/lib/resume/templates");
+  const style = templateStyle(data.template);
+
+  try {
+    const photoUrl = await bakePhotoCrop(
+      info.photoUrl,
+      {
+        zoom: info.photoZoom,
+        offsetX: info.photoOffsetX,
+        offsetY: info.photoOffsetY,
+      },
+      { widthMm: style.photoWidthMm, heightMm: style.photoHeightMm },
+    );
+    return { ...data, personalInfo: { ...info, photoUrl } };
+  } catch {
+    return data;
+  }
 }

@@ -35,6 +35,9 @@ export function emptyPersonalInfo(): PersonalInfoData {
     githubUrl: "",
     photoUrl: "",
     showPhoto: false,
+    photoZoom: 1,
+    photoOffsetX: 0,
+    photoOffsetY: 0,
     summary: "",
   };
 }

@@ -84,18 +84,28 @@ export const id = {
       "Sebaiknya dimatikan. Mesin penyaring lamaran tidak bisa melihat gambar, dan susunan di sekitar foto sering membuat tulisan terbaca acak-acakan. Nyalakan hanya kalau lowongannya memang minta foto.",
     photo: "Pas Foto",
     photoHint:
-      "JPG, PNG, atau WebP. Foto dikecilkan otomatis ke ukuran cetak 3x4, jadi berkas besar dari kamera ponsel tidak masalah. Latar polos memberi hasil terbaik.",
+      "JPG, PNG, atau WebP. Foto dari kamera ponsel dikecilkan otomatis, jadi berkas besar tidak masalah - yang tersimpan paling banyak 1 MB. Latar polos memberi hasil terbaik.",
     photoChoose: "Pilih berkas foto",
     photoReplace: "Ganti foto",
     photoRemove: "Hapus foto",
     photoWorking: "Memproses...",
+    photoZoom: "Perbesaran foto",
+    photoZoomIn: "Perbesar",
+    photoZoomOut: "Perkecil",
+    photoReset: "Kembalikan seperti semula",
+    photoDragHint:
+      "Geser fotonya untuk memilih bagian yang tampil. Bingkainya tetap 3x4, jadi tata letak CV tidak ikut berubah.",
+    photoZoomHint:
+      "Perbesar dulu kalau ingin menggeser posisinya. Bingkainya tetap 3x4, jadi tata letak CV tidak ikut berubah.",
     photoLinked:
       "Foto ini masih berupa tautan gambar dari CV yang dibuat sebelumnya. Tautannya tetap berfungsi; pilih berkas bila ingin fotonya ikut tersimpan di dalam CV.",
     photoErrorType: "Berkas itu bukan gambar. Pilih berkas JPG, PNG, atau WebP.",
     photoErrorRead:
       "Gambarnya tidak dapat dibaca. Berkasnya mungkin rusak - coba berkas lain.",
+    photoErrorSourceTooBig:
+      "Berkasnya lebih dari 12 MB, dan sebesar itu bisa membuat peramban berhenti merespons sebelum sempat memprosesnya. Pilih foto biasa dari galeri - pas foto tidak pernah sebesar itu.",
     photoErrorTooBig:
-      "Gambarnya masih terlalu besar setelah dikecilkan. Foto berlatar polos jauh lebih ringan daripada foto berlatar ramai.",
+      "Sudah dikecilkan semaksimal mungkin, tetapi hasilnya masih di atas 1 MB sehingga tidak bisa disimpan. Biasanya ini terjadi pada foto berlatar sangat ramai; foto berlatar polos jauh lebih ringan.",
 
     summary: "Ringkasan Profil",
     summaryHint:

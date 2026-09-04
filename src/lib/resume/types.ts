@@ -68,6 +68,21 @@ export interface PersonalInfoData {
   githubUrl: string;
   photoUrl: string;
   showPhoto: boolean;
+  /**
+   * Perbesaran pas foto di dalam bingkainya, 1 sampai 3.
+   *
+   * Yang disimpan **parameternya**, bukan gambar hasil potongan. Bedanya
+   * terasa saat pengguna mengubah pilihannya lagi: memotong gambar lalu
+   * menyimpan hasilnya berarti setiap penyuntingan berikutnya bekerja di atas
+   * gambar yang sudah kehilangan piksel, dan mutunya turun bertingkat tanpa
+   * pernah bisa dikembalikan. Dengan parameter, gambar sumbernya tetap utuh
+   * selamanya dan potongannya dihitung ulang setiap kali.
+   */
+  photoZoom: number;
+  /** Geseran mendatar pas foto, -100 sampai 100 persen. */
+  photoOffsetX: number;
+  /** Geseran tegak pas foto, -100 sampai 100 persen. */
+  photoOffsetY: number;
   summary: string;
 }
 

@@ -267,10 +267,27 @@ export function ResumeEditor({
     // dibangun di peramban dari data yang sudah ada di layar. Ketiganya
     // memakai fungsi yang sama dengan yang dipakai server, sehingga isinya
     // identik dengan unduhan dari akun.
+    /*
+      Word selalu dibangun di peramban, juga untuk pengguna yang punya akun.
+
+      Sebabnya potongan pas foto. Word tidak dapat memotong gambar sebaris,
+      jadi potongannya harus dipanggang menjadi piksel lebih dulu - dan itu
+      memerlukan kanvas, yang hanya ada di peramban. Membiarkan pengguna
+      berakun memakai jalur server berarti dua orang dengan CV yang sama
+      memperoleh berkas Word yang berbeda, dan yang berbeda justru bagian
+      yang barusan mereka atur sendiri.
+
+      JSON dan teks tetap lewat server bila ada akunnya: keduanya fungsi murni
+      tanpa gambar, jadi hasilnya memang identik dari mana pun dibangun.
+    */
+    if (path === "docx") {
+      await downloadDocx(dataRef.current);
+      return;
+    }
+
     if (guest) {
       if (path === "json") downloadJson(dataRef.current);
       else if (path === "txt") downloadText(dataRef.current);
-      else if (path === "docx") await downloadDocx(dataRef.current);
       return;
     }
 

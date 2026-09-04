@@ -718,6 +718,31 @@ export function ResumeDocument({
 /* Bagian penyusun                                                            */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Susunan transform untuk pas foto di dalam bingkainya.
+ *
+ * Dipakai bersama oleh dokumen CV dan penyunting fotonya, supaya yang terlihat
+ * saat mengatur potongan persis sama dengan yang tercetak. Dua tempat yang
+ * menghitung sendiri-sendiri adalah cara paling pasti membuat keduanya
+ * berbeda satu piksel, lalu berbeda semakin jauh setiap kali salah satunya
+ * disesuaikan.
+ *
+ * Urutannya penting. `translate` ditulis lebih dulu, dan CSS menerapkan
+ * transform dari kanan ke kiri - jadi gambarnya diperbesar dulu, baru
+ * digeser. Dibalik, jarak geserannya akan ikut terkali perbesaran dan satu
+ * nilai yang sama terasa berbeda jauh pada tiap tingkat zoom.
+ */
+export function photoTransform(info: {
+  photoZoom: number;
+  photoOffsetX: number;
+  photoOffsetY: number;
+}): string {
+  const zoom = Number.isFinite(info.photoZoom) ? info.photoZoom : 1;
+  const x = Number.isFinite(info.photoOffsetX) ? info.photoOffsetX : 0;
+  const y = Number.isFinite(info.photoOffsetY) ? info.photoOffsetY : 0;
+  return `translate(${x}%, ${y}%) scale(${zoom})`;
+}
+
 /** Mengubah "PENGALAMAN KERJA" menjadi "Pengalaman Kerja". */
 function toTitleCase(value: string): string {
   return value
@@ -767,23 +792,59 @@ function ResumeHeader({
 
   const centred = style.photo === "circle" || style.nameAlign === "center";
 
+  /*
+    Bingkainya berukuran tetap, dan gambarnya bergerak di dalamnya.
+
+    Dulu satu elemen `<img>` mengerjakan keduanya sekaligus lewat
+    `object-fit: cover`. Itu sudah menjaga tata letak - ukuran bingkainya tidak
+    pernah ikut berubah oleh bentuk fotonya - tetapi bagian mana dari foto yang
+    tampil selalu bagian tengahnya, dan tidak ada satu pun cara mengubahnya.
+    Pada pas foto yang wajahnya tidak persis di tengah, yang terpotong justru
+    kepalanya.
+
+    Kini ada dua elemen dengan tugas masing-masing: pembungkus yang menahan
+    ukuran dan memotong apa pun yang keluar, dan gambar di dalamnya yang
+    diperbesar serta digeser menurut pilihan pengguna.
+
+    Geserannya memakai `translate` berpersen - persen pada `translate` diukur
+    terhadap ukuran elemen yang digeser, sehingga satu nilai yang sama berlaku
+    di layar maupun di kertas tanpa satu pun perhitungan piksel.
+  */
   const photo = wantsPhoto ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={info.photoUrl}
-      alt=""
+    <span
       style={{
+        display: "block",
         width: `${style.photoWidthMm}mm`,
         height: `${style.photoHeightMm}mm`,
-        objectFit: "cover",
-        display: "block",
+        overflow: "hidden",
         flexShrink: 0,
         borderRadius: style.photo === "circle" ? "9999px" : "1pt",
         marginBottom: style.photo === "beside" ? 0 : "5pt",
         marginLeft: style.photo !== "beside" && centred ? "auto" : undefined,
         marginRight: style.photo !== "beside" && centred ? "auto" : undefined,
+        // Latar putih terlihat hanya bila fotonya gagal dimuat; tanpa ini
+        // yang tersisa adalah lubang berwarna kertas yang tidak jelas
+        // maksudnya.
+        background: "#ffffff",
       }}
-    />
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={info.photoUrl}
+        alt=""
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+          transform: photoTransform(info),
+          // Titik tumpunya tengah, sama dengan titik acuan geseran di
+          // penyuntingnya - kalau berbeda, foto akan melompat begitu
+          // perbesarannya digeser.
+          transformOrigin: "center",
+        }}
+      />
+    </span>
   ) : null;
 
   const identity = (

@@ -179,6 +179,12 @@ model PersonalInfo {
   githubUrl    String  @default("")
   photoUrl     String  @default("")
   showPhoto    Boolean @default(false)
+  /// Perbesaran dan geseran pas foto di dalam bingkainya. Yang disimpan
+  /// parameternya, bukan gambar hasil potongan - lihat PersonalInfo di
+  /// src/lib/resume/types.ts untuk alasannya.
+  photoZoom    Float   @default(1)
+  photoOffsetX Float   @default(0)
+  photoOffsetY Float   @default(0)
   summary      String  @default("")
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
