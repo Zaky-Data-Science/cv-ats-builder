@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { errorResponse, HttpError, requireUser } from "@/lib/guard";
+import { migrasiDokumenCV, VERSI_SKEMA_CV } from "@/lib/portfolio/migrasi";
 import { createResume } from "@/lib/resume/persist";
 import { resumeDataSchema, resumeFileSchema } from "@/lib/resume/schema";
 import { regenerateIds } from "@/lib/resume/serialize";
@@ -35,15 +36,20 @@ export async function POST(request: Request) {
     }
 
     const file = resumeFileSchema.parse(parsedJson);
-    if (file.schemaVersion > 1) {
+    if (file.schemaVersion > VERSI_SKEMA_CV) {
       throw new HttpError(
         422,
         "Berkas ini dibuat oleh versi aplikasi yang lebih baru. Perbarui aplikasi terlebih dahulu.",
       );
     }
 
+    // Berkas versi lama dinaikkan bentuknya lebih dulu. Yang belum ada diisi
+    // bawaannya, yang sudah ada tidak disentuh - termasuk field khusus dari
+    // katalog bidang versi sebelumnya, yang pindah ke slot fleksibel alih-alih
+    // dibuang.
+    const naik = migrasiDokumenCV(file.resume);
     const withNewIds = regenerateIds({
-      ...(file.resume as unknown as ResumeData),
+      ...(resumeDataSchema.parse(naik) as unknown as ResumeData),
       id: "",
     });
     withNewIds.title = `${withNewIds.title} (Impor)`.slice(0, 160);

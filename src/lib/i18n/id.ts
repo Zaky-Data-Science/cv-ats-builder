@@ -256,6 +256,33 @@ export const id = {
     sectionMoveDown: "Pindahkan bagian ini ke bawah",
   },
 
+  /* --------------------------------------------------- portofolio berpola */
+  portofolio: {
+    title: "Bentuk portofolio Anda",
+    intro:
+      "Tiga pertanyaan pendek. Jawabannya menentukan isian apa saja yang ditawarkan di bagian karya - dan isian mana yang wajib.",
+    q1Label: "Apa jurusan atau profesi Anda?",
+    q1Ph: "Teknik Sipil, Ahwal Syakhshiyyah, Tata Boga...",
+    q1Hint:
+      "Ketik nama jurusannya apa adanya. Singkatan yang lazim seperti PWK atau TKJ juga ditemukan.",
+    searchEmpty:
+      "Belum ada yang cocok. Coba nama jurusan lengkapnya, atau lanjut tanpa memilih.",
+    notFound: "Bidang saya tidak ada di daftar",
+    fieldLabel: "Bidang",
+    q2Label: "CV ini untuk apa?",
+    q2Hint:
+      "Keperluan yang berbeda menuntut bukti yang berbeda, meskipun orangnya sama.",
+    q3Label: "Sejauh mana pengalaman Anda?",
+    q3Hint:
+      "Menentukan isian mana yang diwajibkan. Tugas kuliah tetap dihitung - yang berubah hanya ukurannya.",
+    chosenLabel: "Bentuk portofolio",
+    changeShape: "Bukan ini? Ganti bentuknya",
+    change: "Ubah",
+    done: "Simpan jawaban",
+    footnote:
+      "Bisa diubah kapan saja. Mengganti bentuk tidak menghapus satu pun isian yang sudah Anda tulis.",
+  },
+
   /* ------------------------------------------------------------ mode tamu */
   guest: {
     metaTitle: "Buat CV tanpa akun",

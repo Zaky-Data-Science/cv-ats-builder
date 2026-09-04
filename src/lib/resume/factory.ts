@@ -1,4 +1,10 @@
 import { newId } from "@/lib/utils";
+import {
+  bagianPortofolioBawaan,
+  profilPortofolioBawaan,
+  verifikatorKosong,
+  VERSI_SKEMA_CV,
+} from "@/lib/portfolio/migrasi";
 import { DEFAULT_SECTION_ORDER } from "./sections";
 import type {
   AwardItem,
@@ -90,6 +96,18 @@ export function emptyProject(): ProjectItem {
     startDate: "",
     endDate: "",
     bullets: [""],
+    konteks: "",
+    lokasi: "",
+    ringkasan: "",
+    tautan: [],
+    kataKunci: [],
+    inti: {},
+    detailTambahan: [],
+    verifikator: verifikatorKosong(),
+    refleksi: "",
+    polaOverride: "",
+    parentPengalamanId: "",
+    arsip: {},
   };
 }
 
@@ -127,7 +145,17 @@ export function emptyLanguage(): LanguageItem {
 }
 
 export function emptyPublication(): PublicationItem {
-  return { id: newId(), title: "", publisher: "", date: "", url: "", doi: "" };
+  return {
+    id: newId(),
+    title: "",
+    publisher: "",
+    date: "",
+    url: "",
+    doi: "",
+    tipeLuaran: "",
+    peranSaya: "",
+    indeksasiTier: "",
+  };
 }
 
 export function emptyCustomEntry(): CustomEntry {
@@ -149,6 +177,7 @@ export function emptyCustomSection(): CustomSectionItem {
 export function emptyResume(id = ""): ResumeData {
   return {
     id,
+    schemaVersion: VERSI_SKEMA_CV,
     title: "CV Saya",
     template: "CLASSIC",
     accentColor: "#111827",
@@ -160,6 +189,8 @@ export function emptyResume(id = ""): ResumeData {
     marginYMm: null,
     marginXMm: null,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
+    profilPortofolio: profilPortofolioBawaan(),
+    portofolio: bagianPortofolioBawaan(),
     personalInfo: emptyPersonalInfo(),
     experiences: [],
     educations: [],

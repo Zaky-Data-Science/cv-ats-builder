@@ -26,6 +26,29 @@ export type ResumeLanguage = "ID" | "EN";
 import type { PaperSize } from "./paper";
 export type { PaperSize };
 
+/* Bentuk data portofolio berbasis pola tinggal di lib/portfolio, karena
+   registry pola dan kamus bidang tidak boleh bergantung pada bentuk CV -
+   arah ketergantungannya satu arah saja. Yang dipakai di sini diteruskan
+   kembali supaya berkas lain cukup mengimpor satu tempat. */
+import type {
+  BagianPortofolio,
+  DetailTambahan,
+  IntiValue,
+  PolaSlug,
+  ProfilPortofolio,
+  TautanPortofolio,
+  Verifikator,
+} from "@/lib/portfolio/types";
+export type {
+  BagianPortofolio,
+  DetailTambahan,
+  IntiValue,
+  PolaSlug,
+  ProfilPortofolio,
+  TautanPortofolio,
+  Verifikator,
+};
+
 export type EmploymentType =
   | "FULL_TIME"
   | "PART_TIME"
@@ -133,6 +156,30 @@ export interface SkillItem {
   category: string;
 }
 
+/**
+ * Satu item portofolio.
+ *
+ * Namanya masih `ProjectItem` karena memang bagian inilah yang diperluas -
+ * bukan bagian baru di sebelahnya. Bagian `project` sudah ada sejak versi
+ * pertama aplikasi ini dan bentuknya nyaris sama dengan "field umum"
+ * portofolio, jadi menambah bagian kedua hanya akan membingungkan pengguna dan
+ * memecah data yang seharusnya satu.
+ *
+ * Enam field pertama adalah bentuk lamanya dan tidak berubah artinya:
+ *
+ *   name       -> judul karya
+ *   role       -> peran spesifik saya, bukan peran tim
+ *   url        -> tautan utama (kini pintu masuk ke daftar `tautan`)
+ *   startDate  -> mulai
+ *   endDate    -> selesai
+ *   bullets    -> poin
+ *
+ * Sisanya tambahan, dan bentuknya sengaja meniru entri pengalaman kerja -
+ * lengkap dengan `konteks` dan rentang tanggal. Sebagian pengurai hanya
+ * mengenali proyek bila ia menempel pada pengalaman kerja, dan bentuk yang
+ * seragam itulah yang membuat penggabungan (lihat `parentPengalamanId`)
+ * mungkin dilakukan tanpa mengarang ulang datanya.
+ */
 export interface ProjectItem {
   id: string;
   name: string;
@@ -141,7 +188,36 @@ export interface ProjectItem {
   startDate: string;
   endDate: string;
   bullets: string[];
+
+  /** Klien, institusi, kampus, "Proyek Mandiri", atau "Freelance". */
+  konteks: string;
+  lokasi: string;
+  /** Satu kalimat, maksimal 160 karakter. */
+  ringkasan: string;
+  /** Maksimal dua. Teksnya untuk manusia, URL penuhnya tetap disimpan utuh. */
+  tautan: TautanPortofolio[];
+  kataKunci: string[];
+  /** Field inti pola, dikunci nama field dari `PolaSchema.fieldInti`. */
+  inti: Record<string, IntiValue>;
+  /** Slot fleksibel. Maksimal enam; hanya empat teratas yang dicetak. */
+  detailTambahan: DetailTambahan[];
+  /**
+   * Tidak pernah dicetak di CV maupun ikut ke berkas ekspor mana pun.
+   * Lihat Verifikator di lib/portfolio/types.ts untuk kewajiban yang menyertainya.
+   */
+  verifikator: Verifikator;
+  /** Tidak dicetak di CV; hanya menambah nilai kekuatan bukti. */
+  refleksi: string;
+  /** "" berarti item ini mengikuti pola CV-nya. */
+  polaOverride: PolaSlug | "";
+  /** Id entri pengalaman kerja yang menjadi induk. "" berarti berdiri sendiri. */
+  parentPengalamanId: string;
+  /** Isian dari pola sebelumnya, disimpan supaya dapat dipulihkan. */
+  arsip: Record<string, IntiValue>;
 }
+
+/** Nama yang dipakai dokumen rancangan fitur untuk bentuk data yang sama. */
+export type ItemPortofolio = ProjectItem;
 
 export interface CertificationItem {
   id: string;
@@ -178,6 +254,15 @@ export interface LanguageItem {
   proficiency: LanguageProficiency;
 }
 
+/**
+ * Satu karya terbit.
+ *
+ * Bagian ini juga sudah ada sejak awal, dan bentuknya memang persis pola
+ * "Publikasi & Kredit" dalam wujud sederhana. Karena itu ia diperluas, bukan
+ * diduplikasi: `title` menjadi tempat sitasi lengkap, `publisher` menjadi
+ * venue, dan `url`/`doi` menjadi pengenal persisten. Tiga field di bawahnya
+ * yang benar-benar baru.
+ */
 export interface PublicationItem {
   id: string;
   title: string;
@@ -185,6 +270,13 @@ export interface PublicationItem {
   date: string;
   url: string;
   doi: string;
+
+  /** Artikel jurnal, prosiding, paten, pertunjukan, pameran, dan seterusnya. */
+  tipeLuaran: string;
+  /** Penulis pertama, korespondensi, anggota, pemain, sutradara, kurator. */
+  peranSaya: string;
+  /** Scopus Q1-Q4, SINTA 1-6, WoS, Garuda, festival internasional, lokal. */
+  indeksasiTier: string;
 }
 
 export interface CustomEntry {
@@ -204,6 +296,15 @@ export interface CustomSectionItem {
 
 export interface ResumeData {
   id: string;
+  /**
+   * Versi bentuk data dokumen ini.
+   *
+   * Dokumen yang ditulis sebelum kolom ini ada bernilai 1, dan dinaikkan saat
+   * dibaca - lihat lib/portfolio/migrasi.ts. Yang penting dijaga: menaikkan
+   * versi tidak boleh mengubah satu pun nilai yang sudah diketik pengguna,
+   * hanya menambahkan yang belum ada.
+   */
+  schemaVersion: number;
   title: string;
   template: TemplateId;
   accentColor: string;
@@ -220,6 +321,14 @@ export interface ResumeData {
   marginYMm: number | null;
   marginXMm: number | null;
   sectionOrder: SectionKey[];
+  /** Pola pembuktian, tujuan CV, dan jenjang pengalaman pemiliknya. */
+  profilPortofolio: ProfilPortofolio;
+  /**
+   * Pengaturan bagian portofolio. Daftar itemnya sendiri ada di `projects`
+   * (atau `publications` untuk pola Publikasi & Kredit) - lihat
+   * BagianPortofolio di lib/portfolio/types.ts.
+   */
+  portofolio: BagianPortofolio;
   personalInfo: PersonalInfoData;
   experiences: ExperienceItem[];
   educations: EducationItem[];

@@ -142,6 +142,21 @@ model Resume {
   /// ["summary","experience","education","skill","project"]
   sectionOrder Json
 
+  /// Versi bentuk data dokumen ini. 1 = sebelum portofolio berbasis pola.
+  /// Baris lama tetap bernilai 1 sampai dibaca dan disimpan ulang, dan
+  /// menaikkannya tidak mengubah satu pun isian penggunanya.
+  schemaVersion Int @default(1)
+
+  /// Pola pembuktian, tujuan CV, dan jenjang pengalaman pemiliknya.
+  /// NULL berarti pengguna belum pernah menjawab pertanyaan pembuka - dan
+  /// selama itu, bentuk formulirnya sama persis seperti sebelum fitur ini ada.
+  profilPortofolio Json?
+
+  /// Pengaturan bagian portofolio (aktif, judul, gabung ke pengalaman,
+  /// mode redaksi). Daftar itemnya sendiri ada di tabel projects, karena
+  /// bagian itu yang diperluas - bukan bagian baru di sebelahnya.
+  portofolio Json?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -249,6 +264,11 @@ model Skill {
   @@map("skills")
 }
 
+/// Satu item portofolio.
+///
+/// Namanya masih Project karena memang bagian inilah yang diperluas: bentuknya
+/// sejak awal sudah nyaris sama dengan "field umum" portofolio, sehingga
+/// membuat tabel kedua hanya akan memecah data yang seharusnya satu.
 model Project {
   id        String   @id @default(cuid())
   resumeId  String
@@ -259,6 +279,35 @@ model Project {
   endDate   String   @default("")
   bullets   String[] @default([])
   order     Int      @default(0)
+
+  /// Klien, institusi, kampus, "Proyek Mandiri", atau "Freelance".
+  konteks   String   @default("")
+  lokasi    String   @default("")
+  ringkasan String   @default("")
+  refleksi  String   @default("")
+  /// "" berarti item ini mengikuti pola CV-nya.
+  polaOverride String @default("")
+  /// Id entri pengalaman kerja yang menjadi induk saat item digabungkan ke
+  /// PENGALAMAN KERJA. "" berarti item berdiri sendiri. Sengaja bukan relasi
+  /// berkunci asing: baris anak ditulis ulang seluruhnya setiap penyimpanan,
+  /// dan kunci asing akan menolak urutan penulisannya.
+  parentPengalamanId String @default("")
+  kataKunci String[] @default([])
+  /// Daftar tautan: [{ label, url }], maksimal dua.
+  tautan    Json     @default("[]")
+  /// Field inti pola, dikunci nama field dari pola-schemas.ts.
+  inti      Json     @default("{}")
+  /// Slot fleksibel: [{ label, nilai, satuan, prioritas }], maksimal enam.
+  detailTambahan Json @default("[]")
+  /// Nama, jabatan, dan hubungan orang yang dapat memastikan kebenaran item.
+  ///
+  /// DATA PRIBADI MILIK PIHAK KETIGA. Tidak pernah dicetak di CV dan tidak
+  /// pernah ikut ke berkas ekspor mana pun. Ikut terhapus bersama akun lewat
+  /// ON DELETE CASCADE dari resumes, dan itulah kenapa ia disimpan di sini -
+  /// bukan di tabel yang berumur lebih panjang daripada CV-nya.
+  verifikator Json   @default("{}")
+  /// Isian dari pola sebelumnya, disimpan agar dapat dipulihkan.
+  arsip     Json     @default("{}")
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
@@ -329,6 +378,11 @@ model LanguageSkill {
   @@map("language_skills")
 }
 
+/// Satu karya terbit.
+///
+/// Bentuknya memang sudah pola "Publikasi & Kredit" dalam wujud sederhana,
+/// jadi ia diperluas: title menampung sitasi lengkap, publisher menampung
+/// venue, url dan doi menampung pengenal persisten.
 model Publication {
   id        String @id @default(cuid())
   resumeId  String
@@ -338,6 +392,13 @@ model Publication {
   url       String @default("")
   doi       String @default("")
   order     Int    @default(0)
+
+  /// Artikel jurnal, prosiding, paten, pertunjukan, pameran, dan seterusnya.
+  tipeLuaran    String @default("")
+  /// Penulis pertama, korespondensi, anggota, pemain, sutradara, kurator.
+  peranSaya     String @default("")
+  /// Scopus Q1-Q4, SINTA 1-6, WoS, Garuda, festival internasional, lokal.
+  indeksasiTier String @default("")
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 

@@ -239,6 +239,33 @@ export const en: Dictionary = {
     sectionMoveDown: "Move this section down",
   },
 
+  /* ------------------------------------------------- pattern-based folio */
+  portofolio: {
+    title: "The shape of your portfolio",
+    intro:
+      "Three short questions. Your answers decide which fields the work section offers you - and which ones it insists on.",
+    q1Label: "What did you study, or what do you do?",
+    q1Ph: "Civil Engineering, Nursing, Culinary Arts...",
+    q1Hint:
+      "Type the name of the course as it is. Common Indonesian abbreviations such as PWK or TKJ are found too.",
+    searchEmpty:
+      "Nothing matches yet. Try the full name of the course, or carry on without picking one.",
+    notFound: "My field is not on this list",
+    fieldLabel: "Field",
+    q2Label: "What is this CV for?",
+    q2Hint:
+      "Different purposes call for different evidence, even from the same person.",
+    q3Label: "How far along are you?",
+    q3Hint:
+      "This decides which fields are required. Coursework still counts - only the yardstick changes.",
+    chosenLabel: "Portfolio shape",
+    changeShape: "Not this one? Change the shape",
+    change: "Change",
+    done: "Save answers",
+    footnote:
+      "You can change this at any time. Switching shape deletes none of what you have already written.",
+  },
+
   guest: {
     metaTitle: "Build a CV without an account",
     metaDescription:

@@ -7,6 +7,7 @@ import { runKertasTests } from "./kertas.test";
 import { runKeywordTests } from "./keywords.test";
 import { runPasswordResetTests } from "./password-reset.test";
 import { runPdfTests } from "./pdf.test";
+import { runPortofolioTests } from "./portofolio.test";
 import { runPhotoTests } from "./photo.test";
 import { runStaleSessionTests } from "./stale-session.test";
 import { runStructureTests } from "./structure.test";
@@ -25,6 +26,7 @@ async function main() {
   runKeywordTests();
   runEditPathTests();
   runStructureTests();
+  runPortofolioTests();
   runPasswordResetTests();
   runStaleSessionTests();
   runCetakTests();

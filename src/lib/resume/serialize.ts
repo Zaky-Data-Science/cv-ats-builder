@@ -1,8 +1,76 @@
 import { newId } from "@/lib/utils";
+import {
+  bagianPortofolioBawaan,
+  profilPortofolioBawaan,
+  verifikatorKosong,
+  VERSI_SKEMA_CV,
+} from "@/lib/portfolio/migrasi";
 import { emptyPersonalInfo } from "./factory";
 import { normalizeSectionOrder } from "./sections";
+import { bagianPortofolioSchema, profilPortofolioSchema } from "./schema";
 import type { ResumeDataInput } from "./schema";
-import type { CustomEntry, ResumeData } from "./types";
+import type {
+  BagianPortofolio,
+  CustomEntry,
+  DetailTambahan,
+  IntiValue,
+  PolaSlug,
+  ProfilPortofolio,
+  ResumeData,
+  TautanPortofolio,
+  Verifikator,
+} from "./types";
+
+/**
+ * Pembaca kolom JSON.
+ *
+ * Kolom bertipe Json dapat berisi apa saja - termasuk isi yang ditulis versi
+ * aplikasi sebelumnya, atau NULL pada baris yang sudah ada sebelum kolomnya
+ * ditambahkan. Karena itu tiap pembacaan diberi bentuk bawaan, bukan
+ * dipercaya begitu saja.
+ */
+function daftar<T>(nilai: unknown): T[] {
+  return Array.isArray(nilai) ? (nilai as T[]) : [];
+}
+
+function petaInti(nilai: unknown): Record<string, IntiValue> {
+  return nilai !== null && typeof nilai === "object" && !Array.isArray(nilai)
+    ? (nilai as Record<string, IntiValue>)
+    : {};
+}
+
+function bacaVerifikator(nilai: unknown): Verifikator {
+  if (nilai === null || typeof nilai !== "object" || Array.isArray(nilai)) {
+    return verifikatorKosong();
+  }
+  const v = nilai as Partial<Verifikator>;
+  return {
+    nama: v.nama ?? "",
+    jabatan: v.jabatan ?? "",
+    hubungan: v.hubungan ?? "",
+  };
+}
+
+/**
+ * Membaca profil dan pengaturan portofolio dari kolom JSON.
+ *
+ * Dipulangkan lewat skemanya sendiri supaya baris yang ditulis versi lama -
+ * atau yang isinya sudah tidak dikenal lagi - jatuh ke nilai bawaan alih-alih
+ * menggagalkan pemuatan seluruh CV.
+ */
+function bacaProfil(nilai: unknown): ProfilPortofolio {
+  const hasil = profilPortofolioSchema.safeParse(nilai ?? {});
+  return hasil.success
+    ? (hasil.data as ProfilPortofolio)
+    : profilPortofolioBawaan();
+}
+
+function bacaBagian(nilai: unknown): BagianPortofolio {
+  const hasil = bagianPortofolioSchema.safeParse(nilai ?? {});
+  return hasil.success
+    ? (hasil.data as BagianPortofolio)
+    : bagianPortofolioBawaan();
+}
 
 /**
  * Jembatan antara baris database (Prisma) dan bentuk ResumeData yang dipakai
@@ -43,6 +111,9 @@ export function toResumeData(row: any): ResumeData {
     marginYMm: row.marginYMm,
     marginXMm: row.marginXMm,
     sectionOrder: normalizeSectionOrder(row.sectionOrder),
+    schemaVersion: row.schemaVersion ?? 1,
+    profilPortofolio: bacaProfil(row.profilPortofolio),
+    portofolio: bacaBagian(row.portofolio),
     personalInfo: info
       ? {
           fullName: info.fullName,
@@ -105,6 +176,18 @@ export function toResumeData(row: any): ResumeData {
       startDate: p.startDate,
       endDate: p.endDate,
       bullets: p.bullets,
+      konteks: p.konteks ?? "",
+      lokasi: p.lokasi ?? "",
+      ringkasan: p.ringkasan ?? "",
+      tautan: daftar<TautanPortofolio>(p.tautan),
+      kataKunci: p.kataKunci ?? [],
+      inti: petaInti(p.inti),
+      detailTambahan: daftar<DetailTambahan>(p.detailTambahan),
+      verifikator: bacaVerifikator(p.verifikator),
+      refleksi: p.refleksi ?? "",
+      polaOverride: (p.polaOverride ?? "") as PolaSlug | "",
+      parentPengalamanId: p.parentPengalamanId ?? "",
+      arsip: petaInti(p.arsip),
     })),
     certifications: (row.certifications ?? []).map((c: any) => ({
       id: c.id,
@@ -144,6 +227,9 @@ export function toResumeData(row: any): ResumeData {
       date: p.date,
       url: p.url,
       doi: p.doi,
+      tipeLuaran: p.tipeLuaran ?? "",
+      peranSaya: p.peranSaya ?? "",
+      indeksasiTier: p.indeksasiTier ?? "",
     })),
     customSections: (row.customSections ?? []).map((c: any) => ({
       id: c.id,
@@ -210,13 +296,37 @@ export function regenerateIds(data: ResumeData): ResumeData {
   const remap = <T extends { id: string }>(items: T[]): T[] =>
     items.map((item) => ({ ...item, id: newId() }));
 
+  /*
+    Pengalaman kerja diberi id baru lebih dulu, dan pemetaannya disimpan.
+
+    Item portofolio boleh menempel pada satu entri pengalaman kerja lewat
+    `parentPengalamanId`. Kalau id induknya diganti tanpa penunjuknya ikut
+    diperbarui, item itu berubah jadi yatim: sakelar "gabung ke pengalaman
+    kerja" masih menyala, tetapi tidak ada entri yang cocok - dan hasilnya CV
+    yang kehilangan sebagian isinya tepat setelah diduplikasi atau diimpor.
+  */
+  const experiences = data.experiences.map((item) => ({
+    ...item,
+    id: newId(),
+  }));
+  const idBaru = new Map<string, string>();
+  data.experiences.forEach((lama, index) => {
+    idBaru.set(lama.id, experiences[index].id);
+  });
+
   return {
     ...data,
     id: "",
-    experiences: remap(data.experiences),
+    experiences,
     educations: remap(data.educations),
     skills: remap(data.skills),
-    projects: remap(data.projects),
+    projects: data.projects.map((item) => ({
+      ...item,
+      id: newId(),
+      parentPengalamanId: item.parentPengalamanId
+        ? (idBaru.get(item.parentPengalamanId) ?? "")
+        : "",
+    })),
     certifications: remap(data.certifications),
     organizations: remap(data.organizations),
     awards: remap(data.awards),
@@ -230,14 +340,34 @@ export function regenerateIds(data: ResumeData): ResumeData {
   };
 }
 
-/** Berkas ekspor JSON, lengkap dengan metadata versi skema. */
+/**
+ * Berkas ekspor JSON, lengkap dengan metadata versi skema.
+ *
+ * Data `verifikator` sengaja tidak ikut. Isinya nama, jabatan, dan hubungan
+ * seorang **pihak ketiga** yang tidak pernah menyetujui datanya berpindah ke
+ * mana-mana; berkas ekspor adalah berkas yang dikirim, disalin, dan diunggah
+ * pengguna ke tempat-tempat yang tidak dapat kita ketahui. Menyimpannya di
+ * basis data pengguna sendiri adalah satu hal, ikut mengirimkannya adalah hal
+ * lain.
+ *
+ * Akibatnya memang ada dan disengaja: mengimpor kembali berkas ini tidak
+ * memulihkan isian verifikator. Itu harga yang lebih murah daripada
+ * menyebarkan data pribadi orang lain tanpa sepengetahuannya.
+ */
 export function toExportFile(data: ResumeData) {
   const { id: _ignored, ...rest } = data;
   void _ignored;
   return {
-    schemaVersion: 1,
+    schemaVersion: VERSI_SKEMA_CV,
     app: "ATS-Friendly CV Builder",
     exportedAt: new Date().toISOString(),
-    resume: rest,
+    resume: {
+      ...rest,
+      schemaVersion: VERSI_SKEMA_CV,
+      projects: rest.projects.map((item) => ({
+        ...item,
+        verifikator: verifikatorKosong(),
+      })),
+    },
   };
 }
