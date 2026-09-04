@@ -60,8 +60,14 @@ export function useReducedMotion(): boolean {
 
 /**
  * Kartu yang miring mengikuti posisi kursor, memberi kesan objek nyata di
- * atas bidang. Pada layar sentuh efek ini tidak aktif - tidak ada kursor
- * untuk diikuti, dan memaksakan gerak justru mengganggu saat menggulir.
+ * atas bidang.
+ *
+ * Di layar sentuh efek ini juga berlaku, tetapi dipicu oleh jari yang sedang
+ * menekan, bukan oleh kursor yang lewat. Alasan lama mematikannya sama sekali
+ * ("tidak ada kursor untuk diikuti") keliru: yang tidak ada di layar sentuh
+ * bukan penunjuknya melainkan gerak tanpa menekan. Kekhawatiran yang benar -
+ * kartu ikut miring saat halaman digulir - dijawab peramban itu sendiri:
+ * begitu gulir dimulai, `pointercancel` terkirim dan kartu kembali datar.
  */
 export function TiltCard({
   children,
@@ -81,12 +87,13 @@ export function TiltCard({
     const element = ref.current;
     if (!element || reduced) return;
 
-    // Perangkat tanpa penunjuk presisi (ponsel, tablet) dilewati.
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
     let frame = 0;
 
     const onMove = (event: PointerEvent) => {
+      // Di layar sentuh, gerak hanya diikuti selama jari menekan. Tanpa
+      // syarat ini, satu ketukan lalu jari diangkat meninggalkan kartu
+      // dalam keadaan miring sampai disentuh lagi.
+      if (event.pointerType !== "mouse" && !event.buttons) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const rect = element.getBoundingClientRect();
@@ -110,15 +117,35 @@ export function TiltCard({
 
     const onEnter = () => setActive(true);
 
+    const onDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") return;
+      setActive(true);
+      onMove(event);
+    };
+
+    // Jari yang diangkat, dan gulir yang membatalkan sentuhan, sama-sama
+    // harus memulangkan kartu ke keadaan datar. Pada tetikus tidak: kursor
+    // yang melepas tombol masih berada di atas kartunya.
+    const onRelease = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") return;
+      onLeave();
+    };
+
     element.addEventListener("pointermove", onMove);
     element.addEventListener("pointerenter", onEnter);
     element.addEventListener("pointerleave", onLeave);
+    element.addEventListener("pointerdown", onDown);
+    element.addEventListener("pointerup", onRelease);
+    element.addEventListener("pointercancel", onRelease);
 
     return () => {
       cancelAnimationFrame(frame);
       element.removeEventListener("pointermove", onMove);
       element.removeEventListener("pointerenter", onEnter);
       element.removeEventListener("pointerleave", onLeave);
+      element.removeEventListener("pointerdown", onDown);
+      element.removeEventListener("pointerup", onRelease);
+      element.removeEventListener("pointercancel", onRelease);
     };
   }, [maxTilt, reduced]);
 
@@ -173,19 +200,14 @@ export function Interactive({
     (node: HTMLDivElement | null) => {
       if (!node || reduced) return;
 
-      // Perangkat tanpa penunjuk presisi (ponsel, tablet) dilewati: tidak ada
-      // kursor untuk diikuti, dan keadaan hover di sana menempel setelah
-      // ditekan sehingga kartunya terlihat macet dalam keadaan terangkat.
-      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        return;
-      }
-
       const inner = node.firstElementChild as HTMLElement | null;
       if (!inner) return;
 
       let frame = 0;
 
       const onMove = (event: PointerEvent) => {
+        // Lihat TiltCard: di layar sentuh geraknya milik jari yang menekan.
+        if (event.pointerType !== "mouse" && !event.buttons) return;
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
           const rect = node.getBoundingClientRect();
@@ -212,15 +234,32 @@ export function Interactive({
         inner.style.setProperty("--iscale", "1");
       };
 
+      const onDown = (event: PointerEvent) => {
+        if (event.pointerType === "mouse") return;
+        onEnter();
+        onMove(event);
+      };
+
+      const onRelease = (event: PointerEvent) => {
+        if (event.pointerType === "mouse") return;
+        onLeave();
+      };
+
       node.addEventListener("pointermove", onMove);
       node.addEventListener("pointerenter", onEnter);
       node.addEventListener("pointerleave", onLeave);
+      node.addEventListener("pointerdown", onDown);
+      node.addEventListener("pointerup", onRelease);
+      node.addEventListener("pointercancel", onRelease);
 
       return () => {
         cancelAnimationFrame(frame);
         node.removeEventListener("pointermove", onMove);
         node.removeEventListener("pointerenter", onEnter);
         node.removeEventListener("pointerleave", onLeave);
+        node.removeEventListener("pointerdown", onDown);
+        node.removeEventListener("pointerup", onRelease);
+        node.removeEventListener("pointercancel", onRelease);
       };
     },
     [tilt, lift, scale, reduced],
