@@ -387,13 +387,13 @@ export const en: Dictionary = {
 
   home: {
     skipToContent: "Skip to main content",
-    heroBadge: "Free - nothing stamped on your CV - your data is saved",
-    heroTitleLine1: "You just fill in your details.",
-    heroTitleLine2: "The layout and the wording",
-    heroTitleLine3: "sort themselves out.",
+    heroBadge: "100% Free • No Watermark • Saves Itself",
+    heroTitleLine1: "You tell your",
+    heroTitleLine2: "story.",
+    heroTitleLine3: "We handle the ATS formatting.",
     heroBody:
-      "Before a human ever sees it, your application is usually read by a machine first. And that machine trips easily: two-column CVs, tables, or text buried inside an image often come out as nonsense - so the experience you genuinely have simply never registers. Here you just fill in the boxes. We keep the layout safe for machines to read, then score it and show you exactly what is still missing.",
-    heroCtaNew: "Start building my CV",
+      "Plenty of employers filter applications through software that reads your CV automatically, and fancy formatting like two columns, tables, or text buried inside an image often comes out garbled. Do not let good experience get lost to that. Fill in our simple form, get a CV built to ATS conventions, and see your score straight away.",
+    heroCtaNew: "Build my ATS CV now",
     heroCtaDashboard: "Back to my CVs",
     heroCtaCompare: "Check the CV I already have",
     statSections: "CV sections",
@@ -402,103 +402,104 @@ export const en: Dictionary = {
     statFormats: "ways to download it",
     statsPrompt: "Tap a number to see what it means.",
     statSectionsWhy:
-      "Personal details, summary, work experience, education, skills, projects, certificates, organisations, awards, languages, and publications. Sections you leave empty never appear on the CV, so there is no need to fill them all in.",
+      "Personal details, summary, work experience, education, skills, projects, certificates, organisations, awards, languages, and publications. Anything you leave empty never shows up on the CV, so relax: you do not have to fill them all in.",
     statTemplatesWhy:
-      "Ten different looks for the same content - some ruled and formal, some plain, two of them with a place for a photo. Switch whenever you like; your data does not change at all.",
+      "Ten different looks for the same content: some ruled and formal, some plain, two of them with a place for a photo. Switch whenever you like; your data does not change at all.",
     statDimensionsWhy:
-      "Your CV is judged on five things: whether machines can read it, how complete it is, how well the sentences are written, how tidily it is laid out, and how closely it matches the job you are after.",
+      "Your CV is checked on five things: whether machines can read it, how complete it is, how well the sentences are written, how tidily it is laid out, and how closely it matches the job you are after.",
     statFormatsWhy:
-      "PDF to send to employers, Word when the job ad asks for a .docx, plain text for copying into online forms, and a backup file so this CV can be opened again later.",
-    heroCaption: "A finished example - Classic design",
+      "PDF to send to employers, Word when the job ad asks for a .docx, plain text for pasting into online forms, and a backup file so this CV can be opened again later.",
+    heroCaption: "A finished example, Classic design",
     heroBadgeScore: "CV score",
     heroBadgeGrade: "Grade A",
     heroBadgeSaved: "Saved automatically",
 
-    pathsTitle: "Two ways to use it",
+    pathsTitle: "2 solid ways to make sure your CV gets through",
     pathsBody:
-      "Start from nothing, or start from the CV you already have. Both are judged exactly the same way, so the scores mean the same thing.",
-    pathBuildTitle: "Build a new CV",
+      "Start from scratch, or take apart the CV you already have. Both are judged exactly the same way, so what your CV says actually gets read, instead of tripping over its own formatting.",
+    pathBuildTitle: "Build a new CV, no fuss",
     pathBuildBody:
-      "Fill in the boxes one by one, watch the result appear on paper at its real size, fix whatever the score flags, then download it as a PDF, a Word file, or plain text.",
-    pathBuildCta: "Start building my CV",
-    pathCompareTitle: "Check a CV you already have",
+      "Just type into the boxes we give you, watch it change live on a virtual sheet of paper, push the score up, then download it as a PDF, a Word file, or plain text. That simple.",
+    pathBuildCta: "Build my ATS CV now",
+    pathCompareTitle: "Audit and compare your old CVs",
     pathCompareBody:
-      "Got an old CV and wonder how it scores? Upload one file to check it, or up to five to pit them against each other. Each gets a score, a list of strengths, and a list of weaknesses with how to fix them - then we name the one most ready to send. Files are read on your own device and never leave it.",
+      "Getting ghosted by recruiters? Upload your old CV and let our checker take it apart. Compare up to 5 CVs side by side to see exactly where each one falls short and which is readiest to send. Your files are processed on your own device and never sent to our servers.",
     pathCompareCta: "Check my CV now",
 
-    stepsTitle: "Four steps and your CV is done",
+    stepsTitle: "Just 4 steps between you and the interview",
     stepsBody:
-      "Your job is to fill things in. Keeping it tidy, writing dates consistently, and staying readable to machines - leave that to us.",
-    step1Title: "Fill the boxes one by one",
+      "Forget wrestling with margins and layout. Your job is to talk about what you have done; the technical side is ours to handle.",
+    step1Title: "No blank page syndrome",
     step1Body:
-      "No intimidating blank page. Every piece of information gets its own box - job title, employer, dates - and each box already holds a worked example.",
-    step2Title: "The result shows up straight away",
+      "No staring at an empty document wondering what to write. Every section (experience, education, skills) comes with short guidance and a real example already in the box.",
+    step2Title: "A live preview that means it",
     step2Body:
-      "The paper on the right changes as you type, and can be shown cut into separate pages just like Word. Whatever box you are filling gets highlighted over there, so you always know where it lands.",
-    step3Title: "Fix whatever the score flags",
+      "Type on the left, see it on the right. The sheet matches real paper size, so you know exactly where your words will land once it is printed.",
+    step3Title: "Push your CV score up",
     step3Body:
-      "Your CV is judged on five things, and every shortcoming comes with how to fix it - rather than a number handed over with no explanation.",
-    step4Title: "Download it, then apply",
+      "You get an analysis across 5 things that matter. We do not just hand you a number and leave. Every shortcoming comes with the steps to fix it.",
+    step4Title: "Download, send, get ready",
     step4Body:
-      "PDF and Word, ready to send to employers. Your data stays saved, so the next job ad only needs a duplicate and a few tweaks.",
+      "Export to PDF or Word in seconds. Everything stays in your account, ready to duplicate or rework for the next job you go after.",
 
-    featuresTitle: "How this differs from an ordinary Word template",
+    featuresTitle:
+      "Leave the old way behind. Here is why this beats an ordinary Word template.",
     featuresBody:
-      "A Word template hands you a look and then leaves. Here the layout is kept readable to machines, the result is scored, and your data is stored so you can use it again.",
-    feature1Title: "Boxes to fill, not a blank page",
+      "An ordinary Word template only cares whether it looks pretty, and forgets whether software can read it. Here we keep your CV tidy for the recruiter and clean for the screening system.",
+    feature1Title: "Not just a blank sheet",
     feature1Body:
-      "11 CV sections, each with its own boxes, a short prompt, and a real example inside. Keeping it tidy is our job.",
-    feature2Title: "Paper shown at its real size",
+      "11 blocks of information ready to fill in, with the underlying structure kept standard and tidy for you.",
+    feature2Title: "No surprises when it prints",
     feature2Body:
-      "Choose A4, Letter, Legal or F4 - then view your CV as one long scroll or cut into separate pages, exactly as it will print. No surprises at the printer.",
-    feature3Title: "Saved automatically",
+      "Pick A4, Letter, Legal, or F4. The preview uses the real paper size. What you see on screen is what comes out of the printer.",
+    feature3Title: "Saves itself, so you never panic",
     feature3Body:
-      "There is no Save button to remember. Less than a second after you stop typing, the change is already stored. Close the browser, come back next month, carry on where you left off.",
-    feature4Title: "A score that explains itself",
+      "Closed the tab by accident? Relax. Less than a second after you stop typing, the change is already saved. Close the browser, come back next month, carry on where you left off.",
+    feature4Title: "Feedback that points somewhere",
     feature4Body:
-      "Judged on five things. Every suggested fix is clickable, and takes you straight to the box at fault.",
-    feature5Title: "Matched against the job ad",
+      "Find your CV's weak spots through scoring across 5 dimensions. Click a suggestion and you land straight on the box that needs the edit.",
+    feature5Title: "The secret weapon: job ad matching",
     feature5Body:
-      "Paste in the ad you are targeting, then see which words it asks for that your CV does not yet mention.",
+      "Paste in the job ad you are chasing, and we track down which important keywords your CV is still missing.",
     feature6Title: "Your data stays yours",
     feature6Body:
-      "Download your whole CV as a backup file at any time, open it again at any time, or delete your account along with everything in it.",
+      "Download it, keep a backup, or delete the lot along with your account whenever you want, no questions asked.",
 
-    templatesTitle: "Ten designs, one safe structure",
+    templatesTitle: "10 elegant designs. Every one safe for machines to read.",
     templatesBody:
-      "Every one is single-column, table-free, and uses standard section headings - so no design is riskier to read than another. What differs is the lettering, the spacing, the rules, and where a photo sits. Switching design changes nothing about your data.",
+      "No quirky layouts that break the software. Every template is built clean, single column, with no hidden tables. Change the typeface, the line spacing, even where the photo sits. None of it touches your data.",
     templatesWithoutPhoto: "Without a photo",
     templatesWithPhoto: "With a photo",
     templatesPhotoNote:
-      "Two photo designs exist because some Indonesian job ads still ask for one. If yours does not, pick one without a photo - screening software cannot see images.",
+      "Two designs with a photo are here because some Indonesian job ads still ask for one. If yours does not, pick a design without it, since screening software cannot see images anyway.",
 
-    faqTitle: "What people usually ask",
+    faqTitle: "Questions people ask",
     faqBody: "Including the things similar apps tend not to mention.",
 
-    ctaTitle: "Build it once, reuse it many times",
+    ctaTitle: "Build it once, use it again and again",
     ctaBody:
-      "Your data lives in your account. For the next job ad, duplicate an existing CV and change what needs changing - no starting from a blank page again.",
-    ctaButton: "Start building my CV",
+      "Your data lives in your account. For the next job, duplicate the CV you already have and change what needs changing, with no starting from a blank page again.",
+    ctaButton: "Build my ATS CV now",
     ctaButtonSignedIn: "Open my CVs",
-    ctaNote: "No cost, and nothing stamped onto your CV.",
+    ctaNote: "No cost, and no watermark on your CV.",
   },
 
   faq: [
     {
       q: "What is an ATS, and why should I care?",
-      a: "An ATS is the software many employers use to collect and screen the applications they receive. It stands for Applicant Tracking System, but picture it like this: before a human ever sees your CV, a machine reads it first and pulls out the details - name, contact, experience, skills. That machine trips easily. Two-column CVs, tables, or text buried inside an image often come out as nonsense, and experience you genuinely have never reaches anyone. Not because you fall short - just because the file could not be read.",
+      a: "An ATS is the software many employers use to collect and screen the applications they receive. It stands for Applicant Tracking System, but picture it like this: before a human ever sees your CV, a machine reads it first and pulls out the details: name, contact, experience, skills. That machine trips easily. Two-column CVs, tables, or text buried inside an image often come out as nonsense, and experience you genuinely have never reaches anyone. Not because you fall short, just because the file could not be read.",
     },
     {
       q: "So a CV from here is guaranteed to get through?",
-      a: "No - and be wary of anyone who promises that. Every employer runs different screening software, and none of them publish how it works. What we can do, and do, is make sure your CV follows the rules that hold generally: one column, no tables, standard section headings, consistent dates, and text that really is text. A score here means \"it passes what we check\", not \"you will be hired\".",
+      a: "No, and be wary of anyone who promises that. Every employer runs different screening software, and none of them publish how it works. What we can do, and do, is make sure your CV follows the rules that hold generally: one column, no tables, standard section headings, consistent dates, and text that really is text. A score here means \"it passes what we check\", not \"you will be hired\".",
     },
     {
       q: "How many pages should my CV be?",
-      a: "One. That is the right length for almost every applicant, long-serving ones included. Recruiters glance at a CV in seconds, so anything on a second page is likely never read. Two pages only earn their keep when you have more than five years of experience and all of it speaks to the role. And if your CV has grown long, cut the content - do not shrink the font.",
+      a: "One. That is the right length for almost every applicant, long-serving ones included. Recruiters glance at a CV in seconds, so anything on a second page is likely never read. Two pages only earn their keep when you have more than five years of experience and all of it speaks to the role. And if your CV has grown long, cut the content; do not shrink the font.",
     },
     {
       q: "Which paper size should I use?",
-      a: "A4 - and it is already selected for you, so there is nothing to change. A4 is the standard in Indonesia and almost everywhere else. Letter is only needed when you are applying to companies in the US or Canada. Legal and F4 only when an institution specifically asks for them.",
+      a: "A4, and it is already selected for you, so there is nothing to change. A4 is the standard in Indonesia and almost everywhere else. Letter is only needed when you are applying to companies in the US or Canada. Legal and F4 only when an institution specifically asks for them.",
     },
     {
       q: "Free? Genuinely no hidden costs?",
@@ -506,19 +507,19 @@ export const en: Dictionary = {
     },
     {
       q: "Will this app's name or logo end up on my CV?",
-      a: "No. What you download holds only your own data - no logo, no stamp, no app name, no author name. That is your document, not our advertisement.",
+      a: "No. What you download holds only your own data: no logo, no stamp, no app name, no author name. That is your document, not our advertisement.",
     },
     {
-      q: "The CVs I upload to be checked - are they kept on your server?",
-      a: "No - and not merely unkept: they are never sent anywhere in the first place. They are read and scored right on your own phone or computer. Close the page and it is all gone. That is also why this feature needs no account.",
+      q: "The CVs I upload to be checked, are they kept on your server?",
+      a: "No. Not merely unkept: they are never sent anywhere in the first place. They are read and scored right on your own phone or computer. Close the page and it is all gone. That is also why this feature needs no account.",
     },
     {
       q: "If I close my browser, do I lose my data?",
-      a: "You do not - for CVs you build while signed in. Every change saves itself less than a second after you stop typing, so there is no Save button to forget. Sign in again from any device and your CV is still there. Want to be safer still? Download the backup file and keep it yourself.",
+      a: "You do not, for CVs you build while signed in. Every change saves itself less than a second after you stop typing, so there is no Save button to forget. Sign in again from any device and your CV is still there. Want to be safer still? Download the backup file and keep it yourself.",
     },
     {
       q: "Why is a photo usually a bad idea on a CV?",
-      a: "Because screening software cannot see images, and the layout around a photo often scrambles the order in which the surrounding text is read. In many countries photos are also avoided so that appearance does not colour the decision. Even so, two photo designs are here - some Indonesian job ads do still ask - and you will be warned when you switch one on.",
+      a: "Because screening software cannot see images, and the layout around a photo often scrambles the order in which the surrounding text is read. In many countries photos are also avoided so that appearance does not colour the decision. Even so, two photo designs are here, because some Indonesian job ads do still ask, and you will be warned when you switch one on.",
     },
     {
       q: "Can I have more than one CV?",

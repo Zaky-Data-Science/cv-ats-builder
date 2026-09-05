@@ -349,7 +349,7 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
     CLASSIC: {
       name: "Klasik",
       description:
-        "Nama di tengah, judul bagian bergaris bawah. Paling aman untuk instansi dan perusahaan besar.",
+        "Gaya klasik dan profesional. Nama di tengah dengan garis pemisah yang tegas. Pilihan evergreen yang paling meyakinkan untuk melamar ke BUMN, instansi pemerintah, atau korporasi multinasional.",
     },
     MODERN: {
       name: "Modern",
@@ -369,7 +369,7 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
     MINIMAL: {
       name: "Minimalis",
       description:
-        "Tanpa satu garis pun - pemisahnya hanya jarak. Paling bersih dan paling netral.",
+        "Tanpa satu garis pun; pemisahnya hanya jarak. Paling bersih dan paling netral.",
     },
     TIMELINE: {
       name: "Kronologis",
@@ -401,7 +401,7 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
     CLASSIC: {
       name: "Classic",
       description:
-        "Centred name, underlined section headings. The safest choice for government bodies and large firms.",
+        "Classic and professional. A centred name with a firm dividing rule. The evergreen choice, and the most reassuring one when you are applying to state-owned firms, government bodies, or multinationals.",
     },
     MODERN: {
       name: "Modern",
@@ -421,7 +421,7 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
     MINIMAL: {
       name: "Minimal",
       description:
-        "Not a single rule - spacing alone separates the sections. The cleanest and most neutral option.",
+        "Not a single rule; spacing alone separates the sections. The cleanest and most neutral option.",
     },
     TIMELINE: {
       name: "Timeline",

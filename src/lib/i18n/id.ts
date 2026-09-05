@@ -409,100 +409,101 @@ export const id = {
   /* -------------------------------------------------------- halaman depan */
   home: {
     skipToContent: "Lompat ke konten utama",
-    heroBadge: "Gratis - tanpa tulisan tempelan - datanya tersimpan",
-    heroTitleLine1: "Anda cukup isi datanya.",
-    heroTitleLine2: "Desain dan susunan CV-nya",
-    heroTitleLine3: "beres sendiri.",
+    heroBadge: "100% Gratis • Tanpa Watermark • Tersimpan Otomatis",
+    heroTitleLine1: "Fokus ceritakan",
+    heroTitleLine2: "pengalamanmu.",
+    heroTitleLine3: "Format ATS-nya biar kami.",
     heroBody:
-      "Sebelum sampai ke tangan manusia, lamaran Anda biasanya dibaca dulu oleh mesin. Masalahnya, mesin itu gampang tersandung: CV dua kolom, tabel, atau tulisan di dalam gambar sering terbaca acak-acakan - dan pengalaman yang sebenarnya Anda punya jadi tidak terbaca sama sekali. Di sini Anda tinggal mengisi kotak-kotaknya. Susunannya kami buat aman dibaca mesin, lalu kami nilai dan tunjukkan persis apa yang masih kurang.",
-    heroCtaNew: "Mulai Buat CV Saya",
-    heroCtaDashboard: "Lanjutkan ke CV Saya",
-    heroCtaCompare: "Cek dulu CV yang sudah saya punya",
+      "Banyak perusahaan menyaring lamaran lewat sistem yang membaca CV secara otomatis, dan format yang rumit seperti dua kolom, tabel, atau tulisan di dalam gambar sering terbaca berantakan. Jangan biarkan pengalaman hebatmu gugur gara-gara itu. Isi form simpel kami, dapatkan CV berstandar ATS, dan lihat skormu seketika.",
+    heroCtaNew: "Buat CV ATS-ku Sekarang",
+    heroCtaDashboard: "Lanjut ke CV-ku",
+    heroCtaCompare: "Cek dulu CV yang sudah kupunya",
     statSections: "bagian CV",
     statDimensions: "hal yang dinilai",
     statTemplates: "pilihan desain",
     statFormats: "pilihan unduhan",
-    statsPrompt: "Ketuk angkanya untuk tahu maksudnya.",
+    statsPrompt: "Ketuk angkanya buat tahu maksudnya.",
     statSectionsWhy:
-      "Data pribadi, ringkasan, pengalaman kerja, pendidikan, keahlian, proyek, sertifikat, organisasi, penghargaan, bahasa, dan publikasi. Bagian yang tidak Anda isi tidak akan muncul di CV, jadi tidak perlu diisi semua.",
+      "Data pribadi, ringkasan, pengalaman kerja, pendidikan, keahlian, proyek, sertifikat, organisasi, penghargaan, bahasa, dan publikasi. Bagian yang nggak kamu isi nggak akan muncul di CV, jadi santai saja: nggak perlu diisi semua.",
     statTemplatesWhy:
-      "Sepuluh tampilan berbeda untuk isi yang sama - ada yang bergaris tegas, ada yang polos, dua di antaranya punya tempat pas foto. Ganti kapan saja; data Anda tidak berubah sedikit pun.",
+      "Sepuluh tampilan berbeda untuk isi yang sama: ada yang bergaris tegas, ada yang polos, dua di antaranya punya tempat pas foto. Ganti kapan saja; datamu nggak berubah sedikit pun.",
     statDimensionsWhy:
-      "CV Anda diperiksa dari lima sisi: bisa tidaknya dibaca mesin, kelengkapan isinya, mutu kalimatnya, kerapian susunannya, dan kecocokannya dengan lowongan yang Anda incar.",
+      "CV-mu diperiksa dari lima sisi: bisa tidaknya dibaca mesin, kelengkapan isinya, mutu kalimatnya, kerapian susunannya, dan kecocokannya dengan lowongan yang kamu incar.",
     statFormatsWhy:
-      "PDF untuk dikirim ke perusahaan, Word kalau lowongannya minta .docx, teks polos untuk disalin-tempel ke formulir online, dan berkas cadangan supaya CV ini bisa dibuka lagi nanti.",
-    heroCaption: "Contoh hasil jadi - desain Klasik",
+      "PDF buat dikirim ke perusahaan, Word kalau lowongannya minta .docx, teks polos buat disalin-tempel ke formulir online, dan berkas cadangan supaya CV ini bisa dibuka lagi nanti.",
+    heroCaption: "Contoh hasil jadi, desain Klasik",
     heroBadgeScore: "Nilai CV",
     heroBadgeGrade: "Nilai A",
     heroBadgeSaved: "Tersimpan otomatis",
 
-    pathsTitle: "Dua cara memakainya",
+    pathsTitle: "2 Cara Jitu Memastikan CV-mu Lolos Seleksi",
     pathsBody:
-      "Mulai dari nol, atau mulai dari CV yang sudah Anda punya. Keduanya dinilai dengan cara yang sama persis, jadi nilainya bisa langsung dibandingkan.",
-    pathBuildTitle: "Susun CV baru",
+      "Mau mulai dari nol atau membedah CV yang sudah kamu punya, dua-duanya dinilai dengan cara yang sama persis, supaya isi CV-mu benar-benar terbaca, bukan tersandung format.",
+    pathBuildTitle: "Bangun CV Baru Bebas Ribet",
     pathBuildBody:
-      "Isi kotak-kotaknya satu per satu, lihat hasilnya langsung di kertas seukuran aslinya, perbaiki mengikuti nilai yang muncul, lalu unduh sebagai PDF, Word, atau teks polos.",
-    pathBuildCta: "Mulai Buat CV Saya",
-    pathCompareTitle: "Cek CV yang sudah ada",
+      "Tinggal ketik di kotak yang disediakan, pantau perubahannya secara langsung di kertas virtual, tingkatkan skornya, lalu unduh dalam format PDF, Word, atau Teks. Sesimpel itu!",
+    pathBuildCta: "Buat CV ATS-ku Sekarang",
+    pathCompareTitle: "Audit & Bandingkan CV Lamamu",
     pathCompareBody:
-      "Punya CV lama dan penasaran nilainya? Unggah satu berkas untuk diperiksa, atau sampai lima sekaligus untuk diadu. Masing-masing dapat nilai, daftar kelebihan, dan daftar kekurangan lengkap dengan cara memperbaikinya - lalu kami sebutkan mana yang paling siap dikirim. Berkasnya diperiksa di HP atau komputer Anda sendiri, tidak pernah dikirim ke mana pun.",
-    pathCompareCta: "Cek CV saya sekarang",
+      "Sering di-ghosting HRD? Unggah CV lamamu dan biarkan sistem kami membedahnya. Bandingkan hingga 5 CV sekaligus untuk tahu persis letak kekurangannya dan mana yang paling siap dikirim. Berkasmu diproses langsung di perangkatmu dan tidak pernah dikirim ke server kami.",
+    pathCompareCta: "Cek CV-ku sekarang",
 
-    stepsTitle: "Empat langkah, CV Anda jadi",
+    stepsTitle: "Cuma Butuh 4 Langkah Menuju Wawancara Kerja!",
     stepsBody:
-      "Tugas Anda cuma mengisi. Soal rapi-rapinya, penulisan tanggal, dan susunan yang aman dibaca mesin - biar kami yang urus.",
-    step1Title: "Isi kotaknya satu per satu",
+      "Lupakan pusingnya mengatur margin dan layout. Tugasmu cuma menceritakan kehebatanmu, urusan teknis biar sistem kami yang atur.",
+    step1Title: "Anti Blank Page Syndrome",
     step1Body:
-      "Tidak ada halaman kosong yang bikin bengong. Tiap data punya kotaknya sendiri - jabatan, perusahaan, tanggal - dan di dalam tiap kotak sudah ada contoh isiannya.",
-    step2Title: "Hasilnya langsung kelihatan",
+      "Nggak perlu bingung mau nulis apa. Setiap bagian (pengalaman, pendidikan, keahlian) sudah dilengkapi panduan praktis dan contoh nyata di dalam kotaknya.",
+    step2Title: "Live Preview yang Presisi",
     step2Body:
-      "Kertas di sebelah kanan ikut berubah sambil Anda mengetik, dan bisa dilihat terpotong per halaman seperti di Word. Kotak yang sedang Anda isi ikut disorot di sana, jadi Anda tahu persis tulisan itu mendarat di mana.",
-    step3Title: "Perbaiki mengikuti nilainya",
+      "Ketik di kiri, lihat hasilnya di kanan! Tampilan kertas menyesuaikan ukuran asli. Kamu jadi tahu persis di mana tulisanmu mendarat saat dicetak nanti.",
+    step3Title: "Tingkatkan Skor CV-mu",
     step3Body:
-      "CV Anda dinilai dari lima sisi, dan setiap kekurangan disebutkan lengkap dengan cara membetulkannya - bukan cuma dikasih angka lalu ditinggal bingung.",
-    step4Title: "Unduh, lalu lamar",
+      "Dapatkan analisis dari 5 aspek krusial. Kami nggak cuma ngasih angka mati, tapi juga petunjuk langkah demi langkah untuk memperbaikinya.",
+    step4Title: "Unduh, Kirim, dan Bersiap Interview",
     step4Body:
-      "PDF dan Word siap dikirim ke perusahaan. Data Anda tetap tersimpan, jadi untuk lowongan berikutnya tinggal digandakan lalu diubah seperlunya.",
+      "Ekspor ke PDF atau Word dalam sekejap. Semua data tersimpan aman di akunmu, siap diduplikasi atau diedit ulang untuk lowongan incaran berikutnya.",
 
-    featuresTitle: "Bedanya dengan template Word biasa",
+    featuresTitle:
+      "Tinggalkan Cara Lama. Ini Alasan Kami Jauh Lebih Baik dari Template Word Biasa.",
     featuresBody:
-      "Template Word cuma memberi Anda tampilan, lalu selesai. Di sini susunannya dijaga tetap terbaca mesin, hasilnya dinilai, dan datanya disimpan untuk dipakai lagi.",
-    feature1Title: "Kotak isian, bukan halaman kosong",
+      "Template Word biasa cuma peduli soal \"cantik\", tapi lupa soal \"terbaca oleh sistem\". Di sini, kami memastikan CV-mu rapi di mata HRD dan bersih di mata mesin penyaring lamaran.",
+    feature1Title: "Bukan Sekadar Kertas Kosong",
     feature1Body:
-      "11 bagian CV, masing-masing dengan kotak isian, petunjuk singkat, dan contoh nyata di dalamnya. Rapi-rapinya biar kami yang urus.",
-    feature2Title: "Kertasnya seukuran aslinya",
+      "Tersedia 11 blok informasi yang siap diisi. Susunan kerangkanya baku dan rapi secara otomatis.",
+    feature2Title: "Tanpa Kejutan Saat Dicetak",
     feature2Body:
-      "Pilih A4, Letter, Legal, atau F4 - lalu lihat CV Anda memanjang tanpa putus atau terpotong per halaman, persis seperti hasil cetaknya nanti. Tidak ada kejutan saat dicetak.",
-    feature3Title: "Tersimpan otomatis",
+      "Pilih A4, Letter, Legal, atau F4. Pratinjaunya memakai ukuran kertas yang sebenarnya. Apa yang kamu lihat di layar, itu juga yang tercetak nanti.",
+    feature3Title: "Auto-Save, Anti-Panik!",
     feature3Body:
-      "Tidak ada tombol Simpan yang harus diingat. Kurang dari satu detik setelah Anda berhenti mengetik, perubahannya sudah tersimpan. Tutup browser, buka lagi bulan depan, lanjut dari tempat terakhir.",
-    feature4Title: "Nilai CV, lengkap dengan alasannya",
+      "Nggak sengaja menutup tab? Santai. Kurang dari sedetik setelah kamu berhenti mengetik, perubahannya sudah tersimpan. Tutup browser, buka lagi bulan depan, lanjut dari tempat terakhir.",
+    feature4Title: "Feedback Instan & Terarah",
     feature4Body:
-      "Dinilai dari lima sisi. Tiap saran perbaikan bisa diklik, dan Anda langsung dilempar ke kotak isian yang bermasalah.",
-    feature5Title: "Dicocokkan dengan iklan lowongan",
+      "Ketahui kelemahan CV-mu lewat sistem skoring 5 dimensi. Klik saran perbaikannya, dan kamu akan diarahkan langsung ke kotak yang perlu direvisi.",
+    feature5Title: "Senjata Rahasia: Pencocokan Lowongan",
     feature5Body:
-      "Salin-tempel iklan lowongan yang Anda incar, lalu lihat kata penting mana yang diminta lowongan itu tapi belum ada di CV Anda.",
-    feature6Title: "Data Anda milik Anda",
+      "Copy-paste iklan lowongan yang kamu incar, dan sistem kami akan melacak keyword penting apa yang masih kurang di CV-mu.",
+    feature6Title: "Kendali Penuh Atas Datamu",
     feature6Body:
-      "Unduh seluruh isi CV sebagai berkas cadangan kapan saja, buka lagi kapan saja, atau hapus akun beserta semua isinya sekaligus.",
+      "Unduh, simpan cadangan, atau hapus seluruh data beserta akunmu kapan pun kamu mau, tanpa syarat.",
 
-    templatesTitle: "Sepuluh desain, satu susunan yang aman",
+    templatesTitle: "10 Pilihan Desain Elegan. Semuanya Aman Dibaca Mesin.",
     templatesBody:
-      "Semuanya satu kolom, tanpa tabel, dengan judul bagian yang baku - jadi tidak ada desain yang lebih berisiko terbaca kacau daripada yang lain. Yang berbeda cuma bentuk huruf, kerapatan, garis, dan letak pas foto. Ganti desain tidak mengubah data Anda sedikit pun.",
+      "Singkirkan desain nyeleneh yang bikin sistem eror. Semua template kami dirancang bersih dengan tata letak satu kolom tanpa tabel tersembunyi. Ganti gaya huruf, kerapatan baris, hingga letak foto sesuka hati tanpa merusak secuil pun datamu.",
     templatesWithoutPhoto: "Tanpa pas foto",
     templatesWithPhoto: "Pakai pas foto",
     templatesPhotoNote:
-      "Dua desain berfoto disediakan karena sebagian lowongan di Indonesia masih memintanya. Kalau lowongan Anda tidak minta, pilih yang tanpa foto saja - mesin penyaring tidak bisa melihat gambar.",
+      "Dua desain berfoto disediakan karena sebagian lowongan di Indonesia masih memintanya. Kalau lowonganmu nggak minta, pilih yang tanpa foto saja, karena mesin penyaring nggak bisa melihat gambar.",
 
     faqTitle: "Yang sering ditanyakan",
-    faqBody: "Termasuk hal-hal yang biasanya tidak diceritakan aplikasi sejenis.",
+    faqBody: "Termasuk hal-hal yang biasanya nggak diceritakan aplikasi sejenis.",
 
     ctaTitle: "Buat satu kali, pakai berkali-kali",
     ctaBody:
-      "Data Anda tersimpan di akun. Untuk lowongan berikutnya, gandakan CV yang sudah ada lalu ubah seperlunya - tidak usah mulai dari halaman kosong lagi.",
-    ctaButton: "Mulai Buat CV Saya",
-    ctaButtonSignedIn: "Buka CV Saya",
-    ctaNote: "Tanpa biaya, dan tidak ada tulisan tempelan di CV Anda.",
+      "Datamu tersimpan di akun. Untuk lowongan berikutnya, gandakan CV yang sudah ada lalu ubah seperlunya, tanpa perlu mulai dari halaman kosong lagi.",
+    ctaButton: "Buat CV ATS-ku Sekarang",
+    ctaButtonSignedIn: "Buka CV-ku",
+    ctaNote: "Tanpa biaya, dan nggak ada tulisan tempelan di CV-mu.",
   },
 
   /* Pertanyaan yang sering muncul. Disimpan sebagai larik supaya urutan dan
@@ -511,39 +512,39 @@ export const id = {
   faq: [
     {
       q: "Apa itu ATS, dan kenapa saya harus peduli?",
-      a: "ATS adalah aplikasi yang dipakai banyak perusahaan untuk menampung dan menyaring lamaran yang masuk. Kepanjangannya Applicant Tracking System, tapi cukup bayangkan begini: sebelum CV Anda dilihat manusia, ada mesin yang membacanya lebih dulu dan mencomot datanya - nama, kontak, pengalaman, keahlian. Mesin ini gampang tersandung. CV dua kolom, CV bertabel, atau CV yang tulisannya ada di dalam gambar sering terbaca acak-acakan, dan pengalaman yang sebenarnya Anda punya jadi tidak terbaca sama sekali. Bukan karena Anda kurang layak - cuma karena berkasnya tidak terbaca.",
+      a: "ATS adalah aplikasi yang dipakai banyak perusahaan untuk menampung dan menyaring lamaran yang masuk. Kepanjangannya Applicant Tracking System, tapi cukup bayangkan begini: sebelum CV-mu dilihat manusia, ada mesin yang membacanya lebih dulu dan mencomot datanya: nama, kontak, pengalaman, keahlian. Mesin ini gampang tersandung. CV dua kolom, CV bertabel, atau CV yang tulisannya ada di dalam gambar sering terbaca acak-acakan, dan pengalaman yang sebenarnya kamu punya jadi tidak terbaca sama sekali. Bukan karena kamu kurang layak, cuma karena berkasnya tidak terbaca.",
     },
     {
       q: "CV dari sini dijamin lolos, dong?",
-      a: "Tidak, dan sebaiknya curigai siapa pun yang menjanjikan itu. Tiap perusahaan pakai aplikasi penyaring yang berbeda, dan cara kerjanya tidak pernah dibuka ke publik. Yang bisa kami lakukan - dan kami lakukan - adalah memastikan CV Anda memenuhi aturan yang berlaku umum: satu kolom, tanpa tabel, judul bagian yang baku, penulisan tanggal yang seragam, dan tulisan yang benar-benar berupa tulisan, bukan gambar. Nilai yang muncul di sini artinya \"sudah memenuhi yang kami periksa\", bukan \"pasti diterima\".",
+      a: "Tidak, dan sebaiknya curigai siapa pun yang menjanjikan itu. Tiap perusahaan pakai aplikasi penyaring yang berbeda, dan cara kerjanya tidak pernah dibuka ke publik. Yang bisa kami lakukan, dan memang kami lakukan, adalah memastikan CV-mu memenuhi aturan yang berlaku umum: satu kolom, tanpa tabel, judul bagian yang baku, penulisan tanggal yang seragam, dan tulisan yang benar-benar berupa tulisan, bukan gambar. Nilai yang muncul di sini artinya \"sudah memenuhi yang kami periksa\", bukan \"pasti diterima\".",
     },
     {
       q: "CV saya sebaiknya berapa halaman?",
-      a: "Satu. Itu panjang yang pas untuk hampir semua pelamar, termasuk yang sudah lama bekerja. Perekrut melirik satu CV dalam hitungan detik, jadi apa pun yang jatuh ke halaman kedua besar kemungkinan tidak pernah dibaca. Dua halaman baru sepadan kalau pengalaman Anda lebih dari lima tahun dan semuanya nyambung dengan lowongan yang dituju. Dan kalau CV Anda kepanjangan, yang dipangkas isinya - bukan ukuran hurufnya dikecil-kecilkan.",
+      a: "Satu. Itu panjang yang pas untuk hampir semua pelamar, termasuk yang sudah lama bekerja. Perekrut melirik satu CV dalam hitungan detik, jadi apa pun yang jatuh ke halaman kedua besar kemungkinan tidak pernah dibaca. Dua halaman baru sepadan kalau pengalamanmu lebih dari lima tahun dan semuanya nyambung dengan lowongan yang dituju. Dan kalau CV-mu kepanjangan, yang dipangkas isinya, bukan ukuran hurufnya yang dikecil-kecilkan.",
     },
     {
       q: "Pakai ukuran kertas apa?",
-      a: "A4, dan itu sudah jadi pilihan bawaan di sini - jadi Anda tidak perlu mengubah apa pun. A4 adalah ukuran standar di Indonesia dan hampir seluruh dunia. Letter cuma perlu kalau Anda melamar ke perusahaan di Amerika Serikat atau Kanada. Legal dan F4 cuma kalau instansi yang dituju secara khusus memintanya.",
+      a: "A4, dan itu sudah jadi pilihan bawaan di sini, jadi kamu nggak perlu mengubah apa pun. A4 adalah ukuran standar di Indonesia dan hampir seluruh dunia. Letter cuma perlu kalau kamu melamar ke perusahaan di Amerika Serikat atau Kanada. Legal dan F4 cuma kalau instansi yang dituju secara khusus memintanya.",
     },
     {
       q: "Gratis? Beneran tidak ada biaya tersembunyi?",
-      a: "Beneran gratis. Tidak ada versi berbayar, tidak ada batas berapa CV yang boleh dibuat, tidak ada tulisan tempelan di CV yang Anda unduh, dan Anda tidak akan pernah dimintai nomor kartu.",
+      a: "Beneran gratis. Tidak ada versi berbayar, tidak ada batas berapa CV yang boleh dibuat, tidak ada tulisan tempelan di CV yang kamu unduh, dan kamu nggak akan pernah dimintai nomor kartu.",
     },
     {
       q: "Nanti ada logo atau nama aplikasi ini di CV saya?",
-      a: "Tidak ada. CV yang Anda unduh isinya murni data Anda sendiri - tanpa logo, tanpa tulisan tempelan, tanpa nama aplikasi maupun pembuatnya. Itu dokumen Anda, bukan iklan kami.",
+      a: "Tidak ada. CV yang kamu unduh isinya murni datamu sendiri: tanpa logo, tanpa tulisan tempelan, tanpa nama aplikasi maupun pembuatnya. Itu dokumenmu, bukan iklan kami.",
     },
     {
       q: "CV yang saya unggah buat dicek, disimpan di server kalian?",
-      a: "Tidak - dan bukan cuma tidak disimpan, tapi memang tidak pernah dikirim ke mana pun. Berkasnya dibaca dan dinilai langsung di HP atau komputer Anda sendiri. Tutup halamannya, semuanya hilang. Itu juga sebabnya fitur ini bisa dipakai tanpa bikin akun.",
+      a: "Tidak. Bukan cuma tidak disimpan, tapi memang tidak pernah dikirim ke mana pun. Berkasnya dibaca dan dinilai langsung di HP atau komputermu sendiri. Tutup halamannya, semuanya hilang. Itu juga sebabnya fitur ini bisa dipakai tanpa bikin akun.",
     },
     {
       q: "Kalau browser saya tutup, data saya hilang tidak?",
-      a: "Tidak hilang - untuk CV yang Anda susun sambil masuk ke akun. Setiap perubahan tersimpan sendiri kurang dari satu detik setelah Anda berhenti mengetik, jadi tidak ada tombol Simpan yang bisa lupa ditekan. Masuk lagi kapan saja dari perangkat mana saja, CV Anda masih di sana. Mau lebih aman lagi? Unduh berkas cadangannya dan simpan sendiri.",
+      a: "Tidak hilang, untuk CV yang kamu susun sambil masuk ke akun. Setiap perubahan tersimpan sendiri kurang dari satu detik setelah kamu berhenti mengetik, jadi tidak ada tombol Simpan yang bisa lupa kamu tekan. Masuk lagi kapan saja dari perangkat mana saja, CV-mu masih di sana. Mau lebih aman lagi? Unduh berkas cadangannya dan simpan sendiri.",
     },
     {
       q: "Kenapa CV sebaiknya tanpa pas foto?",
-      a: "Karena mesin penyaring tidak bisa melihat gambar, dan susunan di sekitar foto sering membuat urutan tulisannya jadi kacau saat dibaca mesin. Di banyak negara, foto juga sengaja dihindari supaya penilaian tidak terpengaruh penampilan. Meski begitu, dua desain berfoto tetap kami sediakan - sebagian lowongan di Indonesia memang masih memintanya - dan Anda akan diingatkan saat menyalakannya.",
+      a: "Karena mesin penyaring tidak bisa melihat gambar, dan susunan di sekitar foto sering membuat urutan tulisannya jadi kacau saat dibaca mesin. Di banyak negara, foto juga sengaja dihindari supaya penilaian tidak terpengaruh penampilan. Meski begitu, dua desain berfoto tetap kami sediakan, karena sebagian lowongan di Indonesia memang masih memintanya, dan kamu akan diingatkan saat menyalakannya.",
     },
     {
       q: "Boleh punya lebih dari satu CV?",
