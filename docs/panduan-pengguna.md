@@ -1,7 +1,8 @@
 # Panduan Pengguna
 
-Petunjuk pemakaian aplikasi **CV ATS Builder** dari awal sampai CV siap
-dikirim. Ditulis untuk pengguna yang baru pertama kali membuat CV sekalipun.
+Petunjuk pemakaian aplikasi **CV & Portofolio ATS** dari awal sampai berkas
+siap dikirim. Ditulis untuk pengguna yang baru pertama kali membuat CV
+sekalipun.
 
 Versi ringkas panduan ini juga tersedia langsung di dalam aplikasi pada
 halaman **Panduan**.
@@ -10,6 +11,7 @@ halaman **Panduan**.
 
 ## Daftar Isi
 
+0. [CV dan portofolio: dua benda yang berbeda](#0-cv-dan-portofolio-dua-benda-yang-berbeda)
 1. [Sebelum mulai: apa itu ATS](#1-sebelum-mulai-apa-itu-ats)
 2. [Alur penggunaan](#2-alur-penggunaan)
 3. [Membuat akun](#3-membuat-akun)
@@ -26,6 +28,34 @@ halaman **Panduan**.
 14. [Memakai dari ponsel](#14-memakai-dari-ponsel)
 15. [Pengaturan akun dan data](#15-pengaturan-akun-dan-data)
 16. [Kalau ada masalah](#16-kalau-ada-masalah)
+
+---
+
+## 0. CV dan portofolio: dua benda yang berbeda
+
+Aplikasi ini menyusun **dua hal**, bukan satu. Keduanya berangkat dari data
+yang sama, tetapi dibaca orang yang berbeda dengan pertanyaan yang berbeda -
+dan itulah kenapa keduanya tidak dilebur jadi satu berkas.
+
+| | CV | Portofolio |
+|---|---|---|
+| Dibaca | mesin dulu, lalu perekrut sekitar 6 detik | manusia yang ahli di bidang Anda - pelan dan teliti |
+| Menjawab | "pantas diwawancara?" | "benar-benar bisa?" |
+| Bentuk | satu kolom, tanpa tabel, tanpa gambar | bebas - boleh gambar dan studi kasus |
+| Panjang | 1-2 halaman | 3-5 karya terkuat, dibahas mendalam |
+| Dinilai dari | kata kunci dan keterbacaan mesin | kedalaman penalaran dan hasilnya |
+
+**Mana yang Anda butuhkan?** Hampir selalu keduanya, tetapi tidak bersamaan.
+CV yang mengantar Anda melewati penyaringan; portofolio yang meyakinkan orang
+setelah Anda lolos. CV tanpa portofolio membuat Anda dinilai dari kata-kata
+saja; portofolio tanpa CV sering tidak pernah sampai dibuka, karena
+penyaringnya berhenti lebih dulu.
+
+> **Yang perlu Anda tahu tentang keadaan sekarang:** portofolio di aplikasi ini
+> masih berupa **bagian di dalam CV Anda**, bukan berkas yang berdiri sendiri.
+> Bentuk isiannya sudah mengikuti cara bidang Anda membuktikan pekerjaan (lihat
+> bagian 6), tetapi ketika diunduh, yang keluar tetap satu berkas CV yang memuat
+> bagian portofolio di dalamnya. Berkas portofolio terpisah belum ada.
 
 ---
 

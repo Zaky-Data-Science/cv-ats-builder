@@ -31,8 +31,9 @@ function TermsId() {
       <h2>1. Tentang layanan ini</h2>
       <p>
         {SITE.name} adalah aplikasi web untuk menyusun CV yang ramah sistem
-        pembaca lamaran otomatis (ATS), sekaligus memindai dan membandingkan CV
-        yang sudah ada. Aplikasi ini dibangun oleh{" "}
+        pembaca lamaran otomatis (ATS) beserta portofolio yang menyertainya,
+        sekaligus memindai dan membandingkan CV yang sudah ada. Aplikasi ini
+        dibangun oleh{" "}
         <strong>{AUTHOR.name}</strong>.
       </p>
       <p>
@@ -202,8 +203,9 @@ function TermsEn() {
       <h2>1. About this service</h2>
       <p>
         {SITE.name} is a web app for building CVs that automated applicant
-        screening systems (ATS) can read, and for scanning and comparing CVs you
-        already have. It was built by <strong>{AUTHOR.name}</strong>.
+        screening systems (ATS) can read together with the portfolio that goes
+        with them, and for scanning and comparing CVs you already have. It was
+        built by <strong>{AUTHOR.name}</strong>.
       </p>
       <p>By using this app, you are taken to accept the terms on this page.</p>
 

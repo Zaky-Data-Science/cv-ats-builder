@@ -81,20 +81,16 @@ Politeknik Negeri Samarinda.
 
 ## 2. Status: tayang, tetapi ada yang belum di-push
 
-> ### Pekerjaan pertama berikutnya: `git push`
+> ### Keadaan sekarang
 >
-> **Uji manual 1-4 sudah selesai seluruhnya dan lulus** (sesi 13). Yang tersisa
-> tinggal `git push`, lalu Uji 5 - yang memang hanya dapat dikerjakan setelah
-> deploy.
+> **Uji manual 1-5 sudah selesai seluruhnya dan lulus.** Fitur portofolio,
+> perbaikan Mode Redaksi, dan seluruh catatan sesi 13 **sudah ter-push dan
+> tayang di production** (`788fb73`).
 >
-> Fitur portofolio **sudah tergabung ke `main`** (`f4be769`) tetapi **belum
-> di-push**, jadi yang tayang di production masih versi sebelumnya. `main`
-> unggul belasan commit atas `origin/main`.
->
-> Uji 3 sempat gagal 6 dari 25 dan menemukan dua kebocoran nyata di Mode
-> Redaksi; keduanya sudah diperbaiki dan diuji ulang (`df93527`). Uji 4
-> membuktikan rantai `ON DELETE CASCADE` di tingkat basis data - user dihapus,
-> sepuluh tabel turunannya ikut kosong, nol baris yatim.
+> Yang belum di-push: **reposisi dua pilar (sesi 14)** - nama produk berganti
+> menjadi **CV & Portofolio ATS**, beranda punya dua pintu masuk setara.
+> Perubahan tampilan dan teks saja; tidak ada logika fitur yang disentuh.
+> Tunggu peninjauan sebelum push.
 >
 > Catatan untuk lain kali: basis data lokal bisa tertinggal dari skema.
 > Terapkan dengan **`npx prisma migrate deploy`**, jangan `migrate dev` -
@@ -110,7 +106,8 @@ Politeknik Negeri Samarinda.
 | Folder kode | `D:\Website CV dan Portofolio` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. **Belum dipicu untuk fitur portofolio** |
-| Uji manual 1-4 | **selesai dan lulus** (sesi 13). Uji 5 menunggu deploy |
+| Uji manual 1-5 | **selesai dan lulus** (sesi 13) |
+| Nama produk | **CV & Portofolio ATS** sejak sesi 14. Nama repo GitHub dan `name` di package.json sengaja tidak ikut - itu plumbing |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 

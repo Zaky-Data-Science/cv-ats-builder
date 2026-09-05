@@ -17,7 +17,7 @@
 export const id = {
   /* ---------------------------------------------------------------- umum */
   common: {
-    appName: "CV ATS Builder",
+    appName: "CV & Portofolio ATS",
     save: "Simpan",
     cancel: "Batal",
     delete: "Hapus",
@@ -521,7 +521,7 @@ export const id = {
   flow: {
     metaTitle: "Alur dan Arsitektur",
     metaDescription:
-      "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV ATS Builder - tersedia juga sebagai berkas gambar SVG dan PNG.",
+      "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV & Portofolio ATS - tersedia juga sebagai berkas gambar SVG dan PNG.",
     title: "Alur dan arsitektur",
     subtitle:
       "Empat diagram: bagaimana pengguna memakainya, bagaimana datanya mengalir, dan bagaimana perubahan kode sampai ke production. Diagram di halaman ini dan berkas gambarnya dibangkitkan dari satu sumber data yang sama, sehingga keduanya tidak mungkin bercerita berbeda.",
@@ -539,11 +539,11 @@ export const id = {
   home: {
     skipToContent: "Lompat ke konten utama",
     heroBadge: "Gratis - tanpa tulisan tempelan - datanya tersimpan",
-    heroTitleLine1: "Anda cukup isi datanya.",
-    heroTitleLine2: "Desain dan susunan CV-nya",
-    heroTitleLine3: "beres sendiri.",
+    heroTitleLine1: "Isi datanya sekali.",
+    heroTitleLine2: "Jadi CV yang lolos mesin,",
+    heroTitleLine3: "dan portofolio yang meyakinkan.",
     heroBody:
-      "Sebelum sampai ke tangan manusia, lamaran Anda biasanya dibaca dulu oleh mesin. Masalahnya, mesin itu gampang tersandung: CV dua kolom, tabel, atau tulisan di dalam gambar sering terbaca acak-acakan - dan pengalaman yang sebenarnya Anda punya jadi tidak terbaca sama sekali. Di sini Anda tinggal mengisi kotak-kotaknya. Susunannya kami buat aman dibaca mesin, lalu kami nilai dan tunjukkan persis apa yang masih kurang.",
+      "Lamaran Anda dibaca dua kali, oleh dua pembaca yang berbeda. Mesin membacanya lebih dulu, dan mesin itu gampang tersandung: CV dua kolom, tabel, atau tulisan di dalam gambar sering terbaca acak-acakan. Setelah itu manusia yang membacanya, dan yang ia cari bukan lagi kata kunci melainkan bukti Anda benar-benar bisa. Di sini keduanya disusun dari data yang sama - CV-nya dijaga tetap aman dibaca mesin, dan bagian portofolionya mengikuti bentuk pembuktian yang memang dipakai bidang Anda.",
     heroCtaNew: "Mulai Buat CV Saya",
     heroCtaDashboard: "Lanjutkan ke CV Saya",
     heroCtaCompare: "Cek dulu CV yang sudah saya punya",
@@ -565,13 +565,37 @@ export const id = {
     heroBadgeGrade: "Nilai A",
     heroBadgeSaved: "Tersimpan otomatis",
 
-    pathsTitle: "Dua cara memakainya",
-    pathsBody:
-      "Mulai dari nol, atau mulai dari CV yang sudah Anda punya. Keduanya dinilai dengan cara yang sama persis, jadi nilainya bisa langsung dibandingkan.",
-    pathBuildTitle: "Susun CV baru",
-    pathBuildBody:
-      "Isi kotak-kotaknya satu per satu, lihat hasilnya langsung di kertas seukuran aslinya, perbaiki mengikuti nilai yang muncul, lalu unduh sebagai PDF, Word, atau teks polos.",
-    pathBuildCta: "Mulai Buat CV Saya",
+    pillarsTitle: "Dua pilar, satu data",
+    pillarsBody:
+      "CV dan portofolio menjawab dua pertanyaan yang berbeda, dan dibaca dua pembaca yang berbeda. Anda mengisi datanya sekali; yang berbeda cuma cara data itu ditampilkan. Di bawah ini bedanya, supaya Anda tahu sedang butuh yang mana.",
+    pillarCvTitle: "CV - tiket masuknya",
+    pillarCvBody:
+      "Dibaca mesin lebih dulu, lalu dilirik perekrut sekitar enam detik. Karena itu bentuknya dijaga ketat: satu kolom, tanpa tabel, tanpa gambar - apa pun desain yang Anda pilih. Isi kotaknya, lihat hasilnya di kertas seukuran aslinya, perbaiki mengikuti nilainya, lalu unduh.",
+    pillarCvCta: "Susun CV saya",
+    pillarFolioTitle: "Portofolio - buktinya",
+    pillarFolioBody:
+      "Dibaca manusia yang paham bidang Anda, pelan dan teliti. Isinya tiga sampai lima karya terkuat: apa masalahnya, apa yang Anda putuskan, dan hasilnya apa. Bentuk isiannya mengikuti cara bidang Anda membuktikan pekerjaan - arsitek tidak dinilai dengan tolok ukur yang sama dengan dosen.",
+    pillarFolioNote:
+      "Sekarang portofolio menyatu di dalam CV Anda sebagai bagian tersendiri, bukan berkas terpisah. Berkas portofolio yang berdiri sendiri belum ada - itu pekerjaan berikutnya.",
+    pillarFolioCta: "Susun portofolio saya",
+    cmpColCv: "CV",
+    cmpColFolio: "Portofolio",
+    cmpReadLabel: "Dibaca",
+    cmpReadCv: "Mesin dulu, lalu perekrut sekitar 6 detik",
+    cmpReadFolio: "Manusia yang ahli di bidangnya - pelan dan teliti",
+    cmpAnswerLabel: "Menjawab",
+    cmpAnswerCv: "Pantas diwawancara?",
+    cmpAnswerFolio: "Benar-benar bisa?",
+    cmpFormLabel: "Bentuk",
+    cmpFormCv: "Satu kolom, tanpa tabel, tanpa gambar",
+    cmpFormFolio: "Bebas - boleh gambar dan studi kasus",
+    cmpLengthLabel: "Panjang",
+    cmpLengthCv: "1-2 halaman",
+    cmpLengthFolio: "3-5 karya terkuat, dibahas mendalam",
+    cmpScoreLabel: "Dinilai dari",
+    cmpScoreCv: "Kata kunci dan keterbacaan mesin",
+    cmpScoreFolio: "Kedalaman penalaran dan hasilnya",
+    haveCvTitle: "Sudah punya CV dari tempat lain?",
     pathCompareTitle: "Cek CV yang sudah ada",
     pathCompareBody:
       "Punya CV lama dan penasaran nilainya? Unggah satu berkas untuk diperiksa, atau sampai lima sekaligus untuk diadu. Masing-masing dapat nilai, daftar kelebihan, dan daftar kekurangan lengkap dengan cara memperbaikinya - lalu kami sebutkan mana yang paling siap dikirim. Berkasnya diperiksa di HP atau komputer Anda sendiri, tidak pernah dikirim ke mana pun.",

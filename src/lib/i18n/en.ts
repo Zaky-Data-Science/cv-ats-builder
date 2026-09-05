@@ -11,7 +11,7 @@ import type { Dictionary } from "./id";
 
 export const en: Dictionary = {
   common: {
-    appName: "CV ATS Builder",
+    appName: "CV & Portofolio ATS",
     save: "Save",
     cancel: "Cancel",
     delete: "Delete",
@@ -500,7 +500,7 @@ export const en: Dictionary = {
   flow: {
     metaTitle: "Flow and Architecture",
     metaDescription:
-      "User flow, architecture, data flow and development workflow diagrams for CV ATS Builder - also available as SVG and PNG image files.",
+      "User flow, architecture, data flow and development workflow diagrams for CV & Portofolio ATS - also available as SVG and PNG image files.",
     title: "Flow and architecture",
     subtitle:
       "Four diagrams: how people use it, how the data moves, and how a code change reaches production. The diagrams on this page and the image files are generated from the same source data, so the two can never tell different stories.",
@@ -517,11 +517,11 @@ export const en: Dictionary = {
   home: {
     skipToContent: "Skip to main content",
     heroBadge: "Free - nothing stamped on your CV - your data is saved",
-    heroTitleLine1: "You just fill in your details.",
-    heroTitleLine2: "The layout and the wording",
-    heroTitleLine3: "sort themselves out.",
+    heroTitleLine1: "Fill it in once.",
+    heroTitleLine2: "Get a CV machines can read,",
+    heroTitleLine3: "and a portfolio that convinces.",
     heroBody:
-      "Before a human ever sees it, your application is usually read by a machine first. And that machine trips easily: two-column CVs, tables, or text buried inside an image often come out as nonsense - so the experience you genuinely have simply never registers. Here you just fill in the boxes. We keep the layout safe for machines to read, then score it and show you exactly what is still missing.",
+      "Your application is read twice, by two very different readers. A machine reads it first, and that machine trips easily: two-column CVs, tables, or text buried inside an image often come out as nonsense. Then a person reads it, and what they are looking for is no longer keywords but proof you can actually do the work. Here both come from the same data - the CV stays safe for machines to read, and the portfolio part follows the way your own field expects work to be evidenced.",
     heroCtaNew: "Start building my CV",
     heroCtaDashboard: "Back to my CVs",
     heroCtaCompare: "Check the CV I already have",
@@ -543,13 +543,37 @@ export const en: Dictionary = {
     heroBadgeGrade: "Grade A",
     heroBadgeSaved: "Saved automatically",
 
-    pathsTitle: "Two ways to use it",
-    pathsBody:
-      "Start from nothing, or start from the CV you already have. Both are judged exactly the same way, so the scores mean the same thing.",
-    pathBuildTitle: "Build a new CV",
-    pathBuildBody:
-      "Fill in the boxes one by one, watch the result appear on paper at its real size, fix whatever the score flags, then download it as a PDF, a Word file, or plain text.",
-    pathBuildCta: "Start building my CV",
+    pillarsTitle: "Two pillars, one set of data",
+    pillarsBody:
+      "A CV and a portfolio answer two different questions, and two different readers read them. You fill your details in once; only the way they are presented changes. Here is the difference, so you know which one you actually need.",
+    pillarCvTitle: "CV - the ticket in",
+    pillarCvBody:
+      "Read by a machine first, then glanced at by a recruiter for about six seconds. That is why its shape is kept strict: one column, no tables, no images - whichever design you pick. Fill in the boxes, watch it appear on paper at real size, fix what the score flags, then download.",
+    pillarCvCta: "Build my CV",
+    pillarFolioTitle: "Portfolio - the proof",
+    pillarFolioBody:
+      "Read by someone who knows your field, slowly and carefully. Three to five of your strongest pieces: what the problem was, what you decided, and what came of it. The fields follow how your own field proves work - an architect is not judged by the same yardstick as a lecturer.",
+    pillarFolioNote:
+      "For now your portfolio lives inside your CV as its own section, not as a separate file. A standalone portfolio file does not exist yet - that is the next piece of work.",
+    pillarFolioCta: "Build my portfolio",
+    cmpColCv: "CV",
+    cmpColFolio: "Portfolio",
+    cmpReadLabel: "Read by",
+    cmpReadCv: "A machine first, then a recruiter for ~6 seconds",
+    cmpReadFolio: "A human expert in your field - slowly, carefully",
+    cmpAnswerLabel: "Answers",
+    cmpAnswerCv: "Worth interviewing?",
+    cmpAnswerFolio: "Can they actually do it?",
+    cmpFormLabel: "Shape",
+    cmpFormCv: "One column, no tables, no images",
+    cmpFormFolio: "Free - images and case studies welcome",
+    cmpLengthLabel: "Length",
+    cmpLengthCv: "1-2 pages",
+    cmpLengthFolio: "3-5 strongest pieces, covered in depth",
+    cmpScoreLabel: "Judged on",
+    cmpScoreCv: "Keywords and machine readability",
+    cmpScoreFolio: "Depth of reasoning and results",
+    haveCvTitle: "Already have a CV from somewhere else?",
     pathCompareTitle: "Check a CV you already have",
     pathCompareBody:
       "Got an old CV and wonder how it scores? Upload one file to check it, or up to five to pit them against each other. Each gets a score, a list of strengths, and a list of weaknesses with how to fix them - then we name the one most ready to send. Files are read on your own device and never leave it.",

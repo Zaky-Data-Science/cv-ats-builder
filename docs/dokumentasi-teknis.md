@@ -3,6 +3,19 @@
 Berkas ini ditujukan sebagai bahan lampiran laporan: rancangan basis data,
 arsitektur, alur proses, dan rincian aturan penilaian ATS.
 
+Produknya bernama **CV & Portofolio ATS** dan berdiri di dua pilar: CV yang
+aman dibaca ATS, dan portofolio yang membuktikan kemampuan di baliknya.
+Keduanya dibangkitkan dari **satu model data yang sama** - lihat bagian ERD dan
+`src/lib/portfolio/render.ts`, yang menyatukan satu bentuk cetak untuk ketiga
+keluaran. Yang membedakan keduanya bukan datanya melainkan batasan bentuknya:
+CV dikunci satu kolom tanpa tabel dan tanpa gambar karena pengurai ATS
+membacanya berselang-seling antar-kolom, sedangkan portofolio tidak terikat
+batasan itu.
+
+Pada versi ini portofolio masih tersaji sebagai **bagian di dalam dokumen CV**,
+bukan berkas keluaran tersendiri; berkas portofolio terpisah adalah pekerjaan
+yang direncanakan berikutnya.
+
 Diagram ditulis dalam sintaks [Mermaid](https://mermaid.js.org), yang dirender
 otomatis oleh GitHub dan sebagian besar editor Markdown.
 
@@ -108,7 +121,7 @@ flowchart LR
     P((Pengguna))
     T((Pengunjung))
 
-    subgraph Sistem["CV ATS Builder"]
+    subgraph Sistem["CV & Portofolio ATS"]
         U1[Mendaftar / Masuk]
         U2[Membuat CV]
         U3[Mengisi data CV]

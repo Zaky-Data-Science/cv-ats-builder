@@ -1,9 +1,25 @@
-# CV ATS Builder
+# CV & Portofolio ATS
 
-Aplikasi web untuk menyusun CV yang terbaca sistem *Applicant Tracking System* (ATS)
-melalui field terstruktur, dengan pratinjau seukuran kertas sebenarnya, penilaian ATS
-beserta saran perbaikan, ekspor PDF/Word/teks/JSON, dan penyimpanan permanen di basis
-data sehingga CV dapat diedit kembali kapan saja.
+Aplikasi web yang berdiri di **dua pilar**: CV yang terbaca sistem *Applicant Tracking
+System* (ATS), dan portofolio yang membuktikan kemampuan di baliknya. Keduanya disusun
+dari data yang sama, lewat field terstruktur, dengan pratinjau seukuran kertas
+sebenarnya, penilaian beserta saran perbaikan, ekspor PDF/Word/teks/JSON, dan
+penyimpanan permanen sehingga dapat diedit kembali kapan saja.
+
+Keduanya sengaja tidak dilebur, karena pembacanya memang berbeda:
+
+| | CV | Portofolio |
+|---|---|---|
+| Dibaca | mesin dulu, lalu perekrut sekitar 6 detik | manusia yang ahli di bidangnya - pelan dan teliti |
+| Menjawab | "pantas diwawancara?" | "benar-benar bisa?" |
+| Bentuk | satu kolom, tanpa tabel, tanpa gambar | bebas - boleh gambar dan studi kasus |
+| Panjang | 1-2 halaman | 3-5 karya terkuat, dibahas mendalam |
+| Dinilai dari | kata kunci dan keterbacaan mesin | kedalaman penalaran dan hasilnya |
+
+> **Keadaan hari ini:** portofolio berupa **bagian di dalam CV** yang bentuk isiannya
+> mengikuti pola pembuktian bidang penggunanya - bukan berkas terpisah. Berkas
+> portofolio yang berdiri sendiri belum ada dan sedang direncanakan; lihat
+> [Portofolio Berbasis Pola](#portofolio-berbasis-pola).
 
 Aplikasi ini juga dapat **memindai dan membandingkan CV yang sudah ada** - berkas PDF
 atau Word dari mana pun dibaca dan dinilai langsung di dalam peramban, tanpa pernah

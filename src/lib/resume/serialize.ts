@@ -369,7 +369,7 @@ export function toExportFile(data: ResumeData) {
   void _ignored;
   return {
     schemaVersion: VERSI_SKEMA_CV,
-    app: "ATS-Friendly CV Builder",
+    app: "CV & Portofolio ATS",
     exportedAt: new Date().toISOString(),
     resume: {
       ...rest,

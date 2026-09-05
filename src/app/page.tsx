@@ -7,6 +7,7 @@ import {
   FileDown,
   FileText,
   Gauge,
+  Layers,
   LayoutList,
   MousePointerClick,
   Ruler,
@@ -325,36 +326,49 @@ export default async function LandingPage() {
         </section>
 
         {/* ================================================================ */}
-        {/* Dua cara memakainya                                              */}
+        {/* Dua pilar: CV dan Portofolio                                     */}
         {/* ================================================================ */}
+        {/*
+          Dua pintu masuk yang setara, bukan satu pintu CV dengan portofolio
+          sebagai anak kalimat. Keduanya kartu seukuran sama, berdampingan,
+          dengan tombolnya masing-masing.
+
+          Keduanya menuju penyusun yang sama - dan itu memang keadaannya hari
+          ini: portofolio masih berupa bagian di dalam CV, bukan berkas
+          tersendiri. Karena itu kartu portofolio membawa keterangannya sendiri
+          (`pillarFolioNote`) yang menyebutkan hal itu apa adanya. Menjanjikan
+          dua berkas sementara yang keluar satu adalah iklan kosong, dan
+          pengunjung baru menyadarinya setelah selesai mengisi.
+        */}
         <section className="border-y border-ink-200 bg-ink-50 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
-                {t.home.pathsTitle}
+                {t.home.pillarsTitle}
               </h2>
               <p className="mt-2 max-w-2xl text-sm text-ink-600">
-                {t.home.pathsBody}
+                {t.home.pillarsBody}
               </p>
             </Reveal>
 
             <div className="mt-10 grid gap-4 md:grid-cols-2">
+              {/* Pintu 1 - CV */}
               <Reveal>
                 <Interactive>
                   <Card className="flex h-full flex-col p-6">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-ink-900 text-white">
-                    <FileText size={19} />
-                  </span>
-                  <h3 className="mt-4 text-base font-semibold text-ink-900">
-                    {t.home.pathBuildTitle}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
-                    {t.home.pathBuildBody}
-                  </p>
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-ink-900 text-white">
+                      <FileText size={19} />
+                    </span>
+                    <h3 className="mt-4 text-base font-semibold text-ink-900">
+                      {t.home.pillarCvTitle}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
+                      {t.home.pillarCvBody}
+                    </p>
                     <div className="mt-5 flex flex-wrap gap-2">
                       <Link href={signedIn ? "/dashboard" : "/login"}>
                         <Button className="press">
-                          {signedIn ? t.home.heroCtaDashboard : t.home.pathBuildCta}
+                          {signedIn ? t.home.heroCtaDashboard : t.home.pillarCvCta}
                           <ArrowRight size={15} />
                         </Button>
                       </Link>
@@ -368,28 +382,124 @@ export default async function LandingPage() {
                 </Interactive>
               </Reveal>
 
+              {/* Pintu 2 - Portofolio */}
               <Reveal delay={90}>
                 <Interactive>
                   <Card className="flex h-full flex-col p-6">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-ink-900 text-white">
-                    <Upload size={19} />
-                  </span>
-                  <h3 className="mt-4 text-base font-semibold text-ink-900">
-                    {t.home.pathCompareTitle}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
-                    {t.home.pathCompareBody}
-                  </p>
-                    <Link href="/bandingkan" className="mt-5">
-                      <Button variant="outline" className="press">
-                        {t.home.pathCompareCta}
-                        <ArrowRight size={15} />
-                      </Button>
-                    </Link>
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-ink-900 text-white">
+                      <Layers size={19} />
+                    </span>
+                    <h3 className="mt-4 text-base font-semibold text-ink-900">
+                      {t.home.pillarFolioTitle}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
+                      {t.home.pillarFolioBody}
+                    </p>
+                    <p className="mt-3 rounded-lg border border-ink-200 bg-ink-50 px-3 py-2 text-[12px] leading-relaxed text-ink-600">
+                      {t.home.pillarFolioNote}
+                    </p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Link href={signedIn ? "/dashboard" : "/coba"}>
+                        <Button className="press">
+                          {t.home.pillarFolioCta}
+                          <ArrowRight size={15} />
+                        </Button>
+                      </Link>
+                    </div>
                   </Card>
                 </Interactive>
               </Reveal>
             </div>
+
+            {/* ------------------------------------------------------------ */}
+            {/* Bedanya, berdampingan                                        */}
+            {/* ------------------------------------------------------------ */}
+            {/*
+              Tabel - dan di sini tabel memang alat yang tepat. Larangan tabel
+              berlaku pada CV yang dihasilkan, karena pengurai ATS membacanya
+              berselang-seling antar-kolom; halaman promosi ini tidak pernah
+              dibaca pengurai mana pun. Jangan bawa aturan yang satu ke tempat
+              yang lain.
+
+              Dibungkus wadah yang dapat digulir sendiri supaya di layar sempit
+              yang bergeser tabelnya, bukan seluruh halaman.
+            */}
+            <Reveal delay={150}>
+              <div className="mt-8 overflow-x-auto rounded-xl border border-ink-200 bg-white">
+                <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-ink-200 bg-ink-50">
+                      <th scope="col" className="px-4 py-3 font-medium text-ink-500">
+                        <span className="sr-only">{t.home.pillarsTitle}</span>
+                      </th>
+                      <th scope="col" className="px-4 py-3 font-semibold text-ink-900">
+                        {t.home.cmpColCv}
+                      </th>
+                      <th scope="col" className="px-4 py-3 font-semibold text-ink-900">
+                        {t.home.cmpColFolio}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      [t.home.cmpReadLabel, t.home.cmpReadCv, t.home.cmpReadFolio],
+                      [t.home.cmpAnswerLabel, t.home.cmpAnswerCv, t.home.cmpAnswerFolio],
+                      [t.home.cmpFormLabel, t.home.cmpFormCv, t.home.cmpFormFolio],
+                      [t.home.cmpLengthLabel, t.home.cmpLengthCv, t.home.cmpLengthFolio],
+                      [t.home.cmpScoreLabel, t.home.cmpScoreCv, t.home.cmpScoreFolio],
+                    ].map(([label, cv, folio]) => (
+                      <tr key={label} className="border-b border-ink-100 last:border-0">
+                        <th
+                          scope="row"
+                          className="px-4 py-3 align-top text-[13px] font-medium whitespace-nowrap text-ink-500"
+                        >
+                          {label}
+                        </th>
+                        <td className="px-4 py-3 align-top text-ink-700">{cv}</td>
+                        <td className="px-4 py-3 align-top text-ink-700">{folio}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ================================================================ */}
+        {/* Sudah punya CV dari tempat lain                                  */}
+        {/* ================================================================ */}
+        {/*
+          Memindai CV yang sudah jadi bukan pilar ketiga - ia jalan masuk bagi
+          orang yang belum tentu mau menyusun apa pun. Karena itu ia berdiri
+          sebagai satu jalur mendatar di bawah kedua pilar, bukan kartu ketiga
+          yang seukuran keduanya.
+        */}
+        <section className="py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
+            <Reveal>
+              <Interactive>
+                <Card className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ink-900 text-white">
+                    <Upload size={19} />
+                  </span>
+                  <div className="flex-1">
+                    <h2 className="text-base font-semibold text-ink-900">
+                      {t.home.haveCvTitle}
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-600">
+                      {t.home.pathCompareBody}
+                    </p>
+                  </div>
+                  <Link href="/bandingkan" className="shrink-0">
+                    <Button variant="outline" className="press w-full sm:w-auto">
+                      {t.home.pathCompareCta}
+                      <ArrowRight size={15} />
+                    </Button>
+                  </Link>
+                </Card>
+              </Interactive>
+            </Reveal>
           </div>
         </section>
 

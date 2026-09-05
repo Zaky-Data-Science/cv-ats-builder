@@ -101,7 +101,7 @@ export async function sendMail({
 
 const TEKS = {
   id: {
-    subject: "Atur ulang kata sandi CV ATS Builder",
+    subject: "Atur ulang kata sandi CV & Portofolio ATS",
     heading: "Atur ulang kata sandi Anda",
     body: "Ada yang meminta kata sandi baru untuk akun ini. Kalau itu Anda, tekan tombol di bawah.",
     button: "Buat kata sandi baru",
@@ -112,7 +112,7 @@ const TEKS = {
     fallback: "Kalau tombolnya tidak bisa ditekan, salin alamat ini ke browser:",
   },
   en: {
-    subject: "Reset your CV ATS Builder password",
+    subject: "Reset your CV & Portofolio ATS password",
     heading: "Reset your password",
     body: "Someone asked for a new password on this account. If that was you, use the button below.",
     button: "Set a new password",

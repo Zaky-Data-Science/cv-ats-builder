@@ -2240,6 +2240,76 @@ Gerbang kualitas: `npm test` 792 lulus 0 gagal, typecheck bersih, lint bersih.
 
 ---
 
+## Sesi 14 - 5 September 2026: dua pilar, dan nama yang memuat keduanya
+
+Reposisi tampilan - **Bentuk A** dari `rancangan/06-rencana-dua-pilar...`.
+Tidak ada logika fitur yang disentuh; yang berubah nama, salinan, dan susunan
+beranda. Bentuk B (berkas portofolio terpisah) belum dikerjakan.
+
+Nama produk menjadi **CV & Portofolio ATS**. Kata "ATS" sengaja dipertahankan -
+alasannya sama dengan penggantian nama skor di sesi 12: itu kata yang benar-
+benar diketik orang Indonesia di mesin pencari, dan ia masih ada di
+`SITE_META.keywords`. Nama repositori GitHub dan `name` di `package.json`
+sengaja **tidak** ikut berganti: keduanya plumbing, tidak pernah dilihat
+pengguna, dan menggantinya memutus tautan yang sudah tersebar.
+
+### Kenapa CV dan portofolio tidak dilebur
+
+Keduanya menjawab pertanyaan berbeda dan dibaca pembaca berbeda:
+
+| | CV | Portofolio |
+|---|---|---|
+| Dibaca | mesin dulu, lalu perekrut ~6 detik | manusia ahli, pelan dan teliti |
+| Menjawab | pantas diwawancara? | benar-benar bisa? |
+| Bentuk | satu kolom, tanpa tabel, tanpa gambar | bebas, gambar dan studi kasus |
+| Panjang | 1-2 halaman | 3-5 karya terkuat, mendalam |
+| Dinilai | kata kunci + keterbacaan mesin | kedalaman penalaran dan hasil |
+
+Tabel itu kini muncul apa adanya di beranda, README, dan panduan pengguna.
+Menyembunyikannya akan membuat pengunjung memilih pintu yang salah - dan
+menyalahkan aplikasinya, bukan pilihannya.
+
+### Keputusan yang tidak terbaca dari kode
+
+**1. Beranda menyatakan batas produknya sendiri.**
+
+Hari ini portofolio masih berupa bagian **di dalam** CV, bukan berkas terpisah.
+Kartu portofolio di beranda membawa keterangan itu apa adanya
+(`home.pillarFolioNote`), begitu juga README, panduan pengguna, dokumentasi
+teknis, dan halaman Tentang. Menjanjikan dua berkas sementara yang keluar satu
+adalah iklan kosong, dan pengunjung baru menyadarinya **setelah** selesai
+mengisi - saat itu kerugiannya sudah nyata, dan yang hilang kepercayaannya.
+
+**2. Tabel dipakai di beranda, dan itu tidak melanggar apa pun.**
+
+Larangan tabel berlaku pada **CV yang dihasilkan**, karena pengurai ATS
+membacanya berselang-seling antar-kolom. Halaman promosi tidak pernah dibaca
+pengurai mana pun. Aturan yang satu jangan dibawa ke tempat yang lain; komentar
+di `page.tsx` menyebutkan ini supaya tidak ada yang "memperbaikinya" nanti.
+
+**3. Memindai CV bukan pilar ketiga.**
+
+Bagian "Cek CV yang sudah ada" dipindahkan keluar dari kartu berdampingan
+menjadi satu jalur mendatar di bawah kedua pilar. Ia jalan masuk bagi orang
+yang belum tentu mau menyusun apa pun - menaruhnya sebagai kartu seukuran CV
+dan Portofolio akan membuat "dua pilar" terbaca sebagai tiga.
+
+### Catatan kerja
+
+`npm run diagram` dijalankan dan **hasilnya dibuka**, bukan dipercaya begitu
+saja: nama produk ternyata tidak pernah muncul di satu pun diagram, dan
+pembangkitan ulang menghasilkan isi identik (`git diff` nol baris; yang berbeda
+hanya akhiran baris). Berkasnya dipulihkan supaya tidak menambah derau commit.
+
+Dua tempat sengaja **tidak** diganti namanya, dan keduanya bukan kelalaian:
+`scripts/pasang-tugas.ps1` (nama Scheduled Task yang sudah terdaftar di Windows
+- menggantinya membuat tugas lama menggantung) dan `docs/deploy.md` (nama
+project di konsol Google Cloud, milik pihak lain).
+
+Gerbang kualitas: `npm test` 792 lulus 0 gagal, typecheck bersih, lint bersih.
+
+---
+
 ## Rangkuman angka
 
 Angka di bawah ini per akhir sesi 13.
