@@ -17,7 +17,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Interactive, Reveal } from "@/components/motion";
-import { Button, Card } from "@/components/ui";
+import { buttonClass, Card } from "@/components/ui";
 import { getT } from "@/lib/i18n/server";
 import { RUJUKAN } from "@/lib/rujukan";
 import { AUTHOR, SITE } from "@/lib/site";
@@ -317,12 +317,10 @@ export default async function TentangPage() {
               </p>
               <Link
                 href="/login"
-                className="mt-5 inline-block"
+                className={buttonClass({ className: "press mt-5" })}
               >
-                <Button className="press">
-                  {content.ctaButton}
-                  <ArrowRight size={15} />
-                </Button>
+                {content.ctaButton}
+                <ArrowRight size={15} />
               </Link>
               <p className="mt-3 text-[11px] text-ink-400">{SITE.name}</p>
             </Card>

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, UserRoundCog } from "lucide-react";
+import { House, LogOut, UserRoundCog } from "lucide-react";
 import { auth, signOut } from "@/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { BrandMark } from "@/components/BrandMark";
 import { HeaderBack } from "@/components/HeaderBack";
 import { LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui";
+import { Button, buttonClass } from "@/components/ui";
 import { getT } from "@/lib/i18n/server";
 import { SITE } from "@/lib/site";
 
@@ -111,22 +111,48 @@ export default async function AppLayout({
             <LanguageToggle />
             <ThemeToggle />
             {/*
+              Jalan pulang ke halaman depan.
+
+              Sebelum ini tidak ada satu pun: logo di kiri atas menuju
+              /dashboard, dan bagi yang sudah masuk seluruh bilah ini hanya
+              menawarkan tempat-tempat di dalam aplikasi. Halaman depan -
+              tempat panduan, perbandingan, dan penjelasan fiturnya berada -
+              hanya dapat dicapai dengan menyunting alamat di bilah peramban.
+
+              Logonya sengaja tidak dialihkan ke "/" sebagai gantinya. Bagi
+              orang yang sedang bekerja, logo yang membawa pulang ke dasbor
+              adalah yang diharapkan; yang kurang justru pintu keluarnya, dan
+              pintu itu lebih baik disebutkan namanya daripada disembunyikan
+              di balik gambar.
+            */}
+            <Link
+              href="/"
+              title={t.nav.backHome}
+              className={buttonClass({ variant: "ghost", size: "sm" })}
+            >
+              <House size={14} />
+              <span className="hidden lg:inline">{t.nav.home}</span>
+            </Link>
+
+            {/*
               Tautan panel hanya muncul bagi pengelola. Ini kemudahan, BUKAN
               pengamanan: rutenya sendiri memeriksa perannya di server dan
               membalas 404 bagi siapa pun yang lain, termasuk yang mengetik
               alamatnya langsung tanpa pernah melihat tautan ini.
             */}
             {pengelola && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  {t.admin.title}
-                </Button>
+              <Link
+                href="/admin"
+                className={buttonClass({ variant: "ghost", size: "sm" })}
+              >
+                {t.admin.title}
               </Link>
             )}
-            <Link href="/settings">
-              <Button variant="ghost" size="sm">
-                {t.app.settings}
-              </Button>
+            <Link
+              href="/settings"
+              className={buttonClass({ variant: "ghost", size: "sm" })}
+            >
+              {t.app.settings}
             </Link>
             {/*
               "Ganti akun" berbeda maksud dari "Keluar", jadi berbeda tombol.

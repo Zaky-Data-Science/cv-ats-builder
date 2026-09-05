@@ -504,17 +504,21 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
    **Selesai di sesi 13, keempatnya lulus, sudah di-push dan Uji 5 di produksi
    ikut lulus.** Tidak ada lagi yang menahan pekerjaan lain.
 
-0b. **Dua pasang kontrol berlabel sama di kepala halaman.** Sebuah
-   `<a href="/login">` dan sebuah `<button>` sama-sama berbunyi "Masuk", dan
-   hal yang sama berlaku untuk "Daftar Gratis" - keempatnya dapat dicapai Tab.
-   Bagi pengguna papan ketik, satu hal yang sama menghabiskan dua perhentian
-   Tab, dan perhentian kedua tidak menambah apa pun.
+0b. ~~Dua pasang kontrol berlabel sama di kepala halaman.~~ **Selesai di sesi
+   14.** Penyebabnya `<Link><Button>...</Button></Link>` yang menghasilkan
+   `<a><button>`, dan ia ternyata bukan cuma di kepala halaman: **27 tempat**
+   di 12 berkas, termasuk enam tombol di halaman depan.
 
-   Sudah ada sebelum sesi 13; bukan akibat perubahan Mode Redaksi. Uji 1
-   melewatkannya karena yang diperiksa saat itu "apakah tiap perhentian
-   terlihat dan urutannya masuk akal", bukan "apakah ada perhentian yang
-   mubazir". Kecil, tetapi mengenai kelompok pengguna yang paling sulit
-   menyiasatinya sendiri.
+   Diganti helper `buttonClass()` di `components/ui.tsx` - kelas yang sama,
+   satu elemen saja - dan dijaga `tests/markup.test.ts` yang memindai berkas
+   sumber. Pemindaian, bukan perenderan: gejalanya tidak pernah muncul sebagai
+   galat, halamannya terbentuk normal dan tampilannya sama persis.
+
+   Satu jebakan yang sempat hampir tertanam saat menggabungkan kelasnya:
+   `inline-block` milik `<Link>` MENGGANTIKAN `inline-flex` milik tombol -
+   tailwind-merge memenangkan yang ditulis belakangan - dan bersamanya hilang
+   perataan tengah yang menyejajarkan ikon panah dengan teksnya. `inline-block`
+   karena itu dibuang saat digabung, dan `block` diterjemahkan jadi `flex`.
 
 1. **Pemulihan kata sandi lewat surel sudah ada sejak sesi 10, tetapi belum
    menyala.** Seluruh alurnya terpasang - `/lupa-sandi`, `/atur-sandi`, dua

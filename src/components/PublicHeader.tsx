@@ -9,7 +9,7 @@ import { HeaderBack } from "@/components/HeaderBack";
 import { BrandMark } from "@/components/BrandMark";
 import { useI18n, LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui";
+import { buttonClass } from "@/components/ui";
 import { SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -150,10 +150,11 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
           <ThemeToggle />
 
           {signedIn ? (
-            <Link href="/dashboard">
-              <Button size="sm" className="press">
-                {t.nav.dashboard}
-              </Button>
+            <Link
+              href="/dashboard"
+              className={buttonClass({ size: "sm", className: "press" })}
+            >
+              {t.nav.dashboard}
             </Link>
           ) : (
             <>
@@ -164,15 +165,17 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
                 mendaftar ulang. Kedua pilihan kini selalu berdampingan - di
                 bilah pada layar lebar, dan di dalam laci pada layar sempit.
               */}
-              <Link href="/login">
-                <Button variant="ghost" size="sm">
-                  {t.nav.login}
-                </Button>
+              <Link
+                href="/login"
+                className={buttonClass({ variant: "ghost", size: "sm" })}
+              >
+                {t.nav.login}
               </Link>
-              <Link href="/register">
-                <Button size="sm" className="press">
-                  {t.nav.register}
-                </Button>
+              <Link
+                href="/register"
+                className={buttonClass({ size: "sm", className: "press" })}
+              >
+                {t.nav.register}
               </Link>
             </>
           )}
@@ -316,18 +319,31 @@ function MobileDrawer({
 
         <div className="shrink-0 space-y-2 border-t border-ink-200 p-4">
           {signedIn ? (
-            <Link href="/dashboard" onClick={onClose} className="block">
-              <Button className="press w-full">{t.nav.dashboard}</Button>
+            <Link
+              href="/dashboard"
+              onClick={onClose}
+              className={buttonClass({ className: "press w-full flex" })}
+            >
+              {t.nav.dashboard}
             </Link>
           ) : (
             <>
-              <Link href="/register" onClick={onClose} className="block">
-                <Button className="press w-full">{t.nav.register}</Button>
+              <Link
+                href="/register"
+                onClick={onClose}
+                className={buttonClass({ className: "press w-full flex" })}
+              >
+                {t.nav.register}
               </Link>
-              <Link href="/login" onClick={onClose} className="block">
-                <Button variant="outline" className="w-full">
-                  {t.nav.login}
-                </Button>
+              <Link
+                href="/login"
+                onClick={onClose}
+                className={buttonClass({
+                  variant: "outline",
+                  className: "w-full flex",
+                })}
+              >
+                {t.nav.login}
               </Link>
             </>
           )}

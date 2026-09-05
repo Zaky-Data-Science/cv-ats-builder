@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FileQuestion } from "lucide-react";
 import { useI18n } from "@/components/i18n";
-import { Button } from "@/components/ui";
+import { buttonClass } from "@/components/ui";
 
 /**
  * Halaman untuk alamat yang tidak dikenal.
@@ -30,15 +30,20 @@ export default function NotFound() {
         </p>
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
-          <Link href="/dashboard">
-            <Button className="press w-full sm:w-auto">
-              {t.errors.openDashboard}
-            </Button>
+          <Link
+            href="/dashboard"
+            className={buttonClass({ className: "press w-full sm:w-auto" })}
+          >
+            {t.errors.openDashboard}
           </Link>
-          <Link href="/">
-            <Button variant="outline" className="press w-full sm:w-auto">
-              {t.errors.backHome}
-            </Button>
+          <Link
+            href="/"
+            className={buttonClass({
+              variant: "outline",
+              className: "press w-full sm:w-auto",
+            })}
+          >
+            {t.errors.backHome}
           </Link>
         </div>
       </div>

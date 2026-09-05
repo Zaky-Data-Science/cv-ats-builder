@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { HeaderBack } from "@/components/HeaderBack";
 import { LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui";
+import { buttonClass } from "@/components/ui";
 import { getT } from "@/lib/i18n/server";
 import { SITE } from "@/lib/site";
 import { GuestEditor } from "./GuestEditor";
@@ -62,24 +62,35 @@ export default async function CobaPage() {
               padahal di sanalah CV-nya bisa tersimpan permanen.
             */}
             {signedIn ? (
-              <Link href="/dashboard">
-                <Button variant="outline" size="sm" className="press">
-                  <LogIn size={14} />
-                  <span className="hidden sm:inline">{t.nav.dashboard}</span>
-                </Button>
+              <Link
+                href="/dashboard"
+                className={buttonClass({
+                  variant: "outline",
+                  size: "sm",
+                  className: "press",
+                })}
+              >
+                <LogIn size={14} />
+                <span className="hidden sm:inline">{t.nav.dashboard}</span>
               </Link>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm" className="press">
-                    <LogIn size={14} />
-                    <span className="hidden sm:inline">{t.nav.login}</span>
-                  </Button>
+                <Link
+                  href="/login"
+                  className={buttonClass({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "press",
+                  })}
+                >
+                  <LogIn size={14} />
+                  <span className="hidden sm:inline">{t.nav.login}</span>
                 </Link>
-                <Link href="/register">
-                  <Button size="sm" className="press">
-                    {t.nav.register}
-                  </Button>
+                <Link
+                  href="/register"
+                  className={buttonClass({ size: "sm", className: "press" })}
+                >
+                  {t.nav.register}
                 </Link>
               </>
             )}

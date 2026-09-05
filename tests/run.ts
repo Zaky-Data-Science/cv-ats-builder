@@ -6,6 +6,7 @@ import { runEditPathTests } from "./edit-path.test";
 import { runI18nTests } from "./i18n.test";
 import { runKertasTests } from "./kertas.test";
 import { runKeywordTests } from "./keywords.test";
+import { runMarkupTests } from "./markup.test";
 import { runPasswordResetTests } from "./password-reset.test";
 import { runPdfTests } from "./pdf.test";
 import { runPhotoTests } from "./photo.test";
@@ -26,6 +27,7 @@ async function main() {
   runKeywordTests();
   runEditPathTests();
   runStructureTests();
+  runMarkupTests();
   runPasswordResetTests();
   runStaleSessionTests();
   runAdminTests();

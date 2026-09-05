@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
 import { useI18n } from "@/components/i18n";
-import { Badge, Button, Callout, Input } from "@/components/ui";
+import { Badge, Button, buttonClass, Callout, Input } from "@/components/ui";
 import { analyzeResume } from "@/lib/ats/engine";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import {
@@ -643,14 +643,16 @@ export function ResumeEditor({
 
         <div className="shrink-0 border-b border-ink-200 bg-white px-3 py-2 sm:px-4 sm:py-2.5">
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link href={guest ? "/" : "/dashboard"} className="shrink-0">
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label={guest ? t.nav.backHome : t.editor.backAria}
-              >
-                <ArrowLeft size={16} />
-              </Button>
+            <Link
+              href={guest ? "/" : "/dashboard"}
+              aria-label={guest ? t.nav.backHome : t.editor.backAria}
+              className={buttonClass({
+                variant: "ghost",
+                size: "sm",
+                className: "shrink-0",
+              })}
+            >
+              <ArrowLeft size={16} />
             </Link>
 
             <Input

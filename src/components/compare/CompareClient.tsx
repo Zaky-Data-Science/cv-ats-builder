@@ -18,7 +18,14 @@ import {
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useI18n } from "@/components/i18n";
 import { Interactive } from "@/components/motion";
-import { Badge, Button, Callout, Card, Textarea } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  buttonClass,
+  Callout,
+  Card,
+  Textarea,
+} from "@/components/ui";
 import {
   analyzeDocument,
   compareDocuments,
@@ -468,11 +475,12 @@ export function CompareClient() {
             <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-ink-600">
               {t.compare.ctaBody}
             </p>
-              <Link href="/login" className="mt-4 inline-block">
-                <Button className="press">
-                  {t.compare.ctaButton}
-                  <ArrowRight size={15} />
-                </Button>
+              <Link
+                href="/login"
+                className={buttonClass({ className: "press mt-4" })}
+              >
+                {t.compare.ctaButton}
+                <ArrowRight size={15} />
               </Link>
             </Card>
           </Interactive>

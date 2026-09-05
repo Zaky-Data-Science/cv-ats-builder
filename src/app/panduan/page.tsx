@@ -15,7 +15,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Interactive, Reveal } from "@/components/motion";
-import { Badge, Button, Callout, Card } from "@/components/ui";
+import { Badge, buttonClass, Callout, Card } from "@/components/ui";
 import {
   DIMENSION_WEIGHTS,
   dimensionDescriptions,
@@ -328,11 +328,15 @@ export default async function PanduanPage() {
               </p>
             </div>
 
-            <Link href="/bandingkan" className="mt-5 inline-block">
-              <Button variant="outline" className="press">
-                {t.nav.compare}
-                <ArrowRight size={15} />
-              </Button>
+            <Link
+              href="/bandingkan"
+              className={buttonClass({
+                variant: "outline",
+                className: "press mt-5",
+              })}
+            >
+              {t.nav.compare}
+              <ArrowRight size={15} />
             </Link>
           </Reveal>
 
@@ -388,12 +392,10 @@ export default async function PanduanPage() {
               </div>
               <Link
                 href="/login"
-                className="w-full sm:w-auto"
+                className={buttonClass({ className: "press w-full sm:w-auto" })}
               >
-                <Button className="press w-full sm:w-auto">
-                  {signedIn ? content.ctaButtonSignedIn : content.ctaButton}
-                  <ArrowRight size={16} />
-                </Button>
+                {signedIn ? content.ctaButtonSignedIn : content.ctaButton}
+                <ArrowRight size={16} />
               </Link>
             </Card>
           </Reveal>

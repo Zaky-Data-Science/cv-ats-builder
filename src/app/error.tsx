@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { RotateCcw, TriangleAlert } from "lucide-react";
 import { useI18n } from "@/components/i18n";
-import { Button } from "@/components/ui";
+import { Button, buttonClass } from "@/components/ui";
 
 /**
  * Penangkap galat tak terduga.
@@ -46,10 +46,14 @@ export default function Error({
             <RotateCcw size={15} />
             {t.errors.retry}
           </Button>
-          <Link href="/dashboard">
-            <Button variant="outline" className="press w-full sm:w-auto">
-              {t.errors.openDashboard}
-            </Button>
+          <Link
+            href="/dashboard"
+            className={buttonClass({
+              variant: "outline",
+              className: "press w-full sm:w-auto",
+            })}
+          >
+            {t.errors.openDashboard}
           </Link>
         </div>
 

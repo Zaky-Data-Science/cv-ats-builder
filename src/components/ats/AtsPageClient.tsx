@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Gauge, Loader2 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
 import { useI18n } from "@/components/i18n";
-import { Button, Callout, Card, Textarea } from "@/components/ui";
+import { Button, buttonClass, Callout, Card, Textarea } from "@/components/ui";
 import { analyzeResume, type AtsResult } from "@/lib/ats/engine";
 import type { ResumeData } from "@/lib/resume/types";
 
@@ -87,11 +87,12 @@ export function AtsPageClient({
     <div className="mx-auto w-full max-w-6xl px-5 py-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link href={`/resume/${resume.id}/edit`}>
-            <Button variant="ghost" size="sm">
-              <ArrowLeft size={15} />
-              {t.ats.backToEditor}
-            </Button>
+          <Link
+            href={`/resume/${resume.id}/edit`}
+            className={buttonClass({ variant: "ghost", size: "sm" })}
+          >
+            <ArrowLeft size={15} />
+            {t.ats.backToEditor}
           </Link>
           <div>
             <h1 className="text-lg font-bold text-ink-900">

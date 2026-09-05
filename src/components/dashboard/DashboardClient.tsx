@@ -15,7 +15,15 @@ import {
 import { useI18n } from "@/components/i18n";
 import { GuestImport } from "@/components/dashboard/GuestImport";
 import { Interactive } from "@/components/motion";
-import { Badge, Button, Callout, Card, Input, Spinner } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  buttonClass,
+  Callout,
+  Card,
+  Input,
+  Spinner,
+} from "@/components/ui";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { TEMPLATE_INFO } from "@/lib/resume/templates";
 import type { ResumeSummary } from "@/lib/resume/types";
@@ -327,10 +335,14 @@ export function DashboardClient({
                 </div>
               ) : (
                 <div className="flex items-center gap-1.5">
-                  <Link href={`/resume/${resume.id}/edit`} className="flex-1">
-                    <Button size="sm" className="w-full">
-                      {t.dashboard.edit}
-                    </Button>
+                  <Link
+                    href={`/resume/${resume.id}/edit`}
+                    className={buttonClass({
+                      size: "sm",
+                      className: "w-full flex-1",
+                    })}
+                  >
+                    {t.dashboard.edit}
                   </Link>
                   <Button
                     size="icon"

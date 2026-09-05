@@ -24,7 +24,7 @@ import { SamuraiIntro } from "@/components/ink/SamuraiIntro";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Interactive, Reveal, TiltCard } from "@/components/motion";
-import { Badge, Button, Card } from "@/components/ui";
+import { Badge, buttonClass, Card } from "@/components/ui";
 import { auth } from "@/auth";
 import { getT } from "@/lib/i18n/server";
 import {
@@ -276,21 +276,26 @@ export default async function LandingPage() {
               <Reveal delay={60} className="lg:col-start-1 lg:row-start-2">
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-8">
-                  <Link href={signedIn ? "/dashboard" : "/login"}>
-                    <Button size="lg" className="press w-full sm:w-auto">
-                      {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
-                      <ArrowRight size={18} />
-                    </Button>
+                  <Link
+                    href={signedIn ? "/dashboard" : "/login"}
+                    className={buttonClass({
+                      size: "lg",
+                      className: "press w-full sm:w-auto",
+                    })}
+                  >
+                    {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
+                    <ArrowRight size={18} />
                   </Link>
-                  <Link href="/coba">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="press w-full sm:w-auto"
-                      title={t.guest.ctaTryHint}
-                    >
-                      {t.guest.ctaTry}
-                    </Button>
+                  <Link
+                    href="/coba"
+                    title={t.guest.ctaTryHint}
+                    className={buttonClass({
+                      variant: "outline",
+                      size: "lg",
+                      className: "press w-full sm:w-auto",
+                    })}
+                  >
+                    {t.guest.ctaTry}
                   </Link>
                 </div>
 
@@ -353,16 +358,21 @@ export default async function LandingPage() {
                     {t.home.pathBuildBody}
                   </p>
                     <div className="mt-5 flex flex-wrap gap-2">
-                      <Link href={signedIn ? "/dashboard" : "/login"}>
-                        <Button className="press">
-                          {signedIn ? t.home.heroCtaDashboard : t.home.pathBuildCta}
-                          <ArrowRight size={15} />
-                        </Button>
+                      <Link
+                        href={signedIn ? "/dashboard" : "/login"}
+                        className={buttonClass({ className: "press" })}
+                      >
+                        {signedIn ? t.home.heroCtaDashboard : t.home.pathBuildCta}
+                        <ArrowRight size={15} />
                       </Link>
-                      <Link href="/coba">
-                        <Button variant="outline" className="press">
-                          {t.guest.ctaTry}
-                        </Button>
+                      <Link
+                        href="/coba"
+                        className={buttonClass({
+                          variant: "outline",
+                          className: "press",
+                        })}
+                      >
+                        {t.guest.ctaTry}
                       </Link>
                     </div>
                   </Card>
@@ -381,11 +391,15 @@ export default async function LandingPage() {
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
                     {t.home.pathCompareBody}
                   </p>
-                    <Link href="/bandingkan" className="mt-5">
-                      <Button variant="outline" className="press">
-                        {t.home.pathCompareCta}
-                        <ArrowRight size={15} />
-                      </Button>
+                    <Link
+                      href="/bandingkan"
+                      className={buttonClass({
+                        variant: "outline",
+                        className: "press mt-5",
+                      })}
+                    >
+                      {t.home.pathCompareCta}
+                      <ArrowRight size={15} />
                     </Link>
                   </Card>
                 </Interactive>
@@ -609,15 +623,16 @@ export default async function LandingPage() {
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-ink-300">
                 {t.home.ctaBody}
               </p>
-              <Link href={signedIn ? "/dashboard" : "/login"}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="press mt-8 border-ink-700 bg-white text-ink-900"
-                >
-                  {signedIn ? t.home.ctaButtonSignedIn : t.home.ctaButton}
-                  <ArrowRight size={18} />
-                </Button>
+              <Link
+                href={signedIn ? "/dashboard" : "/login"}
+                className={buttonClass({
+                  variant: "outline",
+                  size: "lg",
+                  className: "press mt-8 border-ink-700 bg-white text-ink-900",
+                })}
+              >
+                {signedIn ? t.home.ctaButtonSignedIn : t.home.ctaButton}
+                <ArrowRight size={18} />
               </Link>
               <p className="mt-4 text-[11px] text-ink-400">{t.home.ctaNote}</p>
             </Reveal>

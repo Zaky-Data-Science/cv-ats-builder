@@ -40,6 +40,61 @@ export interface ButtonProps
   size?: ButtonSize;
 }
 
+/**
+ * Rupa tombol, tanpa elemen <button>-nya.
+ *
+ * Ada karena tautan yang tampak seperti tombol adalah hal yang lazim di situs
+ * ini: "Masuk", "Daftar Gratis", "Buka Dasbor" semuanya berpindah halaman,
+ * bukan menjalankan sesuatu di tempat. Cara menulisnya dulu membungkus tombol
+ * di dalam tautan, dan itulah yang diperbaiki:
+ *
+ *     <Link href="/login"><Button>Masuk</Button></Link>
+ *
+ * Markup yang keluar dari situ `<a><button>Masuk</button></a>` - **dua**
+ * elemen yang dapat difokuskan untuk satu perintah yang sama. Akibatnya nyata:
+ * pengguna papan ketik menekan Tab dua kali untuk melewati satu tombol, dan
+ * pembaca layar menyebutkannya dua kali, sekali sebagai tautan dan sekali lagi
+ * sebagai tombol. HTML pun melarang bentuk itu - <a> tidak boleh memuat isi
+ * interaktif - dan yang dilarang berarti tiap peramban bebas memulihkannya
+ * dengan caranya sendiri.
+ *
+ * Dengan helper ini tautannya cukup memakai kelasnya:
+ *
+ *     <Link href="/login" className={buttonClass({ variant: "ghost" })}>
+ *
+ * Satu elemen, satu perhentian Tab, dan ia tetap sebuah tautan - klik tengah,
+ * "buka di tab baru", dan menyalin alamatnya tetap bekerja.
+ *
+ * Dipakai bersama oleh <Button> di bawah, jadi rupa keduanya tidak dapat
+ * berselisih: mengubah salah satu berarti mengubah keduanya.
+ *
+ * Catatan bagi pemanggil: kelasnya sudah memuat `inline-flex`. Menambahkan
+ * `inline-block` atau `block` lewat `className` justru MENGGANTIKANNYA -
+ * tailwind-merge memenangkan yang ditulis belakangan - dan bersama itu hilang
+ * pula perataan tengah yang menyejajarkan ikon dengan teksnya. Bila
+ * dibutuhkan bentuk setara-blok, pakai `flex`, bukan `block`.
+ */
+export function buttonClass({
+  variant = "primary",
+  size = "md",
+  className,
+}: {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  className?: string;
+} = {}): string {
+  return cn(
+    "inline-flex items-center justify-center rounded-lg font-medium",
+    "transition-colors disabled:cursor-not-allowed disabled:opacity-70",
+    // Area sentuh 44 piksel di perangkat berjari, tanpa mengubah
+    // ukuran tombolnya - lihat .tap-target di globals.css.
+    "tap-target",
+    buttonVariants[variant],
+    buttonSizes[size],
+    className,
+  );
+}
+
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
     { className, variant = "primary", size = "md", type = "button", ...props },
@@ -49,16 +104,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         type={type}
-        className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium",
-          "transition-colors disabled:cursor-not-allowed disabled:opacity-70",
-          // Area sentuh 44 piksel di perangkat berjari, tanpa mengubah
-          // ukuran tombolnya - lihat .tap-target di globals.css.
-          "tap-target",
-          buttonVariants[variant],
-          buttonSizes[size],
-          className,
-        )}
+        className={buttonClass({ variant, size, className })}
         {...props}
       />
     );
