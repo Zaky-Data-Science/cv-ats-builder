@@ -2294,6 +2294,47 @@ menjadi satu jalur mendatar di bawah kedua pilar. Ia jalan masuk bagi orang
 yang belum tentu mau menyusun apa pun - menaruhnya sebagai kartu seukuran CV
 dan Portofolio akan membuat "dua pilar" terbaca sebagai tiga.
 
+### Putaran kedua: pintu yang ternyata belum setara
+
+Peninjauan menangkap sesuatu yang lolos dari saya: kartu CV punya dua tombol
+("Susun CV saya" dan "Coba tanpa akun"), kartu portofolio hanya satu. Halaman
+itu baru saja menghabiskan satu paragraf meyakinkan pengunjung bahwa keduanya
+setara, lalu membantahnya sendiri lewat bentuk tombolnya - kartu yang tombolnya
+lebih sedikit terbaca sebagai pilihan yang kurang serius. Keduanya kini
+berbentuk sama persis, dan komentarnya di `page.tsx` menyebutkan alasannya.
+
+Pelajarannya: "setara" pada dua kartu berdampingan diperiksa dari bentuknya,
+bukan dari kalimatnya. Salinan yang benar tidak menyelamatkan tata letak yang
+membantahnya.
+
+### Scheduled Task: nama baru, dan path yang ternyata sudah putus
+
+Tugas `CV ATS Builder - server lokal` diganti menjadi `CV & Portofolio ATS -
+server lokal`. Saat memeriksanya sebelum menyentuh apa pun, ketahuan tugas itu
+**sudah rusak sejak folder project diganti nama pagi harinya**: aksinya masih
+menunjuk `D:\Website CV\scripts\dev-24jam.ps1`, folder yang sudah tidak ada.
+Ia akan gagal menyala pada masuk Windows berikutnya, dan tidak ada yang memberi
+tahu. Pendaftaran ulang memperbaikinya sekaligus, karena `pasang-tugas.ps1`
+menurunkan seluruh pathnya dari `$PSScriptRoot`.
+
+Urutan yang dipakai, dan urutannya memang penting: periksa dulu, hentikan dan
+hapus tugas lama, **pastikan port 3000 benar-benar bebas**, baru daftarkan yang
+baru. Melewati langkah ketiga membuat dua server berebut port yang sama.
+
+`Stop-ScheduledTask` saja tidak cukup untuk membebaskan portnya - hal yang sudah
+tercatat di `MULAI-DI-SINI.md`: prosesnya cucu dari rantai `cmd` > `npm` >
+`node`, jadi yang dihentikan tugasnya, bukan servernya. Prosesnya harus
+dihentikan sendiri.
+
+Tidak ada prompt Administrator: tugasnya per-pengguna dengan `RunLevel Limited`,
+persis seperti yang dirancang sejak awal.
+
+Dua nama sengaja **tidak** ikut berganti. `scripts/dev-24jam.ps1` menulis lognya
+ke `%LOCALAPPDATA%\cv-ats-builder\logs` - itu path folder, bukan nama yang
+dilihat siapa pun, dan menggantinya hanya membuat log lama terputus dari yang
+baru. `docs/deploy.md` menyebut nama project di konsol Google Cloud, milik pihak
+lain.
+
 ### Catatan kerja
 
 `npm run diagram` dijalankan dan **hasilnya dibuka**, bukan dipercaya begitu

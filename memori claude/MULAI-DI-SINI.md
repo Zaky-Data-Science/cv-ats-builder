@@ -123,15 +123,15 @@ typecheck bersih, lint bersih.
 ## 3. Cara menjalankan lagi di komputer
 
 **Sejak sesi 10, biasanya tidak perlu.** Server lokal berjalan sendiri:
-sebuah Scheduled Task bernama `CV ATS Builder - server lokal` menyalakannya
+sebuah Scheduled Task bernama `CV & Portofolio ATS - server lokal` menyalakannya
 setiap masuk Windows, dan menyalakannya lagi bila mati.
 
 ```powershell
 # Melihat statusnya
-Get-ScheduledTask -TaskName "CV ATS Builder - server lokal" | Get-ScheduledTaskInfo
+Get-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal" | Get-ScheduledTaskInfo
 
 # Menyalakan sekarang tanpa masuk ulang
-Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
+Start-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal"
 
 # Membatalkan pemasangannya
 powershell -ExecutionPolicy Bypass -File "scripts\pasang-tugas.ps1" -Hapus

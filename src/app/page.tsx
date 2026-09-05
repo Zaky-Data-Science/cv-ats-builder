@@ -398,11 +398,23 @@ export default async function LandingPage() {
                     <p className="mt-3 rounded-lg border border-ink-200 bg-ink-50 px-3 py-2 text-[12px] leading-relaxed text-ink-600">
                       {t.home.pillarFolioNote}
                     </p>
+                    {/*
+                      Bentuk tombolnya sengaja sama persis dengan kartu CV -
+                      tombol utama ke akun, tombol kedua mencoba tanpa akun.
+                      Kartu yang tombolnya lebih sedikit terbaca sebagai pilihan
+                      yang kurang serius, dan itu membatalkan seluruh kalimat di
+                      atasnya yang baru saja menyatakan keduanya setara.
+                    */}
                     <div className="mt-5 flex flex-wrap gap-2">
-                      <Link href={signedIn ? "/dashboard" : "/coba"}>
+                      <Link href={signedIn ? "/dashboard" : "/login"}>
                         <Button className="press">
-                          {t.home.pillarFolioCta}
+                          {signedIn ? t.home.heroCtaDashboard : t.home.pillarFolioCta}
                           <ArrowRight size={15} />
+                        </Button>
+                      </Link>
+                      <Link href="/coba">
+                        <Button variant="outline" className="press">
+                          {t.guest.ctaTry}
                         </Button>
                       </Link>
                     </div>
