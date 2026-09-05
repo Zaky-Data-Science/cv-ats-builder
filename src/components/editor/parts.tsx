@@ -139,7 +139,17 @@ export function EntryCard({
   return (
     <div
       onFocusCapture={onFocusCapture}
-      onMouseEnter={onFocusCapture}
+      /*
+        Hanya kursor sungguhan yang menyorot lewat lintasan. Di layar sentuh
+        `mouseenter` tetap terkirim saat mengetuk, sehingga menekan tombol
+        naik-turun atau hapus pun ikut memindahkan sorotan ke entri ini -
+        padahal tidak ada yang sedang disunting. Untuk ketukan, `onFocusCapture`
+        di atas sudah menanganinya: menyentuh kotak isian memberi fokus, dan
+        fokus itulah penanda yang benar.
+      */
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") onFocusCapture?.();
+      }}
       className="rounded-lg border border-ink-200 bg-ink-50/50 p-3.5"
     >
       <div className="mb-3 flex items-center justify-between">

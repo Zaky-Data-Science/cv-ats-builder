@@ -59,14 +59,36 @@ export function HeroStats({
             <button
               type="button"
               /*
-                Kursor yang lewat sudah cukup di perangkat bertetikus. Di layar
-                sentuh peristiwa ini tidak pernah terjadi, dan di sanalah
-                ketukan mengambil alih - tombol yang sama melayani keduanya
-                tanpa satu pun pemeriksaan perangkat.
+                Anggapan lama di sini keliru, dan akibatnya baru terlihat di
+                layar sentuh: `mouseenter` MEMANG terjadi di Android. Chrome
+                mengirimkannya tepat sebelum `click` pada sebuah ketukan.
+
+                Akibatnya ketukan pertama tidak pernah membuka apa pun.
+                `mouseenter` menyalakan butir ini, lalu `click` yang menyusul
+                menemukan butir yang sama sudah menyala dan mematikannya lagi.
+                Penjelasannya baru muncul pada ketukan kedua - dan pengguna
+                yang menyerah setelah ketukan pertama menyimpulkan angkanya
+                memang tidak bisa diketuk.
+
+                Karena itu masuk-keluar kursor kini diperiksa jenis
+                penunjuknya. Ketukan tidak lagi ikut menyalakan, sehingga
+                `click` menjadi satu-satunya yang mengatur di layar sentuh.
               */
-              onMouseEnter={() => setActive(i)}
-              onMouseLeave={() => setActive(null)}
-              onFocus={() => setActive(i)}
+              onPointerEnter={(e) => {
+                if (e.pointerType === "mouse") setActive(i);
+              }}
+              onPointerLeave={(e) => {
+                if (e.pointerType === "mouse") setActive(null);
+              }}
+              /*
+                Fokus papan ketik saja yang menyalakan. Di layar sentuh sebuah
+                ketukan juga memberi fokus, dan tanpa penjaga ini ia
+                menghidupkan kembali bentrokan yang sama dengan `click`.
+                `:focus-visible` justru dibuat untuk membedakan keduanya.
+              */
+              onFocus={(e) => {
+                if (e.currentTarget.matches(":focus-visible")) setActive(i);
+              }}
               onBlur={() => setActive(null)}
               onClick={() => setActive((now) => (now === i ? null : i))}
               aria-expanded={active === i}
