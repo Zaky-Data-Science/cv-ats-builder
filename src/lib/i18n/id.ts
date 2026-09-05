@@ -897,16 +897,47 @@ export const id = {
   /* Blok kontak. Dipakai kaki halaman dan halaman Tentang lewat satu
      komponen yang sama, supaya keduanya tidak mungkin berbeda isi. */
   contact: {
-    heading: "Hubungi pengelola",
+    heading: "Punya Masukan atau Kendala?",
     purpose:
-      "Menemukan yang keliru, punya saran, atau butuh bantuan memakai aplikasinya? Kabari saja.",
+      "Website ini murni proyek solo alias saya kembangkan sendirian dari nol. Kalau ada bug, bingung cara pakainya, atau sekadar mau ngasih saran, drop pesan aja!",
     expectation:
-      "Aplikasi ini dikelola satu orang, jadi balasannya tidak selalu cepat. Tapi tiap pesan dibaca.",
+      "Mungkin saya nggak bisa balas secepat mesin otomatis, tapi saya jamin setiap ketikan pesanmu pasti saya baca satu per satu.",
     emailLabel: "Surel",
     waLabel: "WhatsApp",
     waAction: "Chat WhatsApp",
     waAria: "Chat WhatsApp dengan pengelola aplikasi",
     emailAria: "Kirim surel ke pengelola aplikasi",
+  },
+
+  /* Angka dan klaim yang membawa sumbernya sendiri. Kutipan aslinya
+     berbahasa Inggris; di sini maknanya diterjemahkan, lalu dokumen aslinya
+     ditautkan - bukan ditempel mentah di tengah paragraf Indonesia. */
+  rujukan: {
+    matchNote:
+      "Kenapa fitur ini ada: dalam survei terhadap lebih dari 8.000 pencari kerja dan 2.250 eksekutif perusahaan di Amerika Serikat, Inggris, dan Jerman, lebih dari 90% perusahaan memakai sistemnya untuk menyaring atau memeringkat pelamar sejak awal. 88% perusahaan yang disurvei juga mengakui kandidat berkualitas ikut tersaring keluar karena tidak cocok dengan kriteria yang tertulis di iklan lowongan.",
+    matchLink: "Riset Harvard Business School & Accenture (PDF)",
+
+    formatNote:
+      "Aturan bentuknya bukan karangan kami. Pusat karier universitas menyarankan hal yang sama kepada mahasiswanya: satu kolom rata kiri, tanpa tabel maupun kotak teks, tanpa gambar atau foto, dan judul bagian dengan huruf kapital.",
+    formatLinkUsc: "Panduan Format CV, Pusat Karier USC",
+    formatLinkOnu: "Panduan CV untuk ATS, Polar Careers Ohio Northern University (PDF)",
+
+    heading: "Rujukan",
+    intro:
+      "Angka dan aturan bentuk di situs ini berasal dari tiga sumber berikut. Ketiganya dapat dibuka siapa saja dan tidak menjual apa pun.",
+    harvardTitle: "Hidden Workers: Untapped Talent",
+    harvardMeta: "Harvard Business School & Accenture, September 2021",
+    harvardWhat:
+      "Sumber angka lebih dari 90% dan 88% pada penjelasan pencocokan lowongan. Perlu dicatat: risetnya soal kecocokan kriteria dengan iklan lowongan, bukan soal format CV.",
+    uscTitle: "Resume Format Guidelines",
+    uscMeta: "Career Center, University of Southern California",
+    uscWhat:
+      "Dasar aturan tanpa kolom ganda, tanpa gambar, tanpa foto, dan tanpa huruf hias.",
+    onuTitle: "A Guide to Adapting Your Resume for the Applicant Tracking System",
+    onuMeta: "Polar Careers, Ohio Northern University",
+    onuWhat:
+      "Dasar aturan satu kolom rata kiri, tanpa tabel, kontak di badan dokumen, dan judul bagian huruf kapital.",
+    openIn: "membuka di tab baru",
   },
 
   footer: {

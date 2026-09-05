@@ -570,6 +570,15 @@ bila suatu saat ada template yang menyusun ulang urutan isinya.
 | Duplikasi | Membandingkan himpunan id entri asli dan salinan | Tidak ada id yang bertabrakan |
 | Teks PDF | Membuat PDF sungguhan lalu mengekstraksi teksnya | 77 baris terekstraksi, urutan benar, seluruh field kunci ditemukan |
 | Struktur DOCX | Membuka isi berkas `.docx` | Tanpa tabel, tanpa kotak teks, tanpa header/footer, memakai daftar berpoin asli Word |
+
+> **Aturan "kontak jangan di header/footer" ternyata disimpulkan pihak lain juga.**
+> Panduan ATS dari Polar Careers, Ohio Northern University, menyebutnya apa adanya:
+> *"Include contact information in the body of your resume, not in the header or
+> footer."* Kesimpulan yang sama dicapai di sini lewat jalan yang sama sekali
+> berbeda: membongkar berkas `.docx` hasil ekspor dan memeriksa isinya, di mana
+> terlihat isi header dan footer memang tidak ikut terbaca. Dua jalan berbeda, satu
+> kesimpulan. Panduannya:
+> <https://my.onu.edu/sites/default/files/applicant_tracking_system_resume_guide.pdf>
 | Galat peramban | Menelusuri seluruh halaman sambil merekam console | 0 galat |
 | Build production | `npm run build` | Berhasil, 31 route |
 | Tata letak responsif | 7 halaman diuji pada 4 ukuran layar (390, 768, 1280, 1680 piksel) | Tidak ada halaman yang meluber ke samping; perpindahan panel editor di layar sempit berfungsi |

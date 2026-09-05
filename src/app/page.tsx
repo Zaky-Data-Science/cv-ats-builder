@@ -32,6 +32,7 @@ import {
   TEMPLATE_ORDER,
   templateStyle,
 } from "@/lib/resume/templates";
+import { RUJUKAN } from "@/lib/rujukan";
 import { SITE, SITE_META } from "@/lib/site";
 import type { TemplateId } from "@/lib/resume/types";
 
@@ -467,6 +468,34 @@ export default async function LandingPage() {
                 </Reveal>
               ))}
             </div>
+
+            {/*
+              Angka yang membawa sumbernya sendiri.
+
+              Ditaruh di sini, bukan di hero, karena di sinilah ia menjawab
+              pertanyaan yang sedang muncul: kenapa aplikasi ini repot-repot
+              mencocokkan CV dengan iklan lowongan. Di hero ia hanya akan
+              menakut-nakuti orang yang belum tahu apa yang ditawarkan.
+
+              Batas yang dijaga: riset ini soal kecocokan KRITERIA dengan iklan
+              lowongan, bukan soal CV yang gagal dibaca karena tata letaknya.
+              Kalimatnya menyebut "perusahaan yang disurvei mengakui", karena
+              88% itu memang keyakinan perusahaan, bukan hasil pengukuran atas
+              CV yang ditolak.
+            */}
+            <Reveal>
+              <p className="mx-auto mt-10 max-w-3xl border-t border-ink-200 pt-6 text-[13px] leading-relaxed text-ink-500">
+                {t.rujukan.matchNote}{" "}
+                <a
+                  href={RUJUKAN.harvard.pdf}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press text-ink-700 underline underline-offset-2 hover:text-ink-900"
+                >
+                  {t.rujukan.matchLink}
+                </a>
+              </p>
+            </Reveal>
           </div>
         </section>
 
@@ -481,6 +510,35 @@ export default async function LandingPage() {
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-600">
                 {t.home.templatesBody}
+              </p>
+
+              {/*
+                Aturan bentuknya datang dari pihak lain, dan itu justru
+                kekuatannya: dua pusat karier universitas menyimpulkan hal yang
+                sama secara terpisah. Tautannya dipasang terlihat, bukan
+                disembunyikan di balik ikon - angka atau aturan tanpa sumber
+                yang dapat diklik terbaca persis seperti klaim viral yang
+                selama ini ditolak halaman ini.
+              */}
+              <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-500">
+                {t.rujukan.formatNote}{" "}
+                <a
+                  href={RUJUKAN.usc}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press text-ink-700 underline underline-offset-2 hover:text-ink-900"
+                >
+                  {t.rujukan.formatLinkUsc}
+                </a>
+                {" · "}
+                <a
+                  href={RUJUKAN.onu}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press text-ink-700 underline underline-offset-2 hover:text-ink-900"
+                >
+                  {t.rujukan.formatLinkOnu}
+                </a>
               </p>
             </Reveal>
 

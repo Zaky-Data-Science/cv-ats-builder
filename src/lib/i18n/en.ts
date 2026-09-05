@@ -858,16 +858,47 @@ export const en: Dictionary = {
   /* Contact block. The footer and the About page both render it through one
      shared component, so the two can never drift apart. */
   contact: {
-    heading: "Get in touch",
+    heading: "Got feedback or hit a snag?",
     purpose:
-      "Spotted something wrong, got a suggestion, or stuck using the app? Do say.",
+      "This site is a solo project; I built the whole thing from scratch on my own. Found a bug, stuck on how something works, or just want to suggest an idea? Drop me a message.",
     expectation:
-      "One person runs this, so a reply is not always quick. Every message does get read though.",
+      "I may not answer as fast as an automated system, but I promise every message you type gets read, one by one.",
     emailLabel: "Email",
     waLabel: "WhatsApp",
     waAction: "Chat on WhatsApp",
     waAria: "Chat with the maintainer on WhatsApp",
     emailAria: "Email the maintainer",
+  },
+
+  /* Figures and claims that carry their own sources. The English pages quote
+     the originals directly; the Indonesian ones translate the meaning and link
+     the document. */
+  rujukan: {
+    matchNote:
+      "Why this feature exists: in a survey of more than 8,000 job seekers and 2,250 company executives across the United States, the United Kingdom, and Germany, more than 90% of employers use their system to filter or rank candidates from the outset. 88% of the employers surveyed also agree that qualified candidates get vetted out because they do not match the exact criteria set out in the job description.",
+    matchLink: "Harvard Business School & Accenture research (PDF)",
+
+    formatNote:
+      "These shape rules are not ours to invent. University career centres tell their own students the same thing: a single left-aligned column, no tables or text boxes, no images or photos, and section headings in capitals.",
+    formatLinkUsc: "Resume Format Guidelines, USC Career Center",
+    formatLinkOnu: "Resume guide for ATS, Polar Careers at Ohio Northern University (PDF)",
+
+    heading: "Sources",
+    intro:
+      "The figures and formatting rules on this site come from the three sources below. All three are open to anyone and none of them sell anything.",
+    harvardTitle: "Hidden Workers: Untapped Talent",
+    harvardMeta: "Harvard Business School & Accenture, September 2021",
+    harvardWhat:
+      "Source of the 90% and 88% figures beside the job-matching feature. Worth noting: the research is about matching the criteria in a job description, not about CV formatting.",
+    uscTitle: "Resume Format Guidelines",
+    uscMeta: "Career Center, University of Southern California",
+    uscWhat:
+      "Basis for the rules against multiple columns, images, photos, and decorative fonts.",
+    onuTitle: "A Guide to Adapting Your Resume for the Applicant Tracking System",
+    onuMeta: "Polar Careers, Ohio Northern University",
+    onuWhat:
+      "Basis for the single left-aligned column, no tables, contact details in the body, and capitalised section headings.",
+    openIn: "opens in a new tab",
   },
 
   footer: {

@@ -49,6 +49,19 @@ function walk(
  */
 const SAME_ON_PURPOSE = new Set([
   "common.appName",
+
+  /*
+    Judul dokumen rujukan dan nama penerbitnya. Judul karya tidak
+    diterjemahkan - "Hidden Workers: Untapped Talent" adalah nama sebuah
+    dokumen, bukan kalimat, dan menerjemahkannya justru membuat pembaca tidak
+    menemukannya saat mencari. Nama lembaga penerbitnya pun sama alasannya.
+  */
+  "rujukan.harvardTitle",
+  "rujukan.harvardMeta",
+  "rujukan.uscTitle",
+  "rujukan.uscMeta",
+  "rujukan.onuTitle",
+  "rujukan.onuMeta",
   "prefs.language",
   "nav.dashboard",
   "editor.back",

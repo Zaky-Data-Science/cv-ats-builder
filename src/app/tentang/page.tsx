@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Interactive, Reveal } from "@/components/motion";
 import { Button, Card } from "@/components/ui";
 import { getT } from "@/lib/i18n/server";
+import { RUJUKAN } from "@/lib/rujukan";
 import { AUTHOR, SITE } from "@/lib/site";
 import { ABOUT } from "./content";
 
@@ -216,6 +217,68 @@ export default async function TentangPage() {
                 >
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink-400" />
                   {limit}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          {/* ============================================================ */}
+          {/* Rujukan                                                      */}
+          {/* ============================================================ */}
+          {/*
+            Daftar sumber yang dapat dibuka pembaca.
+
+            Tautannya sudah ada di dalam kalimat masing-masing di halaman
+            depan, tetapi orang yang ingin memeriksa tidak seharusnya berburu
+            satu per satu. Tiap butir menyebutkan mendukung klaim yang mana -
+            daftar sumber tanpa keterangan itu hanya hiasan yang terlihat
+            ilmiah.
+          */}
+          <Reveal as="section" className="mt-14">
+            <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
+              {t.rujukan.heading}
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-600">
+              {t.rujukan.intro}
+            </p>
+
+            <ul className="mt-4 space-y-3">
+              {[
+                {
+                  href: RUJUKAN.harvard.pdf,
+                  title: t.rujukan.harvardTitle,
+                  meta: t.rujukan.harvardMeta,
+                  what: t.rujukan.harvardWhat,
+                },
+                {
+                  href: RUJUKAN.usc,
+                  title: t.rujukan.uscTitle,
+                  meta: t.rujukan.uscMeta,
+                  what: t.rujukan.uscWhat,
+                },
+                {
+                  href: RUJUKAN.onu,
+                  title: t.rujukan.onuTitle,
+                  meta: t.rujukan.onuMeta,
+                  what: t.rujukan.onuWhat,
+                },
+              ].map((r) => (
+                <li key={r.href}>
+                  <Card className="p-4">
+                    <a
+                      href={r.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="press text-sm font-semibold text-ink-900 underline underline-offset-2"
+                    >
+                      {r.title}
+                      <span className="sr-only"> ({t.rujukan.openIn})</span>
+                    </a>
+                    <p className="mt-0.5 text-xs text-ink-500">{r.meta}</p>
+                    <p className="mt-2 text-[13px] leading-relaxed text-ink-600">
+                      {r.what}
+                    </p>
+                  </Card>
                 </li>
               ))}
             </ul>
