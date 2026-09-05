@@ -167,7 +167,7 @@ function TermsId() {
       <h2>9. Kepemilikan aplikasi</h2>
       <p>
         Kode program, rancangan antarmuka, dan aturan penilaian di dalam
-        aplikasi ini merupakan karya {AUTHOR.name}. Isi CV yang Anda tuliskan
+        aplikasi ini merupakan karya {AUTHOR.full}. Isi CV yang Anda tuliskan
         tetap sepenuhnya milik Anda.
       </p>
 
@@ -329,7 +329,7 @@ function TermsEn() {
       <h2>9. Ownership of the app</h2>
       <p>
         The source code, interface design, and scoring rules in this app are the
-        work of {AUTHOR.name}. The CV content you write remains entirely yours.
+        work of {AUTHOR.full}. The CV content you write remains entirely yours.
       </p>
 
       <h2>10. Limitation of liability</h2>

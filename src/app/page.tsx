@@ -19,7 +19,7 @@ import {
 import { HeroStats } from "@/components/home/HeroStats";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { InkBackground } from "@/components/ink/InkBackground";
-import { InkWash } from "@/components/ink/InkWash";
+import { HeroGlow } from "@/components/ink/HeroGlow";
 import { SamuraiIntro } from "@/components/ink/SamuraiIntro";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -133,7 +133,7 @@ export default async function LandingPage() {
         */}
         <section>
           <div className="hero-panel relative isolate overflow-hidden">
-            <InkWash />
+            <HeroGlow />
             <InkBackground />
 
             <div className="relative z-[1] mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 sm:pt-16 md:px-10 lg:px-12 lg:pt-20 lg:pb-24">

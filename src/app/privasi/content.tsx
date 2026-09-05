@@ -40,8 +40,8 @@ function PrivacyId() {
     <>
       <h2>1. Siapa yang mengelola aplikasi ini</h2>
       <p>
-        {SITE.name} dikelola oleh <strong>{AUTHOR.name}</strong>, {AUTHOR.role}{" "}
-        di {AUTHOR.institution}. Aplikasi ini disediakan gratis dan bukan
+        {SITE.name} dikelola oleh <strong>{AUTHOR.name}</strong>, {AUTHOR.role},{" "}
+        {AUTHOR.department}, {AUTHOR.institution}. Aplikasi ini disediakan gratis dan bukan
         produk komersial.
       </p>
       <p>
@@ -275,8 +275,8 @@ function PrivacyEn() {
     <>
       <h2>1. Who runs this app</h2>
       <p>
-        {SITE.name} is run by <strong>{AUTHOR.name}</strong>, {AUTHOR.role} at{" "}
-        {AUTHOR.institution}. It is provided free of charge and is not a
+        {SITE.name} is run by <strong>{AUTHOR.name}</strong>, {AUTHOR.role},{" "}
+        {AUTHOR.department}, {AUTHOR.institution}. It is provided free of charge and is not a
         commercial product.
       </p>
       <p>

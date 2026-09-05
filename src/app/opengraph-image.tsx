@@ -32,22 +32,88 @@ export default function OpengraphImage() {
       >
         {/* Kepala */}
         <div style={{ display: "flex", alignItems: "center" }}>
+          {/*
+            Lencana dokumen yang sedang dipindai, mengikuti `BrandMark` dan
+            `icon.tsx`. Digambar dengan kotak berposisi karena penggambarnya
+            (satori) hanya mengenal sebagian kecil SVG.
+
+            Warnanya terbalik dari favicon: di sini lencananya terang di atas
+            latar gelap, jadi kertasnya gelap dan garis pindainya terang.
+          */}
           <div
             style={{
               width: 56,
               height: 56,
               borderRadius: 14,
               background: "#ffffff",
-              color: "#0a0a0b",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 26,
-              fontWeight: 700,
+              position: "relative",
               marginRight: 16,
             }}
           >
-            CV
+            <div
+              style={{
+                position: "absolute",
+                top: 9,
+                left: 15,
+                width: 26,
+                height: 15,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "center",
+                gap: 3,
+                paddingLeft: 4,
+                background: "#0a0a0b",
+                borderTopLeftRadius: 4,
+                borderTopRightRadius: 4,
+              }}
+            >
+              <div style={{ width: 16, height: 3, background: "#ffffff", borderRadius: 2 }} />
+              <div style={{ width: 10, height: 3, background: "#ffffff", borderRadius: 2 }} />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: 24,
+                left: 5,
+                width: 46,
+                height: 6,
+                background: "#ffffff",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: 26,
+                left: 5,
+                width: 46,
+                height: 2,
+                background: "#0a0a0b",
+                borderRadius: 1,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: 30,
+                left: 15,
+                width: 26,
+                height: 17,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "center",
+                gap: 3,
+                paddingLeft: 4,
+                background: "#0a0a0b",
+                borderBottomLeftRadius: 4,
+                borderBottomRightRadius: 4,
+              }}
+            >
+              <div style={{ width: 16, height: 3, background: "#ffffff", borderRadius: 2 }} />
+              <div style={{ width: 10, height: 3, background: "#ffffff", borderRadius: 2 }} />
+            </div>
           </div>
           <div style={{ display: "flex", color: "#9a9aa2", fontSize: 26 }}>
             {SITE.name}
@@ -102,7 +168,7 @@ export default function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex", color: "#74747a", fontSize: 22 }}>
-            {AUTHOR.name} - {AUTHOR.institution}
+            {AUTHOR.name}, {AUTHOR.institution}
           </div>
           <div
             style={{

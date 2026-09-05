@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useI18n } from "@/components/i18n";
+import { BrandMark } from "@/components/BrandMark";
 import { AUTHOR, SITE, SITE_META, YEAR } from "@/lib/site";
 
 /**
@@ -59,8 +60,8 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           {/* Identitas aplikasi */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
-                CV
+              <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-white">
+                <BrandMark className="h-[18px] w-[18px]" />
               </span>
               <span className="text-sm font-semibold text-ink-900">
                 {SITE.name}
@@ -97,6 +98,8 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
                 {AUTHOR.name}
               </span>
               {AUTHOR.role}
+              <br />
+              {AUTHOR.department}
               <br />
               {AUTHOR.institution}
             </address>

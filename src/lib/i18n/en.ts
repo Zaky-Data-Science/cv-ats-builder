@@ -388,9 +388,9 @@ export const en: Dictionary = {
   home: {
     skipToContent: "Skip to main content",
     heroBadge: "100% Free • No Watermark • Saves Itself",
-    heroTitleLine1: "You tell your",
-    heroTitleLine2: "story.",
-    heroTitleLine3: "We handle the ATS formatting.",
+    heroTitleLine1: "You tell your story.",
+    heroTitleLine2: "The ATS formatting",
+    heroTitleLine3: "is on us",
     heroBody:
       "Plenty of employers filter applications through software that reads your CV automatically, and fancy formatting like two columns, tables, or text buried inside an image often comes out garbled. Do not let good experience get lost to that. Fill in our simple form, get a CV built to ATS conventions, and see your score straight away.",
     heroCtaNew: "Build my ATS CV now",

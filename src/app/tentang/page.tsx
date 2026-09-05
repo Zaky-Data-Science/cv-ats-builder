@@ -232,6 +232,7 @@ export default async function TentangPage() {
                 {AUTHOR.name}
               </p>
               <p className="mt-1 text-sm text-ink-600">{AUTHOR.role}</p>
+              <p className="text-sm text-ink-600">{AUTHOR.department}</p>
               <p className="text-sm text-ink-600">{AUTHOR.institution}</p>
               <hr className="hairline my-4" />
               <p className="text-xs text-ink-500">{content.authorRole}</p>

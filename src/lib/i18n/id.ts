@@ -410,9 +410,9 @@ export const id = {
   home: {
     skipToContent: "Lompat ke konten utama",
     heroBadge: "100% Gratis • Tanpa Watermark • Tersimpan Otomatis",
-    heroTitleLine1: "Fokus ceritakan",
-    heroTitleLine2: "pengalamanmu.",
-    heroTitleLine3: "Format ATS-nya biar kami.",
+    heroTitleLine1: "Fokus ceritakan pengalamanmu.",
+    heroTitleLine2: "Format ATS-nya",
+    heroTitleLine3: "biar kami yang urus",
     heroBody:
       "Banyak perusahaan menyaring lamaran lewat sistem yang membaca CV secara otomatis, dan format yang rumit seperti dua kolom, tabel, atau tulisan di dalam gambar sering terbaca berantakan. Jangan biarkan pengalaman hebatmu gugur gara-gara itu. Isi form simpel kami, dapatkan CV berstandar ATS, dan lihat skormu seketika.",
     heroCtaNew: "Buat CV ATS-ku Sekarang",

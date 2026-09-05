@@ -59,9 +59,29 @@ export const SITE_META: Record<
  */
 export const AUTHOR = {
   name: "Muhammad Agus Riyadh Zaky",
-  role: "Mahasiswa D3 Teknik Komputer",
+  role: "Prodi D3 Teknik Komputer",
+  department: "Jurusan Teknologi Informasi",
   institution: "Politeknik Negeri Samarinda",
-  /** Baris tunggal untuk footer dan properti dokumen. */
+
+  /**
+   * Rantai lengkap: nama, prodi, jurusan, kampus.
+   *
+   * Dipakai di tempat yang memang menyatakan kepengarangan secara formal -
+   * halaman Tentang, kaki halaman, Ketentuan, dan Privasi.
+   */
+  full:
+    "Muhammad Agus Riyadh Zaky, Prodi D3 Teknik Komputer, Jurusan Teknologi Informasi, Politeknik Negeri Samarinda",
+
+  /**
+   * Bentuk pendek untuk kredit yang lewat sambil lalu, mis. di panel samping
+   * penyunting. Rantai lengkap di sana lebarnya cuma 11px dan patah jadi tiga
+   * baris di tengah alat kerja - terbaca seperti tanda tangan yang nyasar,
+   * bukan keterangan pembuat.
+   *
+   * Baik `full` maupun `credit` **tidak pernah** ikut ke berkas CV yang
+   * diunduh. Itu bukan kelalaian melainkan janji yang tertulis di FAQ dan di
+   * salinan halaman depan: dokumen yang diunduh isinya murni data penggunanya.
+   */
   credit: "Muhammad Agus Riyadh Zaky",
 } as const;
 

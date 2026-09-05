@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { HeaderBack } from "@/components/HeaderBack";
+import { BrandMark } from "@/components/BrandMark";
 import { useI18n, LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui";
@@ -109,8 +110,8 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
             className="flex min-w-0 items-center gap-2"
             aria-label={`${SITE.name} - ${t.nav.homeAria}`}
           >
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
-              CV
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ink-900 text-white">
+              <BrandMark className="h-[18px] w-[18px]" />
             </span>
             <span className="truncate text-sm font-semibold text-ink-900">
               {SITE.name}
