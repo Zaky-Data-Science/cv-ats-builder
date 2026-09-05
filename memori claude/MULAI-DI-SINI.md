@@ -451,9 +451,21 @@ Delapan butir pada daftar sesi 5 sudah ditimbang satu per satu di sesi 6.
 Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
 `riwayat-pengerjaan.md` sesi 6. Yang masih terbuka:
 
-0. **Uji manual 1-4 di `docs/uji-manual.md` - menahan `git push`.** Lihat
-   bagian 2. Ini yang paling mendesak dari seluruh daftar ini, dan satu-satunya
-   yang menahan pekerjaan lain.
+0. ~~Uji manual 1-4 di `docs/uji-manual.md` - menahan `git push`.~~
+   **Selesai di sesi 13, keempatnya lulus, sudah di-push dan Uji 5 di produksi
+   ikut lulus.** Tidak ada lagi yang menahan pekerjaan lain.
+
+0b. **Dua pasang kontrol berlabel sama di kepala halaman.** Sebuah
+   `<a href="/login">` dan sebuah `<button>` sama-sama berbunyi "Masuk", dan
+   hal yang sama berlaku untuk "Daftar Gratis" - keempatnya dapat dicapai Tab.
+   Bagi pengguna papan ketik, satu hal yang sama menghabiskan dua perhentian
+   Tab, dan perhentian kedua tidak menambah apa pun.
+
+   Sudah ada sebelum sesi 13; bukan akibat perubahan Mode Redaksi. Uji 1
+   melewatkannya karena yang diperiksa saat itu "apakah tiap perhentian
+   terlihat dan urutannya masuk akal", bukan "apakah ada perhentian yang
+   mubazir". Kecil, tetapi mengenai kelompok pengguna yang paling sulit
+   menyiasatinya sendiri.
 
 1. **Pemulihan kata sandi lewat surel sudah ada sejak sesi 10, tetapi belum
    menyala.** Seluruh alurnya terpasang - `/lupa-sandi`, `/atur-sandi`, dua
