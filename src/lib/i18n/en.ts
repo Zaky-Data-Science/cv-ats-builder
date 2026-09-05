@@ -36,7 +36,7 @@ export const en: Dictionary = {
   form: {
     personalTitle: "Personal details",
     personalHint:
-      "The very top of the CV. Name, contact details and profile links - the first thing screening software goes looking for.",
+      "The very top of the CV. Name, contact details and profile links, the first thing screening software goes looking for.",
 
     fullName: "Full name",
     fullNameHint: "No academic titles in front. Post-nominals may go after the name.",
@@ -67,7 +67,7 @@ export const en: Dictionary = {
       "Best left off. Screening software cannot see images, and the layout around a photo often scrambles the text beside it. Only switch it on if the job ad actually asks for a photo.",
     photo: "Photo",
     photoHint:
-      "JPG, PNG, or WebP. Photos from a phone camera are shrunk automatically, so a large file is fine - what gets stored is at most 1 MB. A plain background gives the best result.",
+      "JPG, PNG, or WebP. Photos from a phone camera are shrunk automatically, so a large file is fine, what gets stored is at most 1 MB. A plain background gives the best result.",
     photoChoose: "Choose a photo file",
     photoReplace: "Replace photo",
     photoRemove: "Remove photo",
@@ -84,9 +84,9 @@ export const en: Dictionary = {
       "This photo is still an image link from a CV built earlier. The link keeps working; choose a file if you would rather store the photo inside the CV itself.",
     photoErrorType: "That file is not an image. Choose a JPG, PNG, or WebP file.",
     photoErrorRead:
-      "The image could not be read. The file may be damaged - try another one.",
+      "The image could not be read. The file may be damaged, try another one.",
     photoErrorSourceTooBig:
-      "That file is over 12 MB, and something that large can lock the browser up before it finishes processing. Pick an ordinary photo from your gallery - a passport photo is never that big.",
+      "That file is over 12 MB, and something that large can lock the browser up before it finishes processing. Pick an ordinary photo from your gallery, a passport photo is never that big.",
     photoErrorTooBig:
       "It was compressed as far as it goes and still comes out over 1 MB, so it cannot be stored. That usually happens with a very busy background; a plain one is far lighter.",
 
@@ -101,7 +101,7 @@ export const en: Dictionary = {
 
     experienceLabel: "Experience",
     experienceEmpty:
-      "No work experience yet. Just graduated? Fill in Projects and Organisations instead - both count just as much as evidence of what you can do.",
+      "No work experience yet. Just graduated? Fill in Projects and Organisations instead, both count just as much as evidence of what you can do.",
     experienceAdd: "Add work experience",
     jobTitle: "Job title",
     jobTitleHint: "As it appears on your appointment letter.",
@@ -140,7 +140,7 @@ export const en: Dictionary = {
     skillCalloutMid: ", not",
     skillCalloutBad: "JavaScript (advanced)",
     skillCalloutTail:
-      ". Screening software matches word for word, exactly as written - anything added in brackets simply stops it matching.",
+      ". Screening software matches word for word, exactly as written, anything added in brackets simply stops it matching.",
 
     projectLabel: "Project",
     projectAdd: "Add project",
@@ -209,7 +209,7 @@ export const en: Dictionary = {
     customRemoveEntry: "Remove this item",
     customSectionTitle: "Section heading",
     customSectionTitleHint:
-      "Plain words, no emoji - screening software cannot read emoji.",
+      "Plain words, no emoji, screening software cannot read emoji.",
     customSectionTitlePh: "Training and workshops",
     customEntryTitle: "Title",
     customEntryTitlePh: "Introduction to Cyber Security",
@@ -244,7 +244,7 @@ export const en: Dictionary = {
     metaDescription:
       "Build a CV that gets past screening software without signing up. It is stored in your own browser and downloads as PDF, Word, plain text, or a backup file.",
     ctaTry: "Try without an account",
-    ctaTryHint: "Start right away - no sign-up, no email",
+    ctaTryHint: "Start right away, no sign-up, no email",
     loading: "Preparing the editor...",
 
     bannerTitle: "This CV lives only in this browser.",
@@ -252,7 +252,7 @@ export const en: Dictionary = {
       "Nothing is sent anywhere, which is why you need no account. But there is a catch: open it on another device, clear your browser data, or use a private window, and this CV goes with it. Download the files, or move it into an account if you want it kept for good.",
     savedLocal: "Saved in this browser",
     saveFailed:
-      "The browser refused to save, usually because its storage is full. The photo is by far the largest thing in a CV, so removing it often settles it straight away. Your CV is still safe on screen - if that does not help, download the files now.",
+      "The browser refused to save, usually because its storage is full. The photo is by far the largest thing in a CV, so removing it often settles it straight away. Your CV is still safe on screen, if that does not help, download the files now.",
     loadFromJson: "Open a backup file",
     loadHint:
       "Opens a backup file you saved from here before. Useful for keeping several versions of a CV as files of your own.",
@@ -311,7 +311,7 @@ export const en: Dictionary = {
     appearance: "Appearance",
     fillSample: "Fill with sample",
     fillSampleConfirm:
-      "Everything in this CV will be replaced with a complete worked example. Good for seeing what a finished CV looks like and where each box ends up - but anything you have typed will be lost.",
+      "Everything in this CV will be replaced with a complete worked example. Good for seeing what a finished CV looks like and where each box ends up, but anything you have typed will be lost.",
     fillSampleYes: "Yes, show me the example",
     matchJob: "Match against a job ad",
     moreActions: "More actions",
@@ -332,7 +332,7 @@ export const en: Dictionary = {
     saveFailedTitle: "Could not save",
     saveFailedGeneric: "Your changes could not be saved.",
     saveFailedOffline:
-      "The connection to the server has dropped. What you typed is still safe on screen - just do not close this page until it comes back.",
+      "The connection to the server has dropped. What you typed is still safe on screen, just do not close this page until it comes back.",
     sectionOrderHint:
       "Sections you skip never appear on the CV, so there is no need to fill them all in. To reorder them, use the arrows beside each heading.",
   },
@@ -348,7 +348,7 @@ export const en: Dictionary = {
     templateWithPhoto: "With a photo",
     templateWithoutPhoto: "Without a photo",
     font: "Lettering",
-    fontHint: "All five are safe - screening software can read every one.",
+    fontHint: "All five are safe, screening software can read every one.",
     fontSize: "Text size",
     lineHeight: "Space between lines",
     headingLanguage: "Language of the headings inside the CV",
@@ -362,7 +362,7 @@ export const en: Dictionary = {
     marginFollowTemplate: "following the design",
     marginReset: "Put it back how it was",
     marginHint:
-      "Top and bottom are always equal, and apply to every page - not just the first. Below 10 mm some printers will clip the edges.",
+      "Top and bottom are always equal, and apply to every page, not just the first. Below 10 mm some printers will clip the edges.",
     paperSize: "Paper size",
     photoUnsupported:
       "This design has no place for a photo. If the job ad asks for one, pick a design from the \"With a photo\" group.",
@@ -371,7 +371,7 @@ export const en: Dictionary = {
   flow: {
     metaTitle: "Flow and Architecture",
     metaDescription:
-      "User flow, architecture, data flow and development workflow diagrams for CV ATS Builder - also available as SVG and PNG image files.",
+      "User flow, architecture, data flow and development workflow diagrams for CV ATS Builder, also available as SVG and PNG image files.",
     title: "Flow and architecture",
     subtitle:
       "Four diagrams: how people use it, how the data moves, and how a code change reaches production. The diagrams on this page and the image files are generated from the same source data, so the two can never tell different stories.",
@@ -382,7 +382,7 @@ export const en: Dictionary = {
     downloadPng: "Download PNG",
     legendTitle: "Shape legend",
     legendNote:
-      "Each box states its own type in words rather than relying on colour alone - so the diagram still reads when printed in black and white, and when read aloud by a screen reader.",
+      "Each box states its own type in words rather than relying on colour alone, so the diagram still reads when printed in black and white, and when read aloud by a screen reader.",
   },
 
   home: {
@@ -533,20 +533,20 @@ export const en: Dictionary = {
       "Upload several CVs at once, see the strengths and weaknesses of each, and find out which one is most ready to send. Files are read on your own device and never leave it.",
     title: "Check your CV, or pit a few against each other",
     subtitle:
-      "Upload one file to have it checked, or two to five to pit them against each other. Each gets a score, a list of strengths, and a list of weaknesses with how to fix them - then at the end we name the one most ready to send.",
+      "Upload one file to have it checked, or two to five to pit them against each other. Each gets a score, a list of strengths, and a list of weaknesses with how to fix them, then at the end we name the one most ready to send.",
     privacyTitle: "Your files are not sent anywhere.",
     privacyBody:
       "All the reading and scoring happens inside your own phone or computer. Not one file goes to our server or to any other service, and nothing is stored. Close this page and it is all gone.",
     dropTitle: "Drag your CV files here",
     dropSubtitle: "or tap to choose them from your device",
-    dropFormats: "PDF, Word or text files - up to 5 files, 8 MB each",
+    dropFormats: "PDF, Word or text files, up to 5 files, 8 MB each",
     chooseFiles: "Choose files",
     fileRemove: "Take this file out",
     tooMany: "Five files at a time is the maximum.",
     jobToggleShow: "Got the job ad? Paste it here (you can skip this)",
     jobToggleHide: "Hide the job advertisement",
     jobHint:
-      "Fill this in and every CV is also judged on how well it matches this particular job - which is usually what decides which one you should actually send.",
+      "Fill this in and every CV is also judged on how well it matches this particular job, which is usually what decides which one you should actually send.",
     analyze: "Check them now",
     analyzing: "Checking...",
     reset: "Start over",
@@ -574,9 +574,9 @@ export const en: Dictionary = {
       "Rebuild your CV here: every box already holds a worked example, the score moves as you type, and the result downloads straight away as PDF, Word, or plain text.",
     ctaButton: "Build a CV free",
     addMoreSingle:
-      "Got another version of your CV? Add it now - the two get pitted against each other and we name the one more ready to send.",
+      "Got another version of your CV? Add it now, the two get pitted against each other and we name the one more ready to send.",
     addMoreMany:
-      "Any more CVs? Just add them - up to five files at once.",
+      "Any more CVs? Just add them, up to five files at once.",
     addMoreButton: "Add another CV",
     errorTitle: "The file could not be read",
     limitsNote:
@@ -596,7 +596,7 @@ export const en: Dictionary = {
     statQuantified: "Bullets that name a number",
     breakdownTitle: "Score breakdown",
     breakdownHint:
-      "The final score comes from the five things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
+      "The final score comes from the five things below. They do not all count equally, the percentage beside each one shows how much it weighs.",
     weight: "counts for",
     notScored: "cannot be judged yet",
     keywordsTitle: "Important words from the job ad",
@@ -604,7 +604,7 @@ export const en: Dictionary = {
     keywordsMissing: "Not in your CV yet",
     keywordsMatched: "Already in your CV",
     keywordsWarning:
-      "Only add what you can genuinely back up. Pasting in skills you do not have will lift the number here - and come apart in the interview.",
+      "Only add what you can genuinely back up. Pasting in skills you do not have will lift the number here, and come apart in the interview.",
     noFindings:
       "All clear. Your CV satisfies every rule we check.",
     openField: "Open the part that needs work",
@@ -614,7 +614,7 @@ export const en: Dictionary = {
       "Paste in the job ad you are targeting. We pull out the words that matter and compare them against your CV.",
     jobLabel: "The job ad",
     jobPlaceholder:
-      "Paste the whole job ad here - including the requirements and responsibilities. The more you paste, the better we can tell which words matter.",
+      "Paste the whole job ad here, including the requirements and responsibilities. The more you paste, the better we can tell which words matter.",
     jobAnalyze: "See how well it matches",
     jobAnalyzing: "Working it out...",
     jobClear: "Clear",
@@ -624,12 +624,12 @@ export const en: Dictionary = {
       "Paste in the job ad, then see which of the words it asks for are still missing from your CV.",
     jobDescTitle: "The job ad",
     jobDescHint:
-      "Copy the whole job ad - including the requirements and responsibilities - and paste it below. We pull out the words that matter ourselves.",
+      "Copy the whole job ad, including the requirements and responsibilities, and paste it below. We pull out the words that matter ourselves.",
     wordsAnalyzed: "words checked.",
     saveToHistory: "Record this score",
     historyTitle: "Scores you have recorded",
     historyEmpty:
-      "Nothing recorded yet. Press Record this score to save where you stand now - then improve your CV, record again, and watch your own progress.",
+      "Nothing recorded yet. Press Record this score to save where you stand now, then improve your CV, record again, and watch your own progress.",
     historyBest: "Best score so far:",
     historySaved: "Score recorded.",
     historySaveFailed: "The score could not be recorded.",
@@ -651,7 +651,7 @@ export const en: Dictionary = {
     viewContinuous: "One long scroll",
     typeHere: "Type straight on the page",
     typeHint:
-      "Switch this on and type straight onto the paper, just like in Word. What you type flows back into the boxes on the left - both are the same CV, not two copies. For dates, just click the period: a month picker opens, so the wording stays tidy.",
+      "Switch this on and type straight onto the paper, just like in Word. What you type flows back into the boxes on the left, both are the same CV, not two copies. For dates, just click the period: a month picker opens, so the wording stays tidy.",
     typeDateTitle: "Change the dates",
     typeDateStart: "Start",
     typeDateEnd: "End",
@@ -664,8 +664,8 @@ export const en: Dictionary = {
       "The page count is worked out again once typing mode is off. Empty boxes shown while you type are never printed.",
     typeForcesContinuous:
       "Not available while typing mode is on. The paged view cuts the document at page breaks, and the cursor cannot cross a cut.",
-    viewPagedHint: "Just like Word - you can see exactly where each page breaks.",
-    viewContinuousHint: "One long scroll with no breaks - easier to skim while you change things.",
+    viewPagedHint: "Just like Word, you can see exactly where each page breaks.",
+    viewContinuousHint: "One long scroll with no breaks, easier to skim while you change things.",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     zoomFit: "Fit to width",
@@ -676,7 +676,7 @@ export const en: Dictionary = {
     lengthAcceptable: "Still reasonable if you have more than five years of experience.",
     lengthTooLong: "Too long. Recruiters usually only glance at the first page.",
     onePageAdvice:
-      "One page is enough for almost every applicant. If it runs long, cut the experience that does not speak to the role - do not shrink the lettering.",
+      "One page is enough for almost every applicant. If it runs long, cut the experience that does not speak to the role, do not shrink the lettering.",
   },
 
   prefs: {
@@ -719,7 +719,7 @@ export const en: Dictionary = {
     title: "My CVs",
     subtitleEmpty:
       "Nothing here yet. Start from the example so you can see what a finished CV looks like.",
-    subtitleCount: "CVs saved. Everything saves itself - there is no Save button to press.",
+    subtitleCount: "CVs saved. Everything saves itself, there is no Save button to press.",
     importJson: "Open a backup file",
     startFromSample: "Start from an example",
     createNew: "Create a CV",
@@ -727,7 +727,7 @@ export const en: Dictionary = {
     emptyTitle: "This account has no CVs yet",
     emptyBodyLead: "Suggestion: choose",
     emptyBodyTail:
-      ". The CV arrives filled with a complete example, so you can see where every box ends up - then simply type over it with your own details.",
+      ". The CV arrives filled with a complete example, so you can see where every box ends up, then simply type over it with your own details.",
     nameEmpty: "Name not filled in",
     changedAt: "Edited",
     edit: "Open and edit",
@@ -766,7 +766,7 @@ export const en: Dictionary = {
     passwordSave: "Save password",
     dangerTitle: "Delete account",
     dangerBody:
-      "Every CV and everything in it goes for good and cannot be recovered - not even by us. Download a backup file of each CV before you go on.",
+      "Every CV and everything in it goes for good and cannot be recovered, not even by us. Download a backup file of each CV before you go on.",
     dangerStart: "I want to delete my account",
     dangerConfirmLabel: 'Type "DELETE ACCOUNT" to confirm',
     dangerConfirmHint:
@@ -801,7 +801,7 @@ export const en: Dictionary = {
     invalidCredentials: "That email or password is not right.",
     registerFailed: "Sign-up failed. Give it one more try.",
     sessionStale:
-      "You are no longer signed in - the account recorded here cannot be found any more. You are being taken to the sign-in page.",
+      "You are no longer signed in, the account recorded here cannot be found any more. You are being taken to the sign-in page.",
     forgotPassword: "Forgotten your password?",
     forgotTitle: "Forgotten password",
     forgotSubtitle:
@@ -822,7 +822,7 @@ export const en: Dictionary = {
     resetMismatch: "The two passwords do not match yet. Check them again.",
     resetFailed: "The password could not be changed. Give it one more try.",
     resetNoToken:
-      "This page address carries no recovery link. Open the link from your email again - or ask for a new one.",
+      "This page address carries no recovery link. Open the link from your email again, or ask for a new one.",
     resetDone: "Your password has been changed. Sign in with the new one.",
     backToLogin: "Back to sign in",
     forgotViaGoogle:
@@ -844,11 +844,11 @@ export const en: Dictionary = {
   errors: {
     errorTitle: "Something went wrong",
     errorBody:
-      "This page failed to show. Your CV is safe though - every change had already saved itself the moment you stopped typing.",
+      "This page failed to show. Your CV is safe though, every change had already saved itself the moment you stopped typing.",
     errorCode: "Error code:",
     notFoundTitle: "There is no such page",
     notFoundBody:
-      "The address you opened does not exist - or the CV it points to belongs to a different account than the one signed in now.",
+      "The address you opened does not exist, or the CV it points to belongs to a different account than the one signed in now.",
     retry: "Try again",
     openDashboard: "Open my CVs",
     backHome: "Back to home",

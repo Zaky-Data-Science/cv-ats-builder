@@ -63,16 +63,16 @@ const id: GuideContent = {
   badge: "Panduan",
   title: "Cara memakai aplikasi ini",
   intro:
-    "Ditulis untuk Anda yang baru pertama kali membuat CV. Tidak perlu tahu apa-apa soal desain dokumen - cukup isi kotak-kotaknya, sisanya kami yang urus.",
+    "Ditulis buat kamu yang baru pertama kali bikin CV. Nggak perlu tahu apa-apa soal desain dokumen; isi saja kotak-kotaknya, sisanya kami yang urus.",
 
   flowTitle: "1. Alur penggunaan dari awal sampai akhir",
   flowIntro:
-    "Ini seluruh prosesnya. Perhatikan bahwa mengisi, melihat hasilnya, dan memperbaiki mengikuti nilai itu berputar - boleh diulang sesering yang Anda mau, dan justru pengulangan itulah yang membuat CV Anda makin bagus.",
+    "Ini seluruh prosesnya. Perhatikan bahwa mengisi, melihat hasilnya, dan memperbaiki mengikuti nilai itu berputar - boleh diulang sesering yang kamu mau, dan justru pengulangan itulah yang bikin CV-mu makin bagus.",
   flowMoreLink: "Lihat seluruh diagram alur dan arsitektur",
 
   sectionsTitle: "2. Apa yang diisi di setiap bagian",
   sectionsIntro:
-    "Bagian-bagian ini muncul di CV mengikuti urutan di bawah, dan boleh Anda tukar kapan saja lewat tombol panah di kanan judulnya. Bagian yang Anda lewati tidak akan ikut tercetak.",
+    "Bagian-bagian ini muncul di CV mengikuti urutan di bawah, dan boleh kamu tukar kapan saja lewat tombol panah di kanan judulnya. Bagian yang kamu lewati nggak akan ikut tercetak.",
   sectionsHeadName: "Bagian",
   sectionsHeadHeading: "Judul di CV",
   sectionsHeadWhat: "Isinya apa",
@@ -81,7 +81,7 @@ const id: GuideContent = {
   personalWhat:
     "Nama, jabatan yang dituju, email, nomor telepon, kota tempat tinggal, dan tautan profil. Inilah yang pertama dicari mesin penyaring.",
 
-  scoreTitle: "3. Cara membaca nilai CV Anda",
+  scoreTitle: "3. Cara membaca nilai CV-mu",
   scoreIntro:
     "Nilainya 0 sampai 100, dihitung dari lima hal berikut. Kelimanya tidak berpengaruh sama besar - persentase di sampingnya menunjukkan seberapa besar pengaruhnya.",
   weightLabel: "pengaruh",
@@ -93,61 +93,61 @@ const id: GuideContent = {
   ],
   scoreWarningTitle: "Nilai tinggi bukan jaminan diterima",
   scoreWarningBody:
-    "Yang kami periksa adalah apakah CV Anda memenuhi aturan yang berlaku umum pada mesin pembaca CV. Kami tidak menirukan satu produk penyaring tertentu - tiap perusahaan memakai yang berbeda, dan tidak satu pun membuka cara kerjanya. Anggap nilai ini daftar periksa, bukan ramalan hasil seleksi.",
+    "Yang kami periksa adalah apakah CV-mu memenuhi aturan yang berlaku umum pada mesin pembaca CV. Kami tidak menirukan satu produk penyaring tertentu - tiap perusahaan memakai yang berbeda, dan tidak satu pun membuka cara kerjanya. Anggap nilai ini daftar periksa, bukan ramalan hasil seleksi.",
 
   bulletTitle: "4. Menulis poin pencapaian yang kuat",
   bulletIntroLead:
-    "Inilah bagian yang paling menaikkan nilai CV Anda, sekaligus yang paling menentukan kesan perekrut. Rumusnya sederhana: ",
+    "Inilah bagian yang paling menaikkan nilai CV-mu, sekaligus yang paling menentukan kesan perekrut. Rumusnya sederhana: ",
   bulletFormula: "kata kerja + apa yang dikerjakan + hasilnya, pakai angka",
   bulletExamples: [
     {
       bad: "Bertanggung jawab atas pengembangan website perusahaan.",
       good: "Mengembangkan ulang halaman checkout sehingga tingkat konversi naik dari 2,1% menjadi 3,4% dalam 6 bulan.",
-      why: "Yang pertama menyebut tugas - dan semua orang di posisi itu punya tugas yang sama. Yang kedua menyebut hasil yang bisa diukur, dan itu milik Anda sendiri.",
+      why: "Yang pertama menyebut tugas - dan semua orang di posisi itu punya tugas yang sama. Yang kedua menyebut hasil yang bisa diukur, dan itu milikmu sendiri.",
     },
     {
       bad: "Membantu tim dalam berbagai proyek.",
       good: "Memimpin tim beranggotakan 4 orang dalam migrasi 60 komponen antarmuka, memangkas waktu pengembangan fitur sekitar 30%.",
-      why: "Sebutkan peran Anda yang sebenarnya, berapa orang yang terlibat, dan apa akibatnya.",
+      why: "Sebutkan peranmu yang sebenarnya, berapa orang yang terlibat, dan apa akibatnya.",
     },
     {
       bad: "Menguasai React dan menguasai berbagai tools modern.",
       good: "Menyusun 120 unit test dengan Jest dan React Testing Library, meningkatkan cakupan pengujian dari 38% menjadi 82%.",
-      why: "Daftar keahlian tempatnya di bagian Keahlian. Poin pencapaian gunanya menunjukkan apa yang Anda hasilkan dengan keahlian itu.",
+      why: "Daftar keahlian tempatnya di bagian Keahlian. Poin pencapaian gunanya menunjukkan apa yang kamu hasilkan dengan keahlian itu.",
     },
   ],
   bulletNoNumbersTitle: "Tidak punya angka?",
   bulletNoNumbersBody:
-    "Angka tidak harus berupa persen. Berapa orang yang Anda latih, berapa dokumen yang Anda urus tiap minggu, berapa peserta acara yang Anda selenggarakan - semuanya angka yang sah, dan semuanya membuat poin Anda jauh lebih meyakinkan.",
+    "Angka tidak harus berupa persen. Berapa orang yang kamu latih, berapa dokumen yang kamu urus tiap minggu, berapa peserta acara yang kamu selenggarakan; semuanya angka yang sah, dan semuanya bikin poinmu jauh lebih meyakinkan.",
 
   lengthTitle: "5. Panjang dan ukuran kertas",
   lengthIntro:
     "Dua hal ini yang paling sering ditanyakan - dan jawabannya jauh lebih tegas daripada yang diduga kebanyakan orang.",
   lengthPoints: [
     "Satu halaman. Itu panjang yang tepat untuk hampir semua pelamar, termasuk yang sudah lama bekerja. Perekrut melirik satu CV dalam hitungan detik; apa pun yang jatuh ke halaman kedua besar kemungkinan tidak pernah dibaca.",
-    "Dua halaman baru sepadan kalau pengalaman Anda lebih dari lima tahun dan semuanya nyambung dengan lowongan yang dituju. Tiga halaman hampir tidak pernah bisa dibenarkan.",
-    "Kalau CV Anda terlanjur panjang, yang dipangkas isinya - bukan ukuran hurufnya. Mengecilkan huruf sampai 8pt memang bikin muat, tapi sekaligus bikin tidak terbaca, baik oleh manusia maupun oleh mesin.",
+    "Dua halaman baru sepadan kalau pengalamanmu lebih dari lima tahun dan semuanya nyambung dengan lowongan yang dituju. Tiga halaman hampir tidak pernah bisa dibenarkan.",
+    "Kalau CV-mu terlanjur panjang, yang dipangkas isinya, bukan ukuran hurufnya. Mengecilkan huruf sampai 8pt memang bikin muat, tapi sekaligus bikin nggak terbaca, baik oleh manusia maupun oleh mesin.",
     "Ukuran kertas: pakai A4, dan itu sudah jadi pilihan bawaan di sini. A4 standar di Indonesia dan hampir seluruh dunia. Letter cuma perlu untuk lamaran ke perusahaan di Amerika Serikat atau Kanada; Legal dan F4 cuma kalau instansinya secara khusus meminta.",
-    "Kertas di layar bisa ditampilkan terpotong per halaman seperti di Word, jadi Anda tahu persis kalimat mana yang jatuh ke halaman berikutnya - sebelum CV-nya diunduh.",
+    "Kertas di layar bisa ditampilkan terpotong per halaman seperti di Word, jadi kamu tahu persis kalimat mana yang jatuh ke halaman berikutnya, sebelum CV-nya diunduh.",
   ],
 
-  compareTitle: "6. Membandingkan CV yang sudah Anda punya",
+  compareTitle: "6. Membandingkan CV yang sudah kamu punya",
   compareIntro:
-    "Halaman Cek CV Saya menerima berkas PDF, Word, atau teks dari mana pun - termasuk CV lama yang dulu Anda buat di aplikasi lain. Tidak perlu punya akun.",
+    "Halaman Cek CV Saya menerima berkas PDF, Word, atau teks dari mana pun - termasuk CV lama yang dulu kamu bikin di aplikasi lain. Nggak perlu punya akun.",
   compareSteps: [
     "Seret satu berkas untuk diperiksa, atau dua sampai lima berkas untuk diadu.",
-    "Kalau mau, tempel juga iklan lowongan yang Anda incar - kecocokannya ikut dinilai, dan justru itulah yang paling menentukan CV mana yang sebaiknya Anda kirim.",
+    "Kalau mau, tempel juga iklan lowongan yang kamu incar. Kecocokannya ikut dinilai, dan justru itulah yang paling menentukan CV mana yang sebaiknya kamu kirim.",
     "Tekan Periksa Sekarang. Tiap CV dapat nilai, daftar kelebihan, dan daftar kekurangan lengkap dengan cara membetulkannya.",
     "Kalau berkasnya lebih dari satu, di bagian atas kami sebutkan mana yang paling siap dikirim beserta alasannya - unggul di sisi mana, dan seberapa jauh selisihnya.",
   ],
   compareNote:
-    "Semua pembacaan terjadi di dalam HP atau komputer Anda sendiri. Berkasnya tidak pernah dikirim ke server kami maupun ke layanan lain, dan tidak ada yang disimpan - tutup halamannya, semuanya hilang.",
+    "Semua pembacaan terjadi di dalam HP atau komputermu sendiri. Berkasnya nggak pernah dikirim ke server kami maupun ke layanan lain, dan nggak ada yang disimpan; tutup halamannya, semuanya hilang.",
 
   troubleTitle: "7. Kalau ada yang tidak beres",
   trouble: [
     {
       q: 'Tulisan "Gagal menyimpan" muncul di bilah atas',
-      a: "Internet Anda sedang terputus. Jangan tutup halamannya - yang sudah Anda ketik masih utuh di layar. Begitu internetnya kembali, ketik satu huruf apa saja untuk memancing penyimpanan ulang.",
+      a: "Internetmu sedang terputus. Jangan tutup halamannya; yang sudah kamu ketik masih utuh di layar. Begitu internetnya kembali, ketik satu huruf apa saja untuk memancing penyimpanan ulang.",
     },
     {
       q: "CV saya jadi tiga halaman",
@@ -167,7 +167,7 @@ const id: GuideContent = {
     },
     {
       q: "Berkas CV saya gagal dibaca saat dibandingkan",
-      a: "Kalau pesannya menyebut dokumennya nyaris tidak berisi tulisan, CV Anda kemungkinan berupa gambar hasil pindai atau hasil simpan sebagai gambar. Itu sendiri temuan penting: mesin penyaring akan membacanya sebagai dokumen kosong. Simpan ulang sebagai PDF berisi tulisan, bukan gambar.",
+      a: "Kalau pesannya menyebut dokumennya nyaris tidak berisi tulisan, CV-mu kemungkinan berupa gambar hasil pindai atau hasil simpan sebagai gambar. Itu sendiri temuan penting: mesin penyaring akan membacanya sebagai dokumen kosong. Simpan ulang sebagai PDF berisi tulisan, bukan gambar.",
     },
     {
       q: "Saya ingin menukar urutan bagian CV",
@@ -177,7 +177,7 @@ const id: GuideContent = {
 
   ctaTitle: "Cara tercepat memahaminya: langsung dicoba",
   ctaBody:
-    'Buat akun, pilih "Mulai dari Contoh", lalu timpa isinya dengan data Anda satu per satu. Lima menit sudah kelihatan bentuknya.',
+    'Buat akun, pilih "Mulai dari Contoh", lalu timpa isinya dengan datamu satu per satu. Lima menit sudah kelihatan bentuknya.',
   ctaButton: "Mulai Sekarang",
   ctaButtonSignedIn: "Buka CV Saya",
 };

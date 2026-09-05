@@ -53,13 +53,13 @@ export const id = {
   form: {
     personalTitle: "Data Pribadi",
     personalHint:
-      "Bagian paling atas CV. Nama, kontak, dan tautan profil - inilah yang pertama dicari mesin penyaring lamaran.",
+      "Bagian paling atas CV. Nama, kontak, dan tautan profil, inilah yang pertama dicari mesin penyaring lamaran.",
 
     fullName: "Nama Lengkap",
     fullNameHint: "Tanpa gelar akademik di depan. Gelar boleh ditulis di belakang.",
     fullNamePh: "Budi Santoso",
     headline: "Jabatan / Posisi yang Dituju",
-    headlineHint: "Samakan dengan judul lowongan yang Anda lamar.",
+    headlineHint: "Samakan dengan judul lowongan yang kamu lamar.",
     headlinePh: "Frontend Developer",
     email: "Email",
     emailHint: "Gunakan email profesional yang aktif.",
@@ -84,7 +84,7 @@ export const id = {
       "Sebaiknya dimatikan. Mesin penyaring lamaran tidak bisa melihat gambar, dan susunan di sekitar foto sering membuat tulisan terbaca acak-acakan. Nyalakan hanya kalau lowongannya memang minta foto.",
     photo: "Pas Foto",
     photoHint:
-      "JPG, PNG, atau WebP. Foto dari kamera ponsel dikecilkan otomatis, jadi berkas besar tidak masalah - yang tersimpan paling banyak 1 MB. Latar polos memberi hasil terbaik.",
+      "JPG, PNG, atau WebP. Foto dari kamera ponsel dikecilkan otomatis, jadi berkas besar tidak masalah, yang tersimpan paling banyak 1 MB. Latar polos memberi hasil terbaik.",
     photoChoose: "Pilih berkas foto",
     photoReplace: "Ganti foto",
     photoRemove: "Hapus foto",
@@ -101,9 +101,9 @@ export const id = {
       "Foto ini masih berupa tautan gambar dari CV yang dibuat sebelumnya. Tautannya tetap berfungsi; pilih berkas bila ingin fotonya ikut tersimpan di dalam CV.",
     photoErrorType: "Berkas itu bukan gambar. Pilih berkas JPG, PNG, atau WebP.",
     photoErrorRead:
-      "Gambarnya tidak dapat dibaca. Berkasnya mungkin rusak - coba berkas lain.",
+      "Gambarnya tidak dapat dibaca. Berkasnya mungkin rusak, coba berkas lain.",
     photoErrorSourceTooBig:
-      "Berkasnya lebih dari 12 MB, dan sebesar itu bisa membuat peramban berhenti merespons sebelum sempat memprosesnya. Pilih foto biasa dari galeri - pas foto tidak pernah sebesar itu.",
+      "Berkasnya lebih dari 12 MB, dan sebesar itu bisa membuat peramban berhenti merespons sebelum sempat memprosesnya. Pilih foto biasa dari galeri, pas foto tidak pernah sebesar itu.",
     photoErrorTooBig:
       "Sudah dikecilkan semaksimal mungkin, tetapi hasilnya masih di atas 1 MB sehingga tidak bisa disimpan. Biasanya ini terjadi pada foto berlatar sangat ramai; foto berlatar polos jauh lebih ringan.",
 
@@ -118,7 +118,7 @@ export const id = {
 
     experienceLabel: "Pengalaman",
     experienceEmpty:
-      "Belum ada pengalaman kerja. Baru lulus? Isi bagian Proyek dan Organisasi sebagai gantinya - keduanya sama-sama dihitung sebagai bukti kemampuan.",
+      "Belum ada pengalaman kerja. Baru lulus? Isi bagian Proyek dan Organisasi sebagai gantinya, keduanya sama-sama dihitung sebagai bukti kemampuan.",
     experienceAdd: "Tambah Pengalaman Kerja",
     jobTitle: "Jabatan",
     jobTitleHint: "Sesuai surat pengangkatan.",
@@ -157,13 +157,13 @@ export const id = {
     skillCalloutMid: ", bukan",
     skillCalloutBad: "JavaScript (mahir)",
     skillCalloutTail:
-      ". Mesin penyaring mencocokkan kata demi kata, persis apa adanya - tambahan di dalam kurung justru membuatnya tidak cocok.",
+      ". Mesin penyaring mencocokkan kata demi kata, persis apa adanya, tambahan di dalam kurung justru membuatnya tidak cocok.",
 
     projectLabel: "Proyek",
     projectAdd: "Tambah Proyek",
     projectName: "Nama Proyek",
     projectNamePh: "SIMAK PWA",
-    projectRole: "Peran Anda",
+    projectRole: "Peranmu",
     projectRolePh: "Pengembang Utama",
     projectUrl: "Tautan",
     projectUrlHint: "Repositori, demo, atau publikasi proyek.",
@@ -226,7 +226,7 @@ export const id = {
     customRemoveEntry: "Hapus isian ini",
     customSectionTitle: "Judul Bagian",
     customSectionTitleHint:
-      "Tulisan biasa saja, tanpa emoji - mesin penyaring tidak bisa membaca emoji.",
+      "Tulisan biasa saja, tanpa emoji, mesin penyaring tidak bisa membaca emoji.",
     customSectionTitlePh: "Pelatihan dan Workshop",
     customEntryTitle: "Judul",
     customEntryTitlePh: "Pelatihan Keamanan Siber Dasar",
@@ -237,7 +237,7 @@ export const id = {
     endDate: "Selesai",
     bulletsLabel: "Poin Pencapaian",
     bulletsHint:
-      "Mulai dengan kata kerja, dan sebutkan angkanya. Bukan \"bertanggung jawab atas laporan\", tapi \"menyusun 12 laporan bulanan tepat waktu\". Inilah bagian yang paling menaikkan nilai CV Anda.",
+      "Mulai dengan kata kerja, dan sebutkan angkanya. Bukan \"bertanggung jawab atas laporan\", tapi \"menyusun 12 laporan bulanan tepat waktu\". Inilah bagian yang paling menaikkan nilai CV-mu.",
     bulletsAdd: "Tambah poin",
     bulletsRemove: "Hapus poin",
     bulletPh1:
@@ -260,20 +260,20 @@ export const id = {
   guest: {
     metaTitle: "Buat CV tanpa akun",
     metaDescription:
-      "Susun CV yang lolos mesin penyaring lamaran tanpa perlu mendaftar. Datanya tersimpan di browser Anda sendiri, dan bisa diunduh sebagai PDF, Word, teks, atau berkas cadangan.",
+      "Susun CV yang lolos mesin penyaring lamaran tanpa perlu mendaftar. Datanya tersimpan di browser kamu sendiri, dan bisa diunduh sebagai PDF, Word, teks, atau berkas cadangan.",
     ctaTry: "Coba tanpa akun",
-    ctaTryHint: "Langsung pakai - tanpa daftar, tanpa email",
+    ctaTryHint: "Langsung pakai, tanpa daftar, tanpa email",
     loading: "Menyiapkan editor...",
 
     bannerTitle: "CV ini cuma tersimpan di browser ini.",
     bannerBody:
-      "Tidak ada yang dikirim ke mana pun, jadi Anda tidak perlu akun. Tapi ada risikonya: buka dari HP lain, bersihkan data browser, atau pakai mode penyamaran - CV ini ikut hilang. Unduh berkasnya, atau pindahkan ke akun kalau mau disimpan selamanya.",
+      "Tidak ada yang dikirim ke mana pun, jadi kamu tidak perlu akun. Tapi ada risikonya: buka dari HP lain, bersihkan data browser, atau pakai mode penyamaran, CV ini ikut hilang. Unduh berkasnya, atau pindahkan ke akun kalau mau disimpan selamanya.",
     savedLocal: "Tersimpan di browser ini",
     saveFailed:
-      "Browser menolak menyimpan, biasanya karena penyimpanannya penuh. Pas foto adalah isi yang paling besar, jadi menghapusnya sering langsung menyelesaikan. CV Anda masih utuh di layar - kalau cara itu belum menolong, segera unduh berkasnya.",
+      "Browser menolak menyimpan, biasanya karena penyimpanannya penuh. Pas foto adalah isi yang paling besar, jadi menghapusnya sering langsung menyelesaikan. CV-mu masih utuh di layar, kalau cara itu belum menolong, segera unduh berkasnya.",
     loadFromJson: "Buka berkas cadangan",
     loadHint:
-      "Membuka lagi berkas cadangan yang pernah Anda unduh dari sini. Berguna untuk menyimpan beberapa versi CV sebagai berkas milik Anda sendiri.",
+      "Membuka lagi berkas cadangan yang pernah kamu unduh dari sini. Berguna untuk menyimpan beberapa versi CV sebagai berkas milik kamu sendiri.",
     loadConfirm:
       "CV yang sekarang di layar akan diganti seluruhnya oleh isi berkas itu, dan yang lama tidak bisa dikembalikan lagi.",
     loadYes: "Ganti dengan isi berkas",
@@ -283,14 +283,14 @@ export const id = {
       "Berkas itu dibuat oleh versi aplikasi yang lebih baru. Muat ulang halaman ini dulu, lalu coba lagi.",
     moveToAccount: "Pindahkan ke akun",
     moveHint:
-      "Anda akan diminta masuk atau mendaftar dulu, lalu CV ini bisa dipindahkan ke akun itu.",
+      "Kamu akan diminta masuk atau mendaftar dulu, lalu CV ini bisa dipindahkan ke akun itu.",
 
-    importTitle: "Ada CV yang Anda buat tanpa akun",
+    importTitle: "Ada CV yang kamu buat tanpa akun",
     importBody:
-      "CV itu masih ada di browser ini. Pindahkan sekarang supaya tersimpan permanen di akun Anda dan bisa dibuka dari perangkat mana saja.",
+      "CV itu masih ada di browser ini. Pindahkan sekarang supaya tersimpan permanen di akunmu dan bisa dibuka dari perangkat mana saja.",
     importButton: "Pindahkan ke akun saya",
     importDismiss: "Nanti saja",
-    importDone: "CV berhasil dipindahkan ke akun Anda.",
+    importDone: "CV berhasil dipindahkan ke akunmu.",
     importFailed: "CV gagal dipindahkan. Coba lagi.",
   },
 
@@ -330,7 +330,7 @@ export const id = {
     appearance: "Tampilan",
     fillSample: "Isi contoh",
     fillSampleConfirm:
-      "Seluruh isi CV ini akan diganti dengan contoh yang sudah lengkap. Bagus untuk melihat bentuk CV jadi dan tahu setiap isian muncul di sebelah mana - tapi yang sudah Anda ketik akan hilang.",
+      "Seluruh isi CV ini akan diganti dengan contoh yang sudah lengkap. Bagus untuk melihat bentuk CV jadi dan tahu setiap isian muncul di sebelah mana, tapi yang sudah kamu ketik akan hilang.",
     fillSampleYes: "Ya, tampilkan contohnya",
     matchJob: "Cocokkan dengan iklan lowongan",
     moreActions: "Tindakan lain",
@@ -349,11 +349,11 @@ export const id = {
     saveSaved: "Tersimpan",
     saveError: "Gagal menyimpan",
     saveFailedTitle: "Gagal menyimpan",
-    saveFailedGeneric: "Perubahan Anda gagal disimpan.",
+    saveFailedGeneric: "Perubahanmu gagal disimpan.",
     saveFailedOffline:
-      "Koneksi ke server terputus. Yang Anda ketik masih utuh di layar - jangan tutup halaman ini sampai internetnya kembali.",
+      "Koneksi ke server terputus. Yang kamu ketik masih utuh di layar, jangan tutup halaman ini sampai internetnya kembali.",
     sectionOrderHint:
-      "Bagian yang Anda lewati tidak akan muncul di CV - jadi tidak perlu diisi semua. Untuk menukar urutannya, pakai tombol panah di kanan judul bagian.",
+      "Bagian yang kamu lewati tidak akan muncul di CV, jadi tidak perlu diisi semua. Untuk menukar urutannya, pakai tombol panah di kanan judul bagian.",
   },
 
   /* ------------------------------------------- panel pengaturan tampilan CV */
@@ -368,12 +368,12 @@ export const id = {
     templateWithPhoto: "Pakai pas foto",
     templateWithoutPhoto: "Tanpa pas foto",
     font: "Jenis Huruf",
-    fontHint: "Semuanya aman - mesin penyaring bisa membaca kelimanya.",
+    fontHint: "Semuanya aman, mesin penyaring bisa membaca kelimanya.",
     fontSize: "Besar Huruf",
     lineHeight: "Jarak Antarbaris",
     headingLanguage: "Bahasa judul di dalam CV",
     headingLanguageHint:
-      "Menentukan CV Anda tertulis \"PENGALAMAN KERJA\" atau \"WORK EXPERIENCE\". Tidak ada hubungannya dengan bahasa tampilan aplikasi ini.",
+      "Menentukan CV-mu tertulis \"PENGALAMAN KERJA\" atau \"WORK EXPERIENCE\". Tidak ada hubungannya dengan bahasa tampilan aplikasi ini.",
     accentColor: "Warna Garis dan Judul",
     photoWidth: "Ukuran Pas Foto",
     margin: "Jarak Tepi Kertas",
@@ -382,17 +382,17 @@ export const id = {
     marginFollowTemplate: "ikut desain",
     marginReset: "Kembalikan seperti semula",
     marginHint:
-      "Jarak atas dan bawah selalu sama besar, dan berlaku di setiap halaman - bukan cuma halaman pertama. Di bawah 10 mm, sebagian printer akan memotong tepinya.",
+      "Jarak atas dan bawah selalu sama besar, dan berlaku di setiap halaman, bukan cuma halaman pertama. Di bawah 10 mm, sebagian printer akan memotong tepinya.",
     paperSize: "Ukuran Kertas",
     photoUnsupported:
-      "Desain ini tidak punya tempat untuk pas foto. Kalau lowongan Anda memintanya, pilih desain dari kelompok \"Pakai pas foto\".",
+      "Desain ini tidak punya tempat untuk pas foto. Kalau lowonganmu memintanya, pilih desain dari kelompok \"Pakai pas foto\".",
   },
 
   /* ------------------------------------------------------- halaman alur */
   flow: {
     metaTitle: "Alur dan Arsitektur",
     metaDescription:
-      "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV ATS Builder - tersedia juga sebagai berkas gambar SVG dan PNG.",
+      "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV ATS Builder, tersedia juga sebagai berkas gambar SVG dan PNG.",
     title: "Alur dan arsitektur",
     subtitle:
       "Empat diagram: bagaimana pengguna memakainya, bagaimana datanya mengalir, dan bagaimana perubahan kode sampai ke production. Diagram di halaman ini dan berkas gambarnya dibangkitkan dari satu sumber data yang sama, sehingga keduanya tidak mungkin bercerita berbeda.",
@@ -403,7 +403,7 @@ export const id = {
     downloadPng: "Unduh PNG",
     legendTitle: "Keterangan bentuk",
     legendNote:
-      "Jenis setiap kotak ditulis di dalam kotaknya sendiri, bukan hanya dibedakan lewat warna - supaya diagram ini tetap terbaca saat dicetak hitam-putih maupun saat dibacakan pembaca layar.",
+      "Jenis setiap kotak ditulis di dalam kotaknya sendiri, bukan hanya dibedakan lewat warna, supaya diagram ini tetap terbaca saat dicetak hitam-putih maupun saat dibacakan pembaca layar.",
   },
 
   /* -------------------------------------------------------- halaman depan */
@@ -556,23 +556,23 @@ export const id = {
   compare: {
     metaTitle: "Cek dan Bandingkan CV",
     metaDescription:
-      "Unggah beberapa CV sekaligus, lihat kelebihan dan kekurangan masing-masing, lalu ketahui mana yang paling siap dikirim. Berkasnya diperiksa langsung di perangkat Anda dan tidak pernah dikirim ke mana pun.",
-    title: "Cek CV Anda, atau adu beberapa sekaligus",
+      "Unggah beberapa CV sekaligus, lihat kelebihan dan kekurangan masing-masing, lalu ketahui mana yang paling siap dikirim. Berkasnya diperiksa langsung di perangkatmu dan tidak pernah dikirim ke mana pun.",
+    title: "Cek CV-mu, atau adu beberapa sekaligus",
     subtitle:
-      "Unggah satu berkas untuk diperiksa, atau dua sampai lima untuk diadu. Masing-masing dapat nilai, daftar kelebihan, dan daftar kekurangan lengkap dengan cara membetulkannya - lalu di akhir kami sebutkan mana yang paling siap dikirim.",
-    privacyTitle: "Berkas Anda tidak dikirim ke mana pun.",
+      "Unggah satu berkas untuk diperiksa, atau dua sampai lima untuk diadu. Masing-masing dapat nilai, daftar kelebihan, dan daftar kekurangan lengkap dengan cara membetulkannya, lalu di akhir kami sebutkan mana yang paling siap dikirim.",
+    privacyTitle: "Berkasmu tidak dikirim ke mana pun.",
     privacyBody:
-      "Semua pembacaan dan penilaian terjadi di dalam HP atau komputer Anda sendiri. Tidak ada satu berkas pun yang dikirim ke server kami maupun ke layanan lain, dan tidak ada yang disimpan. Tutup halaman ini, semuanya hilang.",
+      "Semua pembacaan dan penilaian terjadi di dalam HP atau komputermu sendiri. Tidak ada satu berkas pun yang dikirim ke server kami maupun ke layanan lain, dan tidak ada yang disimpan. Tutup halaman ini, semuanya hilang.",
     dropTitle: "Seret berkas CV ke sini",
-    dropSubtitle: "atau ketuk untuk memilih dari perangkat Anda",
-    dropFormats: "Berkas PDF, Word, atau teks - paling banyak 5 berkas, masing-masing 8 MB",
+    dropSubtitle: "atau ketuk untuk memilih dari perangkatmu",
+    dropFormats: "Berkas PDF, Word, atau teks, paling banyak 5 berkas, masing-masing 8 MB",
     chooseFiles: "Pilih Berkas",
     fileRemove: "Batalkan berkas ini",
     tooMany: "Paling banyak 5 berkas sekaligus.",
     jobToggleShow: "Punya iklan lowongannya? Tempel di sini (boleh dilewati)",
     jobToggleHide: "Sembunyikan iklan lowongan",
     jobHint:
-      "Kalau diisi, tiap CV ikut dinilai seberapa cocok isinya dengan lowongan ini - dan justru inilah yang paling menentukan CV mana yang sebaiknya Anda kirim.",
+      "Kalau diisi, tiap CV ikut dinilai seberapa cocok isinya dengan lowongan ini, dan justru inilah yang paling menentukan CV mana yang sebaiknya kamu kirim.",
     analyze: "Periksa Sekarang",
     analyzing: "Sedang memeriksa...",
     reset: "Mulai Ulang",
@@ -597,16 +597,16 @@ export const id = {
     statColumns: "Kolom",
     ctaTitle: "Ingin memperbaikinya sekarang?",
     ctaBody:
-      "Susun ulang CV Anda di sini: tiap kotak isian sudah ada contohnya, nilainya berubah sambil Anda mengetik, dan hasilnya bisa langsung diunduh sebagai PDF, Word, atau teks polos.",
+      "Susun ulang CV-mu di sini: tiap kotak isian sudah ada contohnya, nilainya berubah sambil kamu mengetik, dan hasilnya bisa langsung diunduh sebagai PDF, Word, atau teks polos.",
     ctaButton: "Buat CV Gratis",
     addMoreSingle:
-      "Punya CV versi lain? Tambahkan sekarang - keduanya langsung diadu dan kami sebutkan mana yang lebih siap dikirim.",
+      "Punya CV versi lain? Tambahkan sekarang, keduanya langsung diadu dan kami sebutkan mana yang lebih siap dikirim.",
     addMoreMany:
       "Masih ada CV lain? Tambahkan saja, sampai lima berkas sekaligus.",
     addMoreButton: "Tambah CV lagi",
     errorTitle: "Berkas gagal dibaca",
     limitsNote:
-      "Jujur soal batasannya: penilaian ini membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV Anda terbaca mesin, tapi tidak bisa menilai apakah pengalaman Anda cocok untuk suatu jabatan. Yang itu tetap penilaian Anda sendiri.",
+      "Jujur soal batasannya: penilaian ini membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV-mu terbaca mesin, tapi tidak bisa menilai apakah pengalamanmu cocok untuk suatu jabatan. Yang itu tetap penilaian kamu sendiri.",
   },
 
   /* ------------------------------------------------------- panel skor ATS */
@@ -623,40 +623,40 @@ export const id = {
     statQuantified: "Poin yang menyebut angka",
     breakdownTitle: "Rincian penilaian",
     breakdownHint:
-      "Nilai akhir dihitung dari lima hal di bawah ini. Tidak semuanya berpengaruh sama besar - persentase di samping tiap baris menunjukkan seberapa besar pengaruhnya.",
+      "Nilai akhir dihitung dari lima hal di bawah ini. Tidak semuanya berpengaruh sama besar, persentase di samping tiap baris menunjukkan seberapa besar pengaruhnya.",
     weight: "pengaruh",
     notScored: "belum bisa dinilai",
     keywordsTitle: "Kata penting dari iklan lowongan",
     keywordsMatchSuffix: "cocok",
-    keywordsMissing: "Belum ada di CV Anda",
-    keywordsMatched: "Sudah ada di CV Anda",
+    keywordsMissing: "Belum ada di CV-mu",
+    keywordsMatched: "Sudah ada di CV-mu",
     keywordsWarning:
-      "Masukkan hanya yang benar-benar Anda kuasai. Menempel keahlian yang tidak Anda punya memang menaikkan angka di sini - tapi akan ketahuan begitu masuk wawancara.",
+      "Masukkan hanya yang benar-benar kamu kuasai. Menempel keahlian yang tidak kamu punya memang menaikkan angka di sini, tapi akan ketahuan begitu masuk wawancara.",
     noFindings:
-      "Bersih. CV Anda sudah memenuhi semua aturan yang kami periksa.",
+      "Bersih. CV-mu sudah memenuhi semua aturan yang kami periksa.",
     openField: "Buka bagian yang bermasalah",
     gradePrefix: "Nilai",
     jobTitle: "Cocokkan dengan iklan lowongan",
     jobIntro:
-      "Salin-tempel isi iklan lowongan yang Anda incar. Kata-kata pentingnya kami ambil sendiri, lalu kami bandingkan dengan isi CV Anda.",
+      "Salin-tempel isi iklan lowongan yang kamu incar. Kata-kata pentingnya kami ambil sendiri, lalu kami bandingkan dengan isi CV-mu.",
     jobLabel: "Isi iklan lowongan",
     jobPlaceholder:
-      "Tempel seluruh isi iklan lowongannya di sini - termasuk bagian syarat dan tanggung jawab. Makin lengkap yang ditempel, makin tepat kata penting yang terbaca.",
+      "Tempel seluruh isi iklan lowongannya di sini, termasuk bagian syarat dan tanggung jawab. Makin lengkap yang ditempel, makin tepat kata penting yang terbaca.",
     jobAnalyze: "Lihat seberapa cocok",
     jobAnalyzing: "Menghitung...",
     jobClear: "Kosongkan",
     jobEmpty: "Isi iklan lowongannya belum ditempel.",
     pageTitle: "Cocokkan dengan Lowongan",
     pageSubtitle:
-      "Tempel iklan lowongannya, lalu lihat kata penting mana yang diminta lowongan itu tapi belum ada di CV Anda.",
+      "Tempel iklan lowongannya, lalu lihat kata penting mana yang diminta lowongan itu tapi belum ada di CV-mu.",
     jobDescTitle: "Isi Iklan Lowongan",
     jobDescHint:
-      "Salin seluruh isi iklan lowongannya - termasuk bagian syarat dan tanggung jawab - lalu tempel di bawah ini. Kata-kata pentingnya kami ambil sendiri.",
+      "Salin seluruh isi iklan lowongannya, termasuk bagian syarat dan tanggung jawab, lalu tempel di bawah ini. Kata-kata pentingnya kami ambil sendiri.",
     wordsAnalyzed: "kata diperiksa.",
     saveToHistory: "Catat Nilai Ini",
     historyTitle: "Catatan Nilai Sebelumnya",
     historyEmpty:
-      "Belum ada catatan. Tekan Catat Nilai Ini untuk menyimpan nilai sekarang - lalu perbaiki CV Anda, catat lagi, dan Anda bisa melihat sendiri kemajuannya.",
+      "Belum ada catatan. Tekan Catat Nilai Ini untuk menyimpan nilai sekarang, lalu perbaiki CV-mu, catat lagi, dan kamu bisa melihat sendiri kemajuannya.",
     historyBest: "Nilai tertinggi sejauh ini:",
     historySaved: "Nilainya sudah dicatat.",
     historySaveFailed: "Nilainya gagal dicatat.",
@@ -680,7 +680,7 @@ export const id = {
     viewContinuous: "Memanjang",
     typeHere: "Ketik langsung di kertas",
     typeHint:
-      "Nyalakan ini, lalu ketik langsung di atas kertasnya seperti di Word. Yang Anda ketik otomatis masuk ke kotak isian di sebelah kiri - keduanya satu CV yang sama, bukan dua salinan. Untuk tanggal, klik saja periodenya: pemilih bulan akan muncul, supaya penulisannya tetap rapi.",
+      "Nyalakan ini, lalu ketik langsung di atas kertasnya seperti di Word. Yang kamu ketik otomatis masuk ke kotak isian di sebelah kiri, keduanya satu CV yang sama, bukan dua salinan. Untuk tanggal, klik saja periodenya: pemilih bulan akan muncul, supaya penulisannya tetap rapi.",
     typeDateTitle: "Ubah tanggalnya",
     typeDateStart: "Mulai",
     typeDateEnd: "Selesai",
@@ -693,8 +693,8 @@ export const id = {
       "Jumlah halamannya dihitung ulang setelah mode ketik dimatikan. Kotak kosong yang sengaja ditampilkan selama mengetik tidak ikut tercetak.",
     typeForcesContinuous:
       "Tidak bisa dipakai selama mode ketik menyala. Tampilan per halaman memotong dokumennya di batas halaman, dan kursor tidak bisa menyeberangi potongan itu.",
-    viewPagedHint: "Seperti di Word - Anda bisa lihat persis di mana halaman berganti.",
-    viewContinuousHint: "Satu gulungan panjang tanpa potongan - enak untuk membaca cepat sambil mengubah isinya.",
+    viewPagedHint: "Seperti di Word, kamu bisa lihat persis di mana halaman berganti.",
+    viewContinuousHint: "Satu gulungan panjang tanpa potongan, enak untuk membaca cepat sambil mengubah isinya.",
     zoomIn: "Perbesar",
     zoomOut: "Perkecil",
     zoomFit: "Paskan ke lebar layar",
@@ -702,10 +702,10 @@ export const id = {
     paperSize: "Ukuran kertas",
     paperRecommended: "paling aman",
     lengthIdeal: "Panjangnya sudah pas.",
-    lengthAcceptable: "Masih wajar kalau pengalaman kerja Anda lebih dari lima tahun.",
+    lengthAcceptable: "Masih wajar kalau pengalaman kerjamu lebih dari lima tahun.",
     lengthTooLong: "Kepanjangan. Perekrut biasanya cuma melirik halaman pertama.",
     onePageAdvice:
-      "Satu halaman sudah cukup untuk hampir semua pelamar. Kalau kepanjangan, buang pengalaman yang tidak nyambung dengan lowongan yang dituju - jangan hurufnya yang dikecilkan.",
+      "Satu halaman sudah cukup untuk hampir semua pelamar. Kalau kepanjangan, buang pengalaman yang tidak nyambung dengan lowongan yang dituju, jangan hurufnya yang dikecilkan.",
   },
 
   /* -------------------------------------------------- pemilih tema/bahasa */
@@ -734,7 +734,7 @@ export const id = {
     mainNav: "Utama",
     mobileNav: "Utama (ponsel)",
     settingsGroup: "Tampilan",
-    breadcrumb: "Anda sedang di sini",
+    breadcrumb: "Kamu sedang di sini",
     backHome: "Kembali ke beranda",
     backDashboard: "Kembali ke daftar CV saya",
     homeAria: "beranda",
@@ -751,7 +751,7 @@ export const id = {
   dashboard: {
     title: "CV Saya",
     subtitleEmpty:
-      "Belum ada CV di sini. Mulai dari contoh saja, supaya Anda langsung lihat bentuk jadinya.",
+      "Belum ada CV di sini. Mulai dari contoh saja, supaya kamu langsung lihat bentuk jadinya.",
     subtitleCount: "CV tersimpan. Semuanya tersimpan sendiri, tidak perlu ditekan Simpan.",
     importJson: "Buka Berkas Cadangan",
     startFromSample: "Mulai dari Contoh",
@@ -760,7 +760,7 @@ export const id = {
     emptyTitle: "Belum ada CV di akun ini",
     emptyBodyLead: "Saran: pilih",
     emptyBodyTail:
-      ". CV-nya langsung terisi contoh lengkap, jadi Anda bisa lihat tiap isian muncul di sebelah mana - tinggal ditimpa dengan data Anda sendiri.",
+      ". CV-nya langsung terisi contoh lengkap, jadi kamu bisa lihat tiap isian muncul di sebelah mana, tinggal ditimpa dengan datamu sendiri.",
     nameEmpty: "Nama belum diisi",
     changedAt: "Diubah",
     edit: "Buka dan Sunting",
@@ -794,14 +794,14 @@ export const id = {
     passwordChangeTitle: "Ubah Kata Sandi",
     passwordCreateTitle: "Buat Kata Sandi",
     passwordGoogleNote:
-      "Akun ini dibuat lewat Google, jadi belum punya kata sandi. Kalau Anda membuatnya sekarang, nanti bisa masuk lewat dua cara: tombol Google, atau email dan kata sandi.",
+      "Akun ini dibuat lewat Google, jadi belum punya kata sandi. Kalau kamu membuatnya sekarang, nanti bisa masuk lewat dua cara: tombol Google, atau email dan kata sandi.",
     passwordCurrent: "Kata Sandi Saat Ini",
     passwordNew: "Kata Sandi Baru",
     passwordHint: "Minimal 8 huruf atau angka.",
     passwordSave: "Simpan Kata Sandi",
     dangerTitle: "Hapus Akun",
     dangerBody:
-      "Semua CV beserta isinya akan terhapus selamanya dan tidak bisa dikembalikan - oleh kami sekalipun. Sebaiknya unduh dulu berkas cadangan tiap CV sebelum melanjutkan.",
+      "Semua CV beserta isinya akan terhapus selamanya dan tidak bisa dikembalikan, oleh kami sekalipun. Sebaiknya unduh dulu berkas cadangan tiap CV sebelum melanjutkan.",
     dangerStart: "Saya ingin menghapus akun",
     dangerConfirmLabel: "Ketik \"HAPUS AKUN\" untuk mengonfirmasi",
     dangerConfirmHint:
@@ -817,10 +817,10 @@ export const id = {
   /* --------------------------------------------------------- masuk/daftar */
   auth: {
     loginTitle: "Masuk",
-    loginSubtitle: "Lanjutkan CV yang sudah Anda simpan.",
+    loginSubtitle: "Lanjutkan CV yang sudah kamu simpan.",
     registerTitle: "Daftar",
     registerSubtitle:
-      "Gratis. CV Anda tersimpan sendiri dan bisa diubah kapan saja, dari perangkat mana saja.",
+      "Gratis. CV-mu tersimpan sendiri dan bisa diubah kapan saja, dari perangkat mana saja.",
     google: "Masuk dengan Google",
     divider: "ATAU",
     nameLabel: "Nama Lengkap",
@@ -832,24 +832,24 @@ export const id = {
     submitLogin: "Masuk",
     submitRegister: "Buat Akun",
     registeredNotice:
-      "Akun Anda sudah jadi. Sekarang masuk pakai email dan kata sandi yang barusan dibuat.",
+      "Akunmu sudah jadi. Sekarang masuk pakai email dan kata sandi yang barusan dibuat.",
     signInFailed: "Gagal masuk. Coba sekali lagi.",
     invalidCredentials: "Email atau kata sandi salah.",
     registerFailed: "Pendaftaran gagal. Coba sekali lagi.",
     sessionStale:
-      "Anda sudah tidak dalam keadaan masuk - akun yang tercatat di sini tidak ditemukan lagi. Sebentar lagi Anda dibawa ke halaman masuk.",
+      "Kamu sudah tidak dalam keadaan masuk, akun yang tercatat di sini tidak ditemukan lagi. Sebentar lagi kamu dibawa ke halaman masuk.",
     forgotPassword: "Lupa kata sandi?",
     forgotTitle: "Lupa kata sandi",
     forgotSubtitle:
-      "Masukkan alamat email akun Anda. Kami kirimkan tautan untuk membuat kata sandi baru.",
+      "Masukkan alamat email akunmu. Kami kirimkan tautan untuk membuat kata sandi baru.",
     forgotSubmit: "Kirim tautannya",
     forgotFailed: "Tautannya gagal dikirim. Coba sekali lagi.",
     forgotOffline: "Koneksi ke server terputus. Coba lagi setelah internetnya kembali.",
-    sentTitle: "Cek email Anda",
+    sentTitle: "Cek emailmu",
     sentBody:
       "Kalau alamat itu memang terdaftar, tautan untuk membuat kata sandi baru sudah dalam perjalanan. Tautannya berlaku 30 menit dan hanya bisa dipakai sekali.",
     sentSpam:
-      "Belum sampai setelah beberapa menit? Cek folder spam, dan pastikan alamat yang Anda ketik tidak salah huruf.",
+      "Belum sampai setelah beberapa menit? Cek folder spam, dan pastikan alamat yang kamu ketik tidak salah huruf.",
     resetTitle: "Buat kata sandi baru",
     resetSubtitle: "Ketik kata sandi barunya dua kali, supaya tidak ada salah ketik.",
     resetNew: "Kata Sandi Baru",
@@ -858,12 +858,12 @@ export const id = {
     resetMismatch: "Kedua kata sandi belum sama. Periksa lagi.",
     resetFailed: "Kata sandinya gagal diganti. Coba sekali lagi.",
     resetNoToken:
-      "Alamat halaman ini tidak memuat tautan pemulihan. Buka lagi tautan dari email Anda - atau minta yang baru.",
+      "Alamat halaman ini tidak memuat tautan pemulihan. Buka lagi tautan dari emailmu, atau minta yang baru.",
     resetDone:
-      "Kata sandi Anda sudah diganti. Silakan masuk memakai yang baru.",
+      "Kata sandimu sudah diganti. Silakan masuk memakai yang baru.",
     backToLogin: "Kembali ke halaman masuk",
     forgotViaGoogle:
-      "Pengiriman email belum aktif di pemasangan ini. Yang bisa Anda lakukan sekarang: masuk dengan Google memakai alamat email yang sama, lalu buat kata sandi baru di halaman Pengaturan. Akun dengan alamat email yang sama akan tersambung, bukan tergandakan.",
+      "Pengiriman email belum aktif di pemasangan ini. Yang bisa kamu lakukan sekarang: masuk dengan Google memakai alamat email yang sama, lalu buat kata sandi baru di halaman Pengaturan. Akun dengan alamat email yang sama akan tersambung, bukan tergandakan.",
     forgotNoGoogle:
       "Pengiriman email belum aktif di pemasangan ini, dan masuk lewat Google juga sedang mati. Untuk sekarang, akun yang kata sandinya terlupa belum bisa dipulihkan sendiri.",
     toRegister: "Belum punya akun?",
@@ -882,11 +882,11 @@ export const id = {
   errors: {
     errorTitle: "Ada yang tidak beres",
     errorBody:
-      "Halaman ini gagal ditampilkan. Tenang - CV Anda tetap aman, karena setiap perubahan sudah tersimpan sendiri begitu Anda berhenti mengetik.",
+      "Halaman ini gagal ditampilkan. Tenang, CV-mu tetap aman, karena setiap perubahan sudah tersimpan sendiri begitu kamu berhenti mengetik.",
     errorCode: "Kode kesalahan:",
     notFoundTitle: "Halamannya tidak ada",
     notFoundBody:
-      "Alamat yang Anda buka tidak ada - atau CV yang dituju bukan milik akun yang sedang masuk sekarang.",
+      "Alamat yang kamu buka tidak ada, atau CV yang dituju bukan milik akun yang sedang masuk sekarang.",
     retry: "Coba lagi",
     openDashboard: "Buka CV Saya",
     backHome: "Kembali ke Beranda",

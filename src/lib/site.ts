@@ -10,9 +10,9 @@ import type { Locale } from "@/lib/i18n/config";
 
 export const SITE = {
   name: "CV ATS Builder",
-  tagline: "Susun CV yang terbaca mesin perekrut",
+  tagline: "Bikin CV yang aman dibaca mesin",
   description:
-    "Aplikasi web untuk menyusun CV ramah ATS lewat field terstruktur, dengan pratinjau langsung, penilaian otomatis beserta saran perbaikan, dan penyimpanan permanen sehingga dapat diedit kapan saja.",
+    "Isi kotak-kotaknya, dan CV yang aman dibaca mesin penyaring lamaran tersusun sendiri. Ada pratinjau seukuran kertas aslinya, penilaian yang menyebutkan persis apa yang kurang, dan datamu tersimpan supaya bisa dipakai lagi untuk lowongan berikutnya.",
 } as const;
 
 /** Judul dan deskripsi situs untuk metadata, mengikuti bahasa antarmuka. */
@@ -35,9 +35,9 @@ export const SITE_META: Record<
     ],
   },
   en: {
-    tagline: "Build a CV that recruiting software can actually read",
+    tagline: "Build a CV machines can actually read",
     description:
-      "A web app for building ATS-friendly CVs from structured fields, with a live preview, automatic scoring and improvement suggestions, and permanent storage so you can edit it any time.",
+      "Fill in the boxes and a CV that screening software can read builds itself. There is a preview at real paper size, scoring that names exactly what is missing, and your data stays put so the next job only takes a tweak.",
     keywords: [
       "ATS CV",
       "ATS resume checker",

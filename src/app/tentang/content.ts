@@ -46,7 +46,7 @@ const id: AboutContent = {
   badge: "Tentang",
   title: "Kenapa aplikasi ini dibuat",
   intro:
-    "Pembuat CV yang menjaga hasilnya tetap terbaca mesin penyaring lamaran, menilainya secara terbuka, dan tidak mengunci data Anda di dalamnya.",
+    "Pembuat CV yang menjaga hasilnya tetap terbaca mesin penyaring lamaran, menilainya secara terbuka, dan nggak mengunci datamu di dalamnya.",
 
   problemTitle: "Masalah yang ingin diselesaikan",
   problemParagraphs: [
@@ -155,7 +155,7 @@ const id: AboutContent = {
     "Bagian ini sengaja ada. Aplikasi yang cuma menyebutkan kelebihannya membuat penggunanya salah menaksir seberapa jauh ia boleh bersandar padanya.",
   limits: [
     "Penilaiannya menirukan aturan umum mesin penyaring lamaran, bukan satu produk tertentu. Tiap perusahaan memakai yang berbeda, dan tidak satu pun membuka cara kerjanya - jadi nilai tinggi berarti memenuhi yang kami periksa, bukan jaminan lolos seleksi.",
-    "Penilaiannya membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV Anda terbaca mesin, tapi tidak bisa menilai apakah pengalaman Anda cocok untuk suatu jabatan.",
+    "Penilaiannya membaca tulisan, bukan memahami maksudnya. Ia bisa memastikan CV-mu terbaca mesin, tapi nggak bisa menilai apakah pengalamanmu cocok untuk suatu jabatan.",
     'Kata dicocokkan apa adanya. "frontend" dan "front-end" sudah dianggap sama sejak sesi 6, tetapi kata berimbuhan belum - "mengembangkan" dan "pengembangan" masih dihitung berbeda. Menanganinya menuntut pemenggalan kata, dan itu akan mengorbankan sifat deterministik yang justru menjadi alasan mesin ini dibuat berbasis aturan.',
     "Pada berkas yang diperiksa, susunan CV ditebak dari tulisannya. CV dengan judul bagian yang tidak lazim bisa dinilai lebih rendah daripada seharusnya - meski itu sendiri pertanda yang benar, sebab mesin penyaring pun akan tersandung hal yang sama.",
     "Pas foto disimpan menyatu di dalam data CV, bukan di penyimpanan berkas tersendiri. Konsekuensinya, foto beresolusi sangat besar dikecilkan cukup agresif sebelum disimpan.",
@@ -167,7 +167,7 @@ const id: AboutContent = {
 
   ctaTitle: "Coba sendiri",
   ctaBody:
-    "Gratis, tanpa batas jumlah CV, dan tidak ada satu pun tulisan tempelan di berkas yang Anda unduh.",
+    "Gratis, tanpa batas jumlah CV, dan nggak ada satu pun tulisan tempelan di berkas yang kamu unduh.",
   ctaButton: "Mulai buat CV",
 };
 
