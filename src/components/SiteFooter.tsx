@@ -102,6 +102,32 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               {AUTHOR.department}
               <br />
               {AUTHOR.institution}
+
+              {/*
+                Kontak ditaruh di dalam <address> yang sama, bukan di blok
+                terpisah: elemen itu memang untuk keterangan cara menghubungi
+                pemilik halaman, dan pembaca layar mengumumkannya sebagai satu
+                kesatuan dengan nama pemiliknya.
+              */}
+              <span className="mt-2 block">
+                <a
+                  href={`mailto:${AUTHOR.email}`}
+                  className="underline-offset-2 hover:text-ink-900 hover:underline"
+                >
+                  {AUTHOR.email}
+                </a>
+              </span>
+              <span className="block">
+                WhatsApp{" "}
+                <a
+                  href={AUTHOR.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline-offset-2 hover:text-ink-900 hover:underline"
+                >
+                  {AUTHOR.whatsapp}
+                </a>
+              </span>
             </address>
           </div>
         </div>

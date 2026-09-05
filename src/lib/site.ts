@@ -83,6 +83,21 @@ export const AUTHOR = {
    * salinan halaman depan: dokumen yang diunduh isinya murni data penggunanya.
    */
   credit: "Muhammad Agus Riyadh Zaky",
+
+  /**
+   * Kontak pengelola.
+   *
+   * Dikumpulkan di sini, bukan ditulis ulang di tiap halaman - sebelumnya
+   * alamat surelnya tertanam sebagai tetapan lokal di halaman Privasi saja,
+   * sehingga halaman lain tidak punya cara menyebutkannya tanpa menyalin.
+   *
+   * Nomor WhatsApp disimpan dua bentuk: `whatsapp` untuk dibaca manusia, dan
+   * `whatsappUrl` dalam format internasional tanpa nol depan, karena wa.me
+   * hanya menerima bentuk itu.
+   */
+  email: "riyadhzaky05@gmail.com",
+  whatsapp: "0852-5726-9750",
+  whatsappUrl: "https://wa.me/6285257269750",
 } as const;
 
 /**

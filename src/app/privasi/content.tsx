@@ -33,7 +33,7 @@ export const PRIVACY_META: Record<
   },
 };
 
-const CONTACT_EMAIL = "riyadhzaky05@gmail.com";
+const CONTACT_EMAIL = AUTHOR.email;
 
 function PrivacyId() {
   return (
