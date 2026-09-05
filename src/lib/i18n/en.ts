@@ -901,6 +901,46 @@ export const en: Dictionary = {
     openIn: "opens in a new tab",
   },
 
+  /* Maintainer panel. Open only to the address matching ADMIN_EMAIL; for
+     everyone else the route answers 404. */
+  admin: {
+    title: "Maintainer panel",
+    subtitle:
+      "Handle account problems without opening the code or touching the database directly.",
+    privacyNote:
+      "This panel shows account data only. The contents of anyone's CV cannot be opened, edited, or downloaded from here, and there is no way to sign in as another user.",
+    dbConnected: "Database connected.",
+    dbDown: "The database cannot be reached. The figures and list below could not be loaded.",
+    statAccounts: "accounts",
+    statResumes: "CVs",
+    stat7: "signed up, 7 days",
+    stat30: "signed up, 30 days",
+    searchLabel: "Search",
+    searchPlaceholder: "Search an email address",
+    colEmail: "Email",
+    colJoined: "Joined",
+    colSignIn: "Sign-in",
+    colResumes: "CVs",
+    colActive: "Last active",
+    colActions: "Actions",
+    signInPassword: "Password",
+    signInGoogle: "Google",
+    empty: "No matching accounts.",
+    prev: "Previous",
+    next: "Next",
+    pageOf: "Page {n} of {t}",
+    resend: "Send reset link",
+    deleteAccount: "Delete account",
+    deleteTitle: "Delete this account?",
+    deleteBody:
+      "The account {email}, along with every CV and everything in it, will be deleted for good and cannot be brought back by anyone. Type the address again so the account being deleted is the one you meant.",
+    deleteConfirmLabel: "Type the email address again",
+    deleteCancel: "Cancel",
+    deleteConfirm: "Delete permanently",
+    working: "Working...",
+    back: "Back to my documents",
+  },
+
   footer: {
     pagesHeading: "Pages",
     authorHeading: "Built by",

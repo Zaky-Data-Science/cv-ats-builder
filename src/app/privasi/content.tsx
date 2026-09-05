@@ -249,13 +249,37 @@ function PrivacyId() {
         mengumpulkan data mereka dengan sengaja.
       </p>
 
-      <h2>10. Menghubungi pengelola</h2>
+      <h2>10. Akses pengelola</h2>
+      <p>
+        Ada satu akun pengelola, yaitu pemilik aplikasi ini. Akun itu dapat
+        membuka panel yang menampilkan <strong>data akun</strong>: alamat
+        surel, tanggal daftar, cara masuk (kata sandi atau Google), berapa CV
+        yang dimiliki, dan kapan terakhir aktif. Gunanya menangani masalah
+        seperti tidak bisa masuk, lupa kata sandi, akun ganda, atau permintaan
+        penghapusan akun.
+      </p>
+      <p>
+        <strong>Isi CV tidak termasuk di dalamnya.</strong> Pengelola tidak
+        dapat membuka, menyunting, maupun mengunduh isi CV siapa pun dari panel
+        itu, tidak dapat mengganti kata sandi seseorang, dan tidak dapat masuk
+        sebagai pengguna lain. Yang tersedia untuk menolong orang yang terkunci
+        hanyalah mengirim tautan pemulihan ke alamat surel pemilik akunnya
+        sendiri, sehingga yang menentukan kata sandi barunya tetap pemiliknya.
+      </p>
+      <p>
+        Dua tindakan yang dapat dilakukan pengelola dan berdampak pada data:
+        menghapus sebuah akun beserta seluruh isinya atas permintaan
+        pemiliknya, dan mengirim ulang tautan pemulihan kata sandi. Penghapusan
+        bersifat tetap dan tidak dapat dibatalkan.
+      </p>
+
+      <h2>11. Menghubungi pengelola</h2>
       <p>
         Pertanyaan, permintaan penghapusan data, atau laporan masalah keamanan
         dapat dikirim ke <strong>{CONTACT_EMAIL}</strong>.
       </p>
 
-      <h2>11. Perubahan kebijakan</h2>
+      <h2>12. Perubahan kebijakan</h2>
       <p>
         Bila kebijakan ini berubah, tanggal &quot;terakhir diperbarui&quot; di
         bagian atas halaman ikut diperbarui. Perubahan yang berdampak besar
@@ -472,13 +496,37 @@ function PrivacyEn() {
         data.
       </p>
 
-      <h2>10. Contacting the operator</h2>
+      <h2>10. Maintainer access</h2>
+      <p>
+        There is one maintainer account, belonging to the owner of this app. It
+        can open a panel showing <strong>account data</strong>: the email
+        address, the date the account was created, how the person signs in
+        (password or Google), how many CVs they have, and when they were last
+        active. Its purpose is handling problems such as being unable to sign
+        in, a forgotten password, duplicate accounts, or a request to delete an
+        account.
+      </p>
+      <p>
+        <strong>CV contents are not part of that.</strong> The maintainer
+        cannot open, edit, or download anyone&rsquo;s CV from that panel, cannot
+        change anyone&rsquo;s password, and cannot sign in as another user. The
+        only way to help someone locked out is sending a recovery link to that
+        account&rsquo;s own email address, so the new password is still chosen
+        by its owner.
+      </p>
+      <p>
+        Two maintainer actions do affect data: deleting an account together
+        with everything in it at its owner&rsquo;s request, and re-sending a
+        password recovery link. Deletion is permanent and cannot be undone.
+      </p>
+
+      <h2>11. Contacting the operator</h2>
       <p>
         Questions, deletion requests, or security reports can be sent to{" "}
         <strong>{CONTACT_EMAIL}</strong>.
       </p>
 
-      <h2>11. Changes to this policy</h2>
+      <h2>12. Changes to this policy</h2>
       <p>
         If this policy changes, the &quot;last updated&quot; date at the top of
         the page changes with it. Significant changes will be announced inside

@@ -54,6 +54,19 @@ export default async function AppLayout({
             </span>
             <LanguageToggle />
             <ThemeToggle />
+            {/*
+              Tautan panel hanya muncul bagi pengelola. Ini kemudahan, BUKAN
+              pengamanan: rutenya sendiri memeriksa perannya di server dan
+              membalas 404 bagi siapa pun yang lain, termasuk yang mengetik
+              alamatnya langsung tanpa pernah melihat tautan ini.
+            */}
+            {session.user.admin && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm">
+                  {t.admin.title}
+                </Button>
+              </Link>
+            )}
             <Link href="/settings">
               <Button variant="ghost" size="sm">
                 {t.app.settings}

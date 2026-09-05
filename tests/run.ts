@@ -1,4 +1,5 @@
-﻿import { runAtsEngineTests } from "./ats-engine.test";
+﻿import { runAdminTests } from "./admin.test";
+import { runAtsEngineTests } from "./ats-engine.test";
 import { runCetakTests } from "./cetak.test";
 import { runDocumentTests } from "./document.test";
 import { runEditPathTests } from "./edit-path.test";
@@ -27,6 +28,7 @@ async function main() {
   runStructureTests();
   runPasswordResetTests();
   runStaleSessionTests();
+  runAdminTests();
   runCetakTests();
   runAtsEngineTests();
   runTemplateTests();

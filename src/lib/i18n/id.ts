@@ -940,6 +940,46 @@ export const id = {
     openIn: "membuka di tab baru",
   },
 
+  /* Panel pengelola. Hanya terbuka bagi alamat yang cocok dengan
+     ADMIN_EMAIL; bagi yang lain rutenya membalas 404. */
+  admin: {
+    title: "Panel pengelola",
+    subtitle:
+      "Menangani masalah akun tanpa perlu membuka kode atau menyentuh basis data langsung.",
+    privacyNote:
+      "Panel ini hanya menampilkan data akun. Isi CV pengguna tidak dapat dibuka, disunting, maupun diunduh dari sini, dan tidak ada cara masuk sebagai pengguna lain.",
+    dbConnected: "Basis data tersambung.",
+    dbDown: "Basis data tidak dapat dijangkau. Angka dan daftar di bawah tidak dapat dimuat.",
+    statAccounts: "akun",
+    statResumes: "CV",
+    stat7: "daftar 7 hari",
+    stat30: "daftar 30 hari",
+    searchLabel: "Cari",
+    searchPlaceholder: "Cari alamat surel",
+    colEmail: "Surel",
+    colJoined: "Daftar",
+    colSignIn: "Cara masuk",
+    colResumes: "CV",
+    colActive: "Terakhir aktif",
+    colActions: "Tindakan",
+    signInPassword: "Kata sandi",
+    signInGoogle: "Google",
+    empty: "Tidak ada akun yang cocok.",
+    prev: "Sebelumnya",
+    next: "Berikutnya",
+    pageOf: "Halaman {n} dari {t}",
+    resend: "Kirim tautan reset",
+    deleteAccount: "Hapus akun",
+    deleteTitle: "Hapus akun ini?",
+    deleteBody:
+      "Akun {email} beserta seluruh CV dan isinya akan terhapus selamanya, dan tidak bisa dikembalikan oleh siapa pun. Ketik ulang alamatnya untuk memastikan yang terhapus memang akun ini.",
+    deleteConfirmLabel: "Ketik ulang alamat surelnya",
+    deleteCancel: "Batal",
+    deleteConfirm: "Hapus selamanya",
+    working: "Memproses...",
+    back: "Kembali ke dokumen saya",
+  },
+
   footer: {
     pagesHeading: "Halaman",
     authorHeading: "Pembuat",

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 import { auth } from "@/auth";
+import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { isStaleSessionError } from "@/lib/stale-session";
 
@@ -23,6 +24,40 @@ export async function requireUser() {
     throw new HttpError(401, "Anda belum masuk.");
   }
   return session.user;
+}
+
+/**
+ * Memastikan permintaan datang dari pengelola.
+ *
+ * Diperiksa **di server, pada setiap halaman dan setiap aksi**, bukan sekali
+ * di tempat masuknya. Menyembunyikan menu bukan pengamanan: alamat rutenya
+ * dapat diketik langsung, dan aksinya dapat dipanggil langsung tanpa membuka
+ * halamannya sama sekali.
+ *
+ * Perannya dibaca ulang dari basis data lewat `ADMIN_EMAIL`, bukan dipercaya
+ * dari penanda di dalam token. Token ditandatangani server sehingga tidak
+ * dapat dipalsukan, tetapi ia dapat **basi**: token yang diterbitkan saat
+ * seseorang masih pengelola tetap membawa penandanya sampai kedaluwarsa,
+ * padahal `ADMIN_EMAIL` mungkin sudah diganti sejak lama. Membaca ulang
+ * membuat pencabutan peran berlaku seketika.
+ *
+ * Yang bukan pengelola memperoleh 404, bukan 403. Pesan penolakan justru
+ * memberi tahu ada sesuatu di alamat itu; halaman yang seolah tidak ada tidak
+ * mengungkapkan apa pun.
+ */
+export async function requireAdmin() {
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!session?.user?.id || !isAdminEmail(email)) {
+    throw new HttpError(404, "Halaman tidak ditemukan.");
+  }
+  return session.user;
+}
+
+/** Bentuk yang tidak melempar, untuk halaman yang perlu memanggil notFound(). */
+export async function isAdminRequest(): Promise<boolean> {
+  const session = await auth();
+  return Boolean(session?.user?.id && isAdminEmail(session.user.email));
 }
 
 /**

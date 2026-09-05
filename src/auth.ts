@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { isAdminEmail } from "@/lib/admin";
 import { checkRateLimit, LIMITS, resetRateLimit } from "@/lib/rate-limit";
 
 /**
@@ -138,21 +139,38 @@ const config: NextAuthConfig = {
     async jwt({ token, user }) {
       if (user?.id) {
         token.uid = user.id;
-        return token;
-      }
-      if (!token.uid && token.email) {
+      } else if (!token.uid && token.email) {
         const found = await prisma.user.findUnique({
           where: { email: token.email },
           select: { id: true },
         });
         if (found) token.uid = found.id;
       }
+
+      /*
+        Peran pengelola dihitung di sini, dari alamat surel yang sudah ada di
+        token, dan disimpan sebagai penanda biasa.
+
+        Alamatnya tidak pernah ditulis di dalam kode - ia dibaca dari
+        `ADMIN_EMAIL`. Menulisnya di kode berarti alamat pribadi ikut ke
+        repositori publik, dan menggantinya menuntut deploy ulang.
+
+        Dihitung ulang setiap token disegarkan, bukan sekali saat masuk:
+        mencabut peran cukup dengan mengubah variabelnya, tanpa perlu memaksa
+        siapa pun keluar dan masuk lagi.
+
+        Penanda ini kemudahan tampilan, BUKAN pengamanan. Setiap halaman dan
+        setiap aksi memeriksa ulang perannya sendiri di server - lihat
+        `requireAdmin` di lib/guard.ts.
+      */
+      token.admin = isAdminEmail(token.email);
       return token;
     },
 
     async session({ session, token }) {
       if (token.uid && session.user) {
         session.user.id = token.uid as string;
+        session.user.admin = token.admin === true;
       }
       return session;
     },
