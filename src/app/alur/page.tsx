@@ -26,8 +26,8 @@ const LEGEND: Record<NodeKind, { id: string; en: string }> = {
     en: "A step performed by the user or the system.",
   },
   decision: {
-    id: "Percabangan - alur berlanjut sesuai jawabannya.",
-    en: "A branch - the flow continues according to the answer.",
+    id: "Percabangan; alur berlanjut sesuai jawabannya.",
+    en: "A branch; the flow continues according to the answer.",
   },
   data: {
     id: "Data yang dibaca atau ditulis.",
@@ -80,10 +80,24 @@ export default async function FlowPage() {
               <p className="mt-1.5 text-xs leading-relaxed text-ink-600">
                 {t.flow.legendNote}
               </p>
-              <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+              {/*
+                Label dan keteranganya berdiri di dua kolom tetap, bukan
+                mengalir mengikuti panjang labelnya.
+
+                Sebelumnya keduanya berdampingan dengan `flex`, sehingga
+                keterangan mulai di tempat yang berbeda-beda: "DATA" pendek,
+                "DI PERAMBAN" panjang, dan matanya harus mencari awal tiap
+                baris. Lebar kolom pertama kini dikunci, jadi seluruh
+                keterangan rata di satu garis - dan labelnya, yang sama-sama
+                selebar kolomnya, ikut rata sebagai satu deret.
+              */}
+              <dl className="mt-4 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
                 {(Object.keys(LEGEND) as NodeKind[]).map((kind) => (
-                  <div key={kind} className="flex gap-2.5">
-                    <dt className="shrink-0 text-[10px] font-semibold tracking-wide text-ink-500 uppercase">
+                  <div
+                    key={kind}
+                    className="grid grid-cols-[6.5rem_1fr] items-baseline gap-x-3"
+                  >
+                    <dt className="rounded border border-ink-200 bg-ink-50 px-1.5 py-1 text-center text-[10px] font-semibold tracking-wide text-ink-500 uppercase">
                       {KIND_LABEL[locale][kind]}
                     </dt>
                     <dd className="text-xs leading-relaxed text-ink-600">

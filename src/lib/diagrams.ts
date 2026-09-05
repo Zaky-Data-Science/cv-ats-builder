@@ -82,7 +82,7 @@ const buildFlow: Diagram = {
     en: "User flow: building a CV",
   },
   description: {
-    id: "Dari membuka aplikasi sampai berkas CV terunduh. Perhatikan bahwa penyimpanan berjalan sendiri di latar belakang, dan perbaikan berdasarkan skor merupakan putaran - bukan satu langkah sekali jalan.",
+    id: "Dari membuka aplikasi sampai berkas CV terunduh. Perhatikan bahwa penyimpanan berjalan sendiri di latar belakang, dan perbaikan berdasarkan skor merupakan putaran, bukan satu langkah sekali jalan.",
     en: "From opening the app to a downloaded file. Note that saving runs by itself in the background, and improving on the score is a loop rather than a one-off step.",
   },
   nodes: [
@@ -102,7 +102,7 @@ const buildFlow: Diagram = {
       id: "daftar",
       kind: "process",
       lane: -1,
-      label: { id: "Daftar - email atau Google", en: "Sign up - email or Google" },
+      label: { id: "Daftar, email atau Google", en: "Sign up, email or Google" },
     },
     {
       id: "masuk",
@@ -114,7 +114,7 @@ const buildFlow: Diagram = {
       id: "dashboard",
       kind: "process",
       lane: 0,
-      label: { id: "Dashboard - daftar CV", en: "Dashboard - list of CVs" },
+      label: { id: "Dashboard, daftar CV", en: "Dashboard, list of CVs" },
     },
     {
       id: "buat",
@@ -203,7 +203,7 @@ const buildFlow: Diagram = {
     {
       from: "cukup",
       to: "isi",
-      label: { id: "belum - perbaiki", en: "not yet - fix it" },
+      label: { id: "belum, perbaiki", en: "not yet, fix it" },
       back: true,
     },
     { from: "cukup", to: "unduh", label: { id: "sudah", en: "yes" } },
@@ -272,7 +272,7 @@ const compareFlow: Diagram = {
       id: "nilai",
       kind: "browser",
       lane: 0,
-      label: { id: "Nilai tiap CV - lima dimensi", en: "Score each CV - five dimensions" },
+      label: { id: "Nilai tiap CV, lima dimensi", en: "Score each CV, five dimensions" },
     },
     {
       id: "jumlah",
@@ -346,7 +346,7 @@ const architectureFlow: Diagram = {
       id: "banding",
       kind: "browser",
       lane: -1,
-      label: { id: "Pembanding CV - berhenti di sini", en: "CV comparison - stops here" },
+      label: { id: "Pembanding CV, berhenti di sini", en: "CV comparison, stops here" },
       note: {
         id: "Berkas tidak pernah meninggalkan perangkat pengguna.",
         en: "Files never leave the user's device.",
@@ -366,7 +366,7 @@ const architectureFlow: Diagram = {
       id: "auth",
       kind: "process",
       lane: 1,
-      label: { id: "Auth.js - sesi dan Google OAuth", en: "Auth.js - sessions and Google OAuth" },
+      label: { id: "Auth.js, sesi dan Google OAuth", en: "Auth.js, sessions and Google OAuth" },
     },
     {
       id: "guard",
@@ -398,7 +398,7 @@ const architectureFlow: Diagram = {
       id: "cetak",
       kind: "process",
       lane: 1,
-      label: { id: "Halaman cetak - PDF", en: "Print page - PDF" },
+      label: { id: "Halaman cetak, PDF", en: "Print page, PDF" },
       note: {
         id: "HTML biasa, sehingga teks PDF tetap dapat diseleksi dan diurai.",
         en: "Plain HTML, so the PDF text stays selectable and parseable.",
@@ -435,8 +435,8 @@ const releaseFlow: Diagram = {
     en: "Development and release workflow",
   },
   description: {
-    id: "Gerbang kualitas dijalankan di komputer sendiri sebelum kode dikirim, bukan hanya mengandalkan hasil build di server - kegagalan yang tertangkap lebih awal jauh lebih murah diperbaiki.",
-    en: "The quality gate runs locally before anything is pushed rather than relying on the server build alone - a failure caught early is far cheaper to fix.",
+    id: "Gerbang kualitas dijalankan di komputer sendiri sebelum kode dikirim, bukan hanya mengandalkan hasil build di server, kegagalan yang tertangkap lebih awal jauh lebih murah diperbaiki.",
+    en: "The quality gate runs locally before anything is pushed rather than relying on the server build alone, a failure caught early is far cheaper to fix.",
   },
   nodes: [
     {
@@ -457,8 +457,8 @@ const releaseFlow: Diagram = {
       lane: -1,
       label: { id: "Tulis berkas migrasi secara manual", en: "Write the migration file by hand" },
       note: {
-        id: "prisma migrate dev tidak dipakai di basis data lokal - perintah itu mengosongkan isinya.",
-        en: "prisma migrate dev is never used on the local database - it wipes the contents.",
+        id: "prisma migrate dev tidak dipakai di basis data lokal, perintah itu mengosongkan isinya.",
+        en: "prisma migrate dev is never used on the local database, it wipes the contents.",
       },
     },
     {
@@ -502,7 +502,7 @@ const releaseFlow: Diagram = {
     { from: "migrasi", to: "gerbang" },
     { from: "skema", to: "gerbang", label: { id: "tidak", en: "no" } },
     { from: "gerbang", to: "lulus" },
-    { from: "lulus", to: "ubah", label: { id: "tidak - perbaiki", en: "no - fix it" }, back: true },
+    { from: "lulus", to: "ubah", label: { id: "tidak, perbaiki", en: "no, fix it" }, back: true },
     { from: "lulus", to: "commit", label: { id: "ya", en: "yes" } },
     { from: "commit", to: "vercel" },
     { from: "vercel", to: "tayang" },

@@ -387,12 +387,12 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
         "Paling formal: nama di tengah, garis ganda. Bentuk yang lazim pada seleksi instansi dan BUMN.",
     },
     PORTRAIT: {
-      name: "Berfoto - Formal",
+      name: "Berfoto, Formal",
       description:
         "Pasfoto 3x4 di kanan atas sejajar nama. Untuk lowongan yang memang meminta lampiran foto.",
     },
     PROFILE: {
-      name: "Berfoto - Bulat",
+      name: "Berfoto, Bulat",
       description:
         "Foto bulat di tengah atas. Untuk bidang layanan, perhotelan, dan penerbangan.",
     },
@@ -439,12 +439,12 @@ export const TEMPLATE_INFO: Record<Locale, Record<TemplateId, TemplateInfo>> = {
         "The most formal: centred name, double rules. The shape expected by public-sector selection panels.",
     },
     PORTRAIT: {
-      name: "With photo - Formal",
+      name: "With photo, Formal",
       description:
         "A passport-style photo top right, level with the name. For roles that explicitly ask for one.",
     },
     PROFILE: {
-      name: "With photo - Round",
+      name: "With photo, Round",
       description:
         "A round photo centred at the top. For service, hospitality and aviation roles.",
     },
