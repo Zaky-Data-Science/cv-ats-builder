@@ -13,6 +13,7 @@ import {
   RESET_TTL_MINUTES,
 } from "@/lib/password-reset";
 import { revokeUserTokens } from "@/lib/password-reset-store";
+import { checkRateLimit, LIMITS } from "@/lib/rate-limit";
 import { baseUrl } from "@/lib/site";
 
 /**
@@ -128,6 +129,31 @@ export async function kirimTautanReset(formData: FormData): Promise<HasilAksi> {
       ok: false,
       pesan:
         "Pengiriman surel belum aktif di pemasangan ini (BREVO_API_KEY dan MAIL_FROM masih kosong).",
+    };
+  }
+
+  /*
+    Dibatasi per alamat TUJUAN, bukan per pengelola.
+
+    Yang dijaga bukan siapa yang boleh memanggil - itu sudah dijawab
+    `requireAdmin` di atas - melainkan berapa kali sebuah kotak masuk boleh
+    menerima surel dari aplikasi ini. Kuncinya karena itu alamat penerimanya.
+
+    Batasnya lebih longgar daripada jalur publik: pengelola memang kadang
+    perlu mengirim ulang beberapa kali saat menolong seseorang yang surelnya
+    tidak kunjung sampai.
+  */
+  const batas = await checkRateLimit({
+    key: `admin-reset:${pengguna.email}`,
+    ...LIMITS.adminReset,
+  });
+  if (!batas.allowed) {
+    const menit = Math.ceil(batas.retryAfterSeconds / 60);
+    return {
+      ok: false,
+      pesan:
+        `Ditahan pembatas laju: alamat ini sudah menerima ${LIMITS.adminReset.limit} tautan ` +
+        `pemulihan dalam satu jam terakhir. Surelnya TIDAK dikirim. Coba lagi dalam ${menit} menit.`,
     };
   }
 

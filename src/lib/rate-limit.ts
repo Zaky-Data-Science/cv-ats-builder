@@ -128,4 +128,19 @@ export const LIMITS = {
   forgot: { limit: 3, windowSeconds: 60 * 60 },
   /** Percobaan memakai tautan pemulihan, per alamat IP. */
   reset: { limit: 10, windowSeconds: 60 * 60 },
+  /**
+   * Tautan pemulihan yang dikirim pengelola lewat panel, per alamat tujuan.
+   *
+   * Lebih longgar daripada `forgot` karena yang memanggilnya sudah dipastikan
+   * pengelola, bukan siapa pun dari internet. Tetap dibatasi, dan alasannya
+   * bukan soal siapa yang boleh melainkan seberapa sering:
+   *
+   *  - Kuota pengiriman surel habis sama saja dengan fitur pemulihan mati
+   *    bagi seluruh pengguna, bukan hanya bagi yang sedang ditolong.
+   *  - Orang yang tiba-tiba menerima belasan surel reset akan mengira
+   *    akunnya sedang diretas, dan itu kerugian yang kita timbulkan sendiri.
+   *  - Bila sesi pengelola suatu hari dicuri, batas ini yang menahan
+   *    kerusakannya tetap kecil.
+   */
+  adminReset: { limit: 10, windowSeconds: 60 * 60 },
 } as const;
