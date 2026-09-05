@@ -77,11 +77,33 @@ export function samarkanKonteks(
  * 8.000-9.000, 3,4 menjadi 3-4. Angka di bawah satu dan tahun empat digit
  * dibiarkan - yang pertama karena rentangnya akan lebih kabur daripada
  * berguna, yang kedua karena tahun bukan besaran yang dirahasiakan siapa pun.
+ *
+ * Tidak semua deretan angka adalah besaran. Fungsi ini dikenakan pada baris
+ * "Detail" yang sudah menggabungkan nilai dengan satuannya, sehingga angka
+ * yang kebetulan ikut tertulis di situ - pangkat pada satuan yang diketik
+ * datar (`m2`, `m3`), dan pengali (`2x15 MW`) - dulu ikut disamarkan dan
+ * menghasilkan keluaran yang terbaca rusak seperti `8.000-9.000 m2-3`.
+ * Keduanya kini dilewati. Yang dilewati sengaja sesempit mungkin: keliru
+ * melewatkan berarti angka sungguhan lolos tanpa disamarkan, dan itu jauh
+ * lebih berbahaya daripada keluaran yang jelek.
  */
 export function samarkanAngka(teks: string): string {
-  return teks.replace(/\d[\d.,]*/g, (cocok) => {
+  return teks.replace(/\d[\d.,]*/g, (cocok, posisi: number) => {
     // Tahun dibiarkan apa adanya.
     if (/^(19|20)\d{2}$/.test(cocok)) return cocok;
+
+    const sebelum = teks[posisi - 1] ?? "";
+    const sesudah = teks.slice(posisi + cocok.length);
+
+    // Pangkat pada satuan yang diketik datar: "m2", "m3", "km2". Cirinya satu
+    // digit yang menempel persis di belakang huruf - bukan besaran, melainkan
+    // bagian dari nama satuannya. Dibatasi satu digit supaya "Rp42" yang
+    // ditulis tanpa spasi tetap disamarkan.
+    if (cocok.length === 1 && /\p{L}/u.test(sebelum)) return cocok;
+
+    // Pengali: pada "2x15 MW" yang diukur adalah 15, sedangkan 2 menyatakan
+    // ada dua unit. Menyamarkan pengalinya membuat kalimatnya tidak masuk akal.
+    if (/^[x\u00d7]\d/.test(sesudah)) return cocok;
 
     const pemisahRibuan = cocok.includes(".") && /\.\d{3}(\D|$)/.test(`${cocok} `);
     const angka = Number(

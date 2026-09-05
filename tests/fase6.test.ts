@@ -203,6 +203,43 @@ export async function runFase6Tests(): Promise<void> {
     samarkanAngka("Selesai pada 2024"),
     "Selesai pada 2024",
   );
+
+  /*
+    Penyamaran dikenakan pada baris "Detail" yang sudah menggabungkan nilai
+    dengan satuannya, jadi angka yang kebetulan ikut tertulis di situ pernah
+    ikut tertelan. Dua bentuk di bawah ini yang nyata ditemui; keduanya
+    membuat keluarannya terbaca rusak, bukan membocorkan apa pun.
+  */
+  equal(
+    "pangkat pada satuan yang diketik datar tidak ikut disamarkan",
+    samarkanAngka("8.400 m2"),
+    "8.000-9.000 m2",
+  );
+  equal(
+    "satuan berpangkat tiga juga aman",
+    samarkanAngka("luas 120 m3"),
+    "luas 100-200 m3",
+  );
+  equal(
+    "satuan superskrip tetap seperti sedia kala",
+    samarkanAngka("8.400 m²"),
+    "8.000-9.000 m²",
+  );
+  equal(
+    "angka pengali dibiarkan, yang diukur saja yang disamarkan",
+    samarkanAngka("Kapasitas 2x15 MW"),
+    "Kapasitas 2x10-20 MW",
+  );
+  equal(
+    "besaran tanpa spasi setelah huruf TETAP disamarkan",
+    samarkanAngka("Rp42 M"),
+    "Rp40-50 M",
+  );
+  equal(
+    "persentase berkoma tetap disamarkan",
+    samarkanAngka("turun 4,1% ke 1,8%"),
+    "turun 4-5% ke 1-2%",
+  );
   equal(
     "nama klien diganti deskriptor bidangnya",
     samarkanKonteks(NAMA_KLIEN, {
