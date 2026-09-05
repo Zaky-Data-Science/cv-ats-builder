@@ -4,26 +4,15 @@
  * Dikumpulkan di satu berkas agar nama, institusi, dan deskripsi cukup
  * diubah di satu tempat - dipakai oleh footer, halaman Tentang, metadata
  * halaman, dan properti dokumen berkas yang diunduh.
- *
- * Namanya memuat kedua pilar sekaligus - CV dan portofolio - tanpa membuang
- * kata "ATS". Kata itu dipertahankan bukan karena bunyinya, melainkan karena
- * itulah yang benar-benar diketik orang Indonesia di mesin pencari; ia juga
- * masih dipakai di SITE_META.keywords karena alasan yang sama.
- *
- * Taglinenya sengaja pendek. Judul halaman disusun `${SITE.name} - ${tagline}`,
- * dan mesin pencari memotongnya di sekitar 60 karakter - tagline yang mengulang
- * "CV", "ATS", atau "Portofolio" membuang jatah itu untuk kata yang sudah ada
- * di namanya sendiri. Kalimat penjualnya tinggal di `description`, tempat yang
- * memang disediakan untuk itu.
  */
 
 import type { Locale } from "@/lib/i18n/config";
 
 export const SITE = {
-  name: "CV ATS & Portofolio Builder",
-  tagline: "Satu Data, Dua Senjata",
+  name: "CV ATS Builder",
+  tagline: "Susun CV yang terbaca mesin perekrut",
   description:
-    "Lamaran kerja dibaca dua kali - pertama oleh mesin penyaring lamaran (ATS), lalu oleh rekruter. Aplikasi ini menyusun CV berstandar ATS yang bersih dari kesalahan pembacaan, sekaligus portofolio yang meyakinkan, hanya dari satu kali pengisian data.",
+    "Aplikasi web untuk menyusun CV ramah ATS lewat field terstruktur, dengan pratinjau langsung, penilaian otomatis beserta saran perbaikan, dan penyimpanan permanen sehingga dapat diedit kapan saja.",
 } as const;
 
 /** Judul dan deskripsi situs untuk metadata, mengikuti bahasa antarmuka. */
@@ -43,15 +32,12 @@ export const SITE_META: Record<
       "template CV ATS",
       "skor ATS",
       "bandingkan CV",
-      "portofolio kerja",
-      "CV dan portofolio",
-      "portofolio ATS",
     ],
   },
   en: {
-    tagline: "A CV machines can read, a portfolio people will trust",
+    tagline: "Build a CV that recruiting software can actually read",
     description:
-      "A web app for building an ATS-friendly CV and the portfolio that proves it - both from the same data, through structured fields shaped by how your field expects work to be evidenced, with a live preview, automatic scoring and improvement suggestions, and permanent storage.",
+      "A web app for building ATS-friendly CVs from structured fields, with a live preview, automatic scoring and improvement suggestions, and permanent storage so you can edit it any time.",
     keywords: [
       "ATS CV",
       "ATS resume checker",
@@ -59,8 +45,6 @@ export const SITE_META: Record<
       "ATS friendly CV template",
       "CV score",
       "compare resumes",
-      "work portfolio",
-      "CV and portfolio",
     ],
   },
 };

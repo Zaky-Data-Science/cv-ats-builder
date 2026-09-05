@@ -1,25 +1,9 @@
-# CV ATS & Portofolio Builder
+# CV ATS Builder
 
-Aplikasi web yang berdiri di **dua pilar**: CV yang terbaca sistem *Applicant Tracking
-System* (ATS), dan portofolio yang membuktikan kemampuan di baliknya. Keduanya disusun
-dari data yang sama, lewat field terstruktur, dengan pratinjau seukuran kertas
-sebenarnya, penilaian beserta saran perbaikan, ekspor PDF/Word/teks/JSON, dan
-penyimpanan permanen sehingga dapat diedit kembali kapan saja.
-
-Keduanya sengaja tidak dilebur, karena pembacanya memang berbeda:
-
-| | CV | Portofolio |
-|---|---|---|
-| Dibaca | mesin dulu, lalu perekrut sekitar 6 detik | manusia yang ahli di bidangnya - pelan dan teliti |
-| Menjawab | "pantas diwawancara?" | "benar-benar bisa?" |
-| Bentuk | satu kolom, tanpa tabel, tanpa gambar | bebas - boleh gambar dan studi kasus |
-| Panjang | 1-2 halaman | 3-5 karya terkuat, dibahas mendalam |
-| Dinilai dari | kata kunci dan keterbacaan mesin | kedalaman penalaran dan hasilnya |
-
-> **Keadaan hari ini:** portofolio berupa **bagian di dalam CV** yang bentuk isiannya
-> mengikuti pola pembuktian bidang penggunanya - bukan berkas terpisah. Berkas
-> portofolio yang berdiri sendiri belum ada dan sedang direncanakan; lihat
-> [Portofolio Berbasis Pola](#portofolio-berbasis-pola).
+Aplikasi web untuk menyusun CV yang terbaca sistem *Applicant Tracking System* (ATS)
+melalui field terstruktur, dengan pratinjau seukuran kertas sebenarnya, penilaian ATS
+beserta saran perbaikan, ekspor PDF/Word/teks/JSON, dan penyimpanan permanen di basis
+data sehingga CV dapat diedit kembali kapan saja.
 
 Aplikasi ini juga dapat **memindai dan membandingkan CV yang sudah ada** - berkas PDF
 atau Word dari mana pun dibaca dan dinilai langsung di dalam peramban, tanpa pernah
@@ -51,8 +35,7 @@ dipakai bersama, jadi jangan menaruh data pribadi di dalamnya.
 - [Akun Demo](#akun-demo)
 - [Struktur Project](#struktur-project)
 - [Cara Data Disimpan](#cara-data-disimpan)
-- [Portofolio Berbasis Pola](#portofolio-berbasis-pola)
-- [Mesin Penilaian](#mesin-penilaian)
+- [Mesin Penilaian ATS](#mesin-penilaian-ats)
 - [Menyalakan Login Google](#menyalakan-login-google)
 - [Deploy ke Internet (Gratis)](#deploy-ke-internet-gratis)
 - [Pengujian](#pengujian)
@@ -73,14 +56,7 @@ dipakai bersama, jadi jangan menaruh data pribadi di dalamnya.
 | Simpan otomatis | Perubahan tersimpan ke basis data 0,8 detik setelah berhenti mengetik |
 | Banyak CV per akun | Duplikasi CV untuk disesuaikan dengan tiap lowongan |
 | Multi-pengguna | Login email+kata sandi dan/atau Google; data tiap akun terpisah penuh |
-| Dua angka, bukan satu | **Kekuatan CV** (mutu dokumennya sendiri) dan **Kecocokan Lowongan** (seberapa cocok dengan satu iklan) dihitung terpisah, disertai saran perbaikan yang dapat diklik |
-| 6 dimensi berbobot | Lima dimensi asli ditambah Kekuatan Bukti Karya; bobotnya bergeser sendiri saat bagian portofolio dinyalakan |
-| Portofolio berbasis pola | Bagian Proyek berubah bentuk mengikuti **pola pembuktian** yang dipilih - lima pola, bukan satu formulir untuk semua profesi |
-| Kamus 21 bidang | Mengetik jurusan menghasilkan tebakan pola beserta saran isian yang khas bidang itu |
-| Kredensial berkategori | Empat kategori (lisensi praktik, kredensial berjenjang, sertifikasi sektoral, sertifikasi kompetensi & vendor) dengan masa berlaku yang mengenal "seumur hidup" |
-| Penghitung SKP | Perolehan terhadap ambang resmi profesinya, lengkap dengan sumber peraturan dan tanggal periksanya. Tidak pernah ikut tercetak di CV |
-| Mode Redaksi | Nama klien menjadi deskriptor bidang dan angka pasti menjadi rentang - untuk karya yang terikat perjanjian kerahasiaan |
-| Penanda bahasa | Kalimat ber-"kami" dan kata kerja kabur ditandai tepat di bawah kotak isiannya |
+| Skor ATS | 5 dimensi berbobot, disertai saran perbaikan yang dapat diklik |
 | Pencocokan lowongan | Tempel iklan lowongan untuk melihat kata kunci yang belum ada di CV |
 | 10 template | Delapan tanpa foto, dua berfoto - seluruhnya satu kolom dan aman untuk ATS |
 | 4 ukuran kertas | A4 (bawaan dan disarankan), Letter, Legal, dan F4 |
@@ -251,21 +227,9 @@ src/
     site.ts              Identitas aplikasi dan pembuat
     utils.ts             Format tanggal, penggabung teks
     resume/              Tipe, validasi, contoh, penyimpanan, teks polos
-    ats/                 Mesin penilaian, kata kunci, kosakata, kekuatan bukti
-    portfolio/           Portofolio berbasis pola - lihat catatan di bawah
+    ats/                 Mesin penilaian, kata kunci, kosakata
     docx/                Pembangun berkas Word
 ```
-
-Dua berkas di `lib/portfolio/` adalah *registry*, dan pemisahannya wajib
-dijaga:
-
-- `pola-schemas.ts` menentukan **bentuk** formulir. Kode perlu tahu isinya.
-- `kamus-bidang.ts` menentukan **isi** saran. Kode tidak perlu tahu isinya.
-
-Konsekuensinya satu aturan keras: tidak boleh ada `if (pola === ...)` di dalam
-komponen mana pun. Seluruh percabangan dibaca dari skema polanya, sehingga
-menambah profesi baru berarti menambah satu entri kamus - bukan menulis skema
-baru.
 
 ---
 
@@ -298,131 +262,19 @@ Ringkasnya: **PostgreSQL saat dipakai, JSON saat disimpan sendiri.**
 
 ---
 
-## Portofolio Berbasis Pola
-
-Berkas: `src/lib/portfolio/`
-
-Bukti karya tiap profesi bentuknya berbeda total, tetapi bentuk itu hanya jatuh
-ke sedikit **pola struktural**. Arsitek dengan booklet PDF, desainer dengan
-studi kasus, dan pengembang dengan README di GitHub memakai tiga medium berbeda
-untuk satu struktur yang sama: konteks → peran saya → keputusan → hasil →
-refleksi.
-
-Karena itu yang menentukan bentuk formulir di sini adalah **polanya, bukan
-jurusan penggunanya**. Jurusan hanya dipakai untuk menebak pola dan memberi
-saran isian.
-
-| Pola | Bagian CV | Judul bawaan | Bobot |
-|---|---|---|---:|
-| Karya & Desain | `project` | PORTOFOLIO KARYA | 20% |
-| Proyek Teknis | `project` | PORTOFOLIO PROYEK | 15% |
-| Praktik & Pengajaran | `project` | PENGALAMAN PRAKTIK & PENGAJARAN | 12% |
-| Publikasi & Kredit | `publication` | PUBLIKASI & PENELITIAN | 20% |
-| Program & Dampak | `project` | PORTOFOLIO PROGRAM & DAMPAK | 12% |
-| Umum / Belum Menentukan | `project` | PROYEK & PORTOFOLIO | 12% |
-
-Pola terakhir adalah cadangan yang wajib selalu ada: seseorang yang belum tahu
-polanya tetap harus dapat mengisi CV-nya.
-
-Bagian portofolio **memperluas bagian Proyek yang sudah ada**, bukan menambah
-bagian kedua di sebelahnya. Daftar itemnya karena itu tetap tinggal di
-`ResumeData.projects`, dan untuk pola Publikasi & Kredit yang berlaku adalah
-bagian `publication` yang juga sudah ada.
-
-Empat hal lain yang dibawa bagian ini:
-
-- **Kamus 21 bidang** (`kamus-bidang.ts`). Mengetik jurusan - termasuk jurusan
-  yang jarang - menghasilkan tebakan pola, saran isian, dan kata kunci khas
-  bidang itu yang ikut menyumbang ke Kecocokan Lowongan.
-- **Kredensial berkategori** (`kredensial.ts`). Empat kategori, dengan masa
-  berlaku yang mengenal "seumur hidup" - sejak UU 17/2023 STR Definitif memang
-  berlaku seumur hidup, dan aplikasi yang hanya menerima tanggal kedaluwarsa
-  memaksa penggunanya mengarang tanggal yang tidak ada.
-- **Blok agregat** (`ambang-profesi.ts`). Perolehan SKP terhadap ambang resmi
-  profesinya. Tiap angka membawa `sumber` dan `diperbarui` yang **ditampilkan
-  di antarmuka** - pengguna berhak tahu angka yang ia percayai dibaca dari mana
-  dan kapan. Blok ini tidak pernah ikut tercetak di CV.
-- **Mode Redaksi** (`redaksi.ts`). Nama klien menjadi deskriptor bidangnya dan
-  angka pasti menjadi rentang yang memuatnya - dihitung dari angkanya sendiri,
-  bukan dari daftar rentang yang dikarang. "Rp 42 juta" menjadi "Rp 40-50
-  juta". Untuk orang yang karyanya terikat perjanjian kerahasiaan.
-
-Ditambah **validator bahasa orang pertama** (`bahasa.ts`): kalimat ber-"kami"
-dan kata kerja kabur tanpa objek konkret ditandai tepat di bawah kotak
-isiannya. Dibuat sebagai validator, bukan tips di kotak bantuan - tips dibaca
-sekali lalu dilupakan.
-
-Satu catatan privasi yang mengikat: field **verifikator** menyimpan nama orang
-yang tidak pernah menyetujui penyimpanannya oleh aplikasi ini, sehingga
-UU 27/2022 berlaku. Konsekuensinya ada penjelasan di bawah fieldnya, datanya
-ikut terhapus saat akun dihapus, dan ia **tidak pernah ikut ke berkas ekspor
-mana pun**.
-
----
-
-## Mesin Penilaian
+## Mesin Penilaian ATS
 
 Berkas: `src/lib/ats/`
 
-### Dua angka, dihitung terpisah
+Skor 0-100 disusun dari lima dimensi berbobot:
 
-Aplikasi ini **tidak** menampilkan satu "skor ATS". Ia menampilkan dua angka
-yang mengukur dua hal berbeda:
-
-| Angka | Yang diukur |
-|---|---|
-| **Kekuatan CV** 0-100 | Mutu dokumennya sendiri: kelengkapan, keterbacaan mesin, mutu kalimat, panjang dan urutan, serta kekuatan bukti karya |
-| **Kecocokan Lowongan** 0-100 | Berapa persen kata penting dari satu iklan lowongan yang benar-benar ada di CV. Kosong selama iklannya belum ditempel |
-
-Keduanya dipisah karena mencampurnya menyesatkan: CV yang bagus akan terlihat
-buruk hanya karena iklan yang kebetulan ditempel meminta hal lain - dan yang
-membaca angka itu justru orang yang sedang memperbaiki CV-nya.
-
-Di bawah keduanya ada sanggahan permanen yang tidak dapat ditutup: angka ini
-menilai struktur dan kecocokan kata kunci, dan **tidak** memprediksi keputusan
-sistem perekrutan mana pun.
-
-### Enam dimensi, dengan bobot yang bergeser
-
-| Dimensi | Bobot dasar | Yang diperiksa |
+| Dimensi | Bobot | Yang diperiksa |
 |---|---:|---|
-| Kelengkapan isi | 25% | Nama, email, telepon, ringkasan, pengalaman, pendidikan, keahlian |
-| Bisa dibaca mesin | 25% | Keseragaman format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, foto, karakter pengganggu |
-| Mutu kalimatnya | 20% | Kata kerja aksi, angka terukur, panjang poin, frasa klise |
-| Kecocokan dengan lowongan | 20% | Kata kunci iklan lowongan yang muncul di CV |
-| Panjang dan urutan | 10% | Jumlah halaman, urutan section, kronologi terbalik, jeda kerja |
-| Kekuatan bukti karya | 0% | Peranan dan tingkat kesulitan tiap karya di bagian portofolio |
-
-Bobot "0%" pada dimensi terakhir bukan salah ketik. Selama bagian portofolio
-belum dinyalakan penggunanya, dimensi itu tidak ikut dihitung dan kelima
-dimensi lama memakai bobot aslinya - sehingga **skor CV lama tidak bergeser
-satu angka pun** hanya karena fitur ini ada.
-
-Begitu portofolio dinyalakan, bobot Kekuatan Bukti Karya menjadi angka yang
-ditentukan polanya (12-20%, lihat `bobotBuktiKarya` di
-`src/lib/portfolio/pola-schemas.ts`) dan kelima dimensi lama dikali
-`(100 - bobot) / 100`. Perkalian proporsional itu menjaga totalnya tetap 100
-tanpa satu pun dimensi berubah kedudukannya terhadap yang lain. Nilai dengan
-bobot lama tetap ditampilkan sebagai pembanding, supaya perubahannya terlihat.
-
-### Kekuatan bukti: model P × Q × R
-
-Berkas: `src/lib/ats/bukti-karya.ts`
-
-Rubriknya meminjam struktur penilaian kompetensi insinyur PII (FAIP), dipilih
-karena ia bekerja pada level **item** - sehingga tiap angka dapat ditelusuri ke
-isian yang menyebabkannya:
-
-- **Q - peranan** (0-3): sebesar apa peran penulisnya dalam karya itu
-- **R - tingkat kesulitan** (0-3): dibaca dari penanda `rubrik` pada tiap field
-- skor item = `(Q × R) / 9 × 100`, lalu disesuaikan (verifikator lengkap,
-  refleksi terisi, tautan tidak sah) dan dijepit 0-100
-- **P - banyaknya pengalaman**: pengali agregat, dengan batas bawah jumlah item
-  yang mengikuti jenjang pengalaman penggunanya
-
-Dua hal sengaja **tidak** diambil dari FAIP: ambang 600/3.000/6.000 (itu untuk
-akumulasi karier, salah kategori bila dipakai sebagai skala) dan penilaian
-manusia (di sini seluruhnya deterministik).
+| Kelengkapan Data | 25% | Nama, email, telepon, ringkasan, pengalaman, pendidikan, keahlian |
+| Keterbacaan Mesin | 25% | Keseragaman format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, foto, karakter pengganggu |
+| Kualitas Konten | 20% | Kata kerja aksi, angka terukur, panjang poin, frasa klise |
+| Kecocokan Kata Kunci | 20% | Kata kunci iklan lowongan yang muncul di CV |
+| Panjang & Struktur | 10% | Jumlah halaman, urutan section, kronologi terbalik, jeda kerja |
 
 Catatan perancangan:
 

@@ -1,57 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1242" viewBox="0 0 1000 1242" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1258" viewBox="0 0 1000 1258" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
 <title>Architecture and data flow</title>
 <desc>Note the two deliberately separate paths: building a CV goes through the server and is stored permanently, while comparing files stops in the browser and never touches the database.</desc>
 <defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
-<rect width="1000" height="1242" fill="#ffffff"/>
+<rect width="1000" height="1258" fill="#ffffff"/>
 <text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">Architecture and data flow</text>
 <line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
-<path d="M 500 196 V 219 H 284 V 234" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<rect x="352" y="210" width="80" height="18" rx="9" fill="#ffffff"/>
-<text x="392" y="223" text-anchor="middle" font-size="11.5" fill="#52525a">file upload</text>
-<path d="M 500 196 V 362" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<text x="508" y="287" font-size="11.5" fill="#52525a">HTTPS</text>
-<path d="M 500 452 V 475 H 716 V 490" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 452 V 596" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 702 V 740" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<text x="508" y="729" font-size="11.5" fill="#52525a">yes</text>
-<path d="M 500 808 V 846" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 452 V 725 H 716 V 990" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 952 V 1134" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 716 1096 V 1119 H 500 V 1134" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<rect x="290" y="114" width="420" height="82" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<path d="M 500 212 V 235 H 284 V 250" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="226" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="239" text-anchor="middle" font-size="11.5" fill="#52525a">file upload</text>
+<path d="M 500 212 V 378" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="303" font-size="11.5" fill="#52525a">HTTPS</text>
+<path d="M 500 468 V 491 H 716 V 506" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 468 V 612" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 718 V 756" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="745" font-size="11.5" fill="#52525a">yes</text>
+<path d="M 500 824 V 862" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 468 V 741 H 716 V 1006" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 968 V 1150" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 716 1112 V 1135 H 500 V 1150" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
 <text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
 <text x="308" y="155" font-size="15" font-weight="600" fill="#0a0a0b">The user's browser</text>
-<text x="308" y="178" font-size="12.5" fill="#52525a">Editor, preview, scoring engine, and the CV file reader.</text>
-<rect x="114" y="242" width="340" height="82" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
-<text x="132" y="266" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
-<text x="132" y="283" font-size="15" font-weight="600" fill="#0a0a0b">CV comparison - stops here</text>
-<text x="132" y="306" font-size="12.5" fill="#52525a">Files never leave the user's device.</text>
-<rect x="290" y="370" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="308" y="394" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
-<text x="308" y="411" font-size="15" font-weight="600" fill="#0a0a0b">Next.js server</text>
-<text x="308" y="434" font-size="12.5" fill="#52525a">Renders pages and serves the API. Runs on Vercel.</text>
-<rect x="546" y="498" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="564" y="522" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
-<text x="564" y="539" font-size="15" font-weight="600" fill="#0a0a0b">Auth.js - sessions and Google OAuth</text>
-<rect x="290" y="604" width="420" height="98" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
-<text x="308" y="628" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>
-<text x="308" y="645" font-size="15" font-weight="600" fill="#0a0a0b">Does this data belong to that user?</text>
-<text x="308" y="668" font-size="12.5" fill="#52525a">Not theirs returns 404, not 403 - so even the existence</text>
-<text x="308" y="684" font-size="12.5" fill="#52525a">of an id stays private.</text>
-<rect x="290" y="748" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="308" y="772" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
-<text x="308" y="789" font-size="15" font-weight="600" fill="#0a0a0b">Prisma ORM</text>
-<rect x="290" y="854" width="420" height="98" rx="10" fill="#fafafa" stroke="#a1a1a8" stroke-width="2" stroke-dasharray="7 5"/>
-<text x="308" y="878" font-size="10" letter-spacing="0.08em" fill="#52525a">DATA</text>
-<text x="308" y="895" font-size="15" font-weight="600" fill="#0a0a0b">PostgreSQL (Neon)</text>
-<text x="308" y="918" font-size="12.5" fill="#52525a">16 tables. Every child table is deleted along with its</text>
-<text x="308" y="934" font-size="12.5" fill="#52525a">parent CV.</text>
-<rect x="546" y="998" width="340" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="564" y="1022" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
-<text x="564" y="1039" font-size="15" font-weight="600" fill="#0a0a0b">Print page - PDF</text>
-<text x="564" y="1062" font-size="12.5" fill="#52525a">Plain HTML, so the PDF text stays selectable</text>
-<text x="564" y="1078" font-size="12.5" fill="#52525a">and parseable.</text>
-<rect x="290" y="1142" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
-<text x="308" y="1166" font-size="10" letter-spacing="0.08em" fill="#52525a">END</text>
-<text x="308" y="1183" font-size="15" font-weight="600" fill="#0a0a0b">Downloaded file</text>
+<text x="308" y="178" font-size="12.5" fill="#52525a">Editor, preview, ATS scoring engine, and the CV file</text>
+<text x="308" y="194" font-size="12.5" fill="#52525a">reader.</text>
+<rect x="114" y="258" width="340" height="82" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="282" font-size="10" letter-spacing="0.08em" fill="#52525a">IN THE BROWSER</text>
+<text x="132" y="299" font-size="15" font-weight="600" fill="#0a0a0b">CV comparison - stops here</text>
+<text x="132" y="322" font-size="12.5" fill="#52525a">Files never leave the user's device.</text>
+<rect x="290" y="386" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="410" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="427" font-size="15" font-weight="600" fill="#0a0a0b">Next.js server</text>
+<text x="308" y="450" font-size="12.5" fill="#52525a">Renders pages and serves the API. Runs on Vercel.</text>
+<rect x="546" y="514" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="564" y="538" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="564" y="555" font-size="15" font-weight="600" fill="#0a0a0b">Auth.js - sessions and Google OAuth</text>
+<rect x="290" y="620" width="420" height="98" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="644" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>
+<text x="308" y="661" font-size="15" font-weight="600" fill="#0a0a0b">Does this data belong to that user?</text>
+<text x="308" y="684" font-size="12.5" fill="#52525a">Not theirs returns 404, not 403 - so even the existence</text>
+<text x="308" y="700" font-size="12.5" fill="#52525a">of an id stays private.</text>
+<rect x="290" y="764" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="788" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="308" y="805" font-size="15" font-weight="600" fill="#0a0a0b">Prisma ORM</text>
+<rect x="290" y="870" width="420" height="98" rx="10" fill="#fafafa" stroke="#a1a1a8" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="308" y="894" font-size="10" letter-spacing="0.08em" fill="#52525a">DATA</text>
+<text x="308" y="911" font-size="15" font-weight="600" fill="#0a0a0b">PostgreSQL (Neon)</text>
+<text x="308" y="934" font-size="12.5" fill="#52525a">16 tables. Every child table is deleted along with its</text>
+<text x="308" y="950" font-size="12.5" fill="#52525a">parent CV.</text>
+<rect x="546" y="1014" width="340" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="564" y="1038" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
+<text x="564" y="1055" font-size="15" font-weight="600" fill="#0a0a0b">Print page - PDF</text>
+<text x="564" y="1078" font-size="12.5" fill="#52525a">Plain HTML, so the PDF text stays selectable</text>
+<text x="564" y="1094" font-size="12.5" fill="#52525a">and parseable.</text>
+<rect x="290" y="1158" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="1182" font-size="10" letter-spacing="0.08em" fill="#52525a">END</text>
+<text x="308" y="1199" font-size="15" font-weight="600" fill="#0a0a0b">Downloaded file</text>
 </svg>

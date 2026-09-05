@@ -50,8 +50,7 @@ import {
   applyStructure,
   type StructureAction,
 } from "@/lib/resume/structure";
-import { migrasiDokumenCV, VERSI_SKEMA_CV } from "@/lib/portfolio/migrasi";
-import { resumeDataSchema, resumeFileSchema } from "@/lib/resume/schema";
+import { resumeFileSchema } from "@/lib/resume/schema";
 import { useRiwayat } from "@/lib/resume/history";
 import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
@@ -62,7 +61,6 @@ import { AUTHOR } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { EditorProvider, moveItem } from "./context";
 import { PersonalSection, SECTION_FORMS } from "./sections";
-import { PortofolioOnboarding } from "./PortofolioOnboarding";
 import { SectionCard } from "./parts";
 import { PreviewPane } from "./PreviewPane";
 import { AppearanceDrawer } from "./AppearanceDrawer";
@@ -390,16 +388,13 @@ export function ResumeEditor({
     setErrorText(null);
     try {
       const parsed = resumeFileSchema.parse(JSON.parse(await file.text()));
-      if (parsed.schemaVersion > VERSI_SKEMA_CV) {
+      if (parsed.schemaVersion > 1) {
         setErrorText(t.guest.loadTooNew);
         return;
       }
-      // Berkas versi lama dinaikkan bentuknya lebih dulu, persis seperti di
-      // jalur impor server - satu perilaku, dua pintu masuk.
-      const naik = resumeDataSchema.parse(migrasiDokumenCV(parsed.resume));
       setPendingLoad(
         regenerateIds({
-          ...(naik as unknown as ResumeData),
+          ...(parsed.resume as unknown as ResumeData),
           id: GUEST_ID,
         }),
       );
@@ -765,16 +760,6 @@ export function ResumeEditor({
             </div>
           </div>
 
-          {/*
-            Satu pengecualian yang harus disebut, bukan didiamkan: nama
-            verifikator tidak ikut ke berkas mana pun. Pengguna yang
-            mengandalkan berkas cadangan berhak tahu apa yang tidak ada di
-            dalamnya sebelum ia membutuhkannya kembali.
-          */}
-          <p className="mt-1.5 hidden text-[11px] leading-relaxed text-ink-500 lg:block">
-            {t.editor.btnJsonNote}
-          </p>
-
           {/* Status simpan di layar sempit - diberi baris sendiri agar tidak
               menekan lebar kolom judul. */}
           <div className="mt-1.5 flex items-center justify-between gap-3 lg:hidden">
@@ -850,11 +835,6 @@ export function ResumeEditor({
             )}
           >
             <div className="space-y-3">
-              {/* Tiga pertanyaan pembuka. Diletakkan paling atas karena
-                  jawabannya menentukan bentuk bagian karya di bawahnya -
-                  bukan karena ia yang paling penting. */}
-              <PortofolioOnboarding />
-
               <SectionCard
                 id="form-anchor-personal"
                 title={t.form.personalTitle}

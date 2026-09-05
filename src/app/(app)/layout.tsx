@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { auth, signOut } from "@/auth";
-import { BrandMark } from "@/components/BrandMark";
 import { HeaderBack } from "@/components/HeaderBack";
 import { LanguageToggle } from "@/components/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -39,8 +38,8 @@ export default async function AppLayout({
           <div className="flex min-w-0 items-center gap-1.5">
             <HeaderBack href="/dashboard" />
             <Link href="/dashboard" className="flex items-center gap-2">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-ink-900 text-white">
-                <BrandMark className="h-4 w-4" />
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-ink-900 text-xs font-bold text-white">
+                CV
               </span>
               <span className="hidden text-sm font-semibold text-ink-900 sm:inline">
                 {SITE.name}

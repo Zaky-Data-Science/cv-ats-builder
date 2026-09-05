@@ -1,8 +1,7 @@
 # Panduan Pengguna
 
-Petunjuk pemakaian aplikasi **CV ATS & Portofolio Builder** dari awal sampai berkas
-siap dikirim. Ditulis untuk pengguna yang baru pertama kali membuat CV
-sekalipun.
+Petunjuk pemakaian aplikasi **CV ATS Builder** dari awal sampai CV siap
+dikirim. Ditulis untuk pengguna yang baru pertama kali membuat CV sekalipun.
 
 Versi ringkas panduan ini juga tersedia langsung di dalam aplikasi pada
 halaman **Panduan**.
@@ -11,14 +10,13 @@ halaman **Panduan**.
 
 ## Daftar Isi
 
-0. [CV dan portofolio: dua benda yang berbeda](#0-cv-dan-portofolio-dua-benda-yang-berbeda)
 1. [Sebelum mulai: apa itu ATS](#1-sebelum-mulai-apa-itu-ats)
 2. [Alur penggunaan](#2-alur-penggunaan)
 3. [Membuat akun](#3-membuat-akun)
 4. [Membuat CV pertama](#4-membuat-cv-pertama)
 5. [Mengenal layar editor](#5-mengenal-layar-editor)
 6. [Mengisi tiap bagian](#6-mengisi-tiap-bagian)
-7. [Membaca nilai CV Anda](#7-membaca-nilai-cv-anda)
+7. [Membaca skor ATS](#7-membaca-skor-ats)
 8. [Mencocokkan dengan iklan lowongan](#8-mencocokkan-dengan-iklan-lowongan)
 9. [Panjang dan ukuran kertas](#9-panjang-dan-ukuran-kertas)
 10. [Mengunduh CV](#10-mengunduh-cv)
@@ -28,34 +26,6 @@ halaman **Panduan**.
 14. [Memakai dari ponsel](#14-memakai-dari-ponsel)
 15. [Pengaturan akun dan data](#15-pengaturan-akun-dan-data)
 16. [Kalau ada masalah](#16-kalau-ada-masalah)
-
----
-
-## 0. CV dan portofolio: dua benda yang berbeda
-
-Aplikasi ini menyusun **dua hal**, bukan satu. Keduanya berangkat dari data
-yang sama, tetapi dibaca orang yang berbeda dengan pertanyaan yang berbeda -
-dan itulah kenapa keduanya tidak dilebur jadi satu berkas.
-
-| | CV | Portofolio |
-|---|---|---|
-| Dibaca | mesin dulu, lalu perekrut sekitar 6 detik | manusia yang ahli di bidang Anda - pelan dan teliti |
-| Menjawab | "pantas diwawancara?" | "benar-benar bisa?" |
-| Bentuk | satu kolom, tanpa tabel, tanpa gambar | bebas - boleh gambar dan studi kasus |
-| Panjang | 1-2 halaman | 3-5 karya terkuat, dibahas mendalam |
-| Dinilai dari | kata kunci dan keterbacaan mesin | kedalaman penalaran dan hasilnya |
-
-**Mana yang Anda butuhkan?** Hampir selalu keduanya, tetapi tidak bersamaan.
-CV yang mengantar Anda melewati penyaringan; portofolio yang meyakinkan orang
-setelah Anda lolos. CV tanpa portofolio membuat Anda dinilai dari kata-kata
-saja; portofolio tanpa CV sering tidak pernah sampai dibuka, karena
-penyaringnya berhenti lebih dulu.
-
-> **Yang perlu Anda tahu tentang keadaan sekarang:** portofolio di aplikasi ini
-> masih berupa **bagian di dalam CV Anda**, bukan berkas yang berdiri sendiri.
-> Bentuk isiannya sudah mengikuti cara bidang Anda membuktikan pekerjaan (lihat
-> bagian 6), tetapi ketika diunduh, yang keluar tetap satu berkas CV yang memuat
-> bagian portofolio di dalamnya. Berkas portofolio terpisah belum ada.
 
 ---
 
@@ -105,14 +75,14 @@ flowchart TD
     K --> L[/Tersimpan otomatis
     0,8 detik setelah berhenti mengetik/]
     L --> M[Lihat pratinjau CV
-    dan nilainya]
+    dan skor ATS]
 
-    M --> N{Kekuatan CV 70 ke atas?}
+    M --> N{Skor 70 ke atas?}
     N -- Belum --> O[Buka saran perbaikan,
     klik untuk lompat ke field]
     O --> K
     N -- Sudah --> P[Tempel iklan lowongan
-    pada halaman Cocokkan dengan Lowongan]
+    pada halaman Analisis ATS]
 
     P --> Q{Kata kunci penting
     sudah muncul?}
@@ -301,139 +271,13 @@ Beberapa hal yang perlu diketahui:
 | **Pengalaman Kerja** | Jabatan, perusahaan, periode, poin pencapaian | Urutkan dari yang paling baru. Minimal 2 poin per pengalaman |
 | **Pendidikan** | Jenjang, program studi, institusi, periode, IPK | Cantumkan IPK bila 3.00 ke atas |
 | **Keahlian** | Nama keahlian per kategori | Tulis apa adanya: "JavaScript", bukan "JavaScript (mahir)" |
-| **Proyek** | Nama, peran, tautan, poin hasil | Sangat membantu bagi fresh graduate. Bagian ini bisa berubah bentuk mengikuti bidang Anda - lihat 6a di bawah |
+| **Proyek** | Nama, peran, tautan, poin hasil | Sangat membantu bagi fresh graduate |
 | **Sertifikasi** | Nama, penerbit, tanggal, ID kredensial | ID kredensial memudahkan verifikasi perekrut |
 | **Organisasi** | Jabatan, organisasi, periode, poin kontribusi | Tunjukkan dampak, bukan sekadar keanggotaan |
 | **Penghargaan** | Nama, pemberi, tanggal, keterangan | Sebutkan tingkat kompetisi dan peringkat |
 | **Bahasa** | Nama bahasa dan tingkat penguasaan | Hindari diagram bintang; pakai tingkat baku |
 | **Publikasi** | Judul, penerbit, tanggal, DOI | Relevan untuk jalur akademik dan riset |
 | **Section Tambahan** | Bebas | Gunakan judul berupa teks biasa tanpa emoji |
-
-### 6a. Bagian Proyek yang mengikuti bidang Anda
-
-Bagian Proyek tidak lagi satu formulir yang sama untuk semua orang. Isian yang
-ditawarkannya menyesuaikan **jenis karya** yang Anda hasilkan - karena bukti
-seorang arsitek, seorang perawat, dan seorang penulis jurnal memang bentuknya
-berbeda.
-
-#### Tiga pertanyaan di awal
-
-Saat pertama membuka editor, kotak paling atas berjudul **Bentuk portofolio
-Anda** akan terbuka sendiri. Isinya tiga pertanyaan pendek:
-
-1. **Apa jurusan atau profesi Anda?** Ketik apa adanya - "Teknik Sipil",
-   "Ahwal Syakhshiyyah", "Tata Boga". Singkatan yang lazim seperti PWK atau
-   TKJ juga dikenali. Kalau tidak ada yang cocok, pilih **Bidang saya tidak
-   ada di daftar** dan lanjut saja; Anda tetap bisa mengisi semuanya.
-2. **CV ini untuk apa?** Melamar kerja, mengurus sertifikasi atau lisensi,
-   mendaftar beasiswa, atau ikut tender. Orang yang sama bisa butuh bukti yang
-   berbeda tergantung keperluannya.
-3. **Sejauh mana pengalaman Anda?** Dari mahasiswa sampai di atas 8 tahun.
-   Ini yang menentukan isian mana yang diwajibkan - **tugas kuliah tetap
-   dihitung**, yang berubah hanya ukuran yang dipakai menilainya.
-
-Tekan **Simpan jawaban** dan selesai. Kalau bentuk yang dipilihkan terasa
-tidak pas, ada tautan **Bukan ini? Ganti bentuknya** untuk memilih sendiri.
-
-> **Takut kehilangan isian?** Tidak perlu. Mengganti bentuk tidak menghapus
-> apa pun. Isian yang tidak dikenal bentuk baru hanya disembunyikan, dan
-> aplikasi akan memberi tahu isian mana saja sebelum Anda menyetujuinya. Ia
-> kembali sendiri kalau Anda memilih bentuk lamanya lagi.
-
-#### Menyalakan dan mematikannya
-
-Di dalam bagian Proyek ada sakelar **Pakai bentuk portofolio**. Selama sakelar
-itu mati, bagian Proyek tetap seperti dulu - daftar proyek sederhana - dan
-nilai CV Anda tidak berubah sedikit pun.
-
-#### Isian yang muncul setelah dinyalakan
-
-Yang persisnya muncul tergantung bentuk yang Anda pilih, tetapi polanya sama:
-
-| Kelompok isian | Isinya | Ikut tercetak? |
-|---|---|---|
-| **Ringkasan** | Satu kalimat, maksimal 160 karakter | Ya |
-| **Klien / institusi** | Wajib. Tanpa pemberi kerja, tulis "Proyek Mandiri", "Freelance", atau nama kampus Anda | Ya |
-| **Detail khas bidang** | Isian yang memang khas bidang Anda | Ya |
-| **Detail tambahan** | Label + isi + satuan, bebas. Maksimal 6, yang tercetak 4 teratas | Sebagian |
-| **Tautan** | Maksimal dua. Pakai URL asli, jangan pemendek tautan | Ya |
-| **Verifikator & refleksi** | Orang yang bisa memastikan kebenarannya, dan catatan Anda sendiri | **Tidak pernah** |
-
-> **Soal verifikator.** Yang Anda simpan di situ adalah nama orang lain.
-> Aplikasi ini tidak pernah mencetaknya di CV, tidak mengirimnya ke mana pun,
-> dan tidak menyertakannya bahkan di berkas cadangan JSON. Tetap saja: simpan
-> hanya kalau Anda sudah izin ke orang tersebut.
-
-#### Kalau karya Anda terikat kerahasiaan
-
-Nyalakan **Mode Redaksi**. Nama klien diganti deskriptor bidangnya, dan angka
-pasti diganti rentang yang memuatnya - "Rp 42 juta" menjadi "Rp 40-50 juta",
-"8.400 m²" menjadi "8.000-9.000 m²". Bentuk pekerjaan Anda tetap terbaca dan
-besarannya tetap terasa, tanpa Anda melanggar perjanjian yang Anda tanda
-tangani sendiri.
-
-Berlaku di PDF, Word, dan teks polos. Berkas cadangan JSON tetap menyimpan
-angka aslinya - itu cadangan milik Anda sendiri, bukan berkas yang dikirim ke
-perusahaan.
-
-#### Kalau proyek Anda punya pemberi kerja
-
-Sakelar **Gabung ke Pengalaman Kerja** menempelkan karya Anda sebagai anak
-dari entri pengalaman kerjanya, bukan sebagai bagian tersendiri. Sebagian
-pembaca otomatis hanya mengenali proyek dalam bentuk itu. Aplikasi akan
-menawarkannya sendiri kalau mendeteksi kecocokan, lengkap dengan pratinjau
-**Sebelum** dan **Sesudah** - tetapi tidak pernah menyalakannya diam-diam.
-
-#### Penanda bahasa
-
-Di beberapa bentuk portofolio, kalimat Anda akan diberi penanda kalau memakai
-"kami"/"kita", atau memakai kata kerja yang kabur ("memimpin", "mengelola",
-"menangani", "bertanggung jawab") tanpa menyebut angka.
-
-Alasannya: "Kami membangun sistem pemantauan" tidak memberi tahu apa pun
-tentang Anda - bisa Anda arsiteknya, bisa juga Anda yang membuatkan kopi.
-"Saya menghitung disipasi daya dan memilih topologi buck sinkron" memberi tahu
-persis. Penandanya muncul tepat di bawah kotak isiannya, bukan sebagai daftar
-terpisah.
-
-### 6b. Sertifikasi: kategori dan masa berlaku
-
-Bagian Sertifikasi kini menanyakan **kategori kredensial**, karena empat
-kategori ini diperlakukan berbeda oleh yang membacanya:
-
-| Kategori | Perannya |
-|---|---|
-| Lisensi praktik | Gerbang - tanpa ini Anda tidak boleh berpraktik |
-| Kredensial berjenjang | Menentukan kelayakan Anda mengambil paket pekerjaan tertentu |
-| Sertifikasi sektoral | Menempel pada jabatan tertentu |
-| Sertifikasi kompetensi & vendor | Melengkapi |
-
-Ada juga **Jenjang**, **Klasifikasi bidang**, dan **Jenis penerbit** - untuk
-SKK Konstruksi misalnya, yang menentukan kelayakan seseorang adalah kombinasi
-jenjang dan klasifikasinya, bukan nama sertifikatnya.
-
-**Masa berlaku dipilih bentuknya lebih dulu**, bukan langsung diminta tanggal.
-Sebagian kredensial memang berlaku seumur hidup - STR Definitif salah satunya
-sejak UU 17/2023 - jadi Anda tidak akan pernah dipaksa mengarang tanggal
-kedaluwarsa yang tidak ada.
-
-### 6c. Menghitung perolehan SKP
-
-Kalau profesi Anda punya kewajiban mengumpulkan angka kredit, ada kotak
-**Perolehan terhadap ambang resmi**. Pilih profesi Anda, lalu isi perolehan
-per ranah - hasilnya ditampilkan sebagai "sekian dari sekian".
-
-Dua hal yang perlu Anda tahu:
-
-- **Angkanya Anda tulis sendiri.** Aplikasi ini tidak punya cara membaca
-  catatan resmi siapa pun.
-- **Blok ini tidak pernah ikut tercetak di CV.** Ia alat hitung untuk Anda
-  sendiri.
-
-Di bawah angkanya tertulis **Sumber** (nama peraturan atau rubriknya) dan
-kapan angka itu **diperiksa**. Keduanya sengaja ditampilkan: Anda berhak tahu
-angka yang Anda percayai itu dibaca dari mana dan kapan - apalagi kalau Anda
-memakainya untuk memutuskan kapan mengurus perpanjangan izin praktik.
 
 ### Menulis poin pencapaian yang kuat
 
@@ -475,43 +319,18 @@ cadangan. Tidak ada tautan yang bisa mati di kemudian hari.
 
 ---
 
-## 7. Membaca nilai CV Anda
+## 7. Membaca skor ATS
 
-Buka tab **Kekuatan CV** di sebelah pratinjau. Yang muncul di sana **dua
-angka**, bukan satu - dan keduanya mengukur hal yang berbeda.
+Buka tab **Skor ATS** di sebelah pratinjau. Skor berada pada rentang 0-100,
+dihitung sebagai rata-rata berbobot dari lima dimensi.
 
-| Angka | Artinya |
-|---|---|
-| **Kekuatan & Keterbacaan** 0-100 | Mutu CV-nya sendiri. Naik kalau isinya lengkap, kalimatnya kuat, dan mesin bisa membacanya |
-| **Kecocokan Lowongan** 0-100 | Berapa persen kata penting dari satu iklan lowongan yang sudah ada di CV Anda. Tertulis "Belum ditempel" selama Anda belum menempelkan iklannya |
-
-Kenapa dipisah? Karena CV yang bagus bisa saja tidak cocok dengan satu iklan
-tertentu - dan itu bukan berarti CV-nya jelek. Kalau keduanya dijadikan satu
-angka, Anda akan mengira CV Anda buruk padahal yang tidak cocok cuma
-lowongannya.
-
-### Hal-hal yang dinilai
-
-| Hal yang dinilai | Pengaruh | Yang diperiksa |
+| Dimensi | Bobot | Memeriksa |
 |---|---:|---|
-| Kelengkapan isi | 25% | Apakah semua yang dicari perekrut sudah ada |
-| Bisa dibaca mesin | 25% | Format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, foto |
-| Mutu kalimatnya | 20% | Kata kerja aksi, angka terukur, panjang poin, frasa klise |
-| Kecocokan dengan lowongan | 20% | Kata kunci lowongan yang muncul di CV (perlu iklan lowongan ditempel) |
-| Panjang dan urutan | 10% | Jumlah halaman, urutan bagian, kronologi, jeda kerja |
-| Kekuatan bukti karya | 0% | Peranan dan tingkat kesulitan tiap karya di bagian Proyek |
-
-**Kenapa yang terakhir 0%?** Karena bagian portofolio belum Anda nyalakan.
-Selama begitu, hal itu tidak ikut dihitung sama sekali dan nilai CV Anda persis
-seperti sebelum fitur ini ada. Begitu Anda menyalakannya (lihat bagian 6a),
-pengaruhnya menjadi 12-20% - tergantung jenis karya yang Anda pilih - dan
-pengaruh kelima hal lainnya menyusut sebanding, supaya totalnya tetap 100%.
-
-Saat itu terjadi, akan muncul satu baris keterangan yang menyebutkan berapa
-nilai Anda **kalau dihitung dengan cara lama**, supaya Anda tahu persis apa
-yang berubah dan tidak bingung melihat angkanya bergeser.
-
-### Nilai huruf
+| Kelengkapan Data | 25% | Apakah semua informasi yang dicari perekrut sudah ada |
+| Keterbacaan Mesin | 25% | Format tanggal, kelengkapan pasangan jabatan-perusahaan, jenis huruf, foto |
+| Kualitas Konten | 20% | Kata kerja aksi, angka terukur, panjang poin, frasa klise |
+| Kecocokan Kata Kunci | 20% | Kata kunci lowongan yang muncul di CV (perlu iklan lowongan ditempel) |
+| Panjang & Struktur | 10% | Jumlah halaman, urutan bagian, kronologi, jeda kerja |
 
 | Nilai | Rentang | Artinya |
 |:--:|---|---|
@@ -520,60 +339,33 @@ yang berubah dan tidak bingung melihat angkanya bergeser.
 | C | 55-69 | Ada hal penting yang terlewat |
 | D | 0-54 | Berisiko tersaring sebelum dibaca manusia |
 
-Nilai huruf ini mengikuti angka **Kekuatan & Keterbacaan**, bukan Kecocokan
-Lowongan.
+Di bawah skor terdapat daftar temuan dalam tiga tingkat: **Harus diperbaiki**,
+**Sebaiknya diperbaiki**, dan **Saran penyempurnaan**. Setiap temuan memiliki
+tombol **Buka field terkait** yang melompat langsung ke field bermasalah.
 
-### Daftar temuan
-
-Di bawah kedua angka itu ada daftar temuan dalam tiga tingkat: **Harus
-dibetulkan**, **Sebaiknya dibetulkan**, dan **Kalau mau lebih bagus**. Setiap
-temuan punya tombol **Buka bagian yang bermasalah** yang melompat langsung ke
-kotak isian penyebabnya.
-
-Kalau bagian portofolio menyala, ada satu kotak tambahan - **Rincian kekuatan
-bukti** - yang memecah nilainya per karya: berapa nilai peranan Anda (Q) dan
-berapa tingkat kesulitannya (R), masing-masing 0-3. Karya dengan nilai terendah
-ditampilkan lebih dulu, karena memperbaiki yang itu paling banyak menaikkan
-angkanya.
-
-> **Penting:** angka tinggi berarti CV Anda memenuhi kaidah yang diperiksa -
+> **Penting:** skor tinggi berarti CV Anda memenuhi kaidah yang diperiksa -
 > bukan jaminan lolos seleksi. Setiap perusahaan memakai produk ATS berbeda
-> dengan pengurai yang tidak dipublikasikan. Anggap angka ini sebagai daftar
-> periksa, bukan ramalan hasil. Kalimat yang sama juga tercetak permanen di
-> bawah kedua angka itu di dalam aplikasi.
+> dengan pengurai yang tidak dipublikasikan. Anggap skor ini sebagai daftar
+> periksa, bukan ramalan hasil.
 
 ---
 
 ## 8. Mencocokkan dengan iklan lowongan
 
-1. Dari editor, tekan **Cocokkan dengan iklan lowongan**.
-2. Salin **seluruh** teks iklan lowongan - termasuk bagian syarat dan tanggung
-   jawab - lalu tempel di kotak sebelah kiri.
-3. Angka **Kecocokan Lowongan** dan daftar kata kuncinya diperbarui seketika.
+1. Dari editor, tekan **Cocokkan dengan lowongan**.
+2. Salin **seluruh** teks iklan lowongan - termasuk bagian kualifikasi dan
+   tanggung jawab - lalu tempel di kotak sebelah kiri.
+3. Skor dan daftar kata kunci diperbarui seketika.
 
-Anda akan melihat dua daftar: kata kunci yang **sudah ada di CV Anda**, dan
-yang **belum ada di CV Anda**. Tambahkan yang belum ada ke bagian Keahlian atau
-ke poin pencapaian.
+Anda akan melihat dua daftar: kata kunci yang **sudah ada** di CV, dan yang
+**belum ada**. Tambahkan kata kunci yang belum ada ke bagian Keahlian atau ke
+poin pencapaian.
 
-> **Jangan menempelkan keahlian yang tidak Anda kuasai.** Angkanya memang naik,
+> **Jangan menempelkan keahlian yang tidak Anda kuasai.** Skornya memang naik,
 > tetapi akan terbongkar pada tahap wawancara.
 
-**Kalau Anda sudah mengisi jurusan di pertanyaan pembuka** (lihat 6a), istilah
-khas bidang Anda ikut diperhitungkan lebih berat. Alasannya: "kurva S" mungkin
-hanya muncul dua kali di sebuah iklan konstruksi padahal menentukan segalanya,
-sementara "bertanggung jawab" muncul lima kali dan tidak menentukan apa pun.
-Menghitung dari seringnya sebuah kata muncul tidak bisa membedakan keduanya -
-yang bisa hanya kamus bidangnya.
-
-**Kalau bahasa CV Anda berbeda dari bahasa iklannya**, akan muncul peringatan.
-Ini bukan soal selera: pencarian kandidat berjalan lewat pencocokan kata, dan
-CV berbahasa Inggris yang dilamarkan ke iklan berbahasa Indonesia tidak akan
-pernah cocok pada kata "pengalaman", "keuangan", atau "penjualan". Nama
-perkakas dan sertifikasi tidak termasuk - keduanya memang selalu ditulis dalam
-bahasa Inggris.
-
-Tombol **Catat Nilai Ini** menyimpan angka saat itu. Perbaiki CV Anda, catat
-lagi, dan Anda dapat melihat perkembangannya dari waktu ke waktu.
+Tombol **Simpan Hasil ke Riwayat** mencatat skor saat itu. Perbaiki CV Anda,
+simpan lagi, dan Anda dapat melihat perkembangan skornya dari waktu ke waktu.
 
 ---
 
@@ -665,33 +457,19 @@ memakainya.
 1. Jatuhkan **satu berkas** untuk memindainya, atau **dua sampai lima berkas**
    untuk membandingkannya.
 2. Bila mau, tempel juga iklan lowongan yang Anda incar. Kecocokan kata
-   kuncinya ikut dinilai - dan justru itulah yang paling menentukan CV mana
-   yang sebaiknya Anda kirim untuk lowongan tersebut.
-3. Tekan **Periksa Sekarang**.
+   kuncinya ikut dinilai - dan justru dimensi itulah yang paling menentukan CV
+   mana yang sebaiknya Anda kirim untuk lowongan tersebut.
+3. Tekan **Analisis Sekarang**.
 
 ### Yang Anda peroleh
 
-- Nilai 0-100 untuk setiap CV, beserta rinciannya per hal yang dinilai.
+- Skor 0-100 untuk setiap CV, beserta rinciannya per dimensi.
 - **Daftar kelebihan** - hal yang sudah benar dan sebaiknya tidak diubah.
 - **Daftar kekurangan** beserta cara memperbaikinya, terurut dari yang paling
   mendesak.
 - Bila berkasnya lebih dari satu: **mana yang paling siap dikirim**, beserta
-  alasannya - hal mana yang membuatnya unggul dan seberapa besar selisihnya.
-
-### Tebakan bentuk portofolio
-
-Aplikasi juga menebak **bentuk portofolio** tiap CV dari kata-kata di dalamnya,
-lalu menawarkannya lewat tombol **Pakai bentuk ini**.
-
-Perhatikan kata "menawarkan". Tebakan itu dibaca dari tulisannya, bukan dari
-isian terstruktur seperti di editor - jadi ia bisa saja meleset, dan Anda yang
-memutuskan. Kalau memang tidak bisa ditebak, aplikasi mengatakannya terus
-terang alih-alih menebak asal.
-
-Kalau CV yang Anda bandingkan ternyata berbeda-beda bentuknya, akan muncul
-keterangannya. Nilainya tetap dihitung dengan aturan yang sama - hanya saja
-bukti yang dituntut tiap bentuk memang berbeda, dan itu perlu Anda ingat saat
-membandingkan angkanya.
+  alasannya - dimensi mana yang membuatnya unggul dan seberapa besar
+  selisihnya.
 
 ### Soal privasi
 
@@ -717,7 +495,7 @@ dari nol:
 2. Ganti namanya, misalnya "CV - Backend Engineer PT ABC".
 3. Sesuaikan ringkasan profil dan urutan keahliannya dengan lowongan itu.
 
-Setiap kartu CV di dashboard menampilkan nilai terakhirnya, template yang
+Setiap kartu CV di dashboard menampilkan skor ATS terakhir, template yang
 dipakai, dan kapan terakhir diubah.
 
 ---
@@ -771,8 +549,8 @@ yang dapat diganti lewat bilah di bagian bawah:
 | Panel | Isi |
 |---|---|
 | **Isi Data** | Formulir seluruh bagian CV |
-| **Hasil** | CV ukuran A4, perbesarannya otomatis disesuaikan lebar layar |
-| **Nilai** | Kedua angka beserta daftar saran |
+| **Pratinjau** | CV ukuran A4, perbesarannya otomatis disesuaikan lebar layar |
+| **Skor ATS** | Penilaian beserta daftar saran |
 
 Seluruh tombol unduhan dan pengaturan diringkas ke dalam menu **⋯** di pojok
 kanan atas.

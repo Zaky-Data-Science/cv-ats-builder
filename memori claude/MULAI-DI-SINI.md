@@ -7,13 +7,13 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **4 September 2026** (sesi 12)
+Terakhir diperbarui: **4 September 2026** (sesi 11)
 
 ---
 
 ## 1. Project ini apa
 
-**CV ATS & Portofolio Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
+**CV ATS Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
 (*Applicant Tracking System*). Pengguna mengisi field terstruktur, melihat
 hasilnya seketika di pratinjau seukuran kertas sebenarnya, memperoleh skor ATS
 beserta saran perbaikan, lalu mengunduh PDF/Word/teks/JSON. Datanya tersimpan
@@ -59,15 +59,6 @@ Dan panel hero di halaman depan kini penuh dari tepi ke tepi: jarak di kiri,
 kanan, dan atasnya membuatnya terbaca sebagai kartu yang mengambang, bukan
 sebagai pembuka halaman.
 
-Sesi 12 menambahkan bagian yang paling mengubah wujud aplikasi ini sejak awal:
-**portofolio berbasis pola**. Bagian Proyek tidak lagi satu formulir yang sama
-untuk semua orang - bentuknya mengikuti salah satu dari lima pola pembuktian,
-ditebak dari jurusan yang diketik penggunanya lewat kamus 21 bidang. Ikut
-dengannya: kredensial berkategori, penghitung SKP, Mode Redaksi bagi karya yang
-terikat kerahasiaan, dan penanda bahasa orang pertama. Angkanya pun berubah
-bentuk - satu "Skor ATS" digantikan **dua angka**, Kekuatan CV dan Kecocokan
-Lowongan, sebab keduanya mengukur hal yang berbeda.
-
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
 
@@ -79,22 +70,7 @@ Politeknik Negeri Samarinda.
 
 ---
 
-## 2. Status: tayang, tetapi ada yang belum di-push
-
-> ### Keadaan sekarang
->
-> **Uji manual 1-5 sudah selesai seluruhnya dan lulus.** Fitur portofolio,
-> perbaikan Mode Redaksi, dan seluruh catatan sesi 13 **sudah ter-push dan
-> tayang di production** (`788fb73`).
->
-> Yang belum di-push: **reposisi dua pilar (sesi 14)** - nama produk berganti
-> menjadi **CV ATS & Portofolio Builder**, beranda punya dua pintu masuk setara.
-> Perubahan tampilan dan teks saja; tidak ada logika fitur yang disentuh.
-> Tunggu peninjauan sebelum push.
->
-> Catatan untuk lain kali: basis data lokal bisa tertinggal dari skema.
-> Terapkan dengan **`npx prisma migrate deploy`**, jangan `migrate dev` -
-> lihat catatan Prisma di bawah.
+## 2. Status: sudah tayang
 
 | Hal | Nilai |
 |---|---|
@@ -103,35 +79,29 @@ Politeknik Negeri Samarinda.
 | Tim Vercel | ada di catatan pribadi |
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
-| Folder kode | `D:\Website CV dan Portofolio` |
+| Folder kode | `D:\Website CV` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
-| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. **Belum dipicu untuk fitur portofolio** |
-| Uji manual 1-5 | **selesai dan lulus** (sesi 13) |
-| Nama produk | **CV ATS & Portofolio Builder** sejak sesi 14. Nama repo GitHub dan `name` di package.json sengaja tidak ikut - itu plumbing |
+| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 
 **Hasil uji terakhir di production: 10 dari 10 poin lulus, 0 galat
-JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6. Angka itu
-berasal dari versi **sebelum** fitur portofolio.
-
-Gerbang kualitas pada `main` saat ini: `npm test` **792 lulus 0 gagal**,
-typecheck bersih, lint bersih.
+JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6.
 
 ---
 
 ## 3. Cara menjalankan lagi di komputer
 
 **Sejak sesi 10, biasanya tidak perlu.** Server lokal berjalan sendiri:
-sebuah Scheduled Task bernama `CV ATS & Portofolio Builder - server lokal` menyalakannya
+sebuah Scheduled Task bernama `CV ATS Builder - server lokal` menyalakannya
 setiap masuk Windows, dan menyalakannya lagi bila mati.
 
 ```powershell
 # Melihat statusnya
-Get-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal" | Get-ScheduledTaskInfo
+Get-ScheduledTask -TaskName "CV ATS Builder - server lokal" | Get-ScheduledTaskInfo
 
 # Menyalakan sekarang tanpa masuk ulang
-Start-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
+Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
 
 # Membatalkan pemasangannya
 powershell -ExecutionPolicy Bypass -File "scripts\pasang-tugas.ps1" -Hapus
@@ -144,12 +114,12 @@ ponsel di Wi-Fi yang sama ikut dicatat di log pengawas setiap kali menyala.
 Bila ingin menjalankannya dengan tangan:
 
 ```bash
-cd "D:\Website CV dan Portofolio"
+cd "D:\Website CV"
 
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 708 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 348 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -160,58 +130,6 @@ npm run db:seed      # membuat akun demo@atscv.local / demo12345
 
 Bila nomor port `prisma dev` berubah, sesuaikan `DATABASE_URL` dan
 `SHADOW_DATABASE_URL` di berkas `.env`.
-
-### Cara masuk saat menguji di localhost
-
-Basis data lokal hanya berisi **satu akun**, dan itu akun demo:
-
-| | |
-|---|---|
-| Alamat | <http://localhost:3000/login> |
-| Email | `demo@atscv.local` |
-| Kata sandi | `demo12345` |
-
-Kredensialnya memang terbuka - ia juga tercetak di `README.md` dan ditampilkan
-`npm run db:seed` setelah selesai. Akun ini dipakai bersama, jadi **jangan
-menaruh data pribadi di dalamnya**.
-
-Yang tidak perlu akun: `/coba` (penyusun tanpa akun, tersimpan di peramban),
-`/bandingkan`, dan seluruh halaman publik. Jalur yang menuntut akun hanya
-dasbor, CV tersimpan, dan pengaturan akun.
-
-> **Kalau muncul layar "Ada yang tidak beres" dengan kode galat**, dan
-> `web.log` menyebut `DriverAdapterError: ConnectionClosed`: itu bukan cacat
-> kode. Server Next.js masih memegang koneksi ke Postgres lokal yang sudah
-> mati - lazim terjadi setelah basis datanya hidup ulang sementara servernya
-> tidak. Obatnya menyalakan ulang servernya, bukan mengubah apa pun:
->
-> ```powershell
-> Stop-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
-> # Stop-ScheduledTask TIDAK mematikan servernya - lihat JEBAKAN di bawah.
-> # Hentikan prosesnya sendiri, pastikan port 3000 bebas, baru:
-> Start-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
-> ```
->
-> Membuktikan sudah pulih: buka halaman yang **memakai basis data**, bukan
-> beranda. Beranda tetap terbuka meski koneksinya putus.
->
-> **Kalau P1017 terus berulang meski servernya sudah dinyalakan ulang**, yang
-> rusak bukan sambungannya melainkan Postgres lokalnya. Nyalakan ulang
-> `npm run db:dev`. Bila ia menolak menyala dengan `Lock file is already being
-> held`, itu lock basi dari proses yang pernah dimatikan paksa - hapus **hanya**
-> folder ini, jangan yang lain:
->
-> ```
-> %LOCALAPPDATA%\prisma-dev-nodejs\Data\durable-streamstscv\server.lock.lock
-> ```
->
-> Tetangganya - `durable-streams.sqlite`, `server.lock`, `server.json` - itu
-> datanya. Terhapus berarti seluruh CV lokal ikut hilang.
->
-> Diukur saat kejadian: pada Postgres lokal yang sudah rusak, `getResume()`
-> gagal P1017 pada ukuran lumbung koneksi berapa pun; sesudah dinyalakan ulang,
-> ukuran 2 sampai 8 berhasil seluruhnya. Jadi jangan mengecilkan lumbungnya -
-> yang perlu dinyalakan ulang basis datanya.
 
 ### JEBAKAN PALING PENTING
 
@@ -275,12 +193,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | Lokasi | Isi |
 |---|---|
 | `prisma/schema.prisma` | 17 tabel beserta relasinya |
-| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 6 dimensi untuk CV terstruktur; menghasilkan dua angka terpisah, dan bobotnya bergeser saat portofolio aktif |
-| `src/lib/ats/bukti-karya.ts` | Rubrik P x Q x R untuk dimensi keenam. Pemetaan field ke syarat R dibaca dari penanda `rubrik` di pola-schemas.ts, bukan ditulis di sini |
-| `src/lib/portfolio/pola-schemas.ts` | Registry **bentuk** formulir - lima pola pembuktian plus satu cadangan. Kode perlu tahu isinya |
-| `src/lib/portfolio/kamus-bidang.ts` | Registry **isi** saran - 21 bidang. Kode tidak perlu tahu isinya. Menambah profesi = menambah satu entri di sini, bukan menulis skema baru |
-| `src/lib/portfolio/render.ts` | Item portofolio menjadi bentuk siap cetak. `verifikator` dan `refleksi` sengaja tidak punya tempat di sana, sehingga tidak ada penghasil keluaran yang **dapat** mencetaknya |
-| `src/lib/portfolio/redaksi.ts` | Mode Redaksi. Ada cacat sempit yang diketahui - lihat akhir sesi 12 di riwayat |
+| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 5 dimensi untuk CV terstruktur |
 | `src/lib/ats/messages.ts` | Seluruh kalimat keluaran mesin penilaian, dua bahasa. engine.ts tinggal berisi angka dan syarat |
 | `src/lib/ats/document.ts` | Penilai **berkas CV yang diunggah** - menebak strukturnya dari teks. Sengaja terpisah dari engine.ts; alasannya ada di komentar berkasnya |
 | `src/lib/ats/document-messages.ts` | Kalimat kelebihan/kekurangan untuk penilai berkas |
@@ -319,7 +232,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore), beserta peralihan tinta yang menyebar saat temanya berganti |
 | `src/lib/reveal-init.ts` | Skrip `<head>` yang menyalakan animasi "muncul saat tergulir" - dan menjamin isinya tetap terlihat bila animasinya tidak pernah berjalan |
 | `src/app/(app)/loading.tsx` | Kerangka pemuatan. **Sengaja tidak di root** - alasannya di kepala berkasnya |
-| `tests/` | 708 pemeriksaan; `npm test` |
+| `tests/` | 348 pemeriksaan; `npm test` |
 | `tests/kertas.test.ts` + `tests/fixtures/kertas-acuan.html` | Mengunci markup dokumen CV pada jalur cetak, 10 template x 2 bahasa. Rekam ulang acuannya **hanya** bila tampilannya memang sengaja diubah |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
@@ -500,22 +413,6 @@ Delapan butir pada daftar sesi 5 sudah ditimbang satu per satu di sesi 6.
 Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
 `riwayat-pengerjaan.md` sesi 6. Yang masih terbuka:
 
-0. ~~Uji manual 1-4 di `docs/uji-manual.md` - menahan `git push`.~~
-   **Selesai di sesi 13, keempatnya lulus, sudah di-push dan Uji 5 di produksi
-   ikut lulus.** Tidak ada lagi yang menahan pekerjaan lain.
-
-0b. **Dua pasang kontrol berlabel sama di kepala halaman.** Sebuah
-   `<a href="/login">` dan sebuah `<button>` sama-sama berbunyi "Masuk", dan
-   hal yang sama berlaku untuk "Daftar Gratis" - keempatnya dapat dicapai Tab.
-   Bagi pengguna papan ketik, satu hal yang sama menghabiskan dua perhentian
-   Tab, dan perhentian kedua tidak menambah apa pun.
-
-   Sudah ada sebelum sesi 13; bukan akibat perubahan Mode Redaksi. Uji 1
-   melewatkannya karena yang diperiksa saat itu "apakah tiap perhentian
-   terlihat dan urutannya masuk akal", bukan "apakah ada perhentian yang
-   mubazir". Kecil, tetapi mengenai kelompok pengguna yang paling sulit
-   menyiasatinya sendiri.
-
 1. **Pemulihan kata sandi lewat surel sudah ada sejak sesi 10, tetapi belum
    menyala.** Seluruh alurnya terpasang - `/lupa-sandi`, `/atur-sandi`, dua
    titik akhir API, tabel tiket, batas laju, dan surel dua bahasa. Yang belum:
@@ -614,7 +511,7 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
     pengukuran cukup untuk memaksa satu bingkai berjalan; itulah cara angka di
     atas akhirnya diperoleh.
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 708
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 348
 pemeriksaan). Sejak sesi 5, jalur peramban diuji dengan menjalankan Chrome
 sungguhan lewat DevTools Protocol - termasuk memeriksa isi berkas PDF yang
 benar-benar dihasilkan, bukan sekadar keberadaannya.
@@ -625,11 +522,10 @@ benar-benar dihasilkan, bukan sekadar keberadaannya.
 
 Cukup sampaikan hal-hal ini:
 
-> Project di `D:\Website CV dan Portofolio`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
+> Project di `D:\Website CV`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
-> basis data lokal. Ada pekerjaan yang menahan `git push` - lihat bagian 2.
-> Sebelum menyatakan selesai, jalankan
+> basis data lokal. Sebelum menyatakan selesai, jalankan
 > `npm run typecheck && npm run lint && npm test && npm run build`.
 
 Sejak sesi 10 ada satu hal lagi yang mudah terlewat:

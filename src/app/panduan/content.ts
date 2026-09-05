@@ -63,7 +63,7 @@ const id: GuideContent = {
   badge: "Panduan",
   title: "Cara memakai aplikasi ini",
   intro:
-    "Ditulis untuk Anda yang baru pertama kali menyusun CV maupun portofolio. Tidak perlu tahu apa-apa soal desain dokumen - cukup isi kotak-kotaknya, sisanya kami yang urus. Keduanya berangkat dari satu pengisian yang sama: CV-nya dijaga tetap terbaca mesin, bagian portofolionya mengikuti cara bidang Anda membuktikan pekerjaan.",
+    "Ditulis untuk Anda yang baru pertama kali membuat CV. Tidak perlu tahu apa-apa soal desain dokumen - cukup isi kotak-kotaknya, sisanya kami yang urus.",
 
   flowTitle: "1. Alur penggunaan dari awal sampai akhir",
   flowIntro:
@@ -186,7 +186,7 @@ const en: GuideContent = {
   badge: "Guide",
   title: "How to use this app",
   intro:
-    "Written for someone putting together a CV - and a portfolio - for the very first time. You need to know nothing about document design: fill in the boxes and we handle the rest. Both come from the same set of answers: the CV stays readable by machines, while the portfolio part follows how your own field proves work.",
+    "Written for someone building a CV for the very first time. You need to know nothing about document design - fill in the boxes and we handle the rest.",
 
   flowTitle: "1. The flow from start to finish",
   flowIntro:

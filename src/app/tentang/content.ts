@@ -46,7 +46,7 @@ const id: AboutContent = {
   badge: "Tentang",
   title: "Kenapa aplikasi ini dibuat",
   intro:
-    "Penyusun CV sekaligus portofolio: yang satu dijaga tetap terbaca mesin penyaring lamaran, yang lain memberi bukti dalam bentuk yang memang dipakai bidang Anda. Keduanya dari data yang sama, dinilai secara terbuka, dan tidak mengunci data Anda di dalamnya.",
+    "Pembuat CV yang menjaga hasilnya tetap terbaca mesin penyaring lamaran, menilainya secara terbuka, dan tidak mengunci data Anda di dalamnya.",
 
   problemTitle: "Masalah yang ingin diselesaikan",
   problemParagraphs: [
@@ -65,10 +65,6 @@ const id: AboutContent = {
     {
       title: "Mengubah penilaian menjadi tindakan",
       body: "Nilainya tidak berhenti sebagai angka. Tiap kekurangan datang bersama cara membetulkannya, dan tautan yang melompat langsung ke kotak isian yang bermasalah.",
-    },
-    {
-      title: "Memberi portofolio bentuk yang diharapkan bidangnya",
-      body: "CV menjawab \"pantas diwawancara?\"; portofolio menjawab \"benar-benar bisa?\". Keduanya butuh bukti yang berbeda, dan bidang yang berbeda membuktikan dengan cara yang berbeda pula - arsitek lewat gambar teknis, dosen lewat sitasi dan indeksasi, tenaga kesehatan lewat volume dan lisensi. Isian portofolionya mengikuti salah satu dari lima pola pembuktian itu, bukan satu formulir yang sama untuk semua orang. Hari ini portofolionya menyatu di dalam CV sebagai bagian tersendiri; berkas yang berdiri sendiri belum ada.",
     },
     {
       title: "Menilai CV yang sudah ada, bukan hanya yang dibuat di sini",
@@ -179,7 +175,7 @@ const en: AboutContent = {
   badge: "About",
   title: "Why this app exists",
   intro:
-    "A builder for both a CV and a portfolio: the first stays readable by recruiting software, the second gives evidence in the form your own field actually uses. Both come from the same data, are scored openly, and never lock your data in.",
+    "A CV builder that keeps its output readable by recruiting software, scores it openly, and does not lock your data in.",
 
   problemTitle: "The problem it addresses",
   problemParagraphs: [
@@ -198,10 +194,6 @@ const en: AboutContent = {
     {
       title: "Turns a score into an action",
       body: "The score does not stop at a number. Every shortcoming comes with how to fix it, and a link that jumps straight to the box at fault.",
-    },
-    {
-      title: "Giving the portfolio the shape its field expects",
-      body: "A CV answers \"worth interviewing?\"; a portfolio answers \"can they actually do it?\". Those need different evidence, and different fields prove things differently - architects through technical drawings, academics through citations and indexing, health workers through volume and licences. The portfolio fields follow one of five evidence patterns rather than a single form for everyone. For now the portfolio lives inside the CV as its own section; a standalone file does not exist yet.",
     },
     {
       title: "Scores CVs made elsewhere, not only ones built here",

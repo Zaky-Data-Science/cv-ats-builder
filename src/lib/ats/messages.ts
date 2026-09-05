@@ -95,16 +95,12 @@ export interface AtsMessages {
   keywordCoverageFix: string;
 
   /* ------------------------------------------------- panjang & struktur --*/
-  /*
-    Panjang halaman kini hanya keterangan, bukan penilaian. Tidak ada satu pun
-    kalimat di bawah ini yang menyalahkan CV yang lebih dari satu halaman -
-    karena tidak ada bukti yang mendukungnya, dan bukti yang ada justru
-    mengarah ke sebaliknya.
-  */
   lengthOnePage: string;
-  lengthMultiPage: (pages: number) => string;
+  lengthTwoPages: string;
+  lengthTooLong: (pages: number) => string;
   lengthOnePageFix: string;
-  lengthMultiPageFix: string;
+  lengthTwoPagesFix: string;
+  lengthTooLongFix: string;
   summaryAfterExperience: string;
   summaryAfterExperienceFix: string;
   experienceUnsorted: string;
@@ -112,19 +108,6 @@ export interface AtsMessages {
   employmentGap: (months: number) => string;
   employmentGapUnknown: string;
   employmentGapFix: string;
-
-  /* ------------------------------------------------------------ bahasa --*/
-  bahasaBerbeda: (bahasaCv: string, bahasaIklan: string) => string;
-  bahasaBerbedaFix: string;
-
-  /* ---------------------------------------------------- kekuatan bukti --*/
-  buktiKaryaOff: string;
-  buktiKaryaOffFix: string;
-  buktiKaryaScore: (score: number) => string;
-  buktiKaryaScoreFix: string;
-  buktiKaryaFixPemula: string;
-  buktiKaryaFewItems: (n: number, ideal: number) => string;
-  buktiKaryaFewItemsFix: string;
 
   /* ------------------------------------------------------ umum & vonis --*/
   notScorable: (dimension: string) => string;
@@ -143,7 +126,6 @@ const id: AtsMessages = {
     contentQuality: "Mutu kalimatnya",
     keywordMatch: "Kecocokan dengan lowongan",
     structure: "Panjang dan urutan",
-    buktiKarya: "Kekuatan bukti karya",
   },
   dimensionDescription: {
     completeness:
@@ -155,9 +137,7 @@ const id: AtsMessages = {
     keywordMatch:
       "Berapa banyak kata penting dari iklan lowongan yang benar-benar muncul di CV Anda.",
     structure:
-      "Apakah urutannya wajar dan apakah ada jeda waktu yang belum dijelaskan. Panjang halaman hanya diberi keterangan, tidak dinilai.",
-    buktiKarya:
-      "Seberapa kuat bukti karya Anda dibaca dari tiga hal: peran Anda sendiri, tingkat kesulitannya, dan banyaknya karya yang ditampilkan.",
+      "Apakah panjang dan urutannya wajar, dan apakah ada jeda waktu yang belum dijelaskan.",
   },
 
   nameMissing: "Nama lengkap belum diisi.",
@@ -262,11 +242,14 @@ const id: AtsMessages = {
     "Masukkan kata-kata itu ke bagian Keahlian atau ke poin pencapaian - tapi hanya yang benar-benar Anda kuasai. Menempel yang tidak Anda kuasai memang menaikkan angka di sini, dan akan ketahuan saat wawancara.",
 
   lengthOnePage: "CV Anda 1 halaman.",
-  lengthMultiPage: (p) => `CV Anda ${p} halaman.`,
+  lengthTwoPages: "CV Anda 2 halaman.",
+  lengthTooLong: (p) => `CV Anda ${p} halaman.`,
   lengthOnePageFix:
-    "Satu halaman memang pas untuk pelamar yang pengalamannya masih ringkas. Panjangnya sendiri tidak menaikkan atau menurunkan nilai apa pun di sini.",
-  lengthMultiPageFix:
-    "Lazim untuk tingkat menengah ke atas. Panjang halaman tidak memengaruhi nilai: pengurai bekerja atas teks hasil konversi, tempat \"halaman\" sudah tidak ada lagi. Yang menentukan tetap isinya.",
+    "Panjangnya sudah pas. Perekrut melirik satu CV dalam hitungan detik, dan satu halaman memastikan semua isinya benar-benar sempat terlihat.",
+  lengthTwoPagesFix:
+    "Satu halaman sudah cukup untuk hampir semua pelamar - yang sudah lama bekerja sekalipun. Coba buang pengalaman yang tidak nyambung dengan lowongan yang dituju, dan gabungkan poin yang mirip. Dua halaman baru sepadan kalau pengalaman Anda lebih dari lima tahun dan semuanya nyambung.",
+  lengthTooLongFix:
+    "Pangkas jadi satu halaman. Buang pengalaman lama yang sudah tidak nyambung, gabungkan poin yang mirip, dan sisakan yang benar-benar mendukung lowongan ini. Mengecilkan huruf bukan jalan keluar - yang dikurangi isinya, bukan hurufnya.",
   summaryAfterExperience: "Ringkasan profil Anda ada di bawah pengalaman kerja.",
   summaryAfterExperienceFix:
     "Naikkan Ringkasan Profil ke urutan paling atas. Bagian itu pembuka - kadang satu-satunya yang sempat dibaca.",
@@ -277,24 +260,6 @@ const id: AtsMessages = {
   employmentGapUnknown: "Ada jeda di antara dua pengalaman kerja.",
   employmentGapFix:
     "Jeda lebih dari 12 bulan sebaiknya dijelaskan - isi periode itu dengan proyek, kursus, atau kegiatan organisasi yang Anda jalani.",
-
-  bahasaBerbeda: (bahasaCv, bahasaIklan) =>
-    `CV Anda berbahasa ${bahasaCv}, iklan lowongannya berbahasa ${bahasaIklan}.`,
-  bahasaBerbedaFix:
-    "Penemuan kandidat berjalan lewat pencocokan kata demi kata, jadi CV berbahasa berbeda gagal pada kata seperti \"pengalaman\", \"keuangan\", atau \"penjualan\". Samakan bahasanya dengan iklan yang Anda lamar. Nama perkakas, framework, dan sertifikasi tetap ditulis dalam bahasa Inggris di kedua kasus.",
-
-  buktiKaryaOff: "Bagian portofolio belum dinyalakan.",
-  buktiKaryaOffFix:
-    "Jawab tiga pertanyaan pembuka di atas formulir, lalu bagian karya Anda akan menyesuaikan bentuknya - dan ikut dinilai di sini.",
-  buktiKaryaScore: (score) => `Kekuatan bukti karya Anda ${score} dari 100.`,
-  buktiKaryaScoreFix:
-    "Angkanya naik dari tiga hal: peran Anda sendiri yang terbaca jelas, skala yang berangka, standar atau metode yang disebut, dan hasil yang terukur.",
-  buktiKaryaFixPemula:
-    "Tugas kuliah tetap dihitung. Yang membedakannya: sebut hasil pengukurannya dan apa yang Anda kerjakan sendiri.",
-  buktiKaryaFewItems: (n, ideal) =>
-    `Baru ada ${n} item; yang lazim untuk bentuk ini minimal ${ideal}.`,
-  buktiKaryaFewItemsFix:
-    "Kurang dari jumlah yang lazim, nilainya dipotong sebanding - bukan karena banyaknya yang dinilai, melainkan karena satu contoh belum memperlihatkan pola kerja seseorang.",
 
   notScorable: (dimension) => `${dimension} belum bisa dinilai.`,
   notScorableFix:
@@ -316,7 +281,6 @@ const en: AtsMessages = {
     contentQuality: "How well it is written",
     keywordMatch: "How well it matches the job",
     structure: "Length and ordering",
-    buktiKarya: "How strong your evidence is",
   },
   dimensionDescription: {
     completeness:
@@ -328,9 +292,7 @@ const en: AtsMessages = {
     keywordMatch:
       "How many of the words that matter in the job ad genuinely appear in your CV.",
     structure:
-      "Whether the ordering makes sense and whether any gap in time is left unexplained. Page count is only noted, never marked.",
-    buktiKarya:
-      "How strong your evidence reads, from three things: your own role in it, how demanding it was, and how many pieces you show.",
+      "Whether the length and ordering make sense, and whether any gap in time is left unexplained.",
   },
 
   nameMissing: "Your full name is missing.",
@@ -433,11 +395,14 @@ const en: AtsMessages = {
     "Work those words into your Skills section or your bullets - but only the ones you genuinely have. Pasting in what you cannot back up does lift the number here, and it comes apart in the interview.",
 
   lengthOnePage: "Your CV is 1 page long.",
-  lengthMultiPage: (p) => `Your CV is ${p} pages long.`,
+  lengthTwoPages: "Your CV is 2 pages long.",
+  lengthTooLong: (p) => `Your CV is ${p} pages long.`,
   lengthOnePageFix:
-    "One page suits an applicant whose history is still short. The length itself neither adds to nor takes away from any number here.",
-  lengthMultiPageFix:
-    "Common at mid-level and above. Length does not affect the score: parsers work on converted text, where \"pages\" no longer exist. What counts is still the content.",
+    "That is exactly right. Recruiters glance at a CV in seconds, and one page makes sure all of it is actually seen.",
+  lengthTwoPagesFix:
+    "One page is enough for almost every applicant, long-serving ones included. Try cutting the experience that does not speak to the role, and merging similar bullets. Two pages only earn their keep when you have more than five years and all of it is relevant.",
+  lengthTooLongFix:
+    "Cut it to one page. Drop older experience that no longer speaks to the role, merge similar bullets, and keep only what supports this application. Shrinking the lettering is not the answer - it is the content that needs cutting, not the type.",
   summaryAfterExperience:
     "Your professional summary sits below your work experience.",
   summaryAfterExperienceFix:
@@ -449,24 +414,6 @@ const en: AtsMessages = {
   employmentGapUnknown: "There is a gap between two roles.",
   employmentGapFix:
     "Gaps longer than 12 months are worth explaining - fill the period with a project, a course, or organisational work you did.",
-
-  bahasaBerbeda: (bahasaCv, bahasaIklan) =>
-    `Your CV is written in ${bahasaCv}, the job ad in ${bahasaIklan}.`,
-  bahasaBerbedaFix:
-    "Candidate search runs on word-for-word matching, so a CV in the other language misses words like \"experience\", \"finance\", or \"sales\". Match the language of the ad you are applying to. Tool, framework, and certification names stay in English either way.",
-
-  buktiKaryaOff: "The portfolio section is not switched on yet.",
-  buktiKaryaOffFix:
-    "Answer the three opening questions above the form, and your work section will take the shape of your field - and be scored here.",
-  buktiKaryaScore: (score) => `Your evidence scores ${score} out of 100.`,
-  buktiKaryaScoreFix:
-    "Three things lift it: your own role read clearly, a scale with a number in it, a named standard or method, and a measured result.",
-  buktiKaryaFixPemula:
-    "Coursework still counts. What sets it apart: state what you measured, and what you did yourself.",
-  buktiKaryaFewItems: (n, ideal) =>
-    `Only ${n} item so far; ${ideal} is the usual minimum for this shape.`,
-  buktiKaryaFewItemsFix:
-    "Below the usual count the score is cut proportionally - not because quantity is being marked, but because a single example does not yet show how someone works.",
 
   notScorable: (dimension) => `${dimension} cannot be judged yet.`,
   notScorableFix:

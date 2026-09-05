@@ -149,33 +149,6 @@ function Jaga-Layanan {
     $TerakhirDinyalakan.Value = Get-Date
 }
 
-<#
-    Siapa yang memegang sebuah port.
-
-    Dipakai untuk mengenali basis data yang **mati lalu hidup lagi**. Yang
-    berubah dalam keadaan itu bukan portnya - port yang sama tetap dijawab -
-    melainkan prosesnya. Mengawasi port saja tidak cukup di sini, dan itu tidak
-    bertentangan dengan aturan "tanya portnya" di kepala berkas: portnya tetap
-    yang menentukan hidup atau mati, PID hanya menentukan apakah ia proses yang
-    sama dengan sebelumnya.
-#>
-function Pemilik-Port {
-    param([int]$Port)
-    $c = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
-        Select-Object -First 1
-    if ($c) { return [int]$c.OwningProcess }
-    return 0
-}
-
-function Hentikan-Web {
-    param([string]$Alasan)
-    Tulis-Log "Menyalakan ulang server web: $Alasan"
-    Get-CimInstance Win32_Process -Filter "Name='node.exe'" -ErrorAction SilentlyContinue |
-        Where-Object { $_.CommandLine -like "*$root*" -and $_.CommandLine -notlike "*prisma*" } |
-        ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-    Start-Sleep -Seconds 2
-}
-
 Tulis-Log "=== dev-24jam mulai (project: $root, basis data: $portDb, web: $portWeb) ==="
 Tulis-Log "Log ada di: $logDir"
 
@@ -183,72 +156,9 @@ $dbTerakhir = [datetime]::MinValue
 $webTerakhir = [datetime]::MinValue
 $pernahSiap = $false
 
-# PID proses yang sedang memegang port basis data. 0 berarti belum diketahui.
-$pidDb = 0
-
-<#
-    Basis data dinyalakan dan DITUNGGU lebih dulu, sebelum server web sekali pun
-    dijalankan.
-
-    Sebelum ini keduanya dinyalakan pada putaran gelung yang sama, dan urutan
-    itu punya akibat yang tidak langsung terlihat: server web sempat menyala
-    lebih dulu, membuka lumbung koneksinya ke basis data yang belum siap, lalu
-    memegang koneksi yang tidak pernah hidup. Halaman yang tidak menyentuh
-    basis data - beranda, /coba - tetap melayani dengan baik, sehingga dari
-    luar semuanya tampak normal sampai seseorang membuka penyuntingnya.
-#>
-$batasTunggu = (Get-Date).AddSeconds(90)
-while (-not (Port-Mendengarkan -Port $portDb) -and (Get-Date) -lt $batasTunggu) {
-    Jaga-Layanan -Nama "database" -Port $portDb `
-        -Perintah "npm run db:dev" -TerakhirDinyalakan ([ref]$dbTerakhir)
-    Start-Sleep -Seconds 3
-}
-
-if (Port-Mendengarkan -Port $portDb) {
-    $pidDb = Pemilik-Port -Port $portDb
-    Tulis-Log "Basis data siap di port $portDb (PID $pidDb). Menyalakan server web."
-} else {
-    <#
-        Ini yang dulu tidak pernah dikatakan siapa pun.
-
-        Bila basis data gagal menyala, server web tetap dinyalakan - halamannya
-        terbuka, dan satu-satunya tanda bahwa ada yang salah adalah layar galat
-        beserta tumpukan stack trace Prisma di web.log. Baris di bawah ini
-        menyebutkannya dengan kalimat yang dapat dibaca manusia, di log utama,
-        sebelum galatnya sempat terjadi.
-    #>
-    Tulis-Log "PERINGATAN: basis data TIDAK menyala di port $portDb setelah 90 detik."
-    Tulis-Log "  Halaman yang memakai basis data akan gagal. Periksa database.log."
-    Tulis-Log "  Lock basi dari proses yang dimatikan paksa adalah sebab yang lazim:"
-    Tulis-Log "  hapus HANYA %LOCALAPPDATA%\prisma-dev-nodejs\Data\durable-streams\atscv\server.lock.lock"
-}
-
 while ($true) {
     Jaga-Layanan -Nama "database" -Port $portDb `
         -Perintah "npm run db:dev" -TerakhirDinyalakan ([ref]$dbTerakhir)
-
-    <#
-        Basis data yang mati lalu hidup lagi adalah PROSES BARU, dan koneksi
-        yang dipegang server web menunjuk proses yang sudah tidak ada. Koneksi
-        begitu tidak pernah bisa disambung kembali - yang muncul P1017
-        ConnectionClosed, pada setiap halaman yang menyentuh basis data,
-        sampai server webnya sendiri dinyalakan ulang.
-
-        Sebelum ini tidak ada yang menyadarinya: portnya dijawab, jadi pengawas
-        menganggap keduanya sehat, dan yang menemukan masalahnya justru
-        pengguna - lewat layar galat.
-
-        Karena itu yang dibandingkan pemilik portnya, bukan sekadar portnya.
-    #>
-    $pidSekarang = Pemilik-Port -Port $portDb
-    if ($pidSekarang -ne 0 -and $pidDb -ne 0 -and $pidSekarang -ne $pidDb) {
-        Tulis-Log "Basis data berganti proses (PID $pidDb -> $pidSekarang)."
-        Tulis-Log "  Koneksi yang dipegang server web menunjuk proses lama dan tidak dapat disambung."
-        Hentikan-Web -Alasan "basis data berganti proses"
-        $webTerakhir = [datetime]::MinValue
-        $pernahSiap = $false
-    }
-    if ($pidSekarang -ne 0) { $pidDb = $pidSekarang }
 
     Jaga-Layanan -Nama "web" -Port $portWeb `
         -Perintah "npm run dev" -TerakhirDinyalakan ([ref]$webTerakhir)

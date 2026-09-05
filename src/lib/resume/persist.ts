@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/db";
-import { bacaUlangBilaKoneksiPutus } from "@/lib/db-ulang";
 import type { ResumeDataInput } from "./schema";
 import { buildChildWrites, resumeInclude, toResumeData } from "./serialize";
 import { normalizeSectionOrder } from "./sections";
@@ -34,12 +33,10 @@ export async function getResume(
   resumeId: string,
   userId: string,
 ): Promise<ResumeData | null> {
-  const row = await bacaUlangBilaKoneksiPutus("membuka satu CV", () =>
-    prisma.resume.findFirst({
-      where: { id: resumeId, userId },
-      include: resumeInclude,
-    }),
-  );
+  const row = await prisma.resume.findFirst({
+    where: { id: resumeId, userId },
+    include: resumeInclude,
+  });
   return row ? toResumeData(row) : null;
 }
 
@@ -62,9 +59,6 @@ export async function createResume(
       marginYMm: data.marginYMm,
       marginXMm: data.marginXMm,
       sectionOrder: normalizeSectionOrder(data.sectionOrder),
-      schemaVersion: data.schemaVersion,
-      profilPortofolio: data.profilPortofolio,
-      portofolio: data.portofolio,
       personalInfo: { create: { ...data.personalInfo } },
     },
     select: { id: true },
@@ -107,9 +101,6 @@ export async function saveResume(
       marginYMm: data.marginYMm,
       marginXMm: data.marginXMm,
         sectionOrder: normalizeSectionOrder(data.sectionOrder),
-        schemaVersion: data.schemaVersion,
-        profilPortofolio: data.profilPortofolio,
-        portofolio: data.portofolio,
       },
     });
 

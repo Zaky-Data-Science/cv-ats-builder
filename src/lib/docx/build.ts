@@ -12,21 +12,8 @@ import {
 } from "docx";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";
 import { parseEmbeddedPhoto } from "@/lib/resume/photo";
-import {
-  keteranganKredensial,
-  masaBerlakuTeks,
-} from "@/lib/portfolio/kredensial";
-import {
-  bagiItemPortofolio,
-  barisKepala,
-  itemTercetak,
-  portofolioAktif,
-  skemaItem,
-  PEMISAH_DETAIL,
-  type TautanTercetak,
-} from "@/lib/portfolio/render";
-import { isSectionVisible, sectionHeadingFor } from "@/lib/resume/sections";
-import type { ProjectItem, ResumeData, SectionKey } from "@/lib/resume/types";
+import { isSectionVisible, sectionHeading } from "@/lib/resume/sections";
+import type { ResumeData, SectionKey } from "@/lib/resume/types";
 import { paperSpec } from "@/lib/resume/paper";
 import {
   resumeMargins,
@@ -56,16 +43,10 @@ import {
  * kegagalan pengurai ATS:
  *   1. Tabel        - teks di dalam sel sering terbaca melompat-lompat.
  *   2. Kotak teks   - kerap tidak ikut terekstraksi sama sekali.
- *   3. Header/footer - **isinya hilang total**. Diuji langsung: teks di dalam
- *                      `sec.header`/`sec.footer` tidak terbaca python-docx
- *                      maupun konversi LibreOffice ke teks. Ini masalah khas
- *                      DOCX; di PDF, teks pada posisi atas atau bawah halaman
- *                      terbaca normal.
+ *   3. Header/footer - isinya biasanya diabaikan pengurai, sehingga kontak
+ *                      yang diletakkan di sana menjadi hilang.
  *
- * Karena itu berkas ini **tidak pernah** membuat `headers` maupun `footers`
- * pada section Word - bukan hanya "menghindari menaruh kontak di sana".
- * Seluruh isi, tanpa kecuali, ditulis sebagai paragraf biasa di dalam body
- * beserta daftar berpoin asli Word.
+ * Seluruh isi ditulis sebagai paragraf biasa dan daftar berpoin asli Word.
  */
 
 // docx memakai satuan setengah-poin untuk ukuran huruf dan twip (1/1440 inci)
@@ -220,34 +201,7 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
   /* ---------------------------------------------------------------- */
 
   const heading = (key: SectionKey) =>
-    children.push(sectionTitle(sectionHeadingFor(data, key), data));
-
-  const { mandiri, perInduk } = bagiItemPortofolio(data);
-
-  /*
-    Satu item portofolio. Bentuknya sama persis dengan versi teks polos dan
-    versi cetaknya - lihat lib/portfolio/render.ts untuk alasannya.
-
-    `bersarang` menandai item yang menempel pada entri pengalaman kerja;
-    konteksnya tidak ikut dicetak karena pemberi kerjanya sudah tertulis di
-    entri induknya.
-  */
-  const tulisItem = (item: ProjectItem, bersarang: boolean) => {
-    const cetak = itemTercetak(data, item, lang);
-    const kepala = barisKepala(cetak);
-    const label = bersarang ? `${skemaItem(data, item).labelItem}: ` : "";
-
-    children.push(
-      titleWithDate(label + kepala.utama, cetak.periode, size, smallSize),
-    );
-    const kedua = bersarang ? cetak.lokasi : kepala.kedua;
-    if (kedua) children.push(subtitle(kedua, size));
-    if (cetak.ringkasan) children.push(body(cetak.ringkasan, size));
-    pushBullets(children, cetak.poin, size);
-    if (cetak.detail) children.push(body(`Detail: ${cetak.detail}`, smallSize));
-    const tautan = tautanParagraph(cetak.tautan, smallSize);
-    if (tautan) children.push(tautan);
-  };
+    children.push(sectionTitle(sectionHeading(key, lang), data));
 
   for (const key of data.sectionOrder) {
     if (!isSectionVisible(data, key)) continue;
@@ -272,7 +226,6 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
           const sub = joinNonEmpty([e.company, e.city, e.country]);
           if (sub) children.push(subtitle(sub, size));
           pushBullets(children, e.bullets, size);
-          for (const item of perInduk.get(e.id) ?? []) tulisItem(item, true);
         }
         break;
 
@@ -318,11 +271,6 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
 
       case "project":
         heading(key);
-        if (portofolioAktif(data)) {
-          for (const item of mandiri) tulisItem(item, false);
-          break;
-        }
-        // Bentuk lama, untuk CV yang belum menyalakan bagian portofolio.
         for (const p of data.projects) {
           children.push(
             titleWithDate(
@@ -377,11 +325,6 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
               ],
             }),
           );
-          const keterangan = joinNonEmpty(
-            [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
-            PEMISAH_DETAIL,
-          );
-          if (keterangan) children.push(body(keterangan, smallSize));
           const detail = joinNonEmpty(
             [c.credentialId ? `ID: ${c.credentialId}` : "", prettyUrl(c.url)],
             "  |  ",
@@ -451,19 +394,11 @@ export async function buildDocx(data: ResumeData): Promise<Buffer> {
               ],
             }),
           );
-          const kredit = joinNonEmpty(
-            [p.tipeLuaran, p.peranSaya, p.indeksasiTier],
-            PEMISAH_DETAIL,
+          const detail = joinNonEmpty(
+            [p.doi ? `DOI: ${p.doi}` : "", prettyUrl(p.url)],
+            "  |  ",
           );
-          if (kredit) children.push(body(kredit, smallSize));
-          if (p.doi) children.push(body(`DOI: ${p.doi}`, smallSize));
-          const tautanPublikasi = tautanParagraph(
-            p.url.trim()
-              ? [{ teks: prettyUrl(p.url), href: ensureHttp(p.url) }]
-              : [],
-            smallSize,
-          );
-          if (tautanPublikasi) children.push(tautanPublikasi);
+          if (detail) children.push(body(detail, smallSize));
         }
         break;
 
@@ -619,35 +554,6 @@ function body(text: string, size: number) {
   return new Paragraph({
     spacing: { after: 40 },
     children: [new TextRun({ text, size })],
-  });
-}
-
-/**
- * Baris tautan: teks polos yang terbaca, dengan pranala terpasang pada teks
- * polos itu sendiri.
- *
- * Bukan salah satunya. Alamat tujuan sebuah pranala DOCX tersimpan sebagai
- * relationship di `document.xml.rels`, terpisah dari run teksnya - sehingga
- * ekstraksi teks biasa hanya menemukan teks tampilannya. Kalau yang tampil
- * cuma kata "Portofolio", alamatnya hilang bagi mesin. Kalau pranalanya
- * dibuang, alamatnya hilang bagi rekruter yang membuka berkas aslinya.
- */
-function tautanParagraph(
-  tautan: TautanTercetak[],
-  size: number,
-): Paragraph | null {
-  if (tautan.length === 0) return null;
-  return new Paragraph({
-    spacing: { after: 40 },
-    children: tautan.flatMap((t, index) => [
-      ...(index > 0
-        ? [new TextRun({ text: PEMISAH_DETAIL, size })]
-        : []),
-      new ExternalHyperlink({
-        link: t.href,
-        children: [new TextRun({ text: t.teks, size, style: "Hyperlink" })],
-      }),
-    ]),
   });
 }
 

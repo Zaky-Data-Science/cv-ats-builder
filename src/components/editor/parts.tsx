@@ -71,14 +71,6 @@ export function SectionCard({
           {count !== undefined && count > 0 && <Badge>{count}</Badge>}
         </button>
 
-        {/*
-          Kedua tombol ini isinya hanya ikon, sehingga namanya harus datang
-          dari atribut - dan `title` saja tidak cukup. Ia tidak pernah muncul
-          di layar sentuh (tidak ada kursor yang berhenti di atasnya), dan
-          sebagian pembaca layar tidak membacanya bila tidak ada nama lain.
-          `aria-label` yang menamainya; `title` dibiarkan tetap ada karena ia
-          yang memberi keterangan melayang di komputer bertetikus.
-        */}
         {(onMoveUp || onMoveDown) && (
           <div className="flex shrink-0 items-center gap-0.5">
             <GripVertical size={13} className="text-ink-300" />
@@ -86,7 +78,6 @@ export function SectionCard({
               size="icon"
               variant="ghost"
               title={t.form.sectionMoveUp}
-              aria-label={t.form.sectionMoveUp}
               onClick={onMoveUp}
               disabled={!onMoveUp}
             >
@@ -96,7 +87,6 @@ export function SectionCard({
               size="icon"
               variant="ghost"
               title={t.form.sectionMoveDown}
-              aria-label={t.form.sectionMoveDown}
               onClick={onMoveDown}
               disabled={!onMoveDown}
             >
@@ -156,14 +146,11 @@ export function EntryCard({
         <span className="text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
           {label} {index + 1}
         </span>
-        {/* Ikon tanpa teks - alasan `aria-label`-nya sama dengan tombol
-            pengurut bagian di atas. */}
         <div className="flex items-center gap-0.5">
           <Button
             size="icon"
             variant="ghost"
             title={t.form.entryMoveUp}
-            aria-label={t.form.entryMoveUp}
             onClick={onMoveUp}
             disabled={index === 0}
           >
@@ -173,7 +160,6 @@ export function EntryCard({
             size="icon"
             variant="ghost"
             title={t.form.entryMoveDown}
-            aria-label={t.form.entryMoveDown}
             onClick={onMoveDown}
             disabled={index === total - 1}
           >
@@ -183,7 +169,6 @@ export function EntryCard({
             size="icon"
             variant="ghost"
             title={t.form.entryRemove}
-            aria-label={t.form.entryRemove}
             onClick={() => setConfirming(true)}
           >
             <Trash2 size={13} className="text-bad" />

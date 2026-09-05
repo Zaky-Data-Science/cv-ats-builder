@@ -53,8 +53,3 @@ next-env.d.ts
 # Baris ini tinggal sebagai jaring pengaman bila suatu saat ada yang
 # mengembalikannya ke sini.
 /logs
-
-# Rencana produk yang belum dibangun. Repo ini publik, dan rencana yang belum
-# jadi terbaca sebagai janji oleh orang yang menemukannya. Berkasnya tetap ada
-# di komputer dan masih dipakai; yang ditahan hanya penerbitannya.
-memori claude/rancangan/06-rencana-dua-pilar-cv-dan-portofolio.md

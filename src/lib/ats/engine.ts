@@ -1,16 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
-import { nilaiBuktiKarya, type NilaiItem } from "./bukti-karya";
-import { EFEK_JENJANG } from "@/lib/portfolio/pola-schemas";
-import { skemaProfil } from "@/lib/portfolio/profil";
-import { portofolioAktif } from "@/lib/portfolio/render";
-import { tebakBahasa } from "@/lib/portfolio/deteksi";
-import { kamusProfil } from "@/lib/portfolio/profil";
-import {
-  allBullets,
-  groupSkills,
-  resumeToPlainText,
-  teksPencocokan,
-} from "@/lib/resume/plaintext";
+import { allBullets, groupSkills, resumeToPlainText } from "@/lib/resume/plaintext";
 import { paperSpec } from "@/lib/resume/paper";
 import { isSectionVisible } from "@/lib/resume/sections";
 import { resumeMargins } from "@/lib/resume/templates";
@@ -21,7 +10,6 @@ import type {
   AtsFinding,
   AtsResult,
   AtsStats,
-  BuktiKaryaRingkas,
   DimensionKey,
   DimensionResult,
   Severity,
@@ -59,54 +47,18 @@ export type {
   AtsFinding,
   AtsResult,
   AtsStats,
-  BuktiKaryaRingkas,
   DimensionKey,
   DimensionResult,
   Severity,
 };
 
-/**
- * Bobot lima dimensi asli. Totalnya 100 selama bagian portofolio belum menyala.
- */
 export const DIMENSION_WEIGHTS: Record<DimensionKey, number> = {
   completeness: 25,
   parseability: 25,
   contentQuality: 20,
   keywordMatch: 20,
   structure: 10,
-  buktiKarya: 0,
 };
-
-/**
- * Bobot yang berlaku untuk sebuah CV.
- *
- * Aturannya ditulis eksplisit karena dua kalimat yang mudah bertabrakan harus
- * keduanya benar: bobot dimensi lain turun secara proporsional ketika bukti
- * karya ikut dinilai, **dan** skor CV lama tidak boleh bergeser sebelum
- * penggunanya sendiri menyalakan bagian portofolio.
- *
- *   portofolio mati  -> bobot Bukti Karya 0; lima dimensi lama memakai bobot
- *                       aslinya, total tetap 100
- *   portofolio nyala -> bobot Bukti Karya = bobotBuktiKarya polanya; lima
- *                       dimensi lama dikali (100 - bobot) / 100
- *
- * Perkalian proporsional itu yang menjaga totalnya tetap 100 tanpa satu pun
- * dimensi berubah kedudukannya terhadap dimensi lain.
- */
-export function dimensionWeights(data: ResumeData): Record<DimensionKey, number> {
-  if (!portofolioAktif(data)) return { ...DIMENSION_WEIGHTS };
-
-  const bobot = skemaProfil(data.profilPortofolio).bobotBuktiKarya;
-  const sisa = (100 - bobot) / 100;
-  return {
-    completeness: DIMENSION_WEIGHTS.completeness * sisa,
-    parseability: DIMENSION_WEIGHTS.parseability * sisa,
-    contentQuality: DIMENSION_WEIGHTS.contentQuality * sisa,
-    keywordMatch: DIMENSION_WEIGHTS.keywordMatch * sisa,
-    structure: DIMENSION_WEIGHTS.structure * sisa,
-    buktiKarya: bobot,
-  };
-}
 
 /** Label dimensi mengikuti bahasa antarmuka. */
 export function dimensionLabels(locale: Locale): Record<DimensionKey, string> {
@@ -168,18 +120,6 @@ class DimensionScorer {
     if (safe < threshold) {
       this.findings.push({ ...finding, dimension: this.key });
     }
-  }
-
-  /**
-   * Keterangan yang tidak memengaruhi nilai sama sekali.
-   *
-   * Dipakai untuk hal yang pengguna berhak tahu tetapi tidak berhak dihukum
-   * karenanya - panjang halaman, misalnya. Sengaja dibedakan dari `rule`:
-   * begitu sebuah keterangan menumpang pada aturan berpoin, cepat atau lambat
-   * ia ikut menggerakkan angka tanpa ada yang menyadarinya.
-   */
-  note(finding: Omit<AtsFinding, "dimension">): void {
-    this.findings.push({ ...finding, dimension: this.key });
   }
 
   /** Aturan yang tidak berlaku (mis. tak ada entri untuk diperiksa) diabaikan. */
@@ -660,42 +600,36 @@ function scoreStructure(
   const s = new DimensionScorer("structure", m.dimensionLabel.structure);
 
   /*
-    Panjang halaman tidak lagi menurunkan nilai. Sama sekali.
+    Panjang CV dinilai bertingkat, bukan lolos-atau-gagal.
 
-    Tidak ada satu pun dokumentasi vendor pengurai yang menyebut batas
-    halaman - pengurai bekerja atas teks hasil konversi, tempat "halaman"
-    sudah tidak ada lagi. Dan satu-satunya eksperimen terkontrol yang tersedia
-    (482 profesional rekrutmen, 7.712 CV, tiap CV satu halaman dipasangkan
-    dengan versi dua halaman berisi kredensial identik) justru menemukan versi
-    dua halaman 2,3 kali lebih disukai.
+    Satu halaman memperoleh nilai penuh karena itulah panjang yang benar
+    untuk hampir semua pelamar: perekrut memindai CV dalam hitungan detik,
+    dan apa pun yang jatuh ke halaman kedua besar kemungkinan tidak pernah
+    dibaca. Dua halaman tetap memperoleh sebagian besar nilainya - bagi
+    pelamar dengan pengalaman panjang yang seluruhnya relevan, memaksakan
+    satu halaman justru membuang bukti. Yang benar-benar dihukum adalah
+    tiga halaman ke atas.
 
-    Catatan kejujuran yang harus ikut disebut: studi itu diterbitkan penjual
-    jasa penulisan CV, jadi ada konflik kepentingan. Tapi desainnya terkontrol
-    dan sampelnya besar - jauh di atas mutu bukti lain yang ada di ruang ini,
-    termasuk mutu bukti yang mendasari aturan satu halaman yang digantikannya.
-
-    Yang tersisa adalah keterangan netral: berapa halaman CV-nya, tanpa satu
-    pun angka yang bergerak karenanya. Untuk pola Publikasi & Kredit, bahkan
-    keterangan itu tidak ditampilkan - daftar karya terbit memang tidak
-    dipangkas.
+    Meski nilainya bertingkat, sarannya tetap muncul pada CV dua halaman:
+    pengguna berhak tahu bahwa satu halaman lebih baik, lalu memutuskan
+    sendiri.
   */
-  // Poinnya diberikan penuh tanpa syarat: panjang halaman tidak lagi menjadi
-  // salah satu hal yang dinilai.
-  s.rule(4, true, {
-    severity: "info",
-    message: m.lengthOnePage,
-    fix: m.lengthOnePageFix,
+  const lengthRatio = pages === 1 ? 1 : pages === 2 ? 0.75 : 0.25;
+  s.ratioRule(4, lengthRatio, 1, {
+    severity: pages > 2 ? "warning" : "info",
+    message:
+      pages === 1
+        ? m.lengthOnePage
+        : pages === 2
+          ? m.lengthTwoPages
+          : m.lengthTooLong(pages),
+    fix:
+      pages === 1
+        ? m.lengthOnePageFix
+        : pages === 2
+          ? m.lengthTwoPagesFix
+          : m.lengthTooLongFix,
   });
-
-  // Untuk pola Publikasi & Kredit, bahkan keterangannya tidak ditampilkan -
-  // daftar karya terbit memang tidak pernah dipangkas.
-  if (!skemaProfil(data.profilPortofolio).tanpaIndikatorPanjang) {
-    s.note({
-      severity: "info",
-      message: pages === 1 ? m.lengthOnePage : m.lengthMultiPage(pages),
-      fix: pages === 1 ? m.lengthOnePageFix : m.lengthMultiPageFix,
-    });
-  }
 
   const order = data.sectionOrder;
   const summaryIndex = order.indexOf("summary");
@@ -758,94 +692,6 @@ function hasSubstance(data: ResumeData): boolean {
   );
 }
 
-/**
- * Dimensi Kekuatan Bukti.
- *
- * Nilainya datang dari model P × Q × R di bukti-karya.ts, bukan dihitung di
- * sini - berkas itu yang memegang rubriknya, lengkap dengan rincian per item
- * yang dapat ditelusuri pengguna. Yang dikerjakan di sini hanya mengubahnya
- * menjadi temuan yang dapat diklik.
- */
-function scoreBuktiKarya(data: ResumeData, m: AtsMessages): DimensionResult {
-  const s = new DimensionScorer("buktiKarya", m.dimensionLabel.buktiKarya);
-  const schema = skemaProfil(data.profilPortofolio);
-  const nilai = nilaiBuktiKarya(data);
-
-  if (!portofolioAktif(data)) {
-    const result = s.result(false);
-    result.findings.push({
-      dimension: "buktiKarya",
-      severity: "info",
-      message: m.buktiKaryaOff,
-      fix: m.buktiKaryaOffFix,
-      section: "project",
-    });
-    return result;
-  }
-
-  s.ratioRule(100, nilai.skor / 100, 1, {
-    severity: "info",
-    message: m.buktiKaryaScore(Math.round(nilai.skor)),
-    fix: m.buktiKaryaScoreFix,
-    section: "project",
-  });
-
-  const result = s.result(true);
-  // Temuan diambil dari item terlemah lebih dulu: itulah yang paling banyak
-  // menaikkan angka bila diperbaiki.
-  result.findings = [];
-  const pemula = EFEK_JENJANG[data.profilPortofolio.jenjang].nadaSaran === "pemula";
-  const terlemah = [...nilai.item].sort((a, b) => a.skor - b.skor).slice(0, 3);
-
-  for (const item of terlemah) {
-    if (item.skor >= 100) continue;
-    const judul = item.judul.trim() || schema.labelItem;
-    for (const [peran, kalimat] of Object.entries(schema.saranSkor)) {
-      if (!kalimat) continue;
-      if (!syaratBelumTerpenuhi(peran, item)) continue;
-      result.findings.push({
-        dimension: "buktiKarya",
-        severity: "info",
-        message: `${judul}: ${kalimat}`,
-        fix: pemula ? m.buktiKaryaFixPemula : m.buktiKaryaScoreFix,
-        section: "project",
-      });
-      break;
-    }
-  }
-
-  if (nilai.n > 0 && nilai.p < 1) {
-    result.findings.push({
-      dimension: "buktiKarya",
-      severity: "info",
-      message: m.buktiKaryaFewItems(nilai.n, nilai.rentang[0]),
-      fix: m.buktiKaryaFewItemsFix,
-      section: "project",
-    });
-  }
-
-  return result;
-}
-
-/**
- * Syarat rubrik mana yang belum terpenuhi pada sebuah item.
- *
- * Dibaca dari hasil penilaiannya, bukan dari isiannya lagi - supaya saran yang
- * muncul dan angka yang ditampilkan tidak mungkin berasal dari dua pembacaan
- * yang berbeda.
- */
-function syaratBelumTerpenuhi(peran: string, item: NilaiItem): boolean {
-  if (peran === "peran") return item.q < 2;
-  if (peran === "verifikator") {
-    return !item.penyesuaian.some((p) => p.jenis === "verifikator-lengkap");
-  }
-  if (peran === "tautan") {
-    return item.penyesuaian.some((p) => p.jenis === "tanpa-tautan-valid");
-  }
-  // R menghitung tiga syarat sekaligus; belum penuh berarti ada yang kurang.
-  return item.r < 3;
-}
-
 export function analyzeResume(
   data: ResumeData,
   jobDescription = "",
@@ -854,25 +700,8 @@ export function analyzeResume(
 ): AtsResult {
   const m = atsMessages(locale);
   const plainText = resumeToPlainText(data);
-
-  /*
-    Pencocokan lowongan memakai teks yang sedikit lebih luas daripada yang
-    tercetak: slot detail tambahan hanya mencetak empat baris teratas, tetapi
-    seluruhnya tetap keahlian penggunanya. Dimensi lain tetap membaca teks
-    cetaknya - yang dinilai di sana memang CV yang akan dibaca orang.
-
-    Kata kunci khas bidangnya sendiri diberi bobot lebih tinggi, karena
-    frekuensi kemunculan di iklan lowongan tidak dapat membedakan istilah yang
-    menentukan dari kata yang sekadar sering diulang.
-  */
-  const kamus = kamusProfil(data.profilPortofolio);
   const keywords = jobDescription.trim()
-    ? analyzeKeywords(teksPencocokan(data), jobDescription, 25, {
-        utama: kamus?.kataKunciATS ?? [],
-        sekunder: data.profilPortofolio.industriKBLI
-          ? [data.profilPortofolio.industriKBLI]
-          : [],
-      })
+    ? analyzeKeywords(plainText, jobDescription)
     : null;
 
   const pages = measuredPages ?? estimatePages(data);
@@ -896,100 +725,26 @@ export function analyzeResume(
     }
   }
 
-  const bobot = dimensionWeights(data);
   const dimensions: DimensionResult[] = [
     scoreCompleteness(data, m),
     parseability,
     scoreContentQuality(data, m),
     scoreKeywordMatch(keywords, m),
     structure,
-    scoreBuktiKarya(data, m),
-  ].map((d) => ({
-    ...d,
-    weight: bobot[d.key],
-    score: Math.round(((d.percent / 100) * bobot[d.key] + Number.EPSILON) * 10) / 10,
-  }));
+  ];
 
-  /*
-    Dua angka, dihitung terpisah.
-
-    Kecocokan Lowongan berdiri sendiri karena ia mengukur hal yang berbeda dari
-    yang lain: bukan mutu CV-nya, melainkan kecocokannya dengan satu iklan
-    tertentu. Mencampur keduanya menjadi satu angka membuat CV yang bagus
-    terlihat buruk hanya karena iklan yang ditempel kebetulan meminta hal lain -
-    dan itu justru menyesatkan orang yang sedang memperbaiki CV-nya.
-  */
-  const kekuatanDimensi = dimensions.filter(
-    (d) => d.applicable && d.key !== "keywordMatch",
-  );
-  const bobotKekuatan = kekuatanDimensi.reduce((sum, d) => sum + d.weight, 0);
-  const nilaiKekuatan = kekuatanDimensi.reduce((sum, d) => sum + d.score, 0);
-  const strength =
-    bobotKekuatan === 0 ? 0 : Math.round((nilaiKekuatan / bobotKekuatan) * 100);
-
-  /*
-    Bahasa CV melawan bahasa iklan lowongannya.
-
-    Alasannya mekanis, bukan selera: penemuan kandidat berjalan lewat
-    pencocokan kata kunci, sehingga CV berbahasa Inggris yang dilamarkan ke
-    iklan berbahasa Indonesia gagal pada pencarian "pengalaman", "keuangan",
-    "penjualan" - tiga kata yang tidak akan pernah ada di dalamnya. Istilah
-    teknis tidak termasuk; nama perkakas dan sertifikasi memang selalu Inggris
-    di kedua bahasa.
-  */
-  if (jobDescription.trim()) {
-    const bahasaIklan = tebakBahasa(jobDescription);
-    if (bahasaIklan && bahasaIklan !== data.language) {
-      const dimensi = dimensions.find((d) => d.key === "keywordMatch");
-      dimensi?.findings.push({
-        dimension: "keywordMatch",
-        severity: "warning",
-        message: m.bahasaBerbeda(
-          data.language === "ID" ? "Indonesia" : "Inggris",
-          bahasaIklan === "ID" ? "Indonesia" : "Inggris",
-        ),
-        fix: m.bahasaBerbedaFix,
-      });
-    }
-  }
-
-  const dimensiKeyword = dimensions.find((d) => d.key === "keywordMatch");
-  const match =
-    dimensiKeyword && dimensiKeyword.applicable ? dimensiKeyword.percent : null;
-
-  /*
-    Angka pembanding: nilai yang sama, dihitung dengan bobot lama.
-
-    Dihitung dari persentase dimensi yang sudah ada, bukan dengan menjalankan
-    penilaian dua kali - hasilnya persis sama dan biayanya nol, sementara
-    penilaian ini berjalan setiap kali penggunanya mengetik satu huruf.
-  */
-  const strengthTanpaPortofolio = portofolioAktif(data)
-    ? (() => {
-        const lama = dimensions.filter(
-          (d) => d.applicable && d.key !== "keywordMatch" && d.key !== "buktiKarya",
-        );
-        const bobotLama = lama.reduce(
-          (sum, d) => sum + DIMENSION_WEIGHTS[d.key],
-          0,
-        );
-        const nilaiLama = lama.reduce(
-          (sum, d) => sum + (d.percent / 100) * DIMENSION_WEIGHTS[d.key],
-          0,
-        );
-        return bobotLama === 0 ? 0 : Math.round((nilaiLama / bobotLama) * 100);
-      })()
-    : null;
-
-  const score = strength;
+  // Dimensi yang tidak berlaku dikeluarkan dari pembagi, sehingga skor tetap
+  // pada skala 0-100 meski deskripsi lowongan belum ditempelkan.
+  const applicable = dimensions.filter((d) => d.applicable);
+  const totalWeight = applicable.reduce((sum, d) => sum + d.weight, 0);
+  const totalScore = applicable.reduce((sum, d) => sum + d.score, 0);
+  const score = totalWeight === 0 ? 0 : Math.round((totalScore / totalWeight) * 100);
 
   const severityRank: Record<Severity, number> = {
     error: 0,
     warning: 1,
     info: 2,
   };
-  // Dirakit setelah seluruh temuan terkumpul - termasuk temuan bahasa yang
-  // ditambahkan di atas.
   const suggestions = dimensions
     .flatMap((d) => d.findings)
     .sort((a, b) => severityRank[a.severity] - severityRank[b.severity]);
@@ -1009,35 +764,14 @@ export function analyzeResume(
     experienceCount: data.experiences.length,
   };
 
-  const rincianBukti = nilaiBuktiKarya(data);
-  const buktiKarya: BuktiKaryaRingkas | null = portofolioAktif(data)
-    ? {
-        skor: Math.round(rincianBukti.skor),
-        p: rincianBukti.p,
-        n: rincianBukti.n,
-        rentang: rincianBukti.rentang,
-        item: rincianBukti.item.map((i) => ({
-          id: i.id,
-          judul: i.judul,
-          q: i.q,
-          r: i.r,
-          skor: Math.round(i.skor),
-        })),
-      }
-    : null;
-
   return {
     score,
-    strength,
-    match,
-    strengthTanpaPortofolio,
-    grade: gradeOf(strength),
-    verdict: verdictOf(strength, keywords !== null, m),
+    grade: gradeOf(score),
+    verdict: verdictOf(score, keywords !== null, m),
     dimensions,
     suggestions,
     keywords,
     stats,
-    buktiKarya,
   };
 }
 

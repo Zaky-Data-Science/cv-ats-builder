@@ -11,7 +11,7 @@ import type { Dictionary } from "./id";
 
 export const en: Dictionary = {
   common: {
-    appName: "CV ATS & Portofolio Builder",
+    appName: "CV ATS Builder",
     save: "Save",
     cancel: "Cancel",
     delete: "Delete",
@@ -239,133 +239,6 @@ export const en: Dictionary = {
     sectionMoveDown: "Move this section down",
   },
 
-  /* ------------------------------------------------- pattern-based folio */
-  portofolio: {
-    title: "The shape of your portfolio",
-    intro:
-      "Three short questions. Your answers decide which fields the work section offers you - and which ones it insists on.",
-    q1Label: "What did you study, or what do you do?",
-    q1Ph: "Civil Engineering, Nursing, Culinary Arts...",
-    q1Hint:
-      "Type the name of the course as it is. Common Indonesian abbreviations such as PWK or TKJ are found too.",
-    searchEmpty:
-      "Nothing matches yet. Try the full name of the course, or carry on without picking one.",
-    notFound: "My field is not on this list",
-    fieldLabel: "Field",
-    q2Label: "What is this CV for?",
-    q2Hint:
-      "Different purposes call for different evidence, even from the same person.",
-    q3Label: "How far along are you?",
-    q3Hint:
-      "This decides which fields are required. Coursework still counts - only the yardstick changes.",
-    chosenLabel: "Portfolio shape",
-    changeShape: "Not this one? Change the shape",
-    change: "Change",
-    done: "Save answers",
-    footnote:
-      "You can change this at any time. Switching shape deletes none of what you have already written.",
-
-    /* --- Phase 3: portfolio item form --- */
-    shapeToggle: "Use the portfolio shape",
-    shapeToggleHint:
-      "The fields follow your field of work. Switched off, this section goes back to a plain project list and the extra entries stay saved.",
-    headingLabel: "Section title on the CV",
-    headingHint:
-      "A conventional title is more likely to be recognised by automated readers. Other titles are still read, they are just not always mapped to the right column.",
-    mergeLabel: "Merge into Work Experience",
-    mergeHint:
-      "Some automated readers only recognise projects when they sit inside a job. Turn this on if your projects had an employer.",
-    mergeOffer:
-      "{n} of your {total} pieces name an employer that matches a work entry. Merge them?",
-    mergeBefore: "Before",
-    mergeAfter: "After",
-    mergePreviewSeparate: "A section of its own, under its own heading",
-    mergePreviewNested: "Nested inside the job it belonged to",
-    mergeAccept: "Merge",
-    mergeLater: "Not now",
-    parentLabel: "Sits inside",
-    parentNone: "Stands alone",
-    parentDateWarn:
-      "This item's dates fall outside the job it sits in. Fix the dates, or detach it.",
-    parentDetach: "Detach from the job",
-    coreBlock: "Field-specific details",
-    extraBlock: "Extra details",
-    privateBlock: "Verifier & reflection",
-    privateBlockHint: "Neither is ever printed on the CV or included in an export.",
-    addDetail: "Add a detail",
-    detailLabelPh: "What it is",
-    detailValuePh: "Its value",
-    detailUnitPh: "Unit",
-    detailNotPrinted: "{n} details are saved but not printed on the CV.",
-    detailMax: "Six at most. Only the four highest priorities are printed.",
-    linksLabel: "Links",
-    linksHint:
-      "Two at most. The readable text is printed and the link is attached to that same text - both, not one or the other.",
-    linkAdd: "Add a link",
-    linkLabelPh: "Label (optional)",
-    linkShortener:
-      "A shortened link carries no keywords and tells a human nothing. Use the real address.",
-    verifierName: "Name",
-    verifierRole: "Position",
-    verifierRelation: "How you know them",
-    verifierNotice:
-      "This is never printed on your CV and never sent anywhere. Only save it if you have asked that person first.",
-    reflectionLabel: "Reflection",
-    reflectionHint:
-      "What you learnt, what you would do differently. Not printed on the CV.",
-    summaryLabel: "Summary",
-    summaryHint: "One sentence, 160 characters at most.",
-    contextLabel: "Client / institution",
-    contextHint:
-      "Required. With no employer, write \"Personal project\", \"Freelance\", or the name of your university.",
-    locationLabel: "Location",
-    fillExample: "Fill with an example",
-    hasNumber: "has a number",
-    noNumber: "no number yet",
-    archiveTitle: "Kept from your previous portfolio shape",
-    archiveRestore: "Restore into extra details",
-    shapeChangeWarn:
-      "Changing the shape will hide these entries: {daftar}. Nothing is deleted - they come back if you pick the old shape again.",
-    itemRange: "The usual count for this shape: {min}-{max} items.",
-    itemRangeOpen: "For this shape, more is better. At least {min} items.",
-    addItem: "Add",
-    publicationExtra: "Credit & indexing",
-    credCategory: "Credential category",
-    credCategoryHint:
-      "Four categories, treated differently: a practice licence is a gate, a tiered credential decides which work you may take on, a sectoral certificate attaches to a post, a competency certificate rounds things off.",
-    credValidity: "Validity",
-    credValidityHint:
-      "Pick the shape first. Some credentials genuinely last for life, so an expiry date is never forced on you here.",
-    credLevel: "Tier",
-    credLevelPh: "Tier 7 - Junior Expert",
-    credClass: "Field classification",
-    credClassPh: "Architecture",
-    credSubType: "Issuer type",
-    credSubTypePh: "Global vendor / national body / bootcamp",
-    credSuggest: "Credentials common in your field",
-    aggTitle: "Progress against the official threshold",
-    aggChoose: "Profession",
-    aggChooseNone: "Not chosen yet",
-    aggTotal: "Collected so far",
-    aggOf: "of",
-    aggSource: "Source",
-    aggUpdated: "checked",
-    aggDomain: "By domain",
-    aggNoTotal: "The rule names no total figure.",
-    redactionLabel: "Redaction mode",
-    redactionHint:
-      "Replaces client names with a description of the field, and exact figures with a range that contains them. Applies to PDF, Word, and plain text.",
-    redactionNote:
-      "The JSON backup keeps the real figures - it is your own backup, not the file you send to an employer.",
-    redactionLimit:
-      "Its limit: only what this app already knows can be hidden - the name in the Client/institution field, and figures. That name is also removed from your own sentences, but other names that exist only inside your writing - a colleague, a supervisor, a subsidiary, a product name - cannot be recognised. Read the file yourself before you send it.",
-    langTitle: "Language check",
-    langRequired:
-      "This shape calls for first-person writing. Competency assessors use it to tell your work apart from your team's.",
-    langSuggest:
-      "Not required for this shape, but first-person sentences still read more clearly.",
-  },
-
   guest: {
     metaTitle: "Build a CV without an account",
     metaDescription:
@@ -431,8 +304,6 @@ export const en: Dictionary = {
     btnJson: "Backup",
     btnTextTitle: "Plain text, for copying into online application forms",
     btnJsonTitle: "A backup file, so this CV can be opened again later",
-    btnJsonNote:
-      "The backup holds everything you typed, except your verifiers' names - those belong to someone else, so they go into no file at all.",
     saveNotYet: "Not saved yet",
     saveAuto: "Saves automatically",
     untitled: "Unnamed CV",
@@ -449,7 +320,7 @@ export const en: Dictionary = {
     downloadTxt: "Download text (.txt)",
     downloadJson: "Save a backup file",
     tabPreview: "See the result",
-    tabScore: "CV strength",
+    tabScore: "CV score",
     paneForm: "Fill in",
     panePreview: "Result",
     paneScore: "Score",
@@ -500,10 +371,10 @@ export const en: Dictionary = {
   flow: {
     metaTitle: "Flow and Architecture",
     metaDescription:
-      "User flow, architecture, data flow and development workflow diagrams for CV ATS & Portofolio Builder - also available as SVG and PNG image files.",
+      "User flow, architecture, data flow and development workflow diagrams for CV ATS Builder - also available as SVG and PNG image files.",
     title: "Flow and architecture",
     subtitle:
-      "Four diagrams: how people use it, how the data moves, and how a code change reaches production. Note that the CV and the portfolio share one data path all the way to the printing stage - that is why filling things in once produces both. The diagrams on this page and the image files are generated from the same source, so the two can never tell different stories.",
+      "Four diagrams: how people use it, how the data moves, and how a code change reaches production. The diagrams on this page and the image files are generated from the same source data, so the two can never tell different stories.",
     downloadTitle: "Download as an image",
     downloadNote:
       "For dropping into a report or a slide deck. SVG stays sharp at any size; PNG is handled more reliably by word processors.",
@@ -517,25 +388,25 @@ export const en: Dictionary = {
   home: {
     skipToContent: "Skip to main content",
     heroBadge: "Free - nothing stamped on your CV - your data is saved",
-    heroTitleLine1: "Fill it in once.",
-    heroTitleLine2: "Get a CV machines can read,",
-    heroTitleLine3: "and a portfolio that convinces.",
+    heroTitleLine1: "You just fill in your details.",
+    heroTitleLine2: "The layout and the wording",
+    heroTitleLine3: "sort themselves out.",
     heroBody:
-      "Your application is read twice, by two very different readers. A machine reads it first, and that machine trips easily: two-column CVs, tables, or text buried inside an image often come out as nonsense. Then a person reads it, and what they are looking for is no longer keywords but proof you can actually do the work. Here both come from the same data - the CV stays safe for machines to read, and the portfolio part follows the way your own field expects work to be evidenced.",
+      "Before a human ever sees it, your application is usually read by a machine first. And that machine trips easily: two-column CVs, tables, or text buried inside an image often come out as nonsense - so the experience you genuinely have simply never registers. Here you just fill in the boxes. We keep the layout safe for machines to read, then score it and show you exactly what is still missing.",
     heroCtaNew: "Start building my CV",
     heroCtaDashboard: "Back to my CVs",
     heroCtaCompare: "Check the CV I already have",
     statSections: "CV sections",
-    statPatterns: "portfolio patterns",
-    statFields: "fields in the dictionary",
+    statDimensions: "things we check",
+    statTemplates: "designs to pick from",
     statFormats: "ways to download it",
     statsPrompt: "Tap a number to see what it means.",
     statSectionsWhy:
       "Personal details, summary, work experience, education, skills, projects, certificates, organisations, awards, languages, and publications. Sections you leave empty never appear on the CV, so there is no need to fill them all in.",
-    statPatternsWhy:
-      "Different fields prove work in different ways. Visual work needs illustrated case studies; technical projects need standards and scale; published work needs citations and indexing; practice hours need volume and licences; programmes need impact metrics. The portfolio fields follow one of these five, rather than one form for everyone.",
-    statFieldsWhy:
-      "Type your degree or profession - from civil engineering to culinary arts - and the app picks the evidence pattern for you and prepares the suggestions that field actually uses, such as SNI standard numbers for construction.",
+    statTemplatesWhy:
+      "Ten different looks for the same content - some ruled and formal, some plain, two of them with a place for a photo. Switch whenever you like; your data does not change at all.",
+    statDimensionsWhy:
+      "Your CV is judged on five things: whether machines can read it, how complete it is, how well the sentences are written, how tidily it is laid out, and how closely it matches the job you are after.",
     statFormatsWhy:
       "PDF to send to employers, Word when the job ad asks for a .docx, plain text for copying into online forms, and a backup file so this CV can be opened again later.",
     heroCaption: "A finished example - Classic design",
@@ -543,42 +414,13 @@ export const en: Dictionary = {
     heroBadgeGrade: "Grade A",
     heroBadgeSaved: "Saved automatically",
 
-    pillarsTitle: "Two pillars, one set of data",
-    pillarsBody:
-      "A CV and a portfolio answer two different questions, and two different readers read them. You fill your details in once; only the way they are presented changes. Here is the difference, so you know which one you actually need.",
-    pillarCvTitle: "CV - the ticket in",
-    pillarCvBody:
-      "Read by a machine first, then glanced at by a recruiter for about six seconds. That is why its shape is kept strict: one column, no tables, no images - whichever design you pick. Fill in the boxes, watch it appear on paper at real size, fix what the score flags, then download.",
-    pillarCvCta: "Build my CV",
-    pillarFolioTitle: "Portfolio - the proof",
-    pillarFolioBody:
-      "Read by someone who knows your field, slowly and carefully. Three to five of your strongest pieces: what the problem was, what you decided, and what came of it. The fields follow how your own field proves work - an architect is not judged by the same yardstick as a lecturer.",
-    pillarFolioNote:
-      "For now your portfolio lives inside your CV as its own section, not as a separate file. A standalone portfolio file does not exist yet - that is the next piece of work.",
-    pillarFolioCta: "Build my portfolio",
-    pillarFolioCtaSignedIn: "Open the portfolio in my CV",
-    folioPreviewTitle: "This is what it looks like",
-    folioPreviewBody:
-      "Not a marketing mock-up - this comes out of the same renderer that produces your PDF and Word file. The portfolio prints inside the CV, with a Detail line whose contents follow your field's pattern: standards, scale, stage of involvement, and tools in the civil engineering example below.",
-    folioPreviewCaption: "A portfolio entry on the Technical Project pattern, exactly as it prints today",
-    cmpColCv: "CV",
-    cmpColFolio: "Portfolio",
-    cmpReadLabel: "Read by",
-    cmpReadCv: "A machine first, then a recruiter for ~6 seconds",
-    cmpReadFolio: "A human expert in your field - slowly, carefully",
-    cmpAnswerLabel: "Answers",
-    cmpAnswerCv: "Worth interviewing?",
-    cmpAnswerFolio: "Can they actually do it?",
-    cmpFormLabel: "Shape",
-    cmpFormCv: "One column, no tables, no images",
-    cmpFormFolio: "Free - images and case studies welcome",
-    cmpLengthLabel: "Length",
-    cmpLengthCv: "1-2 pages",
-    cmpLengthFolio: "3-5 strongest pieces, covered in depth",
-    cmpScoreLabel: "Judged on",
-    cmpScoreCv: "Keywords and machine readability",
-    cmpScoreFolio: "Depth of reasoning and results",
-    haveCvTitle: "Already have a CV from somewhere else?",
+    pathsTitle: "Two ways to use it",
+    pathsBody:
+      "Start from nothing, or start from the CV you already have. Both are judged exactly the same way, so the scores mean the same thing.",
+    pathBuildTitle: "Build a new CV",
+    pathBuildBody:
+      "Fill in the boxes one by one, watch the result appear on paper at its real size, fix whatever the score flags, then download it as a PDF, a Word file, or plain text.",
+    pathBuildCta: "Start building my CV",
     pathCompareTitle: "Check a CV you already have",
     pathCompareBody:
       "Got an old CV and wonder how it scores? Upload one file to check it, or up to five to pit them against each other. Each gets a score, a list of strengths, and a list of weaknesses with how to fix them - then we name the one most ready to send. Files are read on your own device and never leave it.",
@@ -685,15 +527,6 @@ export const en: Dictionary = {
   ],
 
   compare: {
-    shapeGuess: "Portfolio shape, guessed",
-    shapeGuessHint:
-      "Guessed from the words in the CV, not from structured fields - so this is an offer, not a verdict. The call is yours.",
-    shapeGuessAccept: "Use this shape",
-    shapeGuessUsing: "Read as",
-    shapeGuessNone: "The shape could not be guessed from this CV.",
-    shapeMismatch:
-      "The CVs you are comparing are of different portfolio shapes ({daftar}). They are still scored by the same rules, but each shape calls for different evidence - keep that in mind when reading the ranking.",
-    shapeMatched: "All the CVs compared share one shape: {nama}.",
     metaTitle: "Check and Compare CVs",
     metaDescription:
       "Upload several CVs at once, see the strengths and weaknesses of each, and find out which one is most ready to send. Files are read on your own device and never leave it.",
@@ -762,7 +595,7 @@ export const en: Dictionary = {
     statQuantified: "Bullets that name a number",
     breakdownTitle: "Score breakdown",
     breakdownHint:
-      "The final score comes from the things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
+      "The final score comes from the five things below. They do not all count equally - the percentage beside each one shows how much it weighs.",
     weight: "counts for",
     notScored: "cannot be judged yet",
     keywordsTitle: "Important words from the job ad",
@@ -775,24 +608,6 @@ export const en: Dictionary = {
       "All clear. Your CV satisfies every rule we check.",
     openField: "Open the part that needs work",
     gradePrefix: "Grade",
-    strengthTitle: "Strength & Readability",
-    strengthHint:
-      "How complete the structure is, whether machines can read it, how it is written, and how strong your evidence is.",
-    matchTitle: "Job Match",
-    matchHint:
-      "What share of the words that matter in the job ad genuinely appear in your CV.",
-    matchEmpty: "Nothing pasted yet",
-    scoreDisclaimer:
-      "These numbers judge the structure and keyword match of your CV. They do not predict what any hiring system will decide - every employer tunes its own filters.",
-    weightChanged:
-      "The weighting changed because the portfolio section is on. Under the previous weighting: {n}.",
-    buktiTitle: "Evidence, piece by piece",
-    buktiHint:
-      "Each piece is marked on two things: your part in it (Q) and how demanding it was (R), 0-3 each.",
-    buktiQ: "Your part",
-    buktiR: "Demand",
-    buktiItems: "pieces marked",
-    buktiFew: "below the usual count, the score is cut proportionally",
     jobTitle: "Match against a job ad",
     jobIntro:
       "Paste in the job ad you are targeting. We pull out the words that matter and compare them against your CV.",
@@ -879,7 +694,7 @@ export const en: Dictionary = {
     about: "About",
     flowNav: "Flow",
     compare: "Check My CV",
-    dashboard: "My documents",
+    dashboard: "My CVs",
     login: "Sign in",
     register: "Sign up free",
     openMenu: "Open menu",
@@ -889,7 +704,7 @@ export const en: Dictionary = {
     settingsGroup: "Display",
     breadcrumb: "You are here",
     backHome: "Back to home",
-    backDashboard: "Back to my documents",
+    backDashboard: "Back to my CVs",
     homeAria: "home",
   },
 
@@ -1029,15 +844,6 @@ export const en: Dictionary = {
     errorTitle: "Something went wrong",
     errorBody:
       "This page failed to show. Your CV is safe though - every change had already saved itself the moment you stopped typing.",
-    errorSteps: "What you can do right now:",
-    errorStep1: "Reload this page - use the button below, or press F5.",
-    errorStep2:
-      "If it still looks the same after reloading, wait a moment and try once more. A dropped database connection usually clears on its own.",
-    errorReload: "Reload the page",
-    errorStepDev:
-      "Development mode: make sure the local database is running (npm run db:dev), then restart the web server. A database that died and came back is a new process, and the web server is still holding connections to the old one.",
-    errorCodeHint:
-      "The code below is for you to quote if you report this - you are not meant to understand it.",
     errorCode: "Error code:",
     notFoundTitle: "There is no such page",
     notFoundBody:

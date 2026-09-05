@@ -1,18 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles } from "lucide-react";
 import { useI18n } from "@/components/i18n";
-import {
-  Button,
-  Callout,
-  Field,
-  Input,
-  Select,
-  Switch,
-  Textarea,
-} from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Field, Input, Select, Switch, Textarea, Callout } from "@/components/ui";
 import {
   emptyAward,
   emptyCertification,
@@ -27,30 +17,9 @@ import {
   emptySkill,
 } from "@/lib/resume/factory";
 import { templateStyle } from "@/lib/resume/templates";
-import type { ProjectItem, ResumeLanguage, SectionKey } from "@/lib/resume/types";
-import { isiArsip, pulihkanKeDetail } from "@/lib/portfolio/arsip";
-import { buatContohItem } from "@/lib/portfolio/contoh";
-import { EFEK_JENJANG } from "@/lib/portfolio/pola-schemas";
-import { skemaBagian } from "@/lib/portfolio/profil";
-import { tanggalDiLuarInduk } from "@/lib/portfolio/render";
+import type { ResumeLanguage, SectionKey } from "@/lib/resume/types";
 import { moveItem, removeAt, replaceAt, useEditor } from "./context";
 import { AddButton, BulletEditor, EntryCard, MonthInput, Row } from "./parts";
-import {
-  adaAngka,
-  BlokAgregat,
-  BlokPribadi,
-  DetailTambahanEditor,
-  FieldIntiInput,
-  Lipat,
-  PeriksaBahasa,
-  saranKamus,
-  TautanEditor,
-} from "./PortofolioFields";
-import {
-  LABEL_KATEGORI_KREDENSIAL,
-  MASA_BERLAKU_LABEL,
-} from "@/lib/portfolio/kredensial";
-import type { KategoriKredensial, MasaBerlakuJenis } from "@/lib/resume/types";
 import { PhotoInput } from "./PhotoInput";
 
 /**
@@ -649,514 +618,76 @@ export function SkillSection() {
 /* Proyek                                                                     */
 /* ========================================================================== */
 
-/**
- * Bagian Proyek - sekaligus rumah bagi portofolio berbasis pola.
- *
- * Selama bentuk portofolio belum dinyalakan, yang tampil persis formulir lama:
- * nama, peran, alamat, tanggal, poin. Itulah yang membuat CV yang sudah
- * tersimpan tidak berubah bentuk sendiri.
- *
- * Begitu dinyalakan, bentuk isiannya dibaca dari skema pola - bukan ditulis di
- * sini. Tidak ada satu pun percabangan bidang maupun pola di dalam komponen
- * ini; yang ada hanya perulangan atas `fieldInti`.
- */
 export function ProjectSection() {
   const { data, update, setHighlight } = useEditor();
   const { t } = useI18n();
-  const teks = t.portofolio;
   const items = data.projects;
-  const profil = data.profilPortofolio;
-  const bagian = data.portofolio;
-  const schema = skemaBagian(profil, "project");
-  const kamus = saranKamus(profil.bidangKamus);
-  const efekJenjang = EFEK_JENJANG[profil.jenjang];
 
-  const set = (index: number, patch: Partial<ProjectItem>) =>
+  const set = (index: number, patch: Partial<(typeof items)[number]>) =>
     update({ projects: replaceAt(items, index, { ...items[index], ...patch }) });
-
-  /* ---------------------------------------------------------------- */
-  /* Bentuk lama                                                       */
-  /* ---------------------------------------------------------------- */
-
-  if (!bagian.aktif) {
-    return (
-      <div className="space-y-3">
-        {items.map((item, index) => (
-          <EntryCard
-            key={item.id}
-            index={index}
-            total={items.length}
-            label={t.form.projectLabel}
-            onFocusCapture={() => setHighlight(`project:${item.id}`)}
-            onMoveUp={() => update({ projects: moveItem(items, index, index - 1) })}
-            onMoveDown={() => update({ projects: moveItem(items, index, index + 1) })}
-            onRemove={() => update({ projects: removeAt(items, index) })}
-          >
-            <Row>
-              <Field label={t.form.projectName} required>
-                <Input
-                  value={item.name}
-                  onChange={(e) => set(index, { name: e.target.value })}
-                  placeholder={t.form.projectNamePh}
-                />
-              </Field>
-              <Field label={t.form.projectRole}>
-                <Input
-                  value={item.role}
-                  onChange={(e) => set(index, { role: e.target.value })}
-                  placeholder={t.form.projectRolePh}
-                />
-              </Field>
-            </Row>
-
-            <Field label={t.form.projectUrl} hint={t.form.projectUrlHint}>
-              <Input
-                value={item.url}
-                onChange={(e) => set(index, { url: e.target.value })}
-                placeholder={t.form.projectUrlPh}
-              />
-            </Field>
-
-            <Row>
-              <MonthInput
-                label={t.form.startDate}
-                value={item.startDate}
-                onChange={(value) => set(index, { startDate: value })}
-              />
-              <MonthInput
-                label={t.form.endDate}
-                value={item.endDate}
-                onChange={(value) => set(index, { endDate: value })}
-              />
-            </Row>
-
-            <BulletEditor
-              bullets={item.bullets}
-              onChange={(bullets) => set(index, { bullets })}
-            />
-          </EntryCard>
-        ))}
-
-        <AddButton
-          label={t.form.projectAdd}
-          onClick={() => update({ projects: [...items, emptyProject()] })}
-        />
-
-        <div className="rounded-lg border border-ink-200 bg-ink-50/60 p-3">
-          <Switch
-            checked={false}
-            onChange={() => update({ portofolio: { ...bagian, aktif: true } })}
-            label={teks.shapeToggle}
-            hint={teks.shapeToggleHint}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  /* ---------------------------------------------------------------- */
-  /* Bentuk portofolio                                                 */
-  /* ---------------------------------------------------------------- */
-
-  const bawah = efekJenjang.batasBawahItem ?? schema.rentangItemIdeal[0];
-  const atas = kamus?.rentangItemIdeal?.[1] ?? schema.rentangItemIdeal[1];
-
-  /*
-    Berapa item yang pemberi kerjanya cocok persis dengan salah satu entri
-    pengalaman kerja. Inilah syarat tawaran penggabungan muncul - bukan
-    penggabungannya sendiri, yang tetap menunggu keputusan pengguna.
-  */
-  const cocokInduk = items.filter((item) =>
-    data.experiences.some(
-      (e) => e.company.trim() && e.company.trim() === item.konteks.trim(),
-    ),
-  );
-
-  const nyalakanGabung = () => {
-    // Pencocokan otomatis hanya untuk yang namanya sama persis. Sisanya
-    // dibiarkan tanpa induk supaya penggunanya sendiri yang memilih.
-    const projects = items.map((item) => {
-      if (item.parentPengalamanId) return item;
-      const induk = data.experiences.find(
-        (e) => e.company.trim() && e.company.trim() === item.konteks.trim(),
-      );
-      return induk ? { ...item, parentPengalamanId: induk.id } : item;
-    });
-    update({ projects, portofolio: { ...bagian, gabungKePengalaman: true } });
-  };
-
-  const tambahItem = (item: ProjectItem) =>
-    update({ projects: [...items, item] });
 
   return (
     <div className="space-y-3">
-      {/* ---------------- Pengaturan bagian ---------------- */}
-      <div className="space-y-3 rounded-lg border border-ink-200 bg-ink-50/60 p-3">
-        <Field label={teks.headingLabel} hint={teks.headingHint}>
-          <Select
-            value={bagian.judulPilihan}
-            onChange={(e) =>
-              update({ portofolio: { ...bagian, judulPilihan: e.target.value } })
-            }
-          >
-            <option value="">{schema.headingCV}</option>
-            {schema.headingAlternatif.map((judul) => (
-              <option key={judul} value={judul}>
-                {judul}
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        <Switch
-          checked={bagian.gabungKePengalaman}
-          onChange={(checked) =>
-            checked
-              ? nyalakanGabung()
-              : update({ portofolio: { ...bagian, gabungKePengalaman: false } })
-          }
-          label={teks.mergeLabel}
-          hint={teks.mergeHint}
-        />
-
-        {/*
-          Tawaran penggabungan. Ditampilkan sebagai tawaran, bukan dikerjakan
-          sendiri: yang berubah bukan tampilan melainkan tempat separuh isi CV
-          seseorang tercetak, dan perubahan sebesar itu tanpa ia sadari adalah
-          kejutan yang buruk.
-        */}
-        {!bagian.gabungKePengalaman && cocokInduk.length > 0 && (
-          <div className="rounded-lg border border-brand-200 bg-white p-3">
-            <p className="text-[11px] leading-relaxed text-ink-700">
-              {teks.mergeOffer
-                .replace("{n}", String(cocokInduk.length))
-                .replace("{total}", String(items.length))}
-            </p>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              <div className="rounded-md border border-ink-200 p-2">
-                <p className="text-[10px] font-semibold tracking-wide text-ink-500 uppercase">
-                  {teks.mergeBefore}
-                </p>
-                <p className="mt-0.5 text-[11px] text-ink-600">
-                  {schema.headingCV} - {teks.mergePreviewSeparate}
-                </p>
-              </div>
-              <div className="rounded-md border border-brand-300 p-2">
-                <p className="text-[10px] font-semibold tracking-wide text-ink-500 uppercase">
-                  {teks.mergeAfter}
-                </p>
-                <p className="mt-0.5 text-[11px] text-ink-600">
-                  {teks.mergePreviewNested}
-                </p>
-              </div>
-            </div>
-            <div className="mt-2">
-              <Button size="sm" onClick={nyalakanGabung}>
-                {teks.mergeAccept}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <Switch
-          checked={bagian.modeRedaksi}
-          onChange={(checked) =>
-            update({ portofolio: { ...bagian, modeRedaksi: checked } })
-          }
-          label={teks.redactionLabel}
-          hint={teks.redactionHint}
-        />
-        {/*
-          Batas Mode Redaksi dinyatakan permanen dan tidak dapat ditutup -
-          bukan hanya saat sakelarnya menyala. Orang yang perlu membacanya
-          justru yang sedang menimbang menyalakannya, dan keterangan yang
-          hanya muncul setelah menyala datang terlambat. Menyamarkan setengah
-          lebih berbahaya daripada tidak menyamarkan sama sekali, karena
-          penggunanya mengira sudah aman.
-        */}
-        <p className="text-[11px] leading-relaxed text-ink-500">
-          {teks.redactionLimit}
-        </p>
-        {bagian.modeRedaksi && (
-          <p className="rounded-md bg-ink-100 px-2.5 py-1.5 text-[11px] leading-relaxed text-ink-600">
-            {teks.redactionNote}
-          </p>
-        )}
-
-        <Switch
-          checked
-          onChange={() => update({ portofolio: { ...bagian, aktif: false } })}
-          label={teks.shapeToggle}
-          hint={teks.shapeToggleHint}
-        />
-
-        <p className="text-[11px] text-ink-500">
-          {atas === null
-            ? teks.itemRangeOpen.replace("{min}", String(bawah))
-            : teks.itemRange
-                .replace("{min}", String(bawah))
-                .replace("{max}", String(atas))}
-        </p>
-      </div>
-
-      {/* ---------------- Peringatan pola dan bidang ---------------- */}
-      {(schema.peringatan.length > 0 ||
-        (kamus?.peringatanTambahan ?? []).length > 0) && (
-        <Callout tone="warn">
-          <ul className="list-disc space-y-1 pl-4">
-            {schema.peringatan.map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-            {(kamus?.peringatanTambahan ?? []).map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ul>
-        </Callout>
-      )}
-
-      {/* ---------------- Blok agregat ---------------- */}
-      {schema.blokAgregat && (
-        <BlokAgregat
-          def={schema.blokAgregat}
-          isi={bagian.agregat}
-          onChange={(agregat) => update({ portofolio: { ...bagian, agregat } })}
-        />
-      )}
-
-      {/* ---------------- Daftar item ---------------- */}
-      {items.map((item, index) => {
-        const induk = data.experiences.find(
-          (e) => e.id === item.parentPengalamanId,
-        );
-        const tanggalBermasalah = induk ? tanggalDiLuarInduk(item, induk) : false;
-        const arsip = isiArsip(item);
-
-        return (
-          <EntryCard
-            key={item.id}
-            index={index}
-            total={items.length}
-            label={schema.labelItem}
-            onFocusCapture={() => setHighlight(`project:${item.id}`)}
-            onMoveUp={() => update({ projects: moveItem(items, index, index - 1) })}
-            onMoveDown={() => update({ projects: moveItem(items, index, index + 1) })}
-            onRemove={() => update({ projects: removeAt(items, index) })}
-          >
-            <Row>
-              <Field label={t.form.projectName} required>
-                <Input
-                  value={item.name}
-                  onChange={(e) => set(index, { name: e.target.value })}
-                  placeholder={schema.contoh.judul}
-                />
-              </Field>
-              <Field label={t.form.projectRole}>
-                <Input
-                  value={item.role}
-                  onChange={(e) => set(index, { role: e.target.value })}
-                  placeholder={schema.contoh.peran}
-                />
-              </Field>
-            </Row>
-
-            <Row>
-              <Field label={teks.contextLabel} hint={teks.contextHint} required>
-                <Input
-                  value={item.konteks}
-                  onChange={(e) => set(index, { konteks: e.target.value })}
-                  placeholder={schema.contoh.konteks}
-                />
-              </Field>
-              <Field label={teks.locationLabel}>
-                <Input
-                  value={item.lokasi}
-                  onChange={(e) => set(index, { lokasi: e.target.value })}
-                  placeholder={t.form.cityPh}
-                />
-              </Field>
-            </Row>
-
-            <Row>
-              <MonthInput
-                label={t.form.startDate}
-                value={item.startDate}
-                onChange={(value) => set(index, { startDate: value })}
-              />
-              <MonthInput
-                label={t.form.endDate}
-                value={item.endDate}
-                onChange={(value) => set(index, { endDate: value })}
-              />
-            </Row>
-
-            {bagian.gabungKePengalaman && (
-              <Field label={teks.parentLabel}>
-                <Select
-                  value={item.parentPengalamanId}
-                  onChange={(e) =>
-                    set(index, { parentPengalamanId: e.target.value })
-                  }
-                >
-                  <option value="">{teks.parentNone}</option>
-                  {data.experiences.map((e) => (
-                    <option key={e.id} value={e.id}>
-                      {e.company || e.jobTitle}
-                    </option>
-                  ))}
-                </Select>
-                {tanggalBermasalah && (
-                  <div className="mt-1.5 rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5">
-                    <p className="text-[11px] leading-relaxed text-ink-700">
-                      {teks.parentDateWarn}
-                    </p>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="mt-1"
-                      onClick={() => set(index, { parentPengalamanId: "" })}
-                    >
-                      {teks.parentDetach}
-                    </Button>
-                  </div>
-                )}
-              </Field>
-            )}
-
-            <Field
-              label={teks.summaryLabel}
-              hint={`${teks.summaryHint} (${item.ringkasan.length}/160)`}
-            >
+      {items.map((item, index) => (
+        <EntryCard
+          key={item.id}
+          index={index}
+          total={items.length}
+          label={t.form.projectLabel}
+          onFocusCapture={() => setHighlight(`project:${item.id}`)}
+          onMoveUp={() => update({ projects: moveItem(items, index, index - 1) })}
+          onMoveDown={() => update({ projects: moveItem(items, index, index + 1) })}
+          onRemove={() => update({ projects: removeAt(items, index) })}
+        >
+          <Row>
+            <Field label={t.form.projectName} required>
               <Input
-                value={item.ringkasan}
-                maxLength={160}
-                onChange={(e) => set(index, { ringkasan: e.target.value })}
-                placeholder={schema.contoh.ringkasan}
+                value={item.name}
+                onChange={(e) => set(index, { name: e.target.value })}
+                placeholder={t.form.projectNamePh}
               />
             </Field>
-
-            <div>
-              <BulletEditor
-                bullets={item.bullets}
-                onChange={(bullets) => set(index, { bullets })}
+            <Field label={t.form.projectRole}>
+              <Input
+                value={item.role}
+                onChange={(e) => set(index, { role: e.target.value })}
+                placeholder={t.form.projectRolePh}
               />
-              <div className="mt-1 flex flex-wrap gap-1.5">
-                {item.bullets
-                  .filter((b) => b.trim())
-                  .map((b, i) => (
-                    <span
-                      key={i}
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px]",
-                        adaAngka(b)
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-ink-100 text-ink-600",
-                      )}
-                    >
-                      {i + 1}. {b.length} - {adaAngka(b) ? teks.hasNumber : teks.noNumber}
-                    </span>
-                  ))}
-              </div>
-              <div className="mt-2">
-                <PeriksaBahasa
-                  kalimat={[...item.bullets, item.ringkasan]}
-                  wajib={schema.aturanBahasa === "orang-pertama-wajib"}
-                />
-              </div>
-            </div>
+            </Field>
+          </Row>
 
-            <TautanEditor
-              tautan={item.tautan}
+          <Field label={t.form.projectUrl} hint={t.form.projectUrlHint}>
+            <Input
+              value={item.url}
+              onChange={(e) => set(index, { url: e.target.value })}
               placeholder={t.form.projectUrlPh}
-              onChange={(tautan) => set(index, { tautan })}
             />
+          </Field>
 
-            <Lipat
-              judul={teks.coreBlock}
-              jumlah={Object.keys(item.inti).length}
-              bukaAwal
-            >
-              {schema.fieldInti
-                .filter((field) => field.simpanDi !== "tautan")
-                .map((field) => (
-                  <FieldIntiInput
-                    key={field.key}
-                    field={field}
-                    nilai={item.inti[field.key]}
-                    saranTambahan={kamus?.saranIsiFieldInti?.[field.key]}
-                    onChange={(nilai) =>
-                      set(index, { inti: { ...item.inti, [field.key]: nilai } })
-                    }
-                  />
-                ))}
-            </Lipat>
+          <Row>
+            <MonthInput
+              label={t.form.startDate}
+              value={item.startDate}
+              onChange={(value) => set(index, { startDate: value })}
+            />
+            <MonthInput
+              label={t.form.endDate}
+              value={item.endDate}
+              onChange={(value) => set(index, { endDate: value })}
+            />
+          </Row>
 
-            <Lipat judul={teks.extraBlock} jumlah={item.detailTambahan.length}>
-              <DetailTambahanEditor
-                detail={item.detailTambahan}
-                saran={kamus?.saranDetailTambahan ?? []}
-                onChange={(detailTambahan) => set(index, { detailTambahan })}
-              />
-            </Lipat>
+          <BulletEditor
+            bullets={item.bullets}
+            onChange={(bullets) => set(index, { bullets })}
+          />
+        </EntryCard>
+      ))}
 
-            {arsip.length > 0 && (
-              <div className="rounded-lg border border-dashed border-ink-300 p-2.5">
-                <p className="text-[11px] font-semibold text-ink-700">
-                  {teks.archiveTitle}
-                </p>
-                <ul className="mt-1 space-y-1">
-                  {arsip.map((a) => (
-                    <li
-                      key={a.kunci}
-                      className="flex items-center justify-between gap-2 text-[11px] text-ink-600"
-                    >
-                      <span className="truncate">{a.teks}</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() =>
-                          update({
-                            projects: replaceAt(
-                              items,
-                              index,
-                              pulihkanKeDetail(item, a.kunci, a.kunci),
-                            ),
-                          })
-                        }
-                      >
-                        {teks.archiveRestore}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <Lipat judul={teks.privateBlock} keterangan={teks.privateBlockHint}>
-              <BlokPribadi
-                verifikator={item.verifikator}
-                refleksi={item.refleksi}
-                onVerifikator={(verifikator) => set(index, { verifikator })}
-                onRefleksi={(refleksi) => set(index, { refleksi })}
-              />
-            </Lipat>
-          </EntryCard>
-        );
-      })}
-
-      <div className="grid gap-2 sm:grid-cols-2">
-        <AddButton
-          label={`${teks.addItem} ${schema.labelItem}`}
-          onClick={() => tambahItem(emptyProject())}
-        />
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => tambahItem(buatContohItem(data, schema))}
-        >
-          <Sparkles size={14} />
-          {teks.fillExample}
-        </Button>
-      </div>
+      <AddButton
+        label={t.form.projectAdd}
+        onClick={() => update({ projects: [...items, emptyProject()] })}
+      />
     </div>
   );
 }
@@ -1168,9 +699,7 @@ export function ProjectSection() {
 export function CertificationSection() {
   const { data, update, setHighlight } = useEditor();
   const { t } = useI18n();
-  const teks = t.portofolio;
   const items = data.certifications;
-  const kamus = saranKamus(data.profilPortofolio.bidangKamus);
 
   const set = (index: number, patch: Partial<(typeof items)[number]>) =>
     update({
@@ -1209,84 +738,6 @@ export function CertificationSection() {
               placeholder={t.form.certIssuerPh}
             />
           </Field>
-
-          {/*
-            Empat kategori kredensial, dan bentuk masa berlakunya.
-
-            Yang paling menentukan justru pilihan "seumur hidup": sejak
-            UU 17/2023, STR Definitif memang tidak lagi punya tanggal
-            kedaluwarsa, dan formulir yang hanya menerima tanggal menuntut
-            penggunanya mengarang tanggal yang tidak ada.
-          */}
-          <Row>
-            <Field label={teks.credCategory} hint={teks.credCategoryHint}>
-              <Select
-                value={item.kategori}
-                onChange={(e) =>
-                  set(index, {
-                    kategori: e.target.value as KategoriKredensial | "",
-                  })
-                }
-              >
-                <option value="">-</option>
-                {(
-                  Object.keys(LABEL_KATEGORI_KREDENSIAL) as KategoriKredensial[]
-                ).map((kategori) => (
-                  <option key={kategori} value={kategori}>
-                    {LABEL_KATEGORI_KREDENSIAL[kategori]}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-            <Field label={teks.credValidity} hint={teks.credValidityHint}>
-              <Select
-                value={item.masaBerlaku}
-                onChange={(e) =>
-                  set(index, {
-                    masaBerlaku: e.target.value as MasaBerlakuJenis | "",
-                  })
-                }
-              >
-                <option value="">-</option>
-                {(Object.keys(MASA_BERLAKU_LABEL) as MasaBerlakuJenis[]).map(
-                  (jenis) => (
-                    <option key={jenis} value={jenis}>
-                      {MASA_BERLAKU_LABEL[jenis]}
-                    </option>
-                  ),
-                )}
-              </Select>
-            </Field>
-          </Row>
-
-          {item.kategori === "berjenjang" && (
-            <Row>
-              <Field label={teks.credLevel}>
-                <Input
-                  value={item.jenjang}
-                  placeholder={teks.credLevelPh}
-                  onChange={(e) => set(index, { jenjang: e.target.value })}
-                />
-              </Field>
-              <Field label={teks.credClass}>
-                <Input
-                  value={item.klasifikasi}
-                  placeholder={teks.credClassPh}
-                  onChange={(e) => set(index, { klasifikasi: e.target.value })}
-                />
-              </Field>
-            </Row>
-          )}
-
-          {item.kategori === "kompetensi" && (
-            <Field label={teks.credSubType}>
-              <Input
-                value={item.subTipe}
-                placeholder={teks.credSubTypePh}
-                onChange={(e) => set(index, { subTipe: e.target.value })}
-              />
-            </Field>
-          )}
 
           <Row>
             <MonthInput
@@ -1327,54 +778,6 @@ export function CertificationSection() {
           update({ certifications: [...items, emptyCertification()] })
         }
       />
-
-      {/*
-        Kredensial yang lazim di bidangnya, langsung dari kamus.
-
-        Keterangan masa berlakunya ikut apa adanya - termasuk yang berbunyi
-        "ditetapkan per skema oleh masing-masing LSP", karena itu memang
-        jawabannya. Menuliskan "3 tahun" untuk seluruh sertifikat BNSP akan
-        salah pada sebagian besar di antaranya.
-      */}
-      {(kamus?.kredensial ?? []).length > 0 && (
-        <div>
-          <p className="mb-1.5 text-[11px] font-medium text-ink-700">
-            {teks.credSuggest}
-          </p>
-          <div className="flex flex-wrap gap-1">
-            {(kamus?.kredensial ?? []).map((k) => (
-              <button
-                key={k.nama}
-                type="button"
-                title={`${k.penerbit} - ${k.masaBerlaku}`}
-                onClick={() =>
-                  update({
-                    certifications: [
-                      ...items,
-                      {
-                        ...emptyCertification(),
-                        name: k.nama,
-                        issuer: k.penerbit,
-                        kategori: k.kategori,
-                        masaBerlaku: /seumur hidup/i.test(k.masaBerlaku)
-                          ? "seumur-hidup"
-                          : /tidak punya masa berlaku|tanpa masa berlaku/i.test(
-                                k.masaBerlaku,
-                              )
-                            ? "tidak-berlaku"
-                            : "",
-                      },
-                    ],
-                  })
-                }
-                className="max-w-full truncate rounded-full border border-ink-200 px-2 py-0.5 text-[11px] text-ink-600 transition-colors hover:bg-ink-50"
-              >
-                + {k.nama}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1609,23 +1012,6 @@ export function PublicationSection() {
       publications: replaceAt(items, index, { ...items[index], ...patch }),
     });
 
-  /*
-    Pola Publikasi & Kredit bekerja pada bagian ini, bukan pada bagian Proyek.
-    Bagian ini memang sudah berbentuk pola itu sejak semula - judul, penerbit,
-    tanggal, DOI - jadi yang ditambahkan hanya tiga hal yang belum punya rumah:
-    tipe luaran, peran penulis, dan tingkat indeksasinya.
-
-    Field yang sudah punya kotak isian sendiri di bawah (judul, penerbit,
-    alamat) sengaja dilewati, supaya isian yang sama tidak diminta dua kali.
-  */
-  const skemaPublikasi = skemaBagian(data.profilPortofolio, "publication");
-  const sudahAda = ["title", "publisher", "url"];
-  const fieldTambahan = data.portofolio.aktif
-    ? skemaPublikasi.fieldInti.filter(
-        (field) => field.simpanDi && !sudahAda.includes(field.simpanDi),
-      )
-    : [];
-
   return (
     <div className="space-y-3">
       {items.map((item, index) => (
@@ -1674,27 +1060,6 @@ export function PublicationSection() {
               />
             </Field>
           </Row>
-
-          {fieldTambahan.length > 0 && (
-            <Lipat judul={t.portofolio.publicationExtra} bukaAwal>
-              {fieldTambahan.map((field) => (
-                <FieldIntiInput
-                  key={field.key}
-                  field={field}
-                  nilai={
-                    (item[field.simpanDi as "tipeLuaran"] as string) ?? ""
-                  }
-                  onChange={(nilai) =>
-                    set(index, {
-                      [field.simpanDi as string]: Array.isArray(nilai)
-                        ? nilai.join(", ")
-                        : String(nilai),
-                    })
-                  }
-                />
-              ))}
-            </Lipat>
-          )}
 
           <Field label={t.form.pubUrl}>
             <Input

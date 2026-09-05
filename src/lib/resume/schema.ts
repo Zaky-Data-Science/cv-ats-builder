@@ -1,9 +1,4 @@
 import { z } from "zod";
-import {
-  SEMUA_JENJANG,
-  SEMUA_POLA,
-  SEMUA_TUJUAN,
-} from "@/lib/portfolio/types";
 import { ALL_SECTION_KEYS } from "./sections";
 
 /**
@@ -55,104 +50,6 @@ export const proficiencySchema = z.enum([
 export const sectionKeySchema = z.enum(
   ALL_SECTION_KEYS as [string, ...string[]],
 );
-
-/* -------------------------------------------------------------------------- */
-/* Portofolio berbasis pola                                                   */
-/* -------------------------------------------------------------------------- */
-
-/*
-  Seluruh isian portofolio punya nilai bawaan, tanpa kecuali.
-
-  Itu yang membuat CV yang disimpan sebelum fitur ini ada tetap terbuka apa
-  adanya: field yang belum pernah ditulis diisi bawaannya saat dibaca, bukan
-  ditolak sebagai payload tidak lengkap. Aturan yang sama berlaku untuk berkas
-  JSON hasil ekspor versi lama, yang tidak pernah lewat basis data sama sekali.
-*/
-
-export const polaSlugSchema = z.enum(SEMUA_POLA as [string, ...string[]]);
-export const tujuanCvSchema = z.enum(SEMUA_TUJUAN as [string, ...string[]]);
-export const jenjangSchema = z.enum(SEMUA_JENJANG as [string, ...string[]]);
-
-/** "" berarti item mengikuti pola CV-nya. */
-const polaOverrideSchema = z.enum([
-  "",
-  ...SEMUA_POLA,
-] as [string, ...string[]]);
-
-const jenjangKkniSchema = z
-  .union([
-    z.literal(0),
-    z.literal(1),
-    z.literal(2),
-    z.literal(3),
-    z.literal(4),
-    z.literal(5),
-    z.literal(6),
-    z.literal(7),
-    z.literal(8),
-    z.literal(9),
-  ])
-  .default(0);
-
-export const profilPortofolioSchema = z.object({
-  pola: polaSlugSchema.default("umum"),
-  tujuan: tujuanCvSchema.default("melamar-kerja"),
-  jenjang: jenjangSchema.default("1-3-tahun"),
-  jurusan: str(120),
-  bidangKamus: str(60),
-  rumpunIlmu: str(60),
-  industriKBLI: str(120),
-  jenjangKKNI: jenjangKkniSchema,
-  sudahDitanya: z.boolean().default(false),
-});
-
-export const bagianPortofolioSchema = z.object({
-  aktif: z.boolean().default(false),
-  judulPilihan: str(80),
-  gabungKePengalaman: z.boolean().default(false),
-  maksItem: z.number().int().min(1).max(50).default(6),
-  modeRedaksi: z.boolean().default(false),
-  agregat: z
-    .object({
-      ambangSlug: str(60),
-      perRanah: z.record(z.string().max(60), z.number().min(0).max(100000)).default({}),
-    })
-    .default({ ambangSlug: "", perRanah: {} }),
-});
-
-const tautanSchema = z.object({
-  label: str(60),
-  url: str(300),
-});
-
-const detailTambahanSchema = z.object({
-  label: str(80),
-  nilai: str(200),
-  satuan: str(40),
-  prioritas: z.number().int().min(1).max(99).default(1),
-});
-
-/*
-  Nama, jabatan, dan hubungan seorang **pihak ketiga**.
-
-  Batas panjangnya sengaja pendek: field ini bukan tempat menyalin surat
-  rekomendasi. Yang dibutuhkan hanya cukup untuk pengguna sendiri mengingat
-  siapa yang dapat memastikan kebenaran itemnya - dan makin sedikit data
-  pribadi orang lain yang disimpan, makin kecil kerugiannya bila terjadi apa-apa.
-*/
-const verifikatorSchema = z.object({
-  nama: str(120),
-  jabatan: str(120),
-  hubungan: str(120),
-});
-
-const intiValueSchema = z.union([
-  z.string().max(2000),
-  z.number(),
-  z.array(z.string().max(500)).max(20),
-]);
-
-const intiSchema = z.record(z.string().max(60), intiValueSchema).default({});
 
 export const personalInfoSchema = z.object({
   fullName: str(120),
@@ -236,25 +133,6 @@ export const projectSchema = z.object({
   startDate: monthStr,
   endDate: monthStr,
   bullets,
-
-  // Perluasan portofolio. Semuanya bernilai bawaan agar entri proyek yang
-  // ditulis sebelum fitur ini ada tetap sah tanpa disentuh.
-  konteks: str(160),
-  lokasi: str(80),
-  ringkasan: str(200),
-  tautan: z.array(tautanSchema).max(2).default([]),
-  kataKunci: z.array(z.string().max(60)).max(30).default([]),
-  inti: intiSchema,
-  detailTambahan: z.array(detailTambahanSchema).max(6).default([]),
-  verifikator: verifikatorSchema.default({
-    nama: "",
-    jabatan: "",
-    hubungan: "",
-  }),
-  refleksi: z.string().max(1000).default(""),
-  polaOverride: polaOverrideSchema.default(""),
-  parentPengalamanId: str(64),
-  arsip: intiSchema,
 });
 
 export const certificationSchema = z.object({
@@ -265,18 +143,6 @@ export const certificationSchema = z.object({
   expiryDate: monthStr,
   credentialId: str(120),
   url: str(300),
-
-  // Empat kategori kredensial, dan bentuk masa berlakunya. Keduanya bernilai
-  // bawaan "" supaya kredensial yang ditulis sebelum fitur ini tetap sah.
-  kategori: z
-    .enum(["", "lisensi-praktik", "berjenjang", "sektoral", "kompetensi"])
-    .default(""),
-  masaBerlaku: z
-    .enum(["", "seumur-hidup", "tanggal", "tidak-berlaku"])
-    .default(""),
-  jenjang: str(120),
-  klasifikasi: str(120),
-  subTipe: str(60),
 });
 
 export const organizationSchema = z.object({
@@ -311,11 +177,6 @@ export const publicationSchema = z.object({
   date: monthStr,
   url: str(300),
   doi: str(120),
-
-  // Perluasan pola Publikasi & Kredit.
-  tipeLuaran: str(60),
-  peranSaya: str(60),
-  indeksasiTier: str(60),
 });
 
 export const customEntrySchema = z.object({
@@ -355,28 +216,6 @@ export const resumeDataSchema = z.object({
   marginYMm: z.number().int().min(8).max(30).nullable().default(null),
   marginXMm: z.number().int().min(8).max(30).nullable().default(null),
   sectionOrder: z.array(sectionKeySchema).max(20).default([]),
-  // Dokumen yang ditulis sebelum kolom ini ada bernilai 1. Angkanya dinaikkan
-  // saat dibaca, dan menaikkannya tidak boleh mengubah satu pun isian.
-  schemaVersion: z.number().int().min(1).default(1),
-  profilPortofolio: profilPortofolioSchema.default({
-    pola: "umum",
-    tujuan: "melamar-kerja",
-    jenjang: "1-3-tahun",
-    jurusan: "",
-    bidangKamus: "",
-    rumpunIlmu: "",
-    industriKBLI: "",
-    jenjangKKNI: 0,
-    sudahDitanya: false,
-  }),
-  portofolio: bagianPortofolioSchema.default({
-    aktif: false,
-    judulPilihan: "",
-    gabungKePengalaman: false,
-    maksItem: 6,
-    modeRedaksi: false,
-    agregat: { ambangSlug: "", perRanah: {} },
-  }),
   personalInfo: personalInfoSchema,
   experiences: z.array(experienceSchema).max(40).default([]),
   educations: z.array(educationSchema).max(20).default([]),
@@ -392,13 +231,7 @@ export const resumeDataSchema = z.object({
 
 export type ResumeDataInput = z.infer<typeof resumeDataSchema>;
 
-/**
- * Berkas ekspor JSON. schemaVersion menjaga kompatibilitas berkas lama.
- *
- * Berkas bernomor lebih kecil dari VERSI_SKEMA_CV tetap diterima - itulah
- * gunanya nomor ini. Yang ditolak hanya berkas dari versi aplikasi yang lebih
- * baru, karena isinya bisa saja memuat bentuk yang belum dikenal di sini.
- */
+/** Berkas ekspor JSON. schemaVersion menjaga kompatibilitas berkas lama. */
 export const resumeFileSchema = z.object({
   schemaVersion: z.number().int().min(1).default(1),
   exportedAt: z.string().optional(),

@@ -53,36 +53,20 @@ export function runAtsEngineTests(): void {
   const twoPages = analyzeResume(sample, "", 2);
   const fourPages = analyzeResume(sample, "", 4);
 
-  /*
-    Panjang halaman tidak lagi menurunkan nilai apa pun.
-
-    Yang tersisa hanya keterangan berapa halaman CV-nya, bernada netral. Ini
-    kebalikan dari perilaku sebelumnya, dan pembalikannya disengaja: tidak ada
-    dokumentasi pengurai mana pun yang menyebut batas halaman, dan
-    satu-satunya eksperimen terkontrol yang tersedia justru menemukan CV dua
-    halaman lebih disukai perekrut.
-  */
   check(
-    "CV dua halaman memperoleh keterangan panjang, bukan teguran",
-    twoPages.suggestions.some(
-      (s) => s.dimension === "structure" && /2 halaman/i.test(s.message),
-    ) &&
-      !twoPages.suggestions.some(
-        (s) => s.dimension === "structure" && /satu halaman/i.test(s.fix),
-      ),
+    "CV satu halaman tidak memperoleh temuan panjang",
+    !onePage.suggestions.some((s) => s.dimension === "structure" && /halaman/i.test(s.message)),
   );
   check(
-    "keterangan panjang tidak pernah bernada peringatan",
-    [twoPages, fourPages].every((hasil) =>
-      hasil.suggestions
-        .filter((s) => s.dimension === "structure" && /halaman/i.test(s.message))
-        .every((s) => s.severity === "info"),
+    "CV dua halaman tetap disarankan dipadatkan jadi satu",
+    twoPages.suggestions.some(
+      (s) => s.dimension === "structure" && /satu halaman/i.test(s.fix),
     ),
   );
   check(
-    "skor tidak lagi bergerak karena jumlah halaman",
-    onePage.score === twoPages.score && twoPages.score === fourPages.score,
-    `${onePage.score} = ${twoPages.score} = ${fourPages.score}`,
+    "skor menurun seiring bertambahnya halaman",
+    onePage.score > twoPages.score && twoPages.score > fourPages.score,
+    `${onePage.score} > ${twoPages.score} > ${fourPages.score}`,
   );
 
   /* ------------------------------------------------------------------ */
@@ -107,27 +91,10 @@ Kualifikasi:
     "kecocokan kata kunci dihitung saat iklan lowongan ditempelkan",
     matched.dimensions.find((d) => d.key === "keywordMatch")?.applicable === true,
   );
-  /*
-    Dua angka yang terpisah, dan pemisahannya diuji di sini.
-
-    Kecocokan Lowongan berubah mengikuti iklan yang ditempel; Kekuatan &
-    Keterbacaan tidak - CV yang sama tidak menjadi lebih buruk hanya karena
-    iklan yang dibandingkan kebetulan meminta hal lain.
-  */
   check(
-    "Kecocokan Lowongan lebih tinggi untuk iklan yang memang sebidang",
-    (matched.match ?? 0) > (mismatched.match ?? 0),
-    `${matched.match} vs ${mismatched.match}`,
-  );
-  check(
-    "Kekuatan & Keterbacaan tidak ikut bergerak saat iklannya diganti",
-    matched.strength === mismatched.strength,
-    `${matched.strength} = ${mismatched.strength}`,
-  );
-  equal(
-    "Kecocokan Lowongan kosong selama iklannya belum ditempel",
-    good.match,
-    null,
+    "CV frontend lebih cocok ke lowongan frontend daripada backend",
+    matched.score > mismatched.score,
+    `${matched.score} vs ${mismatched.score}`,
   );
 
   /* ------------------------------------------------------------------ */

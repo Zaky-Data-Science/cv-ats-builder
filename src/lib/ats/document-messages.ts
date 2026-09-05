@@ -87,11 +87,6 @@ export interface DocMessages {
   lengthBad: (pages: number) => string;
   lengthFixTwo: string;
   lengthFixLong: string;
-  /* Keterangan panjang halaman yang tidak menghukum apa pun. */
-  lengthNote: (pages: number) => string;
-  lengthNoteFix: string;
-  bahasaBerbeda: (bahasaCv: string, bahasaIklan: string) => string;
-  bahasaBerbedaFix: string;
   orderOk: string;
   orderBad: string;
   orderFix: string;
@@ -214,14 +209,6 @@ const id: DocMessages = {
   firstPersonFix:
     "Hilangkan kata \"saya\". Konvensi baku penulisan CV menghilangkan subjek karena seluruh isinya memang tentang pelamar.",
 
-  lengthNote: (pages) =>
-    pages === 1 ? "Panjangnya satu halaman." : `Panjangnya ${pages} halaman.`,
-  lengthNoteFix:
-    "Panjang halaman tidak memengaruhi nilai. Pengurai bekerja atas teks hasil konversi, tempat \"halaman\" sudah tidak ada lagi - yang menentukan tetap isinya.",
-  bahasaBerbeda: (bahasaCv, bahasaIklan) =>
-    `CV ini berbahasa ${bahasaCv}, iklan lowongannya berbahasa ${bahasaIklan}.`,
-  bahasaBerbedaFix:
-    "Penemuan kandidat berjalan lewat pencocokan kata demi kata, jadi CV berbahasa berbeda gagal pada kata seperti \"pengalaman\" atau \"penjualan\". Nama perkakas dan sertifikasi tetap Inggris di kedua kasus.",
   lengthOk: "Panjangnya satu halaman - ideal.",
   lengthTwo: "Panjangnya dua halaman.",
   lengthBad: (pages) => `Panjangnya ${pages} halaman.`,
@@ -358,14 +345,6 @@ const en: DocMessages = {
   firstPersonFix:
     "Drop the pronouns. The standard CV convention omits the subject, because the whole document is about the applicant.",
 
-  lengthNote: (pages) =>
-    pages === 1 ? "One page long." : `${pages} pages long.`,
-  lengthNoteFix:
-    "Page count does not affect the score. Parsers work on converted text, where \"pages\" no longer exist - what counts is the content.",
-  bahasaBerbeda: (bahasaCv, bahasaIklan) =>
-    `This CV is written in ${bahasaCv}, the job ad in ${bahasaIklan}.`,
-  bahasaBerbedaFix:
-    "Candidate search runs on word-for-word matching, so a CV in the other language misses words like \"experience\" or \"sales\". Tool and certification names stay in English either way.",
   lengthOk: "One page long - ideal.",
   lengthTwo: "Two pages long.",
   lengthBad: (pages) => `${pages} pages long.`,

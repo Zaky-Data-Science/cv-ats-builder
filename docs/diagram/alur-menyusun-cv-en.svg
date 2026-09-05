@@ -56,8 +56,8 @@
 <text x="308" y="1092" font-size="12.5" fill="#52525a">A4, Letter, Legal or F4 - continuous, or cut into pages.</text>
 <rect x="290" y="1156" width="420" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
 <text x="308" y="1180" font-size="10" letter-spacing="0.08em" fill="#52525a">PROCESS</text>
-<text x="308" y="1197" font-size="15" font-weight="600" fill="#0a0a0b">Compute the CV score</text>
-<text x="308" y="1220" font-size="12.5" fill="#52525a">Six weighted dimensions, computed in the browser with no</text>
+<text x="308" y="1197" font-size="15" font-weight="600" fill="#0a0a0b">Compute the ATS score</text>
+<text x="308" y="1220" font-size="12.5" fill="#52525a">Five weighted dimensions, computed in the browser with no</text>
 <text x="308" y="1236" font-size="12.5" fill="#52525a">network request.</text>
 <rect x="290" y="1300" width="420" height="60" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
 <text x="308" y="1324" font-size="10" letter-spacing="0.08em" fill="#52525a">DECISION</text>

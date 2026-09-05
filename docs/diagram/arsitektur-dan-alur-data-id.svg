@@ -1,59 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1274" viewBox="0 0 1000 1274" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1258" viewBox="0 0 1000 1258" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
 <title>Arsitektur dan alur data</title>
 <desc>Perhatikan dua jalur yang sengaja dipisah: penyusunan CV melewati server dan tersimpan permanen, sedangkan pembandingan berkas berhenti di peramban dan tidak pernah menyentuh basis data.</desc>
 <defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74747a"/></marker></defs>
-<rect width="1000" height="1274" fill="#ffffff"/>
+<rect width="1000" height="1258" fill="#ffffff"/>
 <text x="40" y="60" font-size="20" font-weight="700" fill="#0a0a0b">Arsitektur dan alur data</text>
 <line x1="40" y1="74" x2="960" y2="74" stroke="#e6e6e8" stroke-width="1"/>
-<path d="M 500 212 V 235 H 284 V 250" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<rect x="352" y="226" width="80" height="18" rx="9" fill="#ffffff"/>
-<text x="392" y="239" text-anchor="middle" font-size="11.5" fill="#52525a">unggah berkas</text>
-<path d="M 500 212 V 394" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<text x="508" y="311" font-size="11.5" fill="#52525a">HTTPS</text>
-<path d="M 500 484 V 507 H 716 V 522" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 484 V 628" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 734 V 772" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<text x="508" y="761" font-size="11.5" fill="#52525a">ya</text>
-<path d="M 500 840 V 878" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 484 V 757 H 716 V 1022" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 500 984 V 1166" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<path d="M 716 1128 V 1151 H 500 V 1166" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
-<rect x="290" y="114" width="420" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<path d="M 500 196 V 219 H 284 V 234" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="352" y="210" width="80" height="18" rx="9" fill="#ffffff"/>
+<text x="392" y="223" text-anchor="middle" font-size="11.5" fill="#52525a">unggah berkas</text>
+<path d="M 500 196 V 378" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="295" font-size="11.5" fill="#52525a">HTTPS</text>
+<path d="M 500 468 V 491 H 716 V 506" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 468 V 612" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 718 V 756" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<text x="508" y="745" font-size="11.5" fill="#52525a">ya</text>
+<path d="M 500 824 V 862" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 468 V 741 H 716 V 1006" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 500 968 V 1150" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<path d="M 716 1112 V 1135 H 500 V 1150" fill="none" stroke="#74747a" stroke-width="1.6" marker-end="url(#panah)"/>
+<rect x="290" y="114" width="420" height="82" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
 <text x="308" y="138" font-size="10" letter-spacing="0.08em" fill="#52525a">DI PERAMBAN</text>
 <text x="308" y="155" font-size="15" font-weight="600" fill="#0a0a0b">Peramban pengguna</text>
-<text x="308" y="178" font-size="12.5" fill="#52525a">Editor, pratinjau, mesin penilaian, dan pembaca berkas</text>
-<text x="308" y="194" font-size="12.5" fill="#52525a">CV.</text>
-<rect x="114" y="258" width="340" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
-<text x="132" y="282" font-size="10" letter-spacing="0.08em" fill="#52525a">DI PERAMBAN</text>
-<text x="132" y="299" font-size="15" font-weight="600" fill="#0a0a0b">Pembanding CV - berhenti di sini</text>
-<text x="132" y="322" font-size="12.5" fill="#52525a">Berkas tidak pernah meninggalkan perangkat</text>
-<text x="132" y="338" font-size="12.5" fill="#52525a">pengguna.</text>
-<rect x="290" y="402" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="308" y="426" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
-<text x="308" y="443" font-size="15" font-weight="600" fill="#0a0a0b">Server Next.js</text>
-<text x="308" y="466" font-size="12.5" fill="#52525a">Merender halaman dan melayani API. Berjalan di Vercel.</text>
-<rect x="546" y="530" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="564" y="554" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
-<text x="564" y="571" font-size="15" font-weight="600" fill="#0a0a0b">Auth.js - sesi dan Google OAuth</text>
-<rect x="290" y="636" width="420" height="98" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
-<text x="308" y="660" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
-<text x="308" y="677" font-size="15" font-weight="600" fill="#0a0a0b">Data ini milik pengguna tersebut?</text>
-<text x="308" y="700" font-size="12.5" fill="#52525a">Bukan miliknya menghasilkan 404, bukan 403 - agar</text>
-<text x="308" y="716" font-size="12.5" fill="#52525a">keberadaan sebuah id pun tidak bocor.</text>
-<rect x="290" y="780" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="308" y="804" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
-<text x="308" y="821" font-size="15" font-weight="600" fill="#0a0a0b">Prisma ORM</text>
-<rect x="290" y="886" width="420" height="98" rx="10" fill="#fafafa" stroke="#a1a1a8" stroke-width="2" stroke-dasharray="7 5"/>
-<text x="308" y="910" font-size="10" letter-spacing="0.08em" fill="#52525a">DATA</text>
-<text x="308" y="927" font-size="15" font-weight="600" fill="#0a0a0b">PostgreSQL (Neon)</text>
-<text x="308" y="950" font-size="12.5" fill="#52525a">16 tabel. Seluruh tabel anak terhapus bersama CV</text>
-<text x="308" y="966" font-size="12.5" fill="#52525a">induknya.</text>
-<rect x="546" y="1030" width="340" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
-<text x="564" y="1054" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
-<text x="564" y="1071" font-size="15" font-weight="600" fill="#0a0a0b">Halaman cetak - PDF</text>
-<text x="564" y="1094" font-size="12.5" fill="#52525a">HTML biasa, sehingga teks PDF tetap dapat</text>
-<text x="564" y="1110" font-size="12.5" fill="#52525a">diseleksi dan diurai.</text>
-<rect x="290" y="1174" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
-<text x="308" y="1198" font-size="10" letter-spacing="0.08em" fill="#52525a">SELESAI</text>
-<text x="308" y="1215" font-size="15" font-weight="600" fill="#0a0a0b">Berkas terunduh</text>
+<text x="308" y="178" font-size="12.5" fill="#52525a">Editor, pratinjau, mesin skor ATS, dan pembaca berkas CV.</text>
+<rect x="114" y="242" width="340" height="98" rx="10" fill="#fafafa" stroke="#d2d2d6" stroke-width="2"/>
+<text x="132" y="266" font-size="10" letter-spacing="0.08em" fill="#52525a">DI PERAMBAN</text>
+<text x="132" y="283" font-size="15" font-weight="600" fill="#0a0a0b">Pembanding CV - berhenti di sini</text>
+<text x="132" y="306" font-size="12.5" fill="#52525a">Berkas tidak pernah meninggalkan perangkat</text>
+<text x="132" y="322" font-size="12.5" fill="#52525a">pengguna.</text>
+<rect x="290" y="386" width="420" height="82" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="410" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="427" font-size="15" font-weight="600" fill="#0a0a0b">Server Next.js</text>
+<text x="308" y="450" font-size="12.5" fill="#52525a">Merender halaman dan melayani API. Berjalan di Vercel.</text>
+<rect x="546" y="514" width="340" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="564" y="538" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="564" y="555" font-size="15" font-weight="600" fill="#0a0a0b">Auth.js - sesi dan Google OAuth</text>
+<rect x="290" y="620" width="420" height="98" rx="22" fill="#f4f4f5" stroke="#a1a1a8" stroke-width="2"/>
+<text x="308" y="644" font-size="10" letter-spacing="0.08em" fill="#52525a">KEPUTUSAN</text>
+<text x="308" y="661" font-size="15" font-weight="600" fill="#0a0a0b">Data ini milik pengguna tersebut?</text>
+<text x="308" y="684" font-size="12.5" fill="#52525a">Bukan miliknya menghasilkan 404, bukan 403 - agar</text>
+<text x="308" y="700" font-size="12.5" fill="#52525a">keberadaan sebuah id pun tidak bocor.</text>
+<rect x="290" y="764" width="420" height="60" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="308" y="788" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="308" y="805" font-size="15" font-weight="600" fill="#0a0a0b">Prisma ORM</text>
+<rect x="290" y="870" width="420" height="98" rx="10" fill="#fafafa" stroke="#a1a1a8" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="308" y="894" font-size="10" letter-spacing="0.08em" fill="#52525a">DATA</text>
+<text x="308" y="911" font-size="15" font-weight="600" fill="#0a0a0b">PostgreSQL (Neon)</text>
+<text x="308" y="934" font-size="12.5" fill="#52525a">16 tabel. Seluruh tabel anak terhapus bersama CV</text>
+<text x="308" y="950" font-size="12.5" fill="#52525a">induknya.</text>
+<rect x="546" y="1014" width="340" height="98" rx="10" fill="#ffffff" stroke="#d2d2d6" stroke-width="2"/>
+<text x="564" y="1038" font-size="10" letter-spacing="0.08em" fill="#52525a">PROSES</text>
+<text x="564" y="1055" font-size="15" font-weight="600" fill="#0a0a0b">Halaman cetak - PDF</text>
+<text x="564" y="1078" font-size="12.5" fill="#52525a">HTML biasa, sehingga teks PDF tetap dapat</text>
+<text x="564" y="1094" font-size="12.5" fill="#52525a">diseleksi dan diurai.</text>
+<rect x="290" y="1158" width="420" height="60" rx="10" fill="#ffffff" stroke="#0a0a0b" stroke-width="3"/>
+<text x="308" y="1182" font-size="10" letter-spacing="0.08em" fill="#52525a">SELESAI</text>
+<text x="308" y="1199" font-size="15" font-weight="600" fill="#0a0a0b">Berkas terunduh</text>
 </svg>

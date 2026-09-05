@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
-import { BrandMark } from "@/components/BrandMark";
 import { SITE } from "@/lib/site";
 
 export default async function AuthLayout({
@@ -16,8 +15,8 @@ export default async function AuthLayout({
       <header className="border-b border-ink-200 bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5">
           <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-white">
-              <BrandMark className="h-[18px] w-[18px]" />
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-sm font-bold text-white">
+              CV
             </span>
             <span className="text-sm font-semibold text-ink-900">
               {SITE.name}

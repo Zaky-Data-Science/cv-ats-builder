@@ -1,18 +1,6 @@
 import { formatDateRange, formatMonth, joinNonEmpty, prettyUrl } from "@/lib/utils";
-import {
-  keteranganKredensial,
-  masaBerlakuTeks,
-} from "@/lib/portfolio/kredensial";
-import {
-  bagiItemPortofolio,
-  barisKepala,
-  itemTercetak,
-  portofolioAktif,
-  skemaItem,
-  PEMISAH_DETAIL,
-} from "@/lib/portfolio/render";
-import { isSectionVisible, sectionHeadingFor } from "./sections";
-import type { ProjectItem, ResumeData, SectionKey } from "./types";
+import { isSectionVisible, sectionHeading } from "./sections";
+import type { ResumeData, SectionKey } from "./types";
 
 /**
  * Mengubah CV menjadi teks polos.
@@ -56,41 +44,7 @@ export function resumeToPlainText(data: ResumeData): string {
 
   const heading = (key: SectionKey) => {
     out.push("");
-    out.push(sectionHeadingFor(data, key));
-  };
-
-  const { mandiri, perInduk } = bagiItemPortofolio(data);
-
-  /*
-    Satu item portofolio, dalam bentuk yang sama persis dengan versi cetak dan
-    versi Word-nya. Urutan barisnya bukan selera: kepala - ringkasan - poin -
-    detail - tautan adalah urutan yang dibaca pengurai dari atas ke bawah, dan
-    yang paling menentukan diletakkan paling dulu.
-
-    `bersarang` menandai item yang sedang menempel pada entri pengalaman kerja.
-    Dalam keadaan itu konteksnya tidak ikut dicetak: pemberi kerjanya sudah
-    tertulis pada entri induknya, dan mencetaknya dua kali membuat satu
-    perusahaan tampak muncul dua kali di CV yang sama.
-  */
-  const tulisItem = (item: ProjectItem, bersarang: boolean) => {
-    const cetak = itemTercetak(data, item, lang);
-    const kepala = barisKepala(cetak);
-    const label = bersarang ? `${skemaItem(data, item).labelItem}: ` : "";
-    const bagianKedua = bersarang ? cetak.lokasi : kepala.kedua;
-
-    out.push(
-      label +
-        joinNonEmpty([kepala.utama, bagianKedua], " | ") +
-        (cetak.periode ? ` (${cetak.periode})` : ""),
-    );
-    if (cetak.ringkasan) out.push(cetak.ringkasan);
-    for (const b of cetak.poin) out.push(`- ${b}`);
-    if (cetak.detail) out.push(`Detail: ${cetak.detail}`);
-    // Teks polos tidak dapat membawa pranala, jadi yang ditulis alamat
-    // penuhnya - inilah satu-satunya keluaran yang memang harus memilih.
-    if (cetak.tautan.length > 0) {
-      out.push(cetak.tautan.map((t) => t.href).join(PEMISAH_DETAIL));
-    }
+    out.push(sectionHeading(key, lang));
   };
 
   for (const key of data.sectionOrder) {
@@ -112,7 +66,6 @@ export function resumeToPlainText(data: ResumeData): string {
           const loc = joinNonEmpty([e.city, e.country]);
           if (loc) out.push(loc);
           for (const b of e.bullets.filter(Boolean)) out.push(`- ${b}`);
-          for (const item of perInduk.get(e.id) ?? []) tulisItem(item, true);
         }
         break;
 
@@ -138,12 +91,6 @@ export function resumeToPlainText(data: ResumeData): string {
       }
 
       case "project":
-        if (portofolioAktif(data)) {
-          heading(key);
-          for (const item of mandiri) tulisItem(item, false);
-          break;
-        }
-        // Bentuk lama, untuk CV yang belum menyalakan bagian portofolio.
         heading(key);
         for (const p of data.projects) {
           out.push(
@@ -162,11 +109,6 @@ export function resumeToPlainText(data: ResumeData): string {
             joinNonEmpty([c.name, c.issuer], " - ") +
               (c.issueDate ? ` (${formatMonth(c.issueDate, lang)})` : ""),
           );
-          const keterangan = joinNonEmpty(
-            [keteranganKredensial(c), masaBerlakuTeks(c, lang)],
-            PEMISAH_DETAIL,
-          );
-          if (keterangan) out.push(keterangan);
           if (c.credentialId) out.push(`ID: ${c.credentialId}`);
         }
         break;
@@ -207,11 +149,6 @@ export function resumeToPlainText(data: ResumeData): string {
             joinNonEmpty([p.title, p.publisher], ". ") +
               (p.date ? ` (${formatMonth(p.date, lang)})` : ""),
           );
-          const kredit = joinNonEmpty(
-            [p.tipeLuaran, p.peranSaya, p.indeksasiTier],
-            PEMISAH_DETAIL,
-          );
-          if (kredit) out.push(kredit);
           if (p.doi) out.push(`DOI: ${p.doi}`);
         }
         break;
@@ -269,42 +206,6 @@ export function groupSkills(data: ResumeData): [string, string[]][] {
     groups.get(category)!.push(skill.name.trim());
   }
   return [...groups.entries()];
-}
-
-/**
- * Teks yang dipakai mencocokkan kata kunci lowongan.
- *
- * Berbeda dari teks yang dicetak, dan bedanya disengaja: slot detail tambahan
- * hanya mencetak empat prioritas teratas, tetapi seluruhnya tetap milik
- * penggunanya. Kata kunci yang ia tulis di detail kelima tidak berhenti
- * menjadi keahliannya hanya karena tidak muat di atas kertas - dan pencarian
- * kandidat berjalan atas seluruh teks, bukan atas empat baris teratas.
- *
- * Yang ditambahkan hanya isian yang memang ditulis penggunanya sendiri: detail
- * tambahan dan kata kunci itemnya. Tidak ada satu pun kata yang dikarang di
- * sini - menambahkan kata kunci yang tidak pernah ia tulis akan menaikkan
- * angkanya atas sesuatu yang tidak ada di CV-nya.
- */
-export function teksPencocokan(data: ResumeData): string {
-  const dasar = resumeToPlainText(data);
-  if (!data.portofolio.aktif) return dasar;
-
-  const tambahan: string[] = [];
-  for (const item of data.projects) {
-    for (const detail of item.detailTambahan) {
-      const baris = joinNonEmpty(
-        [detail.label, detail.nilai, detail.satuan],
-        " ",
-      );
-      if (baris.trim()) tambahan.push(baris);
-    }
-    for (const kata of item.kataKunci) {
-      if (kata.trim()) tambahan.push(kata.trim());
-    }
-  }
-
-  if (tambahan.length === 0) return dasar;
-  return [dasar, ...tambahan].join("\n");
 }
 
 /** Semua poin pencapaian dari seluruh section, untuk dianalisis ATS. */

@@ -3,19 +3,6 @@
 Berkas ini ditujukan sebagai bahan lampiran laporan: rancangan basis data,
 arsitektur, alur proses, dan rincian aturan penilaian ATS.
 
-Produknya bernama **CV ATS & Portofolio Builder** dan berdiri di dua pilar: CV yang
-aman dibaca ATS, dan portofolio yang membuktikan kemampuan di baliknya.
-Keduanya dibangkitkan dari **satu model data yang sama** - lihat bagian ERD dan
-`src/lib/portfolio/render.ts`, yang menyatukan satu bentuk cetak untuk ketiga
-keluaran. Yang membedakan keduanya bukan datanya melainkan batasan bentuknya:
-CV dikunci satu kolom tanpa tabel dan tanpa gambar karena pengurai ATS
-membacanya berselang-seling antar-kolom, sedangkan portofolio tidak terikat
-batasan itu.
-
-Pada versi ini portofolio masih tersaji sebagai **bagian di dalam dokumen CV**,
-bukan berkas keluaran tersendiri; berkas portofolio terpisah adalah pekerjaan
-yang direncanakan berikutnya.
-
 Diagram ditulis dalam sintaks [Mermaid](https://mermaid.js.org), yang dirender
 otomatis oleh GitHub dan sebagian besar editor Markdown.
 
@@ -88,30 +75,6 @@ Dua hal yang membedakan rancangan ini:
    pdf.js dan pembaca DOCX berjalan di peramban; yang menyeberang ke server
    hanyalah CV yang memang sengaja disusun pengguna di dalam aplikasi ini.
 
-4. **Bentuk bagian portofolio ditentukan registry, bukan percabangan di
-   komponen.** Dua berkas di `src/lib/portfolio/` memikul seluruh perbedaan
-   antar-profesi, dan pemisahan keduanya wajib dijaga:
-
-   | Berkas | Menentukan | Kode perlu tahu isinya? |
-   |---|---|---|
-   | `pola-schemas.ts` | **Bentuk** formulir | Ya |
-   | `kamus-bidang.ts` | **Isi** saran | Tidak |
-
-   Konsekuensinya satu aturan keras: **tidak boleh ada `if (pola === ...)` di
-   dalam komponen mana pun.** Seluruh percabangan dibaca dari skema polanya.
-
-   Alasannya: bukti karya tiap profesi bentuknya berbeda total, tetapi bentuk
-   itu hanya jatuh ke sedikit pola struktural. Arsitek dengan booklet PDF,
-   desainer dengan studi kasus, dan pengembang dengan README di GitHub memakai
-   tiga medium berbeda untuk satu struktur yang sama: konteks - peran saya -
-   keputusan - hasil - refleksi. Karena itu menambah profesi baru berarti
-   menambah satu entri kamus, bukan menulis skema baru.
-
-   Bagian portofolio **memperluas bagian `project` yang sudah ada**, bukan
-   menambah bagian kedua di sebelahnya; daftar itemnya tetap tinggal di
-   `ResumeData.projects`, dan pola Publikasi & Kredit mengendalikan bagian
-   `publication` yang juga sudah ada.
-
 ---
 
 ## 1b. Diagram Use Case
@@ -121,7 +84,7 @@ flowchart LR
     P((Pengguna))
     T((Pengunjung))
 
-    subgraph Sistem["CV ATS & Portofolio Builder"]
+    subgraph Sistem["CV ATS Builder"]
         U1[Mendaftar / Masuk]
         U2[Membuat CV]
         U3[Mengisi data CV]
@@ -328,36 +291,12 @@ dapat diseleksi, disalin, dan diurai mesin.
 
 ---
 
-## 4. Aturan Penilaian
+## 4. Aturan Penilaian ATS
 
 Kode: `src/lib/ats/engine.ts`. Kosakata pendukung: `src/lib/ats/vocabulary.ts`.
 
 Setiap dimensi menghimpun sejumlah aturan bernilai poin. Nilai dimensi adalah
 `(poin diperoleh / poin maksimum) x bobot dimensi`.
-
-### 4.0 Dua angka, bukan satu skor ATS
-
-Mesin ini menghasilkan **dua angka yang dihitung terpisah**, dan aplikasi tidak
-pernah menyebut keduanya "skor ATS":
-
-| Angka | Rumus | Isinya |
-|---|---|---|
-| **Kekuatan CV** (`result.strength`) | Seluruh dimensi berlaku **kecuali** `keywordMatch`, dibagi jumlah bobotnya | Mutu dokumennya sendiri |
-| **Kecocokan Lowongan** (`result.match`) | Persentase dimensi `keywordMatch` apa adanya; `null` bila iklan belum ditempel | Kecocokan dengan satu iklan tertentu |
-
-Kecocokan Lowongan berdiri sendiri karena ia mengukur hal yang berbeda dari
-yang lain: bukan mutu CV-nya, melainkan kecocokannya dengan satu iklan
-tertentu. Mencampur keduanya menjadi satu angka membuat CV yang bagus terlihat
-buruk hanya karena iklan yang ditempel kebetulan meminta hal lain - dan itu
-menyesatkan justru bagi orang yang sedang memperbaiki CV-nya.
-
-Nilai huruf (A/B/C/D) mengikuti Kekuatan CV, bukan Kecocokan Lowongan. Ambangnya
-85 / 70 / 55.
-
-Di antarmuka, di bawah kedua angka itu terdapat **sanggahan permanen** yang
-tidak dapat ditutup dan tidak disembunyikan di balik ikon: angka apa pun yang
-ditampilkan aplikasi CV akan dibaca sebagai ramalan lolos-tidaknya lamaran
-seseorang kecuali ada kalimat yang mengatakan sebaliknya di tempat yang sama.
 
 ### 4.1 Kelengkapan Data - bobot 25%
 
@@ -427,33 +366,26 @@ Tahapannya:
 
 | Aturan | Poin |
 |---|---:|
-| Panjang CV - diberikan penuh tanpa syarat, lihat di bawah | 4 |
+| Panjang CV - bertingkat, lihat di bawah | 4 |
 | Ringkasan profil berada sebelum pengalaman kerja | 2 |
 | Pengalaman tersusun kronologis terbalik | 2 |
 | Tidak ada jeda kerja lebih dari 12 bulan | 2 |
 
-**Panjang halaman tidak lagi menurunkan nilai - sama sekali.** Aturan
-bertingkat yang dulu memberi 100% untuk satu halaman, 75% untuk dua, dan 25%
-untuk tiga ke atas sudah dicabut.
+Aturan panjang CV **tidak** berbentuk lolos-atau-gagal, melainkan bertingkat:
 
-Dua alasan mencabutnya:
+| Jumlah halaman | Bagian nilai yang diperoleh |
+|---:|---:|
+| 1 | 100% |
+| 2 | 75% |
+| 3 ke atas | 25% |
 
-1. Tidak ada satu pun dokumentasi vendor pengurai yang menyebut batas halaman.
-   Pengurai bekerja atas teks hasil konversi, dan pada teks itu "halaman" sudah
-   tidak ada lagi.
-2. Satu-satunya eksperimen terkontrol yang tersedia - 482 profesional
-   rekrutmen, 7.712 CV, tiap CV satu halaman dipasangkan dengan versi dua
-   halaman berisi kredensial identik - justru menemukan versi dua halaman
-   **2,3 kali lebih disukai**.
-
-Catatan kejujuran yang harus ikut disebut: studi itu diterbitkan penjual jasa
-penulisan CV, jadi ada konflik kepentingan. Tetapi desainnya terkontrol dan
-sampelnya besar - jauh di atas mutu bukti yang mendasari aturan satu halaman
-yang digantikannya, yang tidak punya eksperimen sama sekali.
-
-Yang tersisa adalah **keterangan netral**: berapa halaman CV-nya, tanpa satu
-pun angka yang bergerak karenanya. Untuk pola Publikasi & Kredit bahkan
-keterangan itu tidak ditampilkan - daftar karya terbit memang tidak dipangkas.
+Satu halaman memperoleh nilai penuh karena itulah panjang yang benar untuk
+hampir semua pelamar: perekrut memindai CV dalam hitungan detik, dan apa pun
+yang jatuh ke halaman kedua besar kemungkinan tidak pernah dibaca. Dua halaman
+tetap memperoleh sebagian besar nilainya - bagi pelamar dengan pengalaman
+panjang yang seluruhnya relevan, memaksakan satu halaman justru membuang bukti.
+Meski demikian, saran memadatkannya tetap ditampilkan pada CV dua halaman:
+pengguna berhak tahu bahwa satu halaman lebih baik, lalu memutuskan sendiri.
 
 Ukuran kertas (A4, Letter, Legal, F4) dan margin tidak ikut dinilai. Keduanya
 menentukan berapa halaman isi yang sama akan memakan tempat, dan pengaruh itu
@@ -492,68 +424,7 @@ dan NULL berarti "ikut template" - disimpan begitu, bukan disalin angkanya,
 supaya CV yang belum pernah disetel manual ikut menyesuaikan sendiri ketika
 templatenya diganti.
 
-### 4.6 Kekuatan Bukti Karya - bobot 0-20%
-
-Kode: `src/lib/ats/bukti-karya.ts`.
-
-Dimensi keenam, dan satu-satunya yang bobotnya tidak tetap. Selama
-`data.portofolio.aktif` bernilai `false`, dimensi ini ditandai **tidak
-berlaku**, bobotnya 0, dan kelima dimensi lama memakai bobot aslinya - sehingga
-CV yang dibuat sebelum fitur ini ada tidak bergeser satu angka pun.
-
-Begitu portofolio dinyalakan:
-
-```
-bobot buktiKarya   = skemaProfil(profil).bobotBuktiKarya    // 12-20
-sisa               = (100 - bobot) / 100
-bobot dimensi lain = bobot asli x sisa
-```
-
-Perkalian proporsional itu menjaga totalnya tetap 100 tanpa satu pun dimensi
-berubah kedudukannya terhadap dimensi lain. Nilai dengan bobot lama tetap
-dihitung dan dikembalikan sebagai `result.strengthTanpaPortofolio`, lalu
-ditampilkan di antarmuka sebagai pembanding - dihitung dari persentase dimensi
-yang sudah ada, bukan dengan menjalankan penilaian dua kali.
-
-#### Rubrik P × Q × R
-
-Strukturnya dipinjam dari model penilaian kompetensi insinyur PII (FAIP),
-dipilih karena ia bekerja pada level **item**, bukan level dokumen - sehingga
-tiap angka dapat ditelusuri ke isian yang menyebabkannya.
-
-| Simbol | Rentang | Artinya |
-|---|---|---|
-| Q | 0-3 | Peranan penulis dalam karya itu |
-| R | 0-3 | Tingkat kesulitannya |
-| P | pengali | Banyaknya pengalaman, dipakai sebagai pengali agregat |
-
-```
-skor item = (Q x R) / 9 x 100, lalu disesuaikan, dijepit 0-100
-skor bagian = rata-rata item terbaik x pengali P
-```
-
-Penyesuaian per item: verifikator lengkap dan refleksi terisi menaikkan, tautan
-yang tidak sah menurunkan.
-
-Pemetaan field ke ketiga syarat R **tidak** ditulis di berkas itu, melainkan
-dibaca dari penanda `rubrik` pada tiap `FieldDef` di `pola-schemas.ts` - aturan
-yang sama dengan seluruh bagian lain fitur portofolio: percabangan per pola
-tinggal di registry, bukan di kode yang memakainya.
-
-Dua hal sengaja **tidak** diambil dari FAIP:
-
-1. **Ambang 600 / 3.000 / 6.000 tidak dipakai sebagai skala.** Angka itu untuk
-   akumulasi karier 3, 8, dan 16 tahun - meminjam strukturnya benar, meminjam
-   angkanya salah kategori. Penyesuaian senioritas masuk lewat jenjang (batas
-   bawah jumlah item), bukan lewat ambang itu.
-2. **Penilaian manusia.** FAIP dinilai asesor yang membaca narasi; di sini
-   seluruhnya deterministik, sehingga data yang sama selalu menghasilkan angka
-   yang sama dan dapat diuji.
-
-Temuan yang ditampilkan diambil dari **item terlemah lebih dulu**: itulah yang
-paling banyak menaikkan angka bila diperbaiki.
-
-### 4.7 Penanganan Dimensi yang Tidak Berlaku
+### 4.6 Penanganan Dimensi yang Tidak Berlaku
 
 Dua keadaan membuat sebuah dimensi tidak dinilai:
 
@@ -571,55 +442,27 @@ tetap berada pada skala 0-100:
 skor = (jumlah nilai dimensi berlaku / jumlah bobot dimensi berlaku) x 100
 ```
 
-### 4.8 Hasil Pengujian Kalibrasi
+### 4.7 Hasil Pengujian Kalibrasi
 
-| Keadaan CV | Kekuatan CV | Nilai | Kecocokan Lowongan |
-|---|---:|---|---:|
-| CV kosong (baru dibuat) | 4 | D | - |
-| CV contoh, satu halaman, tanpa iklan lowongan | 98 | A | - |
-| CV contoh, dua halaman | 98 | A | - |
-| CV contoh, empat halaman | 98 | A | - |
-| CV contoh dengan pas foto | 95 | A | - |
-| CV contoh (Frontend) vs lowongan Frontend Developer | 98 | A | 75 |
-| CV contoh (Frontend) vs lowongan Backend Engineer | 98 | A | 20 |
+| Keadaan CV | Skor | Nilai |
+|---|---:|---|
+| CV kosong (baru dibuat) | 4 | D |
+| CV contoh, satu halaman, tanpa iklan lowongan | 98 | A |
+| CV contoh, dua halaman | 96 | A |
+| CV contoh, empat halaman | 91 | A |
+| CV contoh dengan pas foto | 95 | A |
+| CV contoh (Frontend) vs lowongan Frontend Developer | 94 | A |
+| CV contoh (Frontend) vs lowongan Backend Engineer | 85 | A |
 
-Tiga hal yang terbaca dari tabel ini:
+Dua baris terakhir memperlihatkan bahwa dimensi kecocokan kata kunci memang
+membedakan CV yang relevan dari yang kurang relevan terhadap lowongan tertentu,
+meski mutu penulisan CV-nya sama.
 
-1. **Jumlah halaman tidak lagi menggerakkan angkanya** - tiga baris tengah
-   identik. Bandingkan dengan versi lama dokumen ini, yang mencatat 98/96/91.
-   Lihat 4.5 untuk alasannya.
-2. **Kekuatan CV tidak bergerak saat iklannya diganti** (98 pada kedua baris
-   terakhir), sementara **Kecocokan Lowongan bergerak tajam** (75 lawan 20).
-   Persis itulah gunanya kedua angka dipisah: CV yang sama tidak menjadi lebih
-   buruk hanya karena iklan yang dibandingkan meminta hal lain.
-3. **Pas foto masih menurunkan nilai** (95), karena pengurai umumnya tidak
-   membaca gambar dan tata letak di sekitarnya merusak urutan teks.
+Seluruh angka pada tabel ini dikunci oleh berkas uji `tests/ats-engine.test.ts`,
+sehingga perubahan aturan penilaian yang tidak disengaja akan langsung terlihat
+sebagai kegagalan `npm test`.
 
-Perilaku pergeseran bobot saat portofolio dinyalakan, diukur pada CV contoh
-yang sama dengan pola Proyek Teknis:
-
-| Hal yang dinilai | Bobot dasar | Bobot saat portofolio nyala |
-|---|---:|---:|
-| Kelengkapan isi | 25 | 21,25 |
-| Bisa dibaca mesin | 25 | 21,25 |
-| Mutu kalimatnya | 20 | 17 |
-| Kecocokan dengan lowongan | 20 | 17 |
-| Panjang dan urutan | 10 | 8,5 |
-| Kekuatan bukti karya | 0 | 15 |
-| **Total** | **100** | **100** |
-
-Pada CV contoh itu Kekuatan CV turun dari 98 ke 80 begitu portofolio
-dinyalakan - bukan karena CV-nya memburuk, melainkan karena item proyeknya
-belum mengisi satu pun isian portofolio, sehingga Kekuatan Bukti Karya bernilai
-0%. Angka pembanding dengan bobot lama (98) tetap ditampilkan di antarmuka
-supaya penggunanya tahu apa yang berubah.
-
-Angka pada tabel pertama berasal dari `tests/ats-engine.test.ts`, yang menguji
-**hubungan** antar-angkanya - bahwa Kecocokan Lowongan bergerak dan Kekuatan CV
-tidak - bukan lagi mematok tiap angka satu per satu. Perubahan aturan penilaian
-yang tidak disengaja tetap terlihat sebagai kegagalan `npm test`.
-
-### 4.9 Penilai Berkas CV yang Diunggah
+### 4.8 Penilai Berkas CV yang Diunggah
 
 Fitur bandingkan dan pindai CV memakai mesin **terpisah**
 (`src/lib/ats/document.ts`). Pemisahan ini disengaja: mesin di bagian 4
@@ -629,7 +472,7 @@ strukturnya. Menyatukan keduanya akan memaksa salah satunya berpura-pura -
 entah penilai berkas berpura-pura punya data terstruktur, atau penilai CV
 sendiri kehilangan ketelitiannya.
 
-Yang dibagi bersama hanyalah yang memang sama: bobot kelima dimensi lama, daftar
+Yang dibagi bersama hanyalah yang memang sama: bobot kelima dimensi, daftar
 kata kerja aksi, daftar frasa klise, dan mesin pencocokan kata kunci. Karena
 itu skor dari kedua jalur tetap berada pada skala yang sama dan dapat
 dibandingkan.
@@ -810,7 +653,7 @@ dilakukan sambil bepergian. Karena itu tata letaknya tidak sekadar
 
 | Ukuran layar | Susunan editor |
 |---|---|
-| Di bawah 1024 piksel | Satu panel penuh layar pada satu waktu, berganti lewat bilah navigasi bawah: **Isi Data**, **Hasil**, **Nilai**. Seluruh tombol unduhan diringkas ke satu menu. |
+| Di bawah 1024 piksel | Satu panel penuh layar pada satu waktu, berganti lewat bilah navigasi bawah: **Isi Data**, **Pratinjau**, **Skor ATS**. Seluruh tombol unduhan diringkas ke satu menu. |
 | 1024 piksel ke atas | Dua panel berdampingan: formulir di kiri, pratinjau atau penilaian di kanan. |
 
 Perpindahan panel dikerjakan lewat kelas CSS, bukan lewat kueri media di
@@ -1201,29 +1044,16 @@ diterapkan.
 
 | Berkas / folder | Isi |
 |---|---|
-| `prisma/schema.prisma` | Definisi 17 tabel beserta relasinya |
+| `prisma/schema.prisma` | Definisi 16 tabel beserta relasinya |
 | `prisma/migrations/` | Riwayat perubahan skema |
 | `prisma/seed.ts` | Akun demo dan CV contoh |
 | `src/auth.ts` | Konfigurasi autentikasi, callback penautan akun Google |
-| `src/lib/ats/engine.ts` | Mesin penilaian enam dimensi untuk CV terstruktur; menghasilkan dua angka terpisah |
+| `src/lib/ats/engine.ts` | Mesin penilaian lima dimensi untuk CV terstruktur |
 | `src/lib/ats/messages.ts` | Seluruh kalimat keluaran mesin penilaian, dua bahasa |
 | `src/lib/ats/document.ts` | Mesin penilaian untuk berkas CV yang diunggah |
 | `src/lib/ats/document-messages.ts` | Kalimat kelebihan dan kekurangan untuk mesin di atas |
 | `src/lib/ats/keywords.ts` | Ekstraksi dan pencocokan kata kunci |
 | `src/lib/ats/vocabulary.ts` | Kata henti, kata kerja aksi, frasa klise |
-| `src/lib/ats/bukti-karya.ts` | Rubrik P x Q x R untuk dimensi Kekuatan Bukti Karya |
-| `src/lib/portfolio/pola-schemas.ts` | Registry **bentuk** formulir - lima pola pembuktian plus satu cadangan |
-| `src/lib/portfolio/kamus-bidang.ts` | Registry **isi** saran - 21 bidang beserta kata kunci khasnya |
-| `src/lib/portfolio/types.ts` | Bentuk data portofolio; sumbu pola, tujuan, dan jenjang |
-| `src/lib/portfolio/render.ts` | Item portofolio menjadi bentuk siap cetak - satu jalur untuk PDF, Word, dan teks |
-| `src/lib/portfolio/redaksi.ts` | Mode Redaksi: nama klien menjadi deskriptor, angka pasti menjadi rentang |
-| `src/lib/portfolio/bahasa.ts` | Validator bahasa orang pertama |
-| `src/lib/portfolio/kredensial.ts` | Bentuk kredensial saat dicetak, termasuk masa berlaku seumur hidup |
-| `src/lib/portfolio/ambang-profesi.ts` | Ambang resmi per profesi (SKP), lengkap dengan sumber dan tanggal periksa |
-| `src/lib/portfolio/deteksi.ts` | Menebak pola dari teks CV yang diunggah |
-| `src/lib/portfolio/migrasi.ts` | Kompatibilitas mundur: CV lama dibuka persis seperti sebelumnya, tanpa data dibuang maupun angka bergeser |
-| `src/lib/portfolio/arsip.ts` | Mengganti pola tanpa kehilangan isian - field yang tidak dikenal bentuk baru diarsipkan, bukan dihapus |
-| `src/lib/portfolio/pencarian.ts` | Pencarian bidang dari nama jurusan yang diketik pengguna |
 | `src/lib/intake/extract.ts` | Pembaca PDF dan DOCX di peramban, beserta deteksi jumlah kolom |
 | `src/lib/i18n/` | Kamus antarmuka dua bahasa dan pembacanya di sisi server |
 | `src/lib/diagrams.ts` | Sumber data diagram - dipakai halaman /alur dan pembangkit gambar |

@@ -1,11 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
 import { newId } from "@/lib/utils";
-import {
-  bagianPortofolioBawaan,
-  profilPortofolioBawaan,
-  VERSI_SKEMA_CV,
-} from "@/lib/portfolio/migrasi";
-import { emptyCertification, emptyProject, emptyPublication } from "./factory";
 import { DEFAULT_SECTION_ORDER } from "./sections";
 import type { ResumeData } from "./types";
 
@@ -306,7 +300,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
   return {
     id,
-    schemaVersion: VERSI_SKEMA_CV,
     title: text.title,
     template: "CLASSIC",
     accentColor: "#111827",
@@ -318,8 +311,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
     marginYMm: null,
     marginXMm: null,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
-    profilPortofolio: profilPortofolioBawaan(),
-    portofolio: bagianPortofolioBawaan(),
 
     personalInfo: {
       photoZoom: 1,
@@ -415,17 +406,8 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
       category: text.skillCategories[skill.group],
     })),
 
-    /*
-      Bagian portofolio dibiarkan pada bentuk bawaannya.
-
-      Contoh ini dipakai berkas uji sebagai masukan tetap bagi mesin penilaian,
-      jadi menyalakan bagian portofolio di sini akan menggeser skor contoh
-      tanpa ada yang memintanya - persis kejadian yang harus dicegah pada CV
-      pengguna sungguhan.
-    */
     projects: [
       {
-        ...emptyProject(),
         id: newId(),
         name: text.projectNames[0],
         role: text.projectRoles[0],
@@ -435,7 +417,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         bullets: text.projectBullets[0],
       },
       {
-        ...emptyProject(),
         id: newId(),
         name: text.projectNames[1],
         role: text.projectRoles[1],
@@ -448,7 +429,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
     certifications: [
       {
-        ...emptyCertification(),
         id: newId(),
         name: text.certNames[0],
         issuer: text.certIssuers[0],
@@ -458,7 +438,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         url: "coursera.org/verify/ABCD1234EFGH",
       },
       {
-        ...emptyCertification(),
         id: newId(),
         name: text.certNames[1],
         issuer: text.certIssuers[1],
@@ -468,7 +447,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
         url: "dicoding.com/certificates/DCD-FE-2211",
       },
       {
-        ...emptyCertification(),
         id: newId(),
         name: text.certNames[2],
         issuer: text.certIssuers[2],
@@ -517,7 +495,6 @@ export function sampleResume(id = "", locale: Locale = "id"): ResumeData {
 
     publications: [
       {
-        ...emptyPublication(),
         id: newId(),
         title: text.publicationTitle,
         publisher: text.publisher,
@@ -577,85 +554,6 @@ export function previewResume(locale: Locale = "id"): ResumeData {
       id: fixedId("keahlian", i),
     })),
     projects: [],
-    certifications: [],
-    organizations: [],
-    awards: [],
-    languages: [],
-    publications: [],
-  };
-}
-
-/**
- * Contoh khusus untuk memperlihatkan **wujud bagian portofolio** di halaman
- * depan.
- *
- * Yang dirender komponen pratinjaunya tetap `ResumeDocument` - pencetak yang
- * sama persis dengan yang menghasilkan PDF dan Word. Itu memang syaratnya:
- * halaman depan tidak boleh memperlihatkan tampilan yang tidak ada barangnya.
- * Kalau suatu hari bentuk cetak bagian portofolio berubah, gambar di halaman
- * depan ikut berubah sendiri, dan tidak ada yang perlu diingat.
- *
- * `sectionOrder` sengaja tinggal satu bagian. Yang hendak diperlihatkan
- * bentuk satu entri portofolionya, bukan CV utuh - dan CV utuh sudah menjadi
- * tugas pratinjau template di hero.
- */
-export function portofolioPreviewResume(locale: Locale = "id"): ResumeData {
-  const full = sampleResume("", locale);
-  const inggris = locale === "en";
-
-  return {
-    ...full,
-    sectionOrder: ["project"],
-    profilPortofolio: {
-      ...profilPortofolioBawaan(),
-      pola: "proyek-teknis",
-      bidangKamus: "sipil-konstruksi",
-      jurusan: inggris ? "Civil Engineering" : "Teknik Sipil",
-      sudahDitanya: true,
-    },
-    portofolio: { ...bagianPortofolioBawaan(), aktif: true },
-    projects: [
-      {
-        ...emptyProject(),
-        // Id tetap, bukan newId() - alasannya sama dengan previewResume:
-        // id acak membuat atribut data-field berbeda antara render server dan
-        // peramban, dan React melaporkannya sebagai ketidakcocokan hidrasi.
-        id: "pratinjau-portofolio-0",
-        name: inggris
-          ? "Bontang Lestari Area Drainage"
-          : "Drainase Kawasan Bontang Lestari",
-        role: inggris ? "Assistant Planner" : "Asisten Perencana",
-        konteks: inggris ? "Public Works Agency" : "Dinas Pekerjaan Umum",
-        lokasi: "Bontang",
-        startDate: "2024-02",
-        endDate: "2024-08",
-        ringkasan: inggris
-          ? "Planned 1,200 m of primary channel for an area that flooded twice a year."
-          : "Merencanakan 1.200 m saluran primer untuk kawasan yang banjir dua kali setahun.",
-        bullets: inggris
-          ? [
-              "I recalculated the design discharge and resized the channel to 4.2 m3/s.",
-              "I checked the drawings against SNI 2415 before they went to tender.",
-            ]
-          : [
-              "Saya menghitung ulang debit rencana dan menyesuaikan dimensi saluran ke 4,2 m3/detik.",
-              "Saya memeriksa gambar kerja terhadap SNI 2415 sebelum masuk tahap lelang.",
-            ],
-        inti: {
-          jenisProyek: inggris ? "Area drainage" : "Drainase kawasan",
-          skalaProyek: "8.400 m2",
-          tahapKeterlibatan: ["DED"],
-          standarKode: ["SNI 2415", "SNI 1726"],
-          perkakas: ["Civil 3D", "HEC-RAS"],
-          hasilTerukur: inggris
-            ? ["Flooding", "2x a year", "0", "1 rainy season"]
-            : ["Genangan", "2x setahun", "0", "1 musim hujan"],
-        },
-        tautan: [
-          { label: "", url: "github.com/contoh/laporan-drainase" },
-        ],
-      },
-    ],
     certifications: [],
     organizations: [],
     awards: [],

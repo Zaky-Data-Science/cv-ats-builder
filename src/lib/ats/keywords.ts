@@ -152,59 +152,15 @@ function isUsefulToken(token: string): boolean {
 }
 
 /**
- * Penguat bobot dari bidang yang dipilih pengguna.
- *
- * Kata kunci khas sebuah bidang bukan sembarang kata yang kebetulan sering
- * muncul di iklan lowongan: "kurva S" muncul dua kali di iklan konstruksi dan
- * menentukan segalanya, sementara "bertanggung jawab" muncul lima kali dan
- * tidak menentukan apa pun. Bobot mentah berbasis frekuensi tidak dapat
- * membedakan keduanya - kamus bidangnya yang bisa.
- */
-export interface PenguatKataKunci {
-  /** Kata kunci entri kamus yang sedang dipakai pengguna. */
-  utama: string[];
-  /** Penguat sekunder, mis. dari kategori industri yang ia sebutkan. */
-  sekunder?: string[];
-}
-
-/*
-  Besar penguatnya dipilih, bukan ditemukan - sumber fitur ini hanya menyebut
-  "bobot lebih tinggi" tanpa angka.
-
-  Dua dipilih karena itu pengali yang sudah dipakai berkas ini untuk frasa dua
-  kata, dan alasannya sama persis: keduanya penanda bahwa istilahnya utuh dan
-  memang istilah bidang itu, bukan kata yang kebetulan berulang. Penguat
-  sekunder dibuat lebih kecil supaya kategori industri tidak pernah mengalahkan
-  bidang yang dipilih penggunanya sendiri.
-*/
-const PENGUAT_UTAMA = 2;
-const PENGUAT_SEKUNDER = 1.5;
-
-function himpunanKanonik(daftar: string[] | undefined): Set<string> {
-  const set = new Set<string>();
-  for (const item of daftar ?? []) {
-    const form = canonical(item);
-    if (form) set.add(form);
-  }
-  return set;
-}
-
-/**
  * Mengambil kata kunci terpenting dari deskripsi lowongan.
  *
  * Frasa dua kata yang muncul berulang (mis. "machine learning",
  * "react native") diberi bobot lebih tinggi daripada kata tunggal, karena
  * frasa demikian biasanya merupakan nama keahlian yang utuh.
- *
- * Kata kunci yang juga tercantum di kamus bidang pengguna diberi bobot lebih
- * tinggi lagi, **dan** dijamin tidak terpotong batas jumlah: istilah yang
- * menentukan di sebuah bidang kerap muncul hanya sekali atau dua kali di
- * iklannya, sehingga justru istilah itulah yang paling mudah hilang.
  */
 export function extractKeywords(
   jobDescription: string,
   limit = 25,
-  penguat?: PenguatKataKunci,
 ): { keyword: string; weight: number }[] {
   const tokens = tokenize(jobDescription);
   const useful = tokens.filter(isUsefulToken);
@@ -240,57 +196,9 @@ export function extractKeywords(
     scored.push({ keyword: word, weight: count });
   }
 
-  /*
-    Kamus bidang tidak hanya menguatkan bobot - ia juga menyumbang istilahnya.
-
-    Frasa yang hanya muncul sekali di iklan lowongan tidak pernah lolos
-    penyaring frekuensi di atas, padahal justru istilah semacam itu yang
-    menentukan: "soil test" disebut sekali dan menentukan segalanya bagi
-    seorang site engineer, sementara "bertanggung jawab" disebut lima kali dan
-    tidak menentukan apa pun. Yang tahu bedanya hanya kamus bidangnya.
-  */
-  const indeksIklan = canonicalIndex(jobDescription);
-  for (const istilah of penguat?.utama ?? []) {
-    const form = canonical(istilah);
-    if (!form || !indeksIklan.has(form)) continue;
-    if (scored.some((k) => canonical(k.keyword) === form)) continue;
-    scored.push({ keyword: istilah, weight: 1 });
-    // Kata penyusunnya tidak dihitung lagi sendiri-sendiri, sama seperti
-    // perlakuan frasa yang sudah ada di atas.
-    for (const kata of tokenize(istilah)) claimed.add(kata);
-  }
-  const tersisa = scored.filter(
-    (k) => k.keyword.includes(" ") || !claimed.has(k.keyword),
-  );
-  scored.length = 0;
-  scored.push(...tersisa);
-
-  const utama = himpunanKanonik(penguat?.utama);
-  const sekunder = himpunanKanonik(penguat?.sekunder);
-  const dikuatkan = scored.map((item) => {
-    const form = canonical(item.keyword);
-    if (utama.has(form)) return { ...item, weight: item.weight * PENGUAT_UTAMA };
-    if (sekunder.has(form)) {
-      return { ...item, weight: item.weight * PENGUAT_SEKUNDER };
-    }
-    return item;
-  });
-
-  const urut = dikuatkan.sort(
-    (a, b) => b.weight - a.weight || a.keyword.localeCompare(b.keyword),
-  );
-  const hasil = urut.slice(0, limit);
-
-  // Istilah bidang yang memang ada di iklannya tidak boleh hilang hanya karena
-  // jumlahnya melewati batas tampil.
-  const sudah = new Set(hasil.map((k) => canonical(k.keyword)));
-  for (const item of urut.slice(limit)) {
-    if (utama.has(canonical(item.keyword)) && !sudah.has(canonical(item.keyword))) {
-      hasil.push(item);
-      sudah.add(canonical(item.keyword));
-    }
-  }
-  return hasil;
+  return scored
+    .sort((a, b) => b.weight - a.weight || a.keyword.localeCompare(b.keyword))
+    .slice(0, limit);
 }
 
 /** Mencari sebuah kata kunci di dalam himpunan bentuk kanonik sebuah teks. */
@@ -327,9 +235,8 @@ export function analyzeKeywords(
   resumeText: string,
   jobDescription: string,
   limit = 25,
-  penguat?: PenguatKataKunci,
 ): KeywordAnalysis {
-  const extracted = extractKeywords(jobDescription, limit, penguat);
+  const extracted = extractKeywords(jobDescription, limit);
   // Himpunannya dibangun sekali, lalu dipakai untuk seluruh kata kunci.
   const index = canonicalIndex(resumeText);
 

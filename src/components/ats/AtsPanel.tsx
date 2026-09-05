@@ -13,21 +13,12 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Tampilan hasil penilaian.
+ * Tampilan hasil penilaian ATS.
  *
  * Prinsip perancangannya: angka saja tidak menolong siapa pun. Setiap
  * kekurangan ditampilkan bersama langkah perbaikannya dan tautan yang
  * melompat langsung ke field yang bersangkutan, sehingga pengguna dapat
- * bergerak dari "nilai saya 62" ke "saya tahu persis apa yang harus diubah".
- *
- * Yang ditampilkan **dua angka, bukan satu**, dan pemisahannya bukan soal
- * tata letak. Tidak ada "skor ATS" universal yang bisa direplikasi: filter
- * penyaringan dikonfigurasi tiap pemberi kerja, dan hanya sebagian sistem yang
- * memberi peringkat otomatis sama sekali. Yang dapat dipertanggungjawabkan
- * hanya dua hal - seberapa cocok CV ini dengan satu iklan lowongan tertentu,
- * dan seberapa kuat serta terbaca isinya - dan keduanya mengukur hal yang
- * berbeda. Sanggahannya ditampilkan permanen di sebelah keduanya, bukan
- * disembunyikan di balik tanda tanya.
+ * bergerak dari "skor saya 62" ke "saya tahu persis apa yang harus diubah".
  */
 
 const SEVERITY_META: Record<
@@ -64,20 +55,17 @@ export function AtsPanel({
   return (
     <div className="space-y-5">
       {/* ---------------------------------------------------------------- */}
-      {/* Dua angka                                                         */}
+      {/* Skor keseluruhan                                                  */}
       {/* ---------------------------------------------------------------- */}
       <Card className="p-5">
         <div className="flex items-center gap-5">
           <ScoreDial
-            score={result.strength}
+            score={result.score}
             grade={result.grade}
             gradeLabel={t.ats.gradePrefix}
           />
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
-              {t.ats.strengthTitle}
-            </p>
-            <p className="mt-0.5 text-sm leading-relaxed font-medium text-ink-800">
+            <p className="text-sm leading-relaxed font-medium text-ink-800">
               {result.verdict}
             </p>
             <p className="mt-1.5 text-xs text-ink-500">
@@ -90,63 +78,6 @@ export function AtsPanel({
             </p>
           </div>
         </div>
-
-        <div className="mt-4 grid gap-3 border-t border-ink-100 pt-4 sm:grid-cols-2">
-          <div>
-            <p className="text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
-              {t.ats.strengthTitle}
-            </p>
-            <p className="mt-0.5 text-lg font-bold tabular-nums text-ink-900">
-              {result.strength}
-              <span className="ml-0.5 text-xs font-normal text-ink-400">/100</span>
-            </p>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-ink-500">
-              {t.ats.strengthHint}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
-              {t.ats.matchTitle}
-            </p>
-            <p className="mt-0.5 text-lg font-bold tabular-nums text-ink-900">
-              {result.match === null ? (
-                <span className="text-sm font-medium text-ink-400">
-                  {t.ats.matchEmpty}
-                </span>
-              ) : (
-                <>
-                  {result.match}
-                  <span className="ml-0.5 text-xs font-normal text-ink-400">
-                    /100
-                  </span>
-                </>
-              )}
-            </p>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-ink-500">
-              {t.ats.matchHint}
-            </p>
-          </div>
-        </div>
-
-        {/*
-          Sanggahan permanen, tidak dapat ditutup dan tidak disembunyikan di
-          balik ikon. Angka apa pun yang ditampilkan aplikasi CV akan dibaca
-          sebagai ramalan lolos-tidaknya lamaran seseorang kecuali ada kalimat
-          yang mengatakan sebaliknya di tempat yang sama.
-        */}
-        <p className="mt-3 rounded-md bg-ink-50 px-3 py-2 text-[11px] leading-relaxed text-ink-600">
-          {t.ats.scoreDisclaimer}
-        </p>
-
-        {result.strengthTanpaPortofolio !== null &&
-          result.strengthTanpaPortofolio !== result.strength && (
-            <p className="mt-2 rounded-md border border-brand-200 bg-brand-50/50 px-3 py-2 text-[11px] leading-relaxed text-ink-700">
-              {t.ats.weightChanged.replace(
-                "{n}",
-                String(result.strengthTanpaPortofolio),
-              )}
-            </p>
-          )}
 
         <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-ink-100 pt-4 sm:grid-cols-4">
           <Stat
@@ -230,45 +161,6 @@ export function AtsPanel({
           ))}
         </div>
       </Card>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* Rincian kekuatan bukti, per karya                                 */}
-      {/* ---------------------------------------------------------------- */}
-      {result.buktiKarya && result.buktiKarya.item.length > 0 && (
-        <Card className="p-5">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-sm font-semibold text-ink-900">
-              {t.ats.buktiTitle}
-            </h3>
-            <span className="text-xs font-bold tabular-nums text-ink-700">
-              {result.buktiKarya.skor}/100
-            </span>
-          </div>
-          <p className="mt-1 text-xs text-ink-500">{t.ats.buktiHint}</p>
-
-          <ul className="mt-3 space-y-2">
-            {result.buktiKarya.item.map((karya) => (
-              <li
-                key={karya.id}
-                className="flex items-baseline justify-between gap-3 border-b border-ink-100 pb-2 last:border-0"
-              >
-                <span className="min-w-0 truncate text-xs text-ink-800">
-                  {karya.judul || "-"}
-                </span>
-                <span className="shrink-0 text-[11px] tabular-nums text-ink-500">
-                  {t.ats.buktiQ} {karya.q}/3 · {t.ats.buktiR} {karya.r}/3 ·{" "}
-                  <span className="font-semibold text-ink-800">{karya.skor}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-2 text-[11px] text-ink-500">
-            {result.buktiKarya.n} {t.ats.buktiItems}
-            {result.buktiKarya.p < 1 && ` - ${t.ats.buktiFew}`}.
-          </p>
-        </Card>
-      )}
 
       {/* ---------------------------------------------------------------- */}
       {/* Kata kunci lowongan                                               */}

@@ -1,8 +1,3 @@
-import {
-  itemBagianPortofolio,
-  judulPortofolio,
-  portofolioAktif,
-} from "@/lib/portfolio/render";
 import type { ResumeData, ResumeLanguage, SectionKey } from "./types";
 
 /**
@@ -172,41 +167,11 @@ export function sectionCount(data: ResumeData, key: SectionKey): number {
   }
 }
 
-/**
- * Section kosong tidak dicetak di CV agar tidak muncul judul menggantung.
- *
- * Bagian portofolio punya satu keadaan tambahan yang mudah terlewat: ia boleh
- * menyala sementara **seluruh** itemnya sedang menempel pada entri pengalaman
- * kerja. Yang tersisa di bawah judulnya kalau begitu adalah ruang kosong, dan
- * judul yang menggantung di atas ruang kosong terbaca sebagai bagian yang
- * gagal dimuat - bukan sebagai bagian yang memang tidak ada isinya.
- */
+/** Section kosong tidak dicetak di CV agar tidak muncul judul menggantung. */
 export function isSectionVisible(data: ResumeData, key: SectionKey): boolean {
-  if (key === "project" && portofolioAktif(data)) {
-    return itemBagianPortofolio(data).length > 0;
-  }
   return sectionCount(data, key) > 0;
 }
 
 export function sectionHeading(key: SectionKey, lang: ResumeLanguage): string {
   return SECTION_META[key].heading[lang];
-}
-
-/**
- * Judul section untuk sebuah CV tertentu.
- *
- * Berbeda dari `sectionHeading` yang hanya tahu kunci dan bahasa, yang ini
- * tahu CV-nya - dan itu diperlukan karena judul bagian portofolio ditentukan
- * pola pembuktian penggunanya: "PORTOFOLIO KARYA" untuk perancang,
- * "PENGALAMAN PRAKTIK & PENGAJARAN" untuk tenaga kesehatan dan pengajar.
- *
- * Selama bagian portofolio belum dinyalakan, yang dikembalikan tetap judul
- * lama - sehingga CV yang sudah tersimpan tidak berganti judul sendiri.
- */
-export function sectionHeadingFor(
-  data: ResumeData,
-  key: SectionKey,
-): string {
-  if (key === "project" && portofolioAktif(data)) return judulPortofolio(data);
-  return SECTION_META[key].heading[data.language];
 }
