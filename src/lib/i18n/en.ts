@@ -357,6 +357,8 @@ export const en: Dictionary = {
       "Replaces client names with a description of the field, and exact figures with a range that contains them. Applies to PDF, Word, and plain text.",
     redactionNote:
       "The JSON backup keeps the real figures - it is your own backup, not the file you send to an employer.",
+    redactionLimit:
+      "Its limit: only what this app already knows can be hidden - the name in the Client/institution field, and figures. That name is also removed from your own sentences, but other names that exist only inside your writing - a colleague, a supervisor, a subsidiary, a product name - cannot be recognised. Read the file yourself before you send it.",
     langTitle: "Language check",
     langRequired:
       "This shape calls for first-person writing. Competency assessors use it to tell your work apart from your team's.",

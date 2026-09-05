@@ -297,13 +297,29 @@ export interface FieldDef {
    */
   rubrikButuhAngka?: boolean;
   /**
-   * Isian field ini adalah **nama** - klien, institusi, atau pemberi kerja.
+   * Perlakuan Mode Redaksi terhadap isian field ini.
    *
-   * Ditandai supaya Mode Redaksi ikut menggantinya. Tanpa penanda ini, nama
-   * rumah sakit yang tersimpan di field inti tetap tercetak meski nama klien
-   * di kolom konteks sudah disamarkan - dan penggunanya mengira sudah aman.
+   *   `"nama"`       isinya nama - klien, institusi, atau pemberi kerja - dan
+   *                  diganti deskriptor generik. Tanpa penanda ini, nama rumah
+   *                  sakit yang tersimpan di field inti tetap tercetak meski
+   *                  nama klien di kolom konteks sudah disamarkan, dan
+   *                  penggunanya mengira sudah aman.
+   *
+   *   `"apaadanya"`  isinya **tidak pernah** disentuh penyamaran angka. Ini
+   *                  soal angka saja - nama klien yang kebetulan tertulis di
+   *                  field bertanda ini tetap disapu seperti di field lain.
+   *                  Ada
+   *                  field yang angkanya bukan besaran melainkan bagian dari
+   *                  identitas sesuatu: `SNI 2847` adalah nomor standar,
+   *                  `Civil 3D` nama perangkat lunak, `26(1)` volume dan nomor
+   *                  terbitan. Menyamarkannya tidak menutupi apa pun - tidak
+   *                  ada yang rahasia di sana - dan hanya membuat berkas
+   *                  lamaran terbaca seperti keluaran aplikasi yang rusak.
+   *
+   *   kosong         bawaannya: angkanya disamarkan. Ini arah kekeliruan yang
+   *                  aman, jadi field baru tidak perlu ditandai untuk terlindungi.
    */
-  redaksi?: "nama";
+  redaksi?: "nama" | "apaadanya";
   /**
    * Kolom bawaan tempat nilainya disimpan, bila field ini memang sudah punya
    * rumah sendiri di model data lama (mis. `publisher` pada publikasi).

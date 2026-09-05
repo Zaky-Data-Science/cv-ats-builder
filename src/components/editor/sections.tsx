@@ -866,6 +866,17 @@ export function ProjectSection() {
           label={teks.redactionLabel}
           hint={teks.redactionHint}
         />
+        {/*
+          Batas Mode Redaksi dinyatakan permanen dan tidak dapat ditutup -
+          bukan hanya saat sakelarnya menyala. Orang yang perlu membacanya
+          justru yang sedang menimbang menyalakannya, dan keterangan yang
+          hanya muncul setelah menyala datang terlambat. Menyamarkan setengah
+          lebih berbahaya daripada tidak menyamarkan sama sekali, karena
+          penggunanya mengira sudah aman.
+        */}
+        <p className="text-[11px] leading-relaxed text-ink-500">
+          {teks.redactionLimit}
+        </p>
         {bagian.modeRedaksi && (
           <p className="rounded-md bg-ink-100 px-2.5 py-1.5 text-[11px] leading-relaxed text-ink-600">
             {teks.redactionNote}

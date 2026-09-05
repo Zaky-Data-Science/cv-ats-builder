@@ -1,7 +1,13 @@
 import { formatDateRange, joinNonEmpty, prettyUrl, ensureHttp } from "@/lib/utils";
 import type { ProjectItem, ResumeData, ResumeLanguage } from "@/lib/resume/types";
 import { judulBagian, polaSchema } from "./pola-schemas";
-import { deskriptorGenerik, samarkanAngka, samarkanKonteks } from "./redaksi";
+import {
+  deskriptorGenerik,
+  konteksAdalahNamaKlien,
+  samarkanAngka,
+  samarkanKonteks,
+  sapuNama,
+} from "./redaksi";
 import type { FieldDef, IntiValue, PolaSchema, TautanPortofolio } from "./types";
 
 /**
@@ -249,13 +255,45 @@ export function nilaiIntiTeks(field: FieldDef, nilai: IntiValue): DetailTercetak
  *
  * Field yang punya rumah sendiri di CV - judul, peran, venue, tautan - tidak
  * ikut, karena ia sudah tercetak di tempatnya. `simpanDi` yang menandainya.
+ *
+ * **Mode Redaksi dikenakan di sini, per field, bukan pada baris yang sudah
+ * tergabung.** Dulu sebaliknya, dan itu akar bug yang cukup lama: begitu nilai
+ * seluruh field disatukan jadi satu untai, tidak ada lagi yang tahu angka itu
+ * datang dari mana, sehingga `SNI 2847` tidak dapat dibedakan dari `8.400 m²`
+ * dan ikut jadi `SNI 2000-3000`. Tidak ada regex yang bisa memisahkan keduanya
+ * dari untai gabungan - menumpuk heuristik di sana justru yang melahirkan bug
+ * ini sejak awal. Skema field-nya yang tahu, jadi skema itu yang ditanya.
+ *
+ * `deskriptorRedaksi` terisi hanya saat Mode Redaksi menyala; keberadaannya
+ * itu sendiri yang menyalakan penyamaran angka di fungsi ini.
  */
 export function detailTercetak(
   item: ProjectItem,
   schema: PolaSchema,
   deskriptorRedaksi?: string,
+  namaRahasia: string[] = [],
 ): DetailTercetak[] {
   const hasil: DetailTercetak[] = [];
+
+  /*
+    Dua perlakuan yang berdiri sendiri, dan memisahkannya penting.
+
+    `sapu` mengganti nama yang sudah diketahui aplikasi. Ia dikenakan pada
+    SELURUH field inti, termasuk yang bertanda `"apaadanya"` - penanda itu
+    soal angka, bukan nama, jadi keduanya tidak bertabrakan. Alasannya
+    konsistensi yang dilihat penggunanya: tanpa ini, nama klien hilang dari
+    ringkasan lalu muncul lagi satu baris di bawahnya, di baris Detail
+    ("Jenis proyek: Inspeksi pipa di PT Nusantara Energi Jaya"). Yang begitu
+    lebih buruk daripada tidak menyamarkan sama sekali, karena penggunanya
+    sudah melihat buktinya bekerja.
+
+    Nama disapu lebih dulu, angkanya belakangan: nama klien boleh memuat
+    angka, dan kalau angkanya disamarkan duluan namanya tidak lagi dikenali.
+  */
+  const sapu = (teks: string) =>
+    deskriptorRedaksi ? sapuNama(teks, namaRahasia, deskriptorRedaksi) : teks;
+  const sapuLaluSamarkan = (teks: string) =>
+    deskriptorRedaksi ? samarkanAngka(sapu(teks)) : teks;
 
   const urut = [...schema.fieldInti].sort(
     (a, b) => (a.prioritas ?? 99) - (b.prioritas ?? 99),
@@ -276,17 +314,35 @@ export function detailTercetak(
     }
 
     const baris = nilaiIntiTeks(field, nilai);
-    if (baris) hasil.push(baris);
+    if (!baris) continue;
+
+    // Field yang angkanya bukan besaran keluar tanpa penyamaran angka - tetapi
+    // namanya tetap disapu. Sisanya kena keduanya, termasuk pada labelnya,
+    // karena label field berbentuk `delta` diambil dari nama metrik yang
+    // diketik sendiri oleh penggunanya.
+    if (field.redaksi === "apaadanya") {
+      hasil.push({ label: sapu(baris.label), nilai: sapu(baris.nilai) });
+      continue;
+    }
+    hasil.push({
+      label: sapuLaluSamarkan(baris.label),
+      nilai: sapuLaluSamarkan(baris.nilai),
+    });
   }
 
+  // Detail tambahan tetap disamarkan: labelnya maupun isinya diketik bebas,
+  // jadi tidak ada skema yang bisa menjamin angkanya bukan besaran. Bawaan
+  // yang aman lebih tepat di sini.
   const tambahan = [...item.detailTambahan]
     .filter((d) => d.label.trim() && d.nilai.trim())
     .sort((a, b) => a.prioritas - b.prioritas)
     .slice(0, MAKS_DETAIL_DICETAK);
   for (const d of tambahan) {
     hasil.push({
-      label: d.label.trim(),
-      nilai: joinNonEmpty([d.nilai.trim(), d.satuan.trim()], " "),
+      label: sapuLaluSamarkan(d.label.trim()),
+      nilai: sapuLaluSamarkan(
+        joinNonEmpty([d.nilai.trim(), d.satuan.trim()], " "),
+      ),
     });
   }
 
@@ -305,8 +361,9 @@ export function barisDetail(
   item: ProjectItem,
   schema: PolaSchema,
   deskriptorRedaksi?: string,
+  namaRahasia: string[] = [],
 ): string {
-  return detailTercetak(item, schema, deskriptorRedaksi)
+  return detailTercetak(item, schema, deskriptorRedaksi, namaRahasia)
     .map((d) => `${d.label}: ${d.nilai}`)
     .join(PEMISAH_DETAIL);
 }
@@ -314,6 +371,36 @@ export function barisDetail(
 /* -------------------------------------------------------------------------- */
 /* Satu item, siap cetak                                                      */
 /* -------------------------------------------------------------------------- */
+
+/**
+ * Nama yang sudah diketahui aplikasi dari item ini, untuk disapu dari kalimat
+ * yang diketik penggunanya sendiri.
+ *
+ * Sumbernya hanya dua, dan keduanya field: kolom Klien/institusi, dan field
+ * inti yang skemanya menandai isinya sebagai nama. Tidak ada penebakan dari
+ * bentuk tulisan - lihat `sapuNama` di `redaksi.ts` untuk alasannya.
+ *
+ * Konteks yang memang bukan nama klien ("Freelance", "Proyek Mandiri") tidak
+ * ikut: menyapunya menghapus keterangan yang justru jujur.
+ */
+export function namaRahasiaItem(
+  item: ProjectItem,
+  schema: PolaSchema,
+): string[] {
+  const nama: string[] = [];
+  if (konteksAdalahNamaKlien(item.konteks)) nama.push(item.konteks.trim());
+
+  for (const field of schema.fieldInti) {
+    if (field.redaksi !== "nama") continue;
+    const nilai = item.inti[field.key];
+    if (typeof nilai === "string") {
+      if (nilai.trim()) nama.push(nilai.trim());
+    } else if (Array.isArray(nilai)) {
+      for (const v of nilai) if (v.trim()) nama.push(v.trim());
+    }
+  }
+  return nama;
+}
 
 export interface ItemTercetak {
   id: string;
@@ -325,7 +412,20 @@ export interface ItemTercetak {
   lokasi: string;
   periode: string;
   ringkasan: string;
+  /** Poin yang siap dicetak: sudah disamarkan, poin kosong sudah dibuang. */
   poin: string[];
+  /**
+   * Poin yang sudah disamarkan tetapi **posisinya utuh** - panjang dan
+   * urutannya sama persis dengan `item.bullets`, poin kosong ikut tinggal.
+   *
+   * Dipakai pratinjau, dan bedanya bukan gaya. Pratinjau menulis suntingan
+   * balik ke `projects.N.bullets.M` memakai nomor urut yang ia terima; kalau
+   * yang diterimanya sudah disaring, satu poin kosong di atas sudah cukup
+   * untuk membuat suntingan mendarat di poin yang salah. Ia juga perlu poin
+   * kosong itu sendiri: poin yang baru ditambahkan selalu lahir kosong, dan
+   * tanpa elemennya tidak ada yang bisa diketik.
+   */
+  poinSemua: string[];
   detail: string;
   tautan: TautanTercetak[];
 }
@@ -356,7 +456,17 @@ export function itemTercetak(
     klien yang dirahasiakan tercetak di berkas yang dikirim pelamar.
   */
   const redaksi = aktif && data.portofolio.modeRedaksi;
-  const samarkan = (teks: string) => (redaksi ? samarkanAngka(teks) : teks);
+  const deskriptor = redaksi ? deskriptorGenerik(data.profilPortofolio) : "";
+  const nama = redaksi ? namaRahasiaItem(item, schema) : [];
+
+  /*
+    Urutannya nama dulu, angka belakangan - dan itu bukan selera. Nama klien
+    boleh memuat angka ("PT Tiga Pilar 88"); kalau angkanya disamarkan lebih
+    dulu, namanya berubah bentuk dan tidak lagi cocok dengan yang tersimpan di
+    kolom Klien, sehingga justru lolos.
+  */
+  const samarkan = (teks: string) =>
+    redaksi ? samarkanAngka(sapuNama(teks, nama, deskriptor)) : teks;
 
   return {
     id: item.id,
@@ -371,14 +481,12 @@ export function itemTercetak(
     periode: formatDateRange(item.startDate, item.endDate, false, lang),
     ringkasan: aktif ? samarkan(item.ringkasan) : "",
     poin: item.bullets.filter((b) => b.trim()).map(samarkan),
+    poinSemua: item.bullets.map(samarkan),
+    // Tidak dibungkus `samarkan`: penyamarannya sudah dikenakan per field di
+    // dalam `detailTercetak`, yang tahu field mana memuat besaran dan mana
+    // yang tidak. Membungkusnya lagi di sini akan mengembalikan bug itu.
     detail: aktif
-      ? samarkan(
-          barisDetail(
-            item,
-            schema,
-            redaksi ? deskriptorGenerik(data.profilPortofolio) : undefined,
-          ),
-        )
+      ? barisDetail(item, schema, redaksi ? deskriptor : undefined, nama)
       : "",
     tautan: aktif
       ? tautanTercetak(item)

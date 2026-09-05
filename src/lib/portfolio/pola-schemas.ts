@@ -65,6 +65,7 @@ const KARYA_VISUAL: PolaSchema = {
       key: "masalah",
       label: "Masalah yang dipecahkan",
       tipe: "teks_panjang",
+      redaksi: "apaadanya",
       placeholder:
         "Pengguna gagal menyelesaikan checkout karena form 4 langkah tanpa indikator progres",
       bantuan:
@@ -81,6 +82,7 @@ const KARYA_VISUAL: PolaSchema = {
       // melainkan berapa banyak keputusan yang benar-benar diambil.
       rubrik: "skala",
       rubrikMin: 2,
+      redaksi: "apaadanya",
       placeholder:
         "Riset: 8 wawancara -> temuan drop di langkah 3 -> satukan jadi 2 langkah",
       bantuan: "Struktur baku studi kasus: 2-5 pasangan masalah-solusi.",
@@ -139,6 +141,7 @@ const KARYA_VISUAL: PolaSchema = {
         "foto",
         "video",
       ],
+      redaksi: "apaadanya",
       placeholder: "denah, potongan, render 3D",
       bantuan:
         "Untuk arsitektur, minimal satu gambar teknis (denah/potongan/detail) - bukan hanya render.",
@@ -163,6 +166,7 @@ const KARYA_VISUAL: PolaSchema = {
         "Next.js",
         "Python",
       ],
+      redaksi: "apaadanya",
       placeholder: "Figma, Illustrator, Blender",
       bantuan: "Perkakas yang benar-benar Anda pakai sendiri di karya ini.",
       prioritas: 4,
@@ -194,6 +198,7 @@ const KARYA_VISUAL: PolaSchema = {
         "tugas studio/kuliah",
         "latihan pribadi",
       ],
+      redaksi: "apaadanya",
       placeholder: "dirilis ke publik",
       bantuan:
         "Perekrut membedakan karya nyata dari latihan. Beri label jujur.",
@@ -204,6 +209,7 @@ const KARYA_VISUAL: PolaSchema = {
       label: "Tautan karya",
       tipe: "url",
       simpanDi: "tautan",
+      redaksi: "apaadanya",
       placeholder: "behance.net/nama/proyek",
       bantuan: "Wajib minimal satu yang benar-benar bisa dibuka. Maksimal dua.",
       wajib: true,
@@ -310,6 +316,7 @@ const PROYEK_TEKNIS: PolaSchema = {
         "pengawasan",
         "serah terima",
       ],
+      redaksi: "apaadanya",
       placeholder: "DED/desain, pelaksanaan, pengujian",
       bantuan:
         "Perekrut ingin tahu sejauh mana Anda ikut, bukan hanya proyek apa.",
@@ -340,6 +347,7 @@ const PROYEK_TEKNIS: PolaSchema = {
         "AMDAL",
         "PROPER",
       ],
+      redaksi: "apaadanya",
       placeholder: "SNI 2847, SNI 1726",
       bantuan:
         "Menyebut standar menunjukkan Anda bekerja dalam kerangka, bukan improvisasi.",
@@ -380,6 +388,7 @@ const PROYEK_TEKNIS: PolaSchema = {
         "PI System",
         "DCS/SCADA",
       ],
+      redaksi: "apaadanya",
       placeholder: "ETABS, AutoCAD, Primavera",
       bantuan: "Perkakas yang Anda operasikan sendiri, bukan yang dipakai tim.",
       prioritas: 5,
@@ -469,6 +478,7 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "jenisKegiatan",
       label: "Jenis kegiatan",
       tipe: "teks",
+      redaksi: "apaadanya",
       placeholder: "Rotasi klinis penyakit dalam",
       bantuan: "Sebutkan bentuk kegiatannya, bukan nama programnya saja.",
       prioritas: 1,
@@ -501,6 +511,7 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "periodeAktif",
       label: "Periode & intensitas",
       tipe: "teks",
+      redaksi: "apaadanya",
       placeholder: "Jan 2024 - kini, 3 hari/pekan",
       bantuan: "Intensitas sama pentingnya dengan durasi.",
       prioritas: 4,
@@ -521,6 +532,7 @@ const PRAKTIK_JAM: PolaSchema = {
       // Kerangka luar pada pola ini adalah lisensinya: yang menilai bukan
       // standar teknis melainkan lembaga yang memberi izin praktik.
       rubrik: "standar",
+      redaksi: "apaadanya",
       placeholder: "STR, SIP",
       bantuan:
         "Gerbang wajib untuk pola ini. Perekrut mengecek lisensi sebelum mengecek pengalaman.",
@@ -531,6 +543,7 @@ const PRAKTIK_JAM: PolaSchema = {
       key: "penyelia",
       label: "Penyelia / atasan",
       tipe: "teks",
+      redaksi: "apaadanya",
       placeholder: "dr. Sari Handayani, Sp.PD - DPJP",
       bantuan: "Orang yang dapat memastikan kegiatan ini benar terjadi.",
       prioritas: 7,
@@ -625,6 +638,7 @@ const KARYA_TERKREDIT: PolaSchema = {
         "pameran",
         "film/produksi",
       ],
+      redaksi: "apaadanya",
       placeholder: "artikel jurnal",
       bantuan: "Menentukan pengelompokan daftar karya Anda di CV.",
       prioritas: 1,
@@ -634,6 +648,7 @@ const KARYA_TERKREDIT: PolaSchema = {
       label: "Sitasi / kredit lengkap",
       tipe: "teks_panjang",
       simpanDi: "title",
+      redaksi: "apaadanya",
       placeholder:
         "Santoso, B., & Wijaya, R. (2025). Optimasi jadwal produksi dengan algoritma genetika. Jurnal Teknik Industri, 26(1), 44-58.",
       bantuan:
@@ -649,6 +664,7 @@ const KARYA_TERKREDIT: PolaSchema = {
       // Besaran pada pola ini adalah tempat terbitnya: jurnal, penerbit, atau
       // panggung yang menampungnya.
       rubrik: "skala",
+      redaksi: "apaadanya",
       placeholder: "Jurnal Teknik Industri, Vol 26(1)",
       bantuan: "Tempat terbit inilah yang memvalidasi karya Anda.",
       wajib: true,
@@ -677,6 +693,7 @@ const KARYA_TERKREDIT: PolaSchema = {
         "sutradara",
         "kurator",
       ],
+      redaksi: "apaadanya",
       placeholder: "penulis pertama",
       bantuan: "Penulis pertama dan anggota dinilai berbeda.",
       prioritas: 4,
@@ -708,6 +725,7 @@ const KARYA_TERKREDIT: PolaSchema = {
         "nasional",
         "lokal",
       ],
+      redaksi: "apaadanya",
       placeholder: "Scopus Q2",
       bantuan: "Tingkat venue menentukan bobot karya di mata penilai akademik.",
       prioritas: 5,
@@ -721,6 +739,7 @@ const KARYA_TERKREDIT: PolaSchema = {
       // angka: yang membuktikan di sini keberadaannya, bukan besarannya.
       rubrik: "hasil",
       rubrikButuhAngka: false,
+      redaksi: "apaadanya",
       placeholder: "doi.org/10.xxxx/yyyy",
       bantuan:
         "Pengenal yang tidak berubah membuat karya Anda dapat ditemukan bertahun-tahun kemudian.",
@@ -787,6 +806,7 @@ const DAMPAK_PROGRAM: PolaSchema = {
       key: "lingkupProgram",
       label: "Lingkup",
       tipe: "teks",
+      redaksi: "apaadanya",
       placeholder: "Analisis kredit segmen UKM",
       bantuan: "Sebutkan pekerjaan intinya, bukan nama divisinya.",
       prioritas: 1,
@@ -835,6 +855,7 @@ const DAMPAK_PROGRAM: PolaSchema = {
         "UU Ketenagakerjaan",
         "PP 35/2021",
       ],
+      redaksi: "apaadanya",
       placeholder: "Six Sigma DMAIC, FMEA",
       bantuan: "Metode menunjukkan hasilnya berulang, bukan kebetulan.",
       wajib: true,
@@ -869,6 +890,7 @@ const DAMPAK_PROGRAM: PolaSchema = {
         "NVivo",
         "Kobo Toolbox",
       ],
+      redaksi: "apaadanya",
       placeholder: "SAP, Power BI",
       bantuan: "Sistem yang Anda operasikan sendiri sehari-hari.",
       prioritas: 5,
@@ -943,6 +965,7 @@ const UMUM: PolaSchema = {
       label: "Jenis karya",
       tipe: "teks",
       rubrik: "skala",
+      redaksi: "apaadanya",
       placeholder: "Aplikasi pencatat keuangan pribadi",
       bantuan: "Sebutkan bendanya dengan bahasa yang dimengerti orang luar bidang.",
       prioritas: 1,
@@ -961,6 +984,7 @@ const UMUM: PolaSchema = {
       label: "Alat & metode",
       tipe: "multi",
       rubrik: "standar",
+      redaksi: "apaadanya",
       placeholder: "React, Figma, wawancara pengguna",
       bantuan: "Alat dan cara kerja yang Anda pakai sendiri.",
       prioritas: 3,
@@ -972,6 +996,7 @@ const UMUM: PolaSchema = {
       simpanDi: "tautan",
       // Karya yang dapat dibuka adalah bukti ia benar-benar jadi.
       rubrik: "tahap",
+      redaksi: "apaadanya",
       placeholder: "github.com/nama/repo",
       bantuan: "Maksimal dua, dan pastikan benar-benar bisa dibuka.",
       prioritas: 4,

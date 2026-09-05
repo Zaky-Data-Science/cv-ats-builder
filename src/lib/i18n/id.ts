@@ -374,6 +374,8 @@ export const id = {
       "Mengganti nama klien dengan deskriptor bidangnya, dan angka pasti dengan rentang yang memuatnya. Berlaku di PDF, Word, dan teks.",
     redactionNote:
       "Berkas cadangan JSON tetap menyimpan angka aslinya - ia cadangan milik Anda sendiri, bukan berkas yang dikirim ke perusahaan.",
+    redactionLimit:
+      "Batasnya: yang dapat disamarkan hanya yang sudah diketahui aplikasi ini - nama di kolom Klien/institusi, dan angka. Nama itu ikut disapu dari kalimat Anda, tetapi nama lain yang hanya Anda tulis di dalam kalimat - rekan, atasan, anak perusahaan, nama produk - tidak dapat dikenali. Baca ulang berkasnya sendiri sebelum mengirim.",
     langTitle: "Periksa bahasa",
     langRequired:
       "Bentuk ini menuntut bahasa orang pertama. Badan penilai kompetensi memakainya untuk memisahkan pekerjaan Anda dari pekerjaan tim Anda.",

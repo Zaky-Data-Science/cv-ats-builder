@@ -235,7 +235,12 @@ export function ResumeDocument({
         )}
 
         <Bullets
-          items={item.bullets}
+          // Bukan `item.bullets`: poin milik item portofolio ikut disamarkan
+          // Mode Redaksi, dan halaman inilah yang menjadi PDF. `poinSemua`,
+          // bukan `poin`, karena Bullets menulis suntingan balik memakai nomor
+          // urut yang ia terima - larik yang sudah disaring akan menggeser
+          // nomor itu. Penyaringan untuk cetak tetap dikerjakan Bullets.
+          items={cetak.poinSemua}
           fontSize={data.fontSize}
           edit={edit}
           basePath={`projects.${i}`}
