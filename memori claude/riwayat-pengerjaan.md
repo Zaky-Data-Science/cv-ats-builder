@@ -2154,9 +2154,95 @@ karena sesi perapian ini memang tidak boleh menyentuh logika fitur.
 
 ---
 
+## Sesi 13 - 5 September 2026: Mode Redaksi yang jujur, dan uji manual 1-4
+
+Sesi ini tidak menambah fitur. Ia menutup jarak antara apa yang Mode Redaksi
+janjikan dan apa yang benar-benar dikerjakannya.
+
+### Bug penyamaran angka, dua putaran (`e207447`, lalu `df93527`)
+
+Putaran pertama menambal gejalanya: `m2`, `m3`, dan pengali `2x15 MW`. Audit
+sesudahnya menunjukkan itu baru ujungnya - `SNI 2847` jadi `SNI 2000-3000`,
+`Civil 3D` jadi `Civil 3-4D`, `26(1)` jadi `20-30(1-2)`.
+
+Akarnya bukan regex yang kurang pintar. Penyamaran dikenakan pada baris Detail
+**setelah** nilai seluruh field disatukan; di titik itu tidak ada lagi yang
+tahu sebuah angka datang dari field mana. Perbaikannya memindahkan penyamaran
+ke tiap field, dan menanyakan skema - 25 field ditandai `redaksi: "apaadanya"`.
+Bawaannya tetap "samarkan" supaya field baru terlindungi tanpa perlu ditandai.
+
+Ikut diperbaiki di sini: kelas karakter `[\d.,]*` menelan koma yang menempel di
+belakang angka, yang sekaligus mematikan penjaga tahun - `"Selesai 2021, lalu"`
+menjadi `"Selesai 2000-3000 lalu"`. Polanya kini wajib berakhir pada digit.
+
+### Uji manual 1-4
+
+Uji 1 (papan ketik) lulus: 45 perhentian Tab, nol yang hilang cincin fokusnya.
+Metode yang sahih hanya penekanan Tab sungguhan - `.focus()` lewat skrip tidak
+memicu `:focus-visible` dan sempat memberi hasil palsu.
+
+Uji 2 (alur utuh) lulus 22/22, dijalankan terprogram. Uji 4 (`ON DELETE
+CASCADE`) lulus 20/20 di tingkat basis data - tanpa login dan tanpa mengetik
+kata sandi siapa pun; sepuluh tabel turunan kosong setelah satu baris user
+dihapus, nol baris yatim, akun demo tidak tersentuh.
+
+**Uji 3 gagal 6 dari 25**, dan menemukan dua kebocoran yang uji otomatis tidak
+pernah lihat:
+
+1. Pratinjau mencetak poin mentah sementara teks polos dan Word memakai poin
+   yang sudah disamarkan. Yang bocor justru jalur yang menjadi **PDF**.
+2. Nama klien yang diketik pengguna **di dalam kalimatnya sendiri** tidak
+   pernah disapu - hanya kolomnya yang diganti. Angkanya tersamar, namanya
+   utuh, di ketiga format.
+
+Keduanya diperbaiki di `df93527`, dan Uji 3 diulang seluruhnya: 25/25.
+
+### Dua keputusan yang tidak terbaca dari kode
+
+**1. `poin` dan `poinSemua` sengaja dua larik, bukan satu.**
+
+Memperbaiki kebocoran (1) dengan memakai `cetak.poin` di pratinjau tampak benar
+dan lulus seluruh uji - tetapi menanam kerusakan yang lebih senyap. `poin`
+membuang poin kosong, sedangkan pratinjau menulis suntingan balik ke
+`projects.N.bullets.M` memakai nomor urut yang ia terima. Satu poin kosong di
+atas sudah cukup untuk membuat ketikan di mode "ketik di kertas" mendarat di
+poin yang salah - tidak terlihat di layar, baru ketahuan setelah tulisan orang
+hilang.
+
+Karena itu `poin` (siap cetak, tersaring) dan `poinSemua` (tersamar, panjang
+dan posisi utuh) berdiri sendiri-sendiri. Kalau suatu hari terlihat mubazir dan
+tergoda disatukan: jangan. Uji "mode ketik: poin terisi tetap menunjuk
+bullets.1" ada untuk menahan itu.
+
+**2. Batas Mode Redaksi dinyatakan terbuka, bukan ditutup-tutupi.**
+
+Setelah semua perbaikan, satu batas tetap ada: nama yang hanya hidup di dalam
+kalimat pengguna - rekan, atasan, anak perusahaan - tidak dapat dikenali tanpa
+menebak. Menebaknya dari pola tulisan (`"PT ..."`, `"CV ..."`) ditolak karena
+salah di dua arah sekaligus: melewatkan nama yang tidak berpola, dan merusak
+kalimat yang tidak perlu disentuh - `"CV saya"` bukan nama siapa-siapa.
+
+Batas itu ditulis di layar, di dekat sakelarnya, **permanen dan tidak dapat
+ditutup** - bukan hanya muncul setelah sakelarnya menyala, sebab yang paling
+perlu membacanya justru orang yang sedang menimbang menyalakannya. Fitur
+keamanan yang membesar-besarkan jangkauannya membuat penggunanya berhenti
+waspada, dan itu lebih berbahaya daripada tidak ada fiturnya sama sekali.
+
+### Catatan kerja
+
+Basis data lokal tertinggal satu migrasi (`kredensial_empat_kategori`) dan
+menggagalkan Uji 4 dengan `P2022`. Diterapkan dengan `npx prisma migrate
+deploy` - **bukan** `migrate dev`, yang dapat mereset data lokal.
+
+Cacat `m2` yang sesi 12 catat sebagai "sengaja dibiarkan" kini sudah tertutup.
+
+Gerbang kualitas: `npm test` 792 lulus 0 gagal, typecheck bersih, lint bersih.
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 12.
+Angka di bawah ini per akhir sesi 13.
 
 | Ukuran | Nilai |
 |---|---:|
@@ -2174,6 +2260,6 @@ Angka di bawah ini per akhir sesi 12.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 708 |
+| Pemeriksaan otomatis | 792 |
 
 ---

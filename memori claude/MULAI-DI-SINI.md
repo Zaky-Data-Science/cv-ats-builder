@@ -81,21 +81,24 @@ Politeknik Negeri Samarinda.
 
 ## 2. Status: tayang, tetapi ada yang belum di-push
 
-> ### Pekerjaan pertama besok, sebelum apa pun yang lain
+> ### Pekerjaan pertama berikutnya: `git push`
 >
-> Fitur portofolio sudah selesai dan **sudah tergabung ke `main`** (`f4be769`),
-> tetapi **belum di-push ke GitHub** - jadi yang tayang di production masih
-> versi sebelumnya. `main` unggul beberapa commit atas `origin/main`.
+> **Uji manual 1-4 sudah selesai seluruhnya dan lulus** (sesi 13). Yang tersisa
+> tinggal `git push`, lalu Uji 5 - yang memang hanya dapat dikerjakan setelah
+> deploy.
 >
-> Yang menahannya: **uji manual 1-4 di `docs/uji-manual.md` belum dikerjakan.**
-> Keempatnya menguji hal yang tidak dapat dibuktikan `npm test` - navigasi
-> papan ketik, alur utuh sampai berkasnya jadi, kebocoran Mode Redaksi, dan
-> rantai penghapusan akun. Dua di antaranya bertanda "perbaiki sekarang juga"
-> bila gagal, dan keduanya menyangkut data orang.
+> Fitur portofolio **sudah tergabung ke `main`** (`f4be769`) tetapi **belum
+> di-push**, jadi yang tayang di production masih versi sebelumnya. `main`
+> unggul belasan commit atas `origin/main`.
 >
-> Urutannya: kerjakan uji 1-4 (sekitar 35 menit) -> perbaiki bila ada yang
-> gagal -> baru `git push` -> lalu uji 5, yang memang hanya dapat dikerjakan
-> setelah deploy.
+> Uji 3 sempat gagal 6 dari 25 dan menemukan dua kebocoran nyata di Mode
+> Redaksi; keduanya sudah diperbaiki dan diuji ulang (`df93527`). Uji 4
+> membuktikan rantai `ON DELETE CASCADE` di tingkat basis data - user dihapus,
+> sepuluh tabel turunannya ikut kosong, nol baris yatim.
+>
+> Catatan untuk lain kali: basis data lokal bisa tertinggal dari skema.
+> Terapkan dengan **`npx prisma migrate deploy`**, jangan `migrate dev` -
+> lihat catatan Prisma di bawah.
 
 | Hal | Nilai |
 |---|---|
@@ -104,9 +107,10 @@ Politeknik Negeri Samarinda.
 | Tim Vercel | ada di catatan pribadi |
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
-| Folder kode | `D:\Website CV` |
+| Folder kode | `D:\Website CV dan Portofolio` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. **Belum dipicu untuk fitur portofolio** |
+| Uji manual 1-4 | **selesai dan lulus** (sesi 13). Uji 5 menunggu deploy |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 
@@ -114,8 +118,8 @@ Politeknik Negeri Samarinda.
 JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6. Angka itu
 berasal dari versi **sebelum** fitur portofolio.
 
-Gerbang kualitas pada `main` saat ini: `npm test` 708 lulus 0 gagal, typecheck
-bersih, lint bersih.
+Gerbang kualitas pada `main` saat ini: `npm test` **792 lulus 0 gagal**,
+typecheck bersih, lint bersih.
 
 ---
 
@@ -143,7 +147,7 @@ ponsel di Wi-Fi yang sama ikut dicatat di log pengawas setiap kali menyala.
 Bila ingin menjalankannya dengan tangan:
 
 ```bash
-cd "D:\Website CV"
+cd "D:\Website CV dan Portofolio"
 
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
@@ -560,7 +564,7 @@ benar-benar dihasilkan, bukan sekadar keberadaannya.
 
 Cukup sampaikan hal-hal ini:
 
-> Project di `D:\Website CV`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
+> Project di `D:\Website CV dan Portofolio`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
 > basis data lokal. Ada pekerjaan yang menahan `git push` - lihat bagian 2.
