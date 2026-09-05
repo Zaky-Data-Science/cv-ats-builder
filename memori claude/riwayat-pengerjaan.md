@@ -2518,19 +2518,183 @@ Gerbang kualitas: `npm test` 792 lulus 0 gagal, typecheck bersih, lint bersih.
 
 ---
 
+## Sesi 15 - 5 September 2026: seluruh sesi 14 dibatalkan, lalu situsnya dirapikan sampai ke perhentian Tab
+
+Sesi ini dibuka dengan satu kalimat dari zaky: **"Fokus proyek kembali ke CV
+saja."** Seluruh fitur portofolio dan reposisi dua pilar dari sesi 14
+dikembalikan dalam satu komit (`254cdc5`), termasuk nama produknya. Bagian
+sesi 14 di atas sengaja tidak dihapus - ia catatan perjalanan, bukan gambaran
+keadaan sekarang. Yang tidak ikut dikembalikan hanya nama Scheduled Task di
+Windows; mengganti nama tugas terjadwal membuat perintah lama menggantung, dan
+nama itu tidak pernah dilihat pengguna.
+
+### Salinan baru, dan lima klaim yang justru dibuang
+
+Salinan beranda ditulis ulang dari `copywriting-baru.md` (`dc008eb`). Bagian
+yang paling menentukan bukan yang dipasang melainkan yang **tidak**: lima
+angka di dalam naskah itu diperiksa satu per satu ke kode, dan yang tidak
+dapat dibuktikan tidak dipakai. Aturannya dari zaky sendiri dan berlaku
+seterusnya: *"JANGAN menambah angka dari sumber lain"*, dan setiap angka wajib
+membawa tautan sumbernya.
+
+Aturan itu dilanjutkan di `909bf71`: klaim yang memang bersumber luar kini
+menautkan sumbernya, dan sumbernya dikumpulkan di `src/lib/rujukan.ts` supaya
+tidak tersebar. Verifikasinya dilakukan dengan membuka tautannya, bukan dengan
+mempercayai daftarnya.
+
+### Sapuan tanda hubung yang dibatalkan di tengah jalan
+
+Zaky minta semua tanda "-" dibuang karena "keliatan sekali AI-nya". Sapuan
+menyeluruh dengan regex **dibatalkan setelah diuji kering**: polanya cocok
+dengan rentang teks yang melintasi dua string terpisah, dan akan merusak kode
+- termasuk penghasil CV. Yang dikerjakan hanya teks yang memang dibaca
+pengguna, satu per satu.
+
+### Kontak, dan satu batas yang diminta tegas
+
+Blok kontak dipasang di kaki halaman dan /tentang (`d474fd8`, `019f38e`).
+Batasnya eksplisit dari zaky: **nomor WhatsApp tidak boleh dicetak angkanya**.
+Yang tampil tautannya saja; nomornya hidup di `AUTHOR.whatsapp` dan diubah
+jadi `wa.me/...` di `src/lib/site.ts`.
+
+### Umpan balik sentuh - dan penjaga hover yang TIDAK ditambahkan
+
+`cf0bdfb`. Ketukan pertama di ponsel sempat hanya memicu keadaan hover tanpa
+menjalankan apa pun. Yang diperbaiki: umpan balik tekan lewat satu blok
+`@media (hover: none)` di `globals.css`, dinetralkan lagi di bawah
+`prefers-reduced-motion`.
+
+Yang **tidak** dikerjakan sama pentingnya. Zaky mengira 16 aturan hover tidak
+terjaga; setelah dihitung ulang pada CSS **hasil bangunan**, 14 dari 16 sudah
+terbungkus `@media (hover: hover)` oleh Tailwind v4 sendiri. `@custom-variant`
+yang sempat direncanakan karena itu tidak jadi ditambahkan. Zaky
+mengonfirmasinya sendiri: *"Koreksimu soal hover benar dan saya sudah
+verifikasi sendiri."* Angka yang dihitung semula adalah blok, bukan aturan.
+
+Sisanya di `78a93b7` (angka beranda kini terbuka pada ketukan pertama,
+dijaga `pointerType === "mouse"`) dan `2962e93` (keterangan bentuk di /alur
+disejajarkan dengan grid, bukan dibiarkan mengalir).
+
+### Panel pengelola: batas datanya yang jadi pokok, bukan panelnya
+
+`17d1bb8`. Spesifikasi zaky memuat satu kalimat yang menentukan seluruh
+bentuknya: **"Panel ini melihat DATA AKUN, TIDAK PERNAH ISI CV."** Karena itu
+kuerinya menyebut kolomnya satu per satu, dan `resumes: { select: { title } }`
+pun ditolak - judul CV kerap memuat nama orang dan nama perusahaan yang
+dilamar. Yang diambil hanya jumlahnya.
+
+Yang dilarang keras: membaca atau menyunting isi CV, mengganti kata sandi
+orang, dan masuk menyamar sebagai pengguna lain. Tidak satu pun ada.
+
+Tiga keputusan yang tidak terbaca dari kode:
+
+- Bukan pengelola menerima **404**, bukan pesan penolakan. Pesan penolakan
+  memberi tahu ada sesuatu di alamat itu; halaman yang seolah tidak ada tidak
+  mengungkapkan apa pun.
+- `ADMIN_EMAIL` hidup di env, **tidak pernah di kode**. Repositorinya publik.
+- Keputusan "siapa pengelola" ditaruh di `src/lib/admin.ts` yang **tidak
+  mengimpor apa pun**. Selama ia tinggal di `auth.ts`, ia menyeret klien basis
+  data dan tidak dapat diuji tanpa menyalakan Postgres - padahal seluruh
+  berkas uji di sini sengaja berjalan tanpa server maupun basis data.
+
+Halaman Privasi ikut diperbarui di kedua bahasa; itu syarat dari zaky, bukan
+tambahan.
+
+`b54ab07` membatasi laju aksi kirim-tautan-reset, per alamat tujuan, 10 per
+jam - lebih longgar daripada jalur publik karena pemakainya sudah terverifikasi
+sebagai pengelola. Pesan tertahannya menyebut dengan jelas bahwa surelnya
+**tidak** dikirim, supaya tidak ada yang menunggu surel yang tidak akan datang.
+
+### Masuk sebagai siapa - dan penanda peran yang dibuang dari token
+
+`40bc490`. Lima hal dari satu keluhan: menekan tombol Google lalu langsung
+masuk, tanpa pernah tahu masuk sebagai siapa.
+
+- `prompt: "select_account"` pada penyedia Google, jadi pemilih akunnya selalu
+  muncul. Tanpa itu Google memakai sesi terakhir di peramban tanpa bertanya.
+- Bilah atas menampilkan **alamat surelnya**, bukan hanya nama. Dua akun bisa
+  bernama sama persis; alamatnya selalu berbeda. Di layar sempit yang bertahan
+  alamatnya, karena kalau hanya satu yang muat, yang berguna justru itu.
+- "Ganti akun" terpisah dari "Keluar" - keduanya mengeluarkan, yang berbeda ke
+  mana orangnya dibawa sesudah itu.
+- Lencana "Pengelola" yang terlihat. Zaky menegaskan sendiri: *"Penanda ini
+  kemudahan, BUKAN pengamanan."*
+- Peran dibaca ulang dari `ADMIN_EMAIL` di layout, dan **`token.admin` beserta
+  `session.user.admin` dihapus seluruhnya** - bukan sekadar tidak dipakai.
+  Masalahnya pernah terjadi: `ADMIN_EMAIL` diisi *setelah* seseorang masuk,
+  sehingga rutenya terbuka sementara tautan menunya tidak pernah muncul; menu
+  dan rute berbeda pendapat tentang satu hal yang sama. Penanda yang masih
+  tersimpan mengundang orang menggantungkan izin padanya suatu hari, padahal
+  ia dapat basi. Dengan tidak menyimpannya sama sekali, satu-satunya jawaban
+  yang tersedia adalah membaca ulang. Efek sampingannya: memberi maupun
+  mencabut peran berlaku seketika.
+
+### Perhentian Tab yang mubazir - dan ternyata ada 27
+
+`212a98b`, butir 0b yang dicatat sejak sesi 13. Penyebabnya bentuk penulisan
+yang lazim: `<Link><Button>...</Button></Link>`, yang menghasilkan
+`<a><button>` - dua elemen yang dapat difokuskan untuk satu perintah. Pembaca
+layar menyebutkannya dua kali, dan HTML sendiri melarangnya.
+
+Catatan lamanya menyebut kepala halaman publik. Setelah dipindai, ia ada di
+**27 tempat di 12 berkas**, enam di antaranya tombol utama halaman depan.
+Memperbaiki enam dan meninggalkan 21 akan membuat laporan "perhentian ganda
+sudah hilang" tidak benar, jadi seluruhnya diganti dengan `buttonClass()` di
+`components/ui.tsx` - kelas tombol tanpa elemen `<button>`-nya, dipakai
+bersama oleh `<Button>` sehingga rupa keduanya tidak dapat berselisih.
+
+Satu jebakan nyaris tertanam saat menggabungkan kelasnya: `inline-block` milik
+`<Link>` **menggantikan** `inline-flex` milik tombol - tailwind-merge
+memenangkan yang ditulis belakangan - dan bersamanya hilang `items-center`
+yang menyejajarkan ikon panah dengan teksnya. Ikonnya akan jatuh ke garis
+dasar di halaman yang paling sering dilihat, tanpa satu pun pemeriksaan
+berteriak. `inline-block` karena itu dibuang saat digabung, dan `block`
+diterjemahkan menjadi `flex`.
+
+`tests/markup.test.ts` menjaganya. Ia memindai berkas sumber, bukan merender,
+dan itu disengaja: gejalanya tidak pernah muncul sebagai galat - halamannya
+terbentuk normal dan tampilannya sama persis. Satu-satunya cara menemukannya
+lewat layar adalah menekan Tab berulang sambil menghitung.
+
+Di komit yang sama: **tautan "Beranda" di bilah aplikasi**. Dilaporkan zaky
+sambil melihat layarnya - bagi yang sudah masuk, halaman depan tidak dapat
+dicapai sama sekali. Logonya sengaja tidak dialihkan ke "/" sebagai gantinya:
+bagi orang yang sedang bekerja, logo yang membawa pulang ke dasbor adalah yang
+diharapkan; yang kurang justru pintu keluarnya, dan pintu itu lebih baik
+disebutkan namanya.
+
+### Catatan kerja
+
+**Jangan menjalankan `npx prettier` di repositori ini.** Prettier bukan
+dependensi project dan tidak ada konfigurasinya, jadi `npx` menarik versi baru
+dengan setelan bawaan dan memformat ulang **seluruh pohon** - termasuk berkas
+yang tidak disentuh dan penghasil dokumen CV. Sudah terjadi di sesi ini dan
+harus dibatalkan dengan `git checkout -- src/`. Tidak ada pemeriksa format di
+gerbang kualitas; rapikan sendiri baris yang melebihi 80 kolom.
+
+Pembuktian tetap dilakukan pada berkas yang **benar-benar disajikan**, bukan
+pada sumbernya: halaman depan production diperiksa berulang dan tetap 0 tautan
+yang memuat tombol, dengan 14 tautan yang membawa kelas tombolnya sendiri.
+Sekali sempat terbaca masih memakai bangunan lama sesaat setelah deploy -
+kemungkinan besar satu entri singgahan tepi yang belum berganti; pemeriksaan
+berulang menunjukkannya sudah stabil.
+
+Gerbang kualitas: `npm test` 367 lulus 0 gagal, typecheck bersih, lint bersih.
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 13.
+Angka di bawah ini per akhir sesi 15, dihitung ulang setelah fitur portofolio dibatalkan.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 180 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 189 |
 | Baris kode termasuk berkas uji dan skrip | ~45.000 |
 | Tabel basis data | 17 |
-| Berkas migrasi | 9 |
-| Route aplikasi | 36 |
+| Berkas migrasi | 7 |
+| Route aplikasi | 32 |
 | Hal yang dinilai (dimensi) | 6 |
-| Pola pembuktian portofolio | 5 + 1 cadangan |
 | Bidang di kamus | 21 |
 | Bagian CV yang dapat diisi | 11 |
 | Template CV | 10 |
@@ -2538,6 +2702,6 @@ Angka di bawah ini per akhir sesi 13.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 792 |
+| Pemeriksaan otomatis | 367 |
 
 ---

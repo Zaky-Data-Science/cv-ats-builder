@@ -7,13 +7,13 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **4 September 2026** (sesi 12)
+Terakhir diperbarui: **5 September 2026** (sesi 15)
 
 ---
 
 ## 1. Project ini apa
 
-**CV ATS & Portofolio Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
+**CV ATS Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
 (*Applicant Tracking System*). Pengguna mengisi field terstruktur, melihat
 hasilnya seketika di pratinjau seukuran kertas sebenarnya, memperoleh skor ATS
 beserta saran perbaikan, lalu mengunduh PDF/Word/teks/JSON. Datanya tersimpan
@@ -79,18 +79,26 @@ Politeknik Negeri Samarinda.
 
 ---
 
-## 2. Status: tayang, tetapi ada yang belum di-push
+## 2. Status: tayang, tidak ada yang tertahan
 
 > ### Keadaan sekarang
 >
-> **Uji manual 1-5 sudah selesai seluruhnya dan lulus.** Fitur portofolio,
-> perbaikan Mode Redaksi, dan seluruh catatan sesi 13 **sudah ter-push dan
-> tayang di production** (`788fb73`).
+> **Uji manual 1-5 sudah selesai seluruhnya dan lulus.** Seluruh pekerjaan
+> sampai sesi 15 **sudah ter-push dan tayang di production** (`212a98b`).
+> Tidak ada komit lokal yang menunggu.
 >
-> Yang belum di-push: **reposisi dua pilar (sesi 14)** - nama produk berganti
-> menjadi **CV ATS & Portofolio Builder**, beranda punya dua pintu masuk setara.
-> Perubahan tampilan dan teks saja; tidak ada logika fitur yang disentuh.
-> Tunggu peninjauan sebelum push.
+> **Fitur portofolio dan reposisi dua pilar sudah dibatalkan seluruhnya**
+> (`254cdc5`, sesi 15, atas keputusan zaky: "fokus proyek kembali ke CV
+> saja"). Nama produk kembali **CV ATS Builder**. Bila membaca bagian sesi 14
+> di `riwayat-pengerjaan.md`, ingat bahwa hampir seluruh isinya sudah tidak
+> berlaku lagi - ia disimpan sebagai catatan perjalanan, bukan sebagai
+> gambaran keadaan sekarang.
+>
+> Satu hal dari sesi 14 yang **masih hidup**: Scheduled Task di Windows
+> masih bernama `CV ATS & Portofolio Builder - server lokal`. Namanya sengaja
+> tidak ikut dikembalikan - mengganti nama tugas terjadwal membuat perintah
+> lama menggantung, dan nama itu tidak pernah dilihat pengguna. Perintah
+> di bagian bawah memakai nama itu apa adanya.
 >
 > Catatan untuk lain kali: basis data lokal bisa tertinggal dari skema.
 > Terapkan dengan **`npx prisma migrate deploy`**, jangan `migrate dev` -
@@ -105,9 +113,9 @@ Politeknik Negeri Samarinda.
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV dan Portofolio` |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
-| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. **Belum dipicu untuk fitur portofolio** |
+| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. Terakhir dipicu `212a98b` (sesi 15) |
 | Uji manual 1-5 | **selesai dan lulus** (sesi 13) |
-| Nama produk | **CV ATS & Portofolio Builder** sejak sesi 14. Nama repo GitHub dan `name` di package.json sengaja tidak ikut - itu plumbing |
+| Nama produk | **CV ATS Builder** - sempat berganti di sesi 14 lalu dikembalikan di sesi 15. Nama repo GitHub dan `name` di package.json memang tidak pernah ikut berganti - itu plumbing |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 
@@ -460,6 +468,8 @@ Berguna bila gejala serupa muncul lagi.
 | `/dashboard` membalas 200 tanpa login | Kerangka pemuatan sempat dialirkan sebelum pengalihan | Middleware mengalihkan lebih awal, kini 307 |
 | Deteksi dua kolom tidak jalan pada halaman berisi sedikit teks | Ambangnya 40 potongan teks, terlalu tinggi | Diturunkan ke 12 |
 | Worker pdf.js menumpuk setiap PDF dibuka | pdf.js 6 memindahkan metode pembebasan dari objek dokumen ke objek tugas pemuatannya | `task.destroy()`, bukan `document.destroy()` |
+| Satu tombol menghabiskan dua perhentian Tab | `<Link><Button>` menghasilkan `<a><button>` - dua elemen yang dapat difokuskan untuk satu perintah. Ada di 27 tempat | Helper `buttonClass()` di `components/ui.tsx`; dijaga `tests/markup.test.ts` |
+| Panel pengelola terbuka tetapi tautan menunya tidak muncul | Peran dicap ke dalam token saat masuk; `ADMIN_EMAIL` diisi sesudahnya, jadi rute dan menu berbeda pendapat | `token.admin` dihapus seluruhnya; peran selalu dibaca ulang lewat `isAdminEmail` |
 | Satu berkas terbaca sebagai berkas biner oleh grep | Karakter NUL literal tertulis di dalam pola regex pembersih teks | Diganti rentang karakter kendali yang ditulis sebagai escape |
 | CV contoh berbahasa Inggris bernilai satu poin lebih rendah | Daftar kata kerja aksi Inggris kehilangan bentuk lampau tak beraturan ("rebuilt", "wrote", "ran", "used") | Daftar diperluas 40 kata |
 | Label panah balik pada diagram tertutup kotak | Kotak digambar setelah panah | Label panah balik digambar paling akhir; jalurnya dihitung dari kotak paling kiri di seluruh diagram |
@@ -632,7 +642,9 @@ Cukup sampaikan hal-hal ini:
 > Project di `D:\Website CV dan Portofolio`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
-> basis data lokal. Ada pekerjaan yang menahan `git push` - lihat bagian 2.
+> basis data lokal, dan jangan menjalankan `npx prettier` - prettier bukan
+> dependensi project, jadi ia akan memformat ulang seluruh pohon termasuk
+> berkas yang tidak disentuh. Tidak ada yang menahan `git push`.
 > Sebelum menyatakan selesai, jalankan
 > `npm run typecheck && npm run lint && npm test && npm run build`.
 
