@@ -96,9 +96,32 @@ export const AUTHOR = {
    * hanya menerima bentuk itu.
    */
   email: "riyadhzaky05@gmail.com",
+
+  /**
+   * Nomor WhatsApp, bentuk yang dibaca manusia.
+   *
+   * **Tidak pernah dirender sebagai teks.** Situs ini publik dan terindeks,
+   * dan nomor yang tercetak akan dipanen perayap. Yang ditampilkan hanya
+   * tautan "Chat WhatsApp"; bagi manusia fungsinya sama, bagi pemanen
+   * nomornya tidak ada di halaman.
+   *
+   * Alamat surel tetap ditampilkan apa adanya: ia lebih mudah disaring dan
+   * jauh lebih mudah diganti daripada nomor telepon.
+   */
   whatsapp: "0852-5726-9750",
-  whatsappUrl: "https://wa.me/6285257269750",
 } as const;
+
+/**
+ * Tautan wa.me, diturunkan dari `AUTHOR.whatsapp`.
+ *
+ * Diturunkan, bukan ditulis kedua kalinya: dua salinan nomor yang sama adalah
+ * cara paling pasti membuat salah satunya basi setelah yang lain diperbarui.
+ * wa.me hanya menerima bentuk internasional tanpa tanda baca dan tanpa nol
+ * depan, jadi konversinya dikerjakan di sini sekali untuk seluruh aplikasi.
+ */
+export const WHATSAPP_URL = `https://wa.me/${AUTHOR.whatsapp
+  .replace(/\D/g, "")
+  .replace(/^0/, "62")}`;
 
 /**
  * Tahun pembuatan. Ditulis tetap, bukan `new Date().getFullYear()`, supaya

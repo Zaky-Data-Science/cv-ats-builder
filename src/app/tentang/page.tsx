@@ -12,6 +12,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { auth } from "@/auth";
+import { ContactBlock } from "@/components/ContactBlock";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -234,23 +235,7 @@ export default async function TentangPage() {
               <p className="mt-1 text-sm text-ink-600">{AUTHOR.role}</p>
               <p className="text-sm text-ink-600">{AUTHOR.department}</p>
               <p className="text-sm text-ink-600">{AUTHOR.institution}</p>
-              <p className="mt-3 text-sm text-ink-600">
-                <a
-                  href={`mailto:${AUTHOR.email}`}
-                  className="underline-offset-2 hover:text-ink-900 hover:underline"
-                >
-                  {AUTHOR.email}
-                </a>
-                <span className="px-2 text-ink-300">·</span>
-                <a
-                  href={AUTHOR.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline-offset-2 hover:text-ink-900 hover:underline"
-                >
-                  WhatsApp {AUTHOR.whatsapp}
-                </a>
-              </p>
+              <ContactBlock className="mt-5 border-t border-ink-100 pt-5 text-left" />
               <hr className="hairline my-4" />
               <p className="text-xs text-ink-500">{content.authorRole}</p>
             </Card>

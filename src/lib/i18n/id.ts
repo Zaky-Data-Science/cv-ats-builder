@@ -894,6 +894,21 @@ export const id = {
   },
 
   /* ------------------------------------------------------------------ footer */
+  /* Blok kontak. Dipakai kaki halaman dan halaman Tentang lewat satu
+     komponen yang sama, supaya keduanya tidak mungkin berbeda isi. */
+  contact: {
+    heading: "Hubungi pengelola",
+    purpose:
+      "Menemukan yang keliru, punya saran, atau butuh bantuan memakai aplikasinya? Kabari saja.",
+    expectation:
+      "Aplikasi ini dikelola satu orang, jadi balasannya tidak selalu cepat. Tapi tiap pesan dibaca.",
+    emailLabel: "Surel",
+    waLabel: "WhatsApp",
+    waAction: "Chat WhatsApp",
+    waAria: "Chat WhatsApp dengan pengelola aplikasi",
+    emailAria: "Kirim surel ke pengelola aplikasi",
+  },
+
   footer: {
     pagesHeading: "Halaman",
     authorHeading: "Pembuat",

@@ -855,6 +855,21 @@ export const en: Dictionary = {
     loading: "Loading page...",
   },
 
+  /* Contact block. The footer and the About page both render it through one
+     shared component, so the two can never drift apart. */
+  contact: {
+    heading: "Get in touch",
+    purpose:
+      "Spotted something wrong, got a suggestion, or stuck using the app? Do say.",
+    expectation:
+      "One person runs this, so a reply is not always quick. Every message does get read though.",
+    emailLabel: "Email",
+    waLabel: "WhatsApp",
+    waAction: "Chat on WhatsApp",
+    waAria: "Chat with the maintainer on WhatsApp",
+    emailAria: "Email the maintainer",
+  },
+
   footer: {
     pagesHeading: "Pages",
     authorHeading: "Built by",
