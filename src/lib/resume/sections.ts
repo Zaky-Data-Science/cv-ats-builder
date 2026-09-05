@@ -26,7 +26,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     key: "summary",
     label: "Ringkasan Profil",
     heading: { ID: "RINGKASAN PROFIL", EN: "PROFESSIONAL SUMMARY" },
-    hint: "2-4 kalimat: siapa Anda, keahlian utama, dan pencapaian terbesar. Ditempatkan paling atas karena bagian ini yang pertama dibaca perekrut.",
+    hint: "2-4 kalimat: siapa kamu, keahlian utama, dan pencapaian terbesar. Ditempatkan paling atas karena bagian ini yang pertama dibaca perekrut.",
     repeatable: false,
   },
   experience: {
