@@ -2028,24 +2028,516 @@ memuat peringatan usang itu.
 
 ---
 
+## Sesi 12 - 4 September 2026: portofolio berbasis pola, dan perapian dokumentasinya
+
+Fitur terbesar sejak aplikasi ini ada, dikerjakan di cabang `fitur-portofolio`
+lalu digabung ke `main` lewat `f4be769` (`--no-ff`, supaya tujuh fasenya tetap
+terbaca sebagai satu pekerjaan). Isi perubahannya ada di lima commit dan tidak
+diulang di sini:
+
+| Commit | Isi |
+|---|---|
+| `cc30eaa` | Fase 1-2: fondasi data dan kamus 21 bidang |
+| `bb0b16b` | Fase 3-4: formulir dinamis dan render ke seluruh keluaran |
+| `d87b4e2` | Fase 5: kekuatan bukti P x Q x R; skor berhenti mengaku sebagai ATS |
+| `9e8419c` | Perbaikan rubrik + Fase 6: kredensial, agregat, redaksi, validator bahasa |
+| `df0558b` | Fase 7: kamus menyumbang ke pencocokan lowongan, deteksi pola, uji penerimaan |
+| `cbe05c3` | Perapian dokumentasi |
+
+Pesan tiap commit sudah memuat rinciannya. Yang dicatat di sini hanya yang
+**tidak terbaca dari kode maupun diff** - empat keputusan yang, bila lupa
+alasannya, besar kemungkinan diputar balik oleh siapa pun yang menyentuh
+bagian ini nanti.
+
+### Kenapa bagian `project` diperluas, bukan dibuatkan bagian baru
+
+Godaannya jelas: fitur baru, bagian baru. Yang menahannya adalah kenyataan
+bahwa bagian `project` sudah ada sejak sesi 1 dan bentuknya nyaris sama persis
+dengan "field umum" portofolio - judul, peran, tautan, poin hasil.
+
+Membuat bagian kedua berarti dua bagian yang tumpang tindih di formulir, dua
+bagian di kertas, dan satu pertanyaan yang tidak punya jawaban benar bagi
+penggunanya: proyek saya ditulis di yang mana. Ia juga akan memaksa migrasi
+memindahkan data orang dari satu bagian ke bagian lain - pekerjaan berisiko
+demi hasil yang lebih buruk.
+
+Karena itu daftar itemnya tetap tinggal di `ResumeData.projects`, dan pola
+Publikasi & Kredit mengendalikan bagian `publication` yang juga sudah ada dan
+memang persis pola itu dalam bentuk sederhana.
+
+### Kenapa penanda rubrik R dibuat abstrak
+
+Ini koreksi terhadap Fase 5, dan cacatnya sempat tercatat terus terang di
+pesan commit-nya sendiri sebelum diperbaiki di `9e8419c`.
+
+Semula syarat R menyebut **nama field** - dan field yang disebutnya hanya ada
+di pola Proyek Teknis. Akibatnya kelima pola lain tidak dapat mencapai nilai
+penuh pada dimensi yang justru berbobot 20% bagi sebagian mereka, dan pola
+Publikasi & Kredit tertahan di R=0 selamanya. Sebuah sitasi tidak pernah punya
+"standar & kode", dan tidak akan pernah punya.
+
+Penandanya kini abstrak - skala, standar, hasil, tahap, peran - dan **tiap pola
+menyatakan sendiri field pemenuhnya**. Aturan yang sama dengan seluruh bagian
+lain fitur ini: percabangan per pola tinggal di registry, bukan di kode yang
+memakainya. Keenam pola kini dapat mencapai R=3.
+
+### Kenapa verifikator dikecualikan dari ekspor, tetapi refleksi tidak
+
+Keduanya sama-sama tidak pernah tercetak di CV, jadi sekilas keduanya pantas
+diperlakukan sama. Ternyata tidak, dan yang membedakan bukan sifat rahasianya
+melainkan **siapa pemiliknya**.
+
+Verifikator berisi nama, jabatan, dan hubungan seorang **pihak ketiga** yang
+tidak pernah menyetujui datanya berpindah ke mana-mana. Berkas ekspor dikirim,
+disalin, dan diunggah penggunanya ke tempat yang tidak dapat diketahui siapa
+pun. Menyimpan nama orang lain di basis data penggunanya sendiri adalah satu
+hal; ikut mengirimkannya adalah hal lain.
+
+Refleksi adalah catatan pengguna **untuk dirinya sendiri**, dan berkas ekspor
+adalah cadangan miliknya. Membuangnya diam-diam membuat janji "impor kembali
+kapan saja" bocor tanpa ada yang tahu - dan orang baru menemukannya persis
+pada saat terburuk, yaitu ketika ia memulihkan cadangannya.
+
+Pengecualian verifikator itu **dikatakan terus terang di antarmuka unduhan**,
+dengan alasan yang sama: pengecualian yang tidak diberitahukan akan ditemukan
+pengguna pada saat yang paling buruk.
+
+### Kenapa "Skor ATS" hanya diganti sebagai nama angka
+
+Penggantiannya sengaja dipersempit. Yang dibuang adalah **klaim**, bukan
+kata-katanya.
+
+Sebuah angka bernama "Skor ATS" berjanji sesuatu yang tidak dapat ditepati
+aplikasi mana pun: bahwa ia tahu apa yang akan dilakukan mesin penyaring
+sebuah perusahaan. Tiap perusahaan menyetel filternya sendiri dan tidak ada
+yang mempublikasikannya. Karena itu angkanya berganti nama menjadi **Kekuatan
+CV** dan **Kecocokan Lowongan** - keduanya menyebut persis apa yang mereka
+ukur - disertai sanggahan permanen yang tidak dapat ditutup.
+
+Tetapi "ATS" tetap dipakai sebagai **nama produk** dan **istilah kategori**,
+dan itu bukan kelalaian. Aplikasinya bernama CV ATS Builder; orang menemukannya
+dengan mengetik "ATS"; dan bagian 1 panduan memang harus menjelaskan apa itu
+ATS, sebab justru ketidaktahuan itulah yang membuat orang membuat CV dua kolom.
+Membuang katanya sekalian akan menghapus satu-satunya kata yang menghubungkan
+aplikasi ini dengan masalah yang dipecahkannya.
+
+### Perapian dokumentasi (`cbe05c3`)
+
+Tiga dokumen proyek masih menggambarkan satu "Skor ATS" dari lima dimensi.
+Diperbarui seluruhnya, diagram dibangkitkan ulang, dan `docs/uji-manual.md`
+disertakan setelah dicocokkan dengan aplikasi yang sebenarnya.
+
+Empat hal basi ditemukan di luar daftar dan ikut dibetulkan: aturan panjang
+halaman 100/75/25% yang sudah dicabut Fase 6 tetapi masih tertulis, tabel
+kalibrasi yang angkanya sudah bergeser, lima nama tombol yang sudah berganti,
+dan `breakdownHint` di kedua kamus i18n yang menyebut "lima hal di bawah ini"
+sementara daftar yang ditunjuknya berisi enam baris.
+
+Satu hal yang perlu diketahui untuk lain kali: `src/lib/diagrams.ts` ternyata
+**belum tuntas** disunting di Fase 5 - tiga sisa istilah lama masih ada di
+sana, dan tidak terlihat sampai berkas gambarnya dibaca satu per satu.
+Menjalankan `npm run diagram` saja tidak cukup; hasilnya harus dibuka.
+
+### Satu cacat yang ditemukan dan sengaja dibiarkan
+
+`samarkanAngka()` ikut menyamarkan angka yang berada **di dalam satuan** bila
+satuannya ditulis tanpa superskrip:
+
+```
+"8.400 m²"  ->  "8.000-9.000 m²"      benar
+"8.400 m2"  ->  "8.000-9.000 m2-3"    salah
+```
+
+Sebabnya `samarkan()` di `render.ts` dikenakan pada baris detail yang sudah
+menggabung nilai dengan satuannya. Sempit, tetapi nyata. Tidak diperbaiki
+karena sesi perapian ini memang tidak boleh menyentuh logika fitur.
+
+---
+
+## Sesi 13 - 5 September 2026: Mode Redaksi yang jujur, dan uji manual 1-4
+
+Sesi ini tidak menambah fitur. Ia menutup jarak antara apa yang Mode Redaksi
+janjikan dan apa yang benar-benar dikerjakannya.
+
+### Bug penyamaran angka, dua putaran (`e207447`, lalu `df93527`)
+
+Putaran pertama menambal gejalanya: `m2`, `m3`, dan pengali `2x15 MW`. Audit
+sesudahnya menunjukkan itu baru ujungnya - `SNI 2847` jadi `SNI 2000-3000`,
+`Civil 3D` jadi `Civil 3-4D`, `26(1)` jadi `20-30(1-2)`.
+
+Akarnya bukan regex yang kurang pintar. Penyamaran dikenakan pada baris Detail
+**setelah** nilai seluruh field disatukan; di titik itu tidak ada lagi yang
+tahu sebuah angka datang dari field mana. Perbaikannya memindahkan penyamaran
+ke tiap field, dan menanyakan skema - 25 field ditandai `redaksi: "apaadanya"`.
+Bawaannya tetap "samarkan" supaya field baru terlindungi tanpa perlu ditandai.
+
+Ikut diperbaiki di sini: kelas karakter `[\d.,]*` menelan koma yang menempel di
+belakang angka, yang sekaligus mematikan penjaga tahun - `"Selesai 2021, lalu"`
+menjadi `"Selesai 2000-3000 lalu"`. Polanya kini wajib berakhir pada digit.
+
+### Uji manual 1-4
+
+Uji 1 (papan ketik) lulus: 45 perhentian Tab, nol yang hilang cincin fokusnya.
+Metode yang sahih hanya penekanan Tab sungguhan - `.focus()` lewat skrip tidak
+memicu `:focus-visible` dan sempat memberi hasil palsu.
+
+Uji 2 (alur utuh) lulus 22/22, dijalankan terprogram. Uji 4 (`ON DELETE
+CASCADE`) lulus 20/20 di tingkat basis data - tanpa login dan tanpa mengetik
+kata sandi siapa pun; sepuluh tabel turunan kosong setelah satu baris user
+dihapus, nol baris yatim, akun demo tidak tersentuh.
+
+**Uji 3 gagal 6 dari 25**, dan menemukan dua kebocoran yang uji otomatis tidak
+pernah lihat:
+
+1. Pratinjau mencetak poin mentah sementara teks polos dan Word memakai poin
+   yang sudah disamarkan. Yang bocor justru jalur yang menjadi **PDF**.
+2. Nama klien yang diketik pengguna **di dalam kalimatnya sendiri** tidak
+   pernah disapu - hanya kolomnya yang diganti. Angkanya tersamar, namanya
+   utuh, di ketiga format.
+
+Keduanya diperbaiki di `df93527`, dan Uji 3 diulang seluruhnya: 25/25.
+
+### Dua keputusan yang tidak terbaca dari kode
+
+**1. `poin` dan `poinSemua` sengaja dua larik, bukan satu.**
+
+Memperbaiki kebocoran (1) dengan memakai `cetak.poin` di pratinjau tampak benar
+dan lulus seluruh uji - tetapi menanam kerusakan yang lebih senyap. `poin`
+membuang poin kosong, sedangkan pratinjau menulis suntingan balik ke
+`projects.N.bullets.M` memakai nomor urut yang ia terima. Satu poin kosong di
+atas sudah cukup untuk membuat ketikan di mode "ketik di kertas" mendarat di
+poin yang salah - tidak terlihat di layar, baru ketahuan setelah tulisan orang
+hilang.
+
+Karena itu `poin` (siap cetak, tersaring) dan `poinSemua` (tersamar, panjang
+dan posisi utuh) berdiri sendiri-sendiri. Kalau suatu hari terlihat mubazir dan
+tergoda disatukan: jangan. Uji "mode ketik: poin terisi tetap menunjuk
+bullets.1" ada untuk menahan itu.
+
+**2. Batas Mode Redaksi dinyatakan terbuka, bukan ditutup-tutupi.**
+
+Setelah semua perbaikan, satu batas tetap ada: nama yang hanya hidup di dalam
+kalimat pengguna - rekan, atasan, anak perusahaan - tidak dapat dikenali tanpa
+menebak. Menebaknya dari pola tulisan (`"PT ..."`, `"CV ..."`) ditolak karena
+salah di dua arah sekaligus: melewatkan nama yang tidak berpola, dan merusak
+kalimat yang tidak perlu disentuh - `"CV saya"` bukan nama siapa-siapa.
+
+Batas itu ditulis di layar, di dekat sakelarnya, **permanen dan tidak dapat
+ditutup** - bukan hanya muncul setelah sakelarnya menyala, sebab yang paling
+perlu membacanya justru orang yang sedang menimbang menyalakannya. Fitur
+keamanan yang membesar-besarkan jangkauannya membuat penggunanya berhenti
+waspada, dan itu lebih berbahaya daripada tidak ada fiturnya sama sekali.
+
+### Catatan kerja
+
+Basis data lokal tertinggal satu migrasi (`kredensial_empat_kategori`) dan
+menggagalkan Uji 4 dengan `P2022`. Diterapkan dengan `npx prisma migrate
+deploy` - **bukan** `migrate dev`, yang dapat mereset data lokal.
+
+Cacat `m2` yang sesi 12 catat sebagai "sengaja dibiarkan" kini sudah tertutup.
+
+Gerbang kualitas: `npm test` 792 lulus 0 gagal, typecheck bersih, lint bersih.
+
+---
+
+## Sesi 14 - 5 September 2026: dua pilar, dan nama yang memuat keduanya
+
+Reposisi tampilan - **Bentuk A** dari `rancangan/06-rencana-dua-pilar...`.
+Tidak ada logika fitur yang disentuh; yang berubah nama, salinan, dan susunan
+beranda. Bentuk B (berkas portofolio terpisah) belum dikerjakan.
+
+Nama produk menjadi **CV ATS & Portofolio Builder**. Nama itu sempat berbunyi
+"CV & Portofolio ATS" di tengah sesi lalu diperbaiki: judul tab tersusun
+`nama - tagline`, dan tagline yang ikut menyebut CV, ATS, dan Portofolio
+membuat ketiganya muncul dua kali sekaligus melewati batas potong mesin
+pencari. Taglinenya dipangkas jadi "Satu Data, Dua Senjata"; kalimat penjualnya
+pindah ke meta description, tempat yang memang untuk itu.
+
+Kata "ATS" sengaja dipertahankan -
+alasannya sama dengan penggantian nama skor di sesi 12: itu kata yang benar-
+benar diketik orang Indonesia di mesin pencari, dan ia masih ada di
+`SITE_META.keywords`. Nama repositori GitHub dan `name` di `package.json`
+sengaja **tidak** ikut berganti: keduanya plumbing, tidak pernah dilihat
+pengguna, dan menggantinya memutus tautan yang sudah tersebar.
+
+### Kenapa CV dan portofolio tidak dilebur
+
+Keduanya menjawab pertanyaan berbeda dan dibaca pembaca berbeda:
+
+| | CV | Portofolio |
+|---|---|---|
+| Dibaca | mesin dulu, lalu perekrut ~6 detik | manusia ahli, pelan dan teliti |
+| Menjawab | pantas diwawancara? | benar-benar bisa? |
+| Bentuk | satu kolom, tanpa tabel, tanpa gambar | bebas, gambar dan studi kasus |
+| Panjang | 1-2 halaman | 3-5 karya terkuat, mendalam |
+| Dinilai | kata kunci + keterbacaan mesin | kedalaman penalaran dan hasil |
+
+Tabel itu kini muncul apa adanya di beranda, README, dan panduan pengguna.
+Menyembunyikannya akan membuat pengunjung memilih pintu yang salah - dan
+menyalahkan aplikasinya, bukan pilihannya.
+
+### Keputusan yang tidak terbaca dari kode
+
+**1. Beranda menyatakan batas produknya sendiri.**
+
+Hari ini portofolio masih berupa bagian **di dalam** CV, bukan berkas terpisah.
+Kartu portofolio di beranda membawa keterangan itu apa adanya
+(`home.pillarFolioNote`), begitu juga README, panduan pengguna, dokumentasi
+teknis, dan halaman Tentang. Menjanjikan dua berkas sementara yang keluar satu
+adalah iklan kosong, dan pengunjung baru menyadarinya **setelah** selesai
+mengisi - saat itu kerugiannya sudah nyata, dan yang hilang kepercayaannya.
+
+**2. Tabel dipakai di beranda, dan itu tidak melanggar apa pun.**
+
+Larangan tabel berlaku pada **CV yang dihasilkan**, karena pengurai ATS
+membacanya berselang-seling antar-kolom. Halaman promosi tidak pernah dibaca
+pengurai mana pun. Aturan yang satu jangan dibawa ke tempat yang lain; komentar
+di `page.tsx` menyebutkan ini supaya tidak ada yang "memperbaikinya" nanti.
+
+**3. Memindai CV bukan pilar ketiga.**
+
+Bagian "Cek CV yang sudah ada" dipindahkan keluar dari kartu berdampingan
+menjadi satu jalur mendatar di bawah kedua pilar. Ia jalan masuk bagi orang
+yang belum tentu mau menyusun apa pun - menaruhnya sebagai kartu seukuran CV
+dan Portofolio akan membuat "dua pilar" terbaca sebagai tiga.
+
+### Putaran kedua: pintu yang ternyata belum setara
+
+Peninjauan menangkap sesuatu yang lolos dari saya: kartu CV punya dua tombol
+("Susun CV saya" dan "Coba tanpa akun"), kartu portofolio hanya satu. Halaman
+itu baru saja menghabiskan satu paragraf meyakinkan pengunjung bahwa keduanya
+setara, lalu membantahnya sendiri lewat bentuk tombolnya - kartu yang tombolnya
+lebih sedikit terbaca sebagai pilihan yang kurang serius. Keduanya kini
+berbentuk sama persis, dan komentarnya di `page.tsx` menyebutkan alasannya.
+
+Pelajarannya: "setara" pada dua kartu berdampingan diperiksa dari bentuknya,
+bukan dari kalimatnya. Salinan yang benar tidak menyelamatkan tata letak yang
+membantahnya.
+
+### Scheduled Task: nama baru, dan path yang ternyata sudah putus
+
+Tugas `CV ATS Builder - server lokal` diganti menjadi `CV ATS & Portofolio Builder -
+server lokal`. Saat memeriksanya sebelum menyentuh apa pun, ketahuan tugas itu
+**sudah rusak sejak folder project diganti nama pagi harinya**: aksinya masih
+menunjuk `D:\Website CV\scripts\dev-24jam.ps1`, folder yang sudah tidak ada.
+Ia akan gagal menyala pada masuk Windows berikutnya, dan tidak ada yang memberi
+tahu. Pendaftaran ulang memperbaikinya sekaligus, karena `pasang-tugas.ps1`
+menurunkan seluruh pathnya dari `$PSScriptRoot`.
+
+Urutan yang dipakai, dan urutannya memang penting: periksa dulu, hentikan dan
+hapus tugas lama, **pastikan port 3000 benar-benar bebas**, baru daftarkan yang
+baru. Melewati langkah ketiga membuat dua server berebut port yang sama.
+
+`Stop-ScheduledTask` saja tidak cukup untuk membebaskan portnya - hal yang sudah
+tercatat di `MULAI-DI-SINI.md`: prosesnya cucu dari rantai `cmd` > `npm` >
+`node`, jadi yang dihentikan tugasnya, bukan servernya. Prosesnya harus
+dihentikan sendiri.
+
+Tidak ada prompt Administrator: tugasnya per-pengguna dengan `RunLevel Limited`,
+persis seperti yang dirancang sejak awal.
+
+Dua nama sengaja **tidak** ikut berganti. `scripts/dev-24jam.ps1` menulis lognya
+ke `%LOCALAPPDATA%\cv-ats-builder\logs` - itu path folder, bukan nama yang
+dilihat siapa pun, dan menggantinya hanya membuat log lama terputus dari yang
+baru. `docs/deploy.md` menyebut nama project di konsol Google Cloud, milik pihak
+lain.
+
+### Putaran ketiga: tampilannya masih berpihak ke CV
+
+Peninjauan menemukan lima hal yang masih membantah dua pilar, dan semuanya
+benar. Yang paling mencolok: **kartu portofolio tombolnya berbunyi "Lanjutkan
+ke CV Saya"** saat pengguna sudah masuk - kartu portofolio dengan tombol CV,
+karena label kartu CV dipakai ulang begitu saja.
+
+Ikut dibetulkan: navigasi ("CV Saya" jadi "Dokumen Saya"), dua dari empat angka
+di beranda diganti angka portofolio (5 pola, 21 bidang), dan pembuka `/panduan`,
+`/alur`, serta `/tentang` yang semuanya berkerangka "CV dulu, portofolio
+menyusul".
+
+**"Cek CV Saya" sengaja dibiarkan.** Fitur itu memang hanya memindai berkas CV;
+menamainya lebih luas justru menjanjikan yang tidak ada.
+
+### Lencana: dua lembar bertumpuk
+
+Lencananya dulu harfiah bertuliskan huruf "CV" - benda paling kecil di halaman,
+tetapi yang paling keras menyatakan produk ini soal CV saja. Diganti dua lembar
+bertumpuk: lembar belakang bergaris teks satu kolom (CV), lembar depan berisi
+dua bidang gelap dan satu baris keterangan (portofolio). Bertumpuk, bukan
+berdampingan, karena memang begitu keadaannya - satu data, dua wujud, dan hari
+ini portofolionya masih tinggal di dalam CV yang sama.
+
+Digambar tiga kali dengan alasan yang berbeda: `BrandMark.tsx` sebagai SVG untuk
+antarmuka, lalu `icon.tsx` dan `opengraph-image.tsx` dengan kotak berposisi -
+penggambarnya (satori) hanya mengenal sebagian kecil SVG, dan memaksakan path
+yang sama berisiko menghasilkan gambar kosong tanpa peringatan. Keduanya
+diverifikasi dengan mengambil PNG-nya dan memeriksa header berkasnya, bukan
+dengan menganggap berhasil.
+
+### Wujud portofolio kini terlihat di beranda
+
+Sebelumnya pengunjung melihat contoh CV jadi di hero tetapi tidak pernah melihat
+portofolio - separuh janji halaman itu tidak punya bukti apa pun di layar.
+`PortfolioPreview` menampilkannya, dan yang dirender **`ResumeDocument` yang
+sungguhan** - pencetak yang sama dengan penghasil PDF dan Word.
+
+Itu syaratnya, bukan pilihan gaya: kalau gambarnya dikarang, ia akan basi
+diam-diam begitu bentuk cetaknya berubah, dan halaman depan mulai menjanjikan
+sesuatu yang tidak keluar. Dengan cara ini gambarnya ikut berubah sendiri.
+
+### Putaran keempat: nama final, dan galat P1017 yang hampir salah diperbaiki
+
+Nama produk dikunci menjadi **CV ATS & Portofolio Builder**, tagline dipangkas
+jadi "Satu Data, Dua Senjata" - judul tab 52 karakter, di bawah batas potong
+mesin pencari, tanpa kata yang muncul dua kali.
+
+Satu kalimat penjualan ditolak masuk: "melipatgandakan peluang dipanggil
+interview". Tidak ada sumbernya, dan sesi 13 justru dihabiskan membuat skor
+berhenti mengaku bisa memprediksi keputusan ATS. Menjanjikannya di halaman
+depan akan membatalkan pekerjaan itu.
+
+**P1017: kesimpulan pertama saya salah, dan hampir ikut ter-commit.**
+
+Percobaan ulang satu kali untuk galat koneksi dipasang di tiga jalur baca
+(`getResume`, `requireOwnedResume`, daftar CV di dasbor) dengan empat batas:
+sekali saja, hanya kode koneksi, hanya pembacaan, dan selalu dicatat. Batas
+ketiga yang paling penting - P1017 bisa terjadi setelah pernyataan berhasil
+dijalankan tetapi sebelum jawabannya kembali, jadi mengulang penulisan berarti
+membuat baris kembar. Sengaja bukan perluasan klien Prisma yang berlaku
+otomatis: perluasan tidak dapat membedakan kueri lepas dari kueri di dalam
+transaksi.
+
+Yang nyaris salah: saat menguji, `getResume()` gagal P1017 berulang kali, dan
+pengukuran menunjukkan lumbung koneksi 5 selalu gagal sementara 1-3 selalu
+berhasil. Kesimpulan yang tampak jelas - lumbungnya kebesaran untuk Postgres
+lokal - sudah ditulis lengkap dengan komentar panjang di `db.ts`.
+
+Lalu pengukuran diulang, dan **max=2 pun mulai gagal**. Yang berubah bukan
+ukurannya melainkan keadaan servernya. Setelah Postgres lokal dinyalakan ulang,
+ukuran 2 sampai 8 berhasil seluruhnya, tiga putaran. Korelasi tadi palsu:
+servernya yang rusak, bukan lumbungnya yang kebesaran. Perubahan `db.ts`
+dibatalkan seluruhnya.
+
+Pelajarannya bukan tentang Prisma. Angka yang berulang tiga kali masih bisa
+salah kalau variabel yang sebenarnya berubah tidak ikut dikendalikan - dan
+"sudah diukur" bukan alasan yang cukup untuk memasang perbaikan. Yang
+menyelamatkan hanya satu: mengukur sekali lagi setelah mengembalikan keadaan
+awal.
+
+Prisma lokal juga menolak menyala setelah proses lamanya dimatikan paksa -
+`Lock file is already being held`. Yang basi hanya folder `server.lock.lock`;
+tetangganya `durable-streams.sqlite` (1,8 GB) adalah datanya. Prosedurnya
+dicatat di `MULAI-DI-SINI.md` lengkap dengan peringatan itu.
+
+**Halaman galat** kini menyebut langkah nyata - muat ulang halaman, dan tombol
+utamanya benar-benar memuat ulang, bukan `reset()` yang hanya merender ulang di
+peramban. Kode galatnya turun ke bawah disertai keterangan bahwa itu memang
+bukan untuk dipahami penggunanya.
+
+### Akar P1017: basis data yang mati lalu hidup sebagai proses baru
+
+Kesimpulan pertama saya salah dua kali sebelum benar, dan itu pantas dicatat.
+
+Percobaan pertama: "koneksi menganggur yang basi". Salah - tiga permintaan
+berjarak 25 detik semuanya normal.
+
+Percobaan kedua: "lumbung koneksi kebesaran". Pengukuran mendukungnya tiga
+putaran berturut-turut - lumbung 5 selalu gagal, 1-3 selalu berhasil - dan
+perbaikannya sudah ditulis lengkap di `db.ts`. Lalu pengukuran diulang dan
+**max=2 pun mulai gagal**. Yang berubah bukan ukurannya melainkan keadaan
+servernya. Setelah Postgres lokal dinyalakan ulang, ukuran 2 sampai 8 berhasil
+seluruhnya. Korelasi tadi palsu; perubahan `db.ts` dibatalkan seluruhnya.
+
+Yang benar: **prosesnya**. `prisma dev` yang mati lalu hidup lagi adalah proses
+baru dengan PID baru di port yang sama. Server web masih memegang koneksi ke
+proses lama, dan koneksi ke proses yang sudah tidak ada tidak pernah bisa
+disambung. Itu juga menjelaskan polanya - `/` dan `/coba` tetap 200 karena
+tidak menyentuh basis data, sementara penyunting gagal karena menyentuh.
+
+Pelajarannya bukan tentang Prisma. Angka yang berulang tiga kali masih bisa
+salah kalau variabel yang sebenarnya berubah tidak ikut dikendalikan, dan
+"sudah diukur" bukan alasan cukup untuk memasang perbaikan. Yang menyelamatkan
+hanya satu: mengukur sekali lagi setelah mengembalikan keadaan awal.
+
+### Percobaan ulang, dan batas yang jujur
+
+Satu percobaan ulang dipasang di tiga jalur baca dengan empat batas: sekali
+saja, hanya kode koneksi, hanya pembacaan, selalu dicatat. Batas ketiga yang
+paling penting - P1017 bisa terjadi setelah pernyataan berhasil dijalankan
+tetapi sebelum jawabannya kembali, jadi mengulang penulisan berarti membuat
+baris kembar.
+
+Yang ditambahkan setelah akar masalahnya diketahui: **membedakan sambungan yang
+putus dari basis data yang mati**. P1001 dan ECONNREFUSED tidak pernah diulang -
+mengulang permintaan ke server yang prosesnya berhenti hanya menunda pesan yang
+jujur. Fungsinya `basisDataMati()`, dan galat semacam itu dilepas seketika
+dengan satu baris log yang menyebutkan bahwa yang perlu dinyalakan basis
+datanya.
+
+Percobaan ulang ini **bukan tambalan untuk laptop**: di production basis datanya
+Neon, yang tidak ikut mati bersama terminal tetapi tetap memutus koneksi
+menganggur. Keadaan A nyata di sana; keadaan B tidak.
+
+Sengaja bukan perluasan klien Prisma yang berlaku otomatis - perluasan tidak
+dapat membedakan kueri lepas dari kueri di dalam transaksi.
+
+### Pengawas yang memulihkan, bukan sekadar mencatat
+
+`dev-24jam.ps1` diperbaiki tiga hal:
+
+1. **Basis data dinyalakan dan ditunggu lebih dulu**, sebelum server web sekali
+   pun dijalankan. Sebelumnya keduanya menyala pada putaran gelung yang sama,
+   sehingga server web sempat membuka lumbung koneksi ke basis data yang belum
+   siap.
+2. **PID pemilik port basis data diawasi.** Kalau berganti, koneksi yang
+   dipegang server web menunjuk proses yang sudah tidak ada - dan server webnya
+   dinyalakan ulang otomatis. Ini yang menghentikan kejadian berulang hari ini.
+   Tidak bertentangan dengan aturan "tanya portnya" di kepala berkas: port tetap
+   yang menentukan hidup atau mati, PID hanya menentukan apakah ia proses yang
+   sama.
+3. **Log yang terbaca manusia** bila basis data gagal menyala - termasuk
+   petunjuk lock basi - alih-alih hanya tumpukan stack trace Prisma di web.log.
+
+Diuji sungguhan, bukan dibaca ulang: proses basis data dimatikan selagi server
+web hidup. Log mencatat `Basis data berganti proses (PID 18292 -> 24988)`, server
+web dinyalakan ulang sendiri, dan keduanya pulih dalam sekitar 30 detik tanpa
+ada yang membuka layar galat.
+
+### Catatan kerja
+
+`npm run diagram` dijalankan dan **hasilnya dibuka**, bukan dipercaya begitu
+saja: nama produk ternyata tidak pernah muncul di satu pun diagram, dan
+pembangkitan ulang menghasilkan isi identik (`git diff` nol baris; yang berbeda
+hanya akhiran baris). Berkasnya dipulihkan supaya tidak menambah derau commit.
+
+Dua tempat sengaja **tidak** diganti namanya, dan keduanya bukan kelalaian:
+`scripts/pasang-tugas.ps1` (nama Scheduled Task yang sudah terdaftar di Windows
+- menggantinya membuat tugas lama menggantung) dan `docs/deploy.md` (nama
+project di konsol Google Cloud, milik pihak lain).
+
+Gerbang kualitas: `npm test` 792 lulus 0 gagal, typecheck bersih, lint bersih.
+
+---
+
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 10.
+Angka di bawah ini per akhir sesi 13.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 138 |
-| Baris kode termasuk berkas uji dan skrip | ~30.600 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 180 |
+| Baris kode termasuk berkas uji dan skrip | ~45.000 |
 | Tabel basis data | 17 |
-| Berkas migrasi | 7 |
-| Route aplikasi | 37 |
-| Dimensi penilaian ATS | 5 |
+| Berkas migrasi | 9 |
+| Route aplikasi | 36 |
+| Hal yang dinilai (dimensi) | 6 |
+| Pola pembuktian portofolio | 5 + 1 cadangan |
+| Bidang di kamus | 21 |
 | Bagian CV yang dapat diisi | 11 |
 | Template CV | 10 |
 | Ukuran kertas | 4 |
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 348 |
+| Pemeriksaan otomatis | 792 |
 
 ---
