@@ -8,8 +8,6 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      /** Benar hanya bila surelnya cocok dengan ADMIN_EMAIL. */
-      admin?: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -17,7 +15,6 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     uid?: string;
-    admin?: boolean;
   }
 }
 

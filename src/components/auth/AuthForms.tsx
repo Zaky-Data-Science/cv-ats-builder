@@ -87,6 +87,25 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   const justRegistered = params.get("registered") === "1";
 
+  /*
+    Datang dari tombol "Ganti akun".
+
+    Yang diminta bukan sekadar keluar, melainkan masuk lagi sebagai orang
+    lain - jadi pemilih akun Google dibuka langsung, tanpa membuat orangnya
+    menekan tombol yang sama sekali lagi di halaman ini.
+
+    Hanya dijalankan sekali walau komponennya dirender ulang, dan hanya bila
+    Google memang aktif di pemasangan ini; kalau tidak, halaman masuk biasa
+    yang tampil dan formulir email tetap dapat dipakai.
+  */
+  const gantiAkun = params.get("ganti") === "1";
+  const sudahMengalihkan = React.useRef(false);
+  React.useEffect(() => {
+    if (!gantiAkun || !googleEnabled || sudahMengalihkan.current) return;
+    sudahMengalihkan.current = true;
+    void signIn("google", { callbackUrl: "/dashboard" });
+  }, [gantiAkun, googleEnabled]);
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);

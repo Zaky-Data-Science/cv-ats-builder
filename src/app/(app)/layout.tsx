@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, UserRoundCog } from "lucide-react";
 import { auth, signOut } from "@/auth";
+import { isAdminEmail } from "@/lib/admin";
 import { BrandMark } from "@/components/BrandMark";
 import { HeaderBack } from "@/components/HeaderBack";
 import { LanguageToggle } from "@/components/i18n";
@@ -30,7 +31,27 @@ export default async function AppLayout({
   const { t } = await getT();
   if (!session?.user?.id) redirect("/login");
 
-  const displayName = session.user.name || session.user.email || t.app.user;
+  const email = session.user.email ?? "";
+  const displayName = session.user.name || email || t.app.user;
+
+  /*
+    Peran dibaca ULANG di sini dari ADMIN_EMAIL, bukan diambil dari
+    `session.user.admin`.
+
+    Penanda di dalam token dicap saat masuk dan tidak berubah sampai token itu
+    disegarkan. Akibatnya nyata dan pernah terjadi: ADMIN_EMAIL diisi SETELAH
+    seseorang masuk, sehingga rutenya sudah terbuka - ia memang membaca ulang
+    dari env - sementara tautan menunya tidak pernah muncul. Menu dan rute
+    berbeda pendapat, dan yang mengalaminya harus menebak alamatnya sendiri.
+
+    Membaca dari sumber yang sama membuat keduanya tidak mungkin berbeda lagi,
+    dan pemberian maupun pencabutan peran berlaku tanpa perlu keluar-masuk.
+
+    Ini tetap kemudahan tampilan, BUKAN pengamanan: /admin dan setiap aksinya
+    memeriksa perannya sendiri di server. Jangan pernah menggantungkan izin apa
+    pun pada nilai ini.
+  */
+  const pengelola = isAdminEmail(email);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -49,9 +70,44 @@ export default async function AppLayout({
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
-            <span className="hidden max-w-40 truncate text-xs text-ink-500 lg:inline">
-              {displayName}
+            {/*
+              Yang ditampilkan alamat surelnya, bukan hanya nama tampilan.
+
+              Dua akun bisa punya nama yang sama persis - "Riyadh Zaky" tidak
+              memberi tahu apa pun tentang akun mana yang sedang dipakai.
+              Alamat surel selalu berbeda, dan itulah satu-satunya yang
+              menjawab "saya sedang masuk sebagai siapa".
+
+              Namanya tetap disebut di atas alamatnya pada layar lebar, karena
+              di situ ada ruang dan nama lebih cepat dikenali. Di layar sempit
+              yang bertahan alamatnya, bukan namanya: kalau hanya satu yang
+              muat, yang berguna justru alamatnya.
+            */}
+            <span className="flex min-w-0 flex-col items-end leading-tight">
+              <span className="hidden max-w-52 truncate text-xs text-ink-500 xl:inline">
+                {displayName}
+              </span>
+              <span className="hidden max-w-52 truncate text-[11px] text-ink-400 sm:inline">
+                {email}
+              </span>
             </span>
+
+            {/*
+              Lencana pengelola.
+
+              Sebelum ini tidak ada cara mengetahui sedang masuk sebagai
+              pengelola selain menebak-nebak alamat /admin. Lencananya membaca
+              sumber yang sama dengan tautan panelnya, jadi keduanya tidak
+              mungkin bertentangan.
+            */}
+            {pengelola && (
+              <span
+                className="hidden shrink-0 rounded-md border border-ink-300 bg-ink-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-ink-700 uppercase sm:inline"
+                title={t.app.adminBadgeHint}
+              >
+                {t.app.adminBadge}
+              </span>
+            )}
             <LanguageToggle />
             <ThemeToggle />
             {/*
@@ -60,7 +116,7 @@ export default async function AppLayout({
               membalas 404 bagi siapa pun yang lain, termasuk yang mengetik
               alamatnya langsung tanpa pernah melihat tautan ini.
             */}
-            {session.user.admin && (
+            {pengelola && (
               <Link href="/admin">
                 <Button variant="ghost" size="sm">
                   {t.admin.title}
@@ -72,6 +128,34 @@ export default async function AppLayout({
                 {t.app.settings}
               </Button>
             </Link>
+            {/*
+              "Ganti akun" berbeda maksud dari "Keluar", jadi berbeda tombol.
+
+              Keluar berarti selesai: kembali ke halaman masuk dan berhenti di
+              sana. Ganti akun berarti ingin masuk lagi, sebagai orang lain -
+              dan yang dituju langsung pemilih akun Google, tanpa singgah di
+              halaman masuk lalu menekan tombol yang sama sekali lagi.
+
+              Keduanya sama-sama mengeluarkan lebih dulu. Yang membedakan
+              hanya ke mana orangnya dibawa sesudah itu, dan itulah yang
+              dijelaskan namanya.
+            */}
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/login?ganti=1" });
+              }}
+            >
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                title={t.app.switchAccountHint}
+              >
+                <UserRoundCog size={14} />
+                <span className="hidden lg:inline">{t.app.switchAccount}</span>
+              </Button>
+            </form>
             <form
               action={async () => {
                 "use server";

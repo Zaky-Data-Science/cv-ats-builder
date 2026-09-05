@@ -4,7 +4,6 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { isAdminEmail } from "@/lib/admin";
 import { checkRateLimit, LIMITS, resetRateLimit } from "@/lib/rate-limit";
 
 /**
@@ -84,6 +83,23 @@ const config: NextAuthConfig = {
             clientId: process.env.AUTH_GOOGLE_ID,
             clientSecret: process.env.AUTH_GOOGLE_SECRET,
             allowDangerousEmailAccountLinking: false,
+
+            /*
+              Pemilih akun Google SELALU ditampilkan, bahkan bila di peramban
+              itu hanya ada satu akun.
+
+              Tanpa `prompt`, Google memakai sesi terakhir di peramban tanpa
+              bertanya: menekan tombolnya langsung membuat orang masuk, dan ia
+              tidak pernah melihat sedang masuk sebagai siapa. Di komputer
+              bersama, atau bagi siapa pun yang punya lebih dari satu akun
+              Google, itu cara paling mudah mengisi CV di akun yang salah dan
+              baru menyadarinya jauh kemudian.
+
+              Biayanya satu ketukan tambahan bagi yang memang hanya punya satu
+              akun. Itu jauh lebih murah daripada tidak tahu sedang masuk
+              sebagai siapa.
+            */
+            authorization: { params: { prompt: "select_account" } },
           }),
         ]
       : []),
@@ -148,29 +164,25 @@ const config: NextAuthConfig = {
       }
 
       /*
-        Peran pengelola dihitung di sini, dari alamat surel yang sudah ada di
-        token, dan disimpan sebagai penanda biasa.
+        Peran pengelola sengaja TIDAK disimpan di dalam token.
 
-        Alamatnya tidak pernah ditulis di dalam kode - ia dibaca dari
-        `ADMIN_EMAIL`. Menulisnya di kode berarti alamat pribadi ikut ke
-        repositori publik, dan menggantinya menuntut deploy ulang.
+        Sempat disimpan, dan akibatnya nyata: token dicap saat masuk dan tidak
+        berubah sampai disegarkan, sehingga ADMIN_EMAIL yang diisi setelah
+        seseorang masuk membuat rutenya terbuka sementara menunya tidak pernah
+        muncul. Menu dan rute berbeda pendapat tentang satu hal yang sama.
 
-        Dihitung ulang setiap token disegarkan, bukan sekali saat masuk:
-        mencabut peran cukup dengan mengubah variabelnya, tanpa perlu memaksa
-        siapa pun keluar dan masuk lagi.
-
-        Penanda ini kemudahan tampilan, BUKAN pengamanan. Setiap halaman dan
-        setiap aksi memeriksa ulang perannya sendiri di server - lihat
-        `requireAdmin` di lib/guard.ts.
+        Penanda yang tersimpan juga mengundang orang menggantungkan izin
+        padanya, padahal ia dapat basi. Dengan tidak menyimpannya sama sekali,
+        satu-satunya jawaban yang tersedia adalah membaca ulang dari
+        `ADMIN_EMAIL` - lihat `isAdminEmail` di lib/admin.ts, dipakai oleh
+        `requireAdmin` maupun oleh bilah atas.
       */
-      token.admin = isAdminEmail(token.email);
       return token;
     },
 
     async session({ session, token }) {
       if (token.uid && session.user) {
         session.user.id = token.uid as string;
-        session.user.admin = token.admin === true;
       }
       return session;
     },

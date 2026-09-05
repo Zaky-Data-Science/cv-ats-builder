@@ -713,6 +713,12 @@ export const en: Dictionary = {
     settings: "Settings",
     signOut: "Sign out",
     user: "User",
+    switchAccount: "Switch account",
+    switchAccountHint:
+      "Sign out, then go straight to the Google account chooser to sign in as someone else.",
+    adminBadge: "Maintainer",
+    adminBadgeHint:
+      "This account is registered as the maintainer, so the maintainer panel can be opened.",
   },
 
   dashboard: {

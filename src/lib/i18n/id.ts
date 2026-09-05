@@ -745,6 +745,12 @@ export const id = {
     settings: "Pengaturan",
     signOut: "Keluar",
     user: "Pengguna",
+    switchAccount: "Ganti akun",
+    switchAccountHint:
+      "Keluar, lalu langsung ke pemilih akun Google untuk masuk sebagai orang lain.",
+    adminBadge: "Pengelola",
+    adminBadgeHint:
+      "Akun ini terdaftar sebagai pengelola, jadi panel pengelola dapat dibuka.",
   },
 
   /* ------------------------------------------------------------- dashboard */
