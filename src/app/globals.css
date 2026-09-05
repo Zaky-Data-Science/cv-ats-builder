@@ -830,6 +830,42 @@ body {
   transform: scale(0.975);
 }
 
+/* ==========================================================================
+   UMPAN BALIK TEKAN DI PERANGKAT SENTUH
+   ==========================================================================
+
+   Di layar sentuh tidak ada hover, jadi tidak ada yang memberi tahu bahwa
+   sebuah elemen benar-benar tertekan. Penggantinya `:active`.
+
+   Aturannya ditulis sekali di sini, bukan ditempelkan ke tiap komponen. Ada
+   56 utilitas interaktif tersebar di 22 berkas; menambal satu per satu berarti
+   yang ke-23 pasti terlewat, dan rasanya berbeda-beda di tiap tempat.
+
+   Nilai skalanya sengaja sama persis dengan `.press:active` di atas. Elemen
+   yang sudah memakai `.press` karena itu tidak berubah rasanya sedikit pun,
+   dan yang belum memakainya kini terasa sama - itu inti "konsisten".
+
+   Dibatasi `(hover: none)`: di perangkat berkursor, hover sudah menjadi
+   penanda dan `:active` bawaan sudah cukup. Batas ini juga yang menjaga agar
+   tautan di dalam kalimat tidak ikut bergerak saat diklik dengan tetikus.
+
+   Catatan pengukuran, supaya tidak ditelusuri ulang dari nol: utilitas
+   `hover:` di proyek ini **sudah** aman di layar sentuh. Tailwind 4.3.3
+   membungkus varian `hover` bawaannya dalam `@media (hover: hover)`, dan pada
+   CSS hasil build 14 dari 16 aturan `:hover` berada di dalam satu blok penjaga
+   itu; dua sisanya `.press:hover` (dijaga `(hover: hover) and (pointer: fine)`)
+   dan hover pada gagang bilah gulir. Jadi yang kurang memang umpan balik
+   tekan, bukan penjagaan hover. */
+@media (hover: none) {
+  a[href]:active,
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active,
+  summary:active {
+    transform: scale(0.975);
+    transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
 /*
   Pengguna yang memilih mengurangi gerak - misalnya karena sensitif terhadap
   animasi atau memakai perangkat lambat - tetap memperoleh seluruh isi
@@ -857,6 +893,15 @@ body {
 
   .reveal {
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Umpan balik tekan termasuk gerak. Elemennya tetap dapat ditekan; yang
+     dihilangkan hanya perubahan bentuknya. */
+  a[href]:active,
+  button:active,
+  [role="button"]:active,
+  summary:active {
     transform: none !important;
   }
 
