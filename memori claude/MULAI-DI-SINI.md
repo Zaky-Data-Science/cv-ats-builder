@@ -13,7 +13,7 @@ Terakhir diperbarui: **4 September 2026** (sesi 12)
 
 ## 1. Project ini apa
 
-**CV ATS Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
+**CV ATS & Portofolio Builder** - aplikasi web untuk menyusun CV yang terbaca sistem ATS
 (*Applicant Tracking System*). Pengguna mengisi field terstruktur, melihat
 hasilnya seketika di pratinjau seukuran kertas sebenarnya, memperoleh skor ATS
 beserta saran perbaikan, lalu mengunduh PDF/Word/teks/JSON. Datanya tersimpan
@@ -88,7 +88,7 @@ Politeknik Negeri Samarinda.
 > tayang di production** (`788fb73`).
 >
 > Yang belum di-push: **reposisi dua pilar (sesi 14)** - nama produk berganti
-> menjadi **CV & Portofolio ATS**, beranda punya dua pintu masuk setara.
+> menjadi **CV ATS & Portofolio Builder**, beranda punya dua pintu masuk setara.
 > Perubahan tampilan dan teks saja; tidak ada logika fitur yang disentuh.
 > Tunggu peninjauan sebelum push.
 >
@@ -107,7 +107,7 @@ Politeknik Negeri Samarinda.
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. **Belum dipicu untuk fitur portofolio** |
 | Uji manual 1-5 | **selesai dan lulus** (sesi 13) |
-| Nama produk | **CV & Portofolio ATS** sejak sesi 14. Nama repo GitHub dan `name` di package.json sengaja tidak ikut - itu plumbing |
+| Nama produk | **CV ATS & Portofolio Builder** sejak sesi 14. Nama repo GitHub dan `name` di package.json sengaja tidak ikut - itu plumbing |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
 | Project Google Cloud | `CV ATS Builder` (id ada di catatan pribadi) |
 
@@ -123,15 +123,15 @@ typecheck bersih, lint bersih.
 ## 3. Cara menjalankan lagi di komputer
 
 **Sejak sesi 10, biasanya tidak perlu.** Server lokal berjalan sendiri:
-sebuah Scheduled Task bernama `CV & Portofolio ATS - server lokal` menyalakannya
+sebuah Scheduled Task bernama `CV ATS & Portofolio Builder - server lokal` menyalakannya
 setiap masuk Windows, dan menyalakannya lagi bila mati.
 
 ```powershell
 # Melihat statusnya
-Get-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal" | Get-ScheduledTaskInfo
+Get-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal" | Get-ScheduledTaskInfo
 
 # Menyalakan sekarang tanpa masuk ulang
-Start-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal"
+Start-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
 
 # Membatalkan pemasangannya
 powershell -ExecutionPolicy Bypass -File "scripts\pasang-tugas.ps1" -Hapus
@@ -186,14 +186,32 @@ dasbor, CV tersimpan, dan pengaturan akun.
 > tidak. Obatnya menyalakan ulang servernya, bukan mengubah apa pun:
 >
 > ```powershell
-> Stop-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal"
+> Stop-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
 > # Stop-ScheduledTask TIDAK mematikan servernya - lihat JEBAKAN di bawah.
 > # Hentikan prosesnya sendiri, pastikan port 3000 bebas, baru:
-> Start-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal"
+> Start-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
 > ```
 >
 > Membuktikan sudah pulih: buka halaman yang **memakai basis data**, bukan
 > beranda. Beranda tetap terbuka meski koneksinya putus.
+>
+> **Kalau P1017 terus berulang meski servernya sudah dinyalakan ulang**, yang
+> rusak bukan sambungannya melainkan Postgres lokalnya. Nyalakan ulang
+> `npm run db:dev`. Bila ia menolak menyala dengan `Lock file is already being
+> held`, itu lock basi dari proses yang pernah dimatikan paksa - hapus **hanya**
+> folder ini, jangan yang lain:
+>
+> ```
+> %LOCALAPPDATA%\prisma-dev-nodejs\Data\durable-streamstscv\server.lock.lock
+> ```
+>
+> Tetangganya - `durable-streams.sqlite`, `server.lock`, `server.json` - itu
+> datanya. Terhapus berarti seluruh CV lokal ikut hilang.
+>
+> Diukur saat kejadian: pada Postgres lokal yang sudah rusak, `getResume()`
+> gagal P1017 pada ukuran lumbung koneksi berapa pun; sesudah dinyalakan ulang,
+> ukuran 2 sampai 8 berhasil seluruhnya. Jadi jangan mengecilkan lumbungnya -
+> yang perlu dinyalakan ulang basis datanya.
 
 ### JEBAKAN PALING PENTING
 

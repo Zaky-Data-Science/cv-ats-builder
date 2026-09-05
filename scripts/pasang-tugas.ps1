@@ -29,7 +29,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$nama = "CV & Portofolio ATS - server lokal"
+$nama = "CV ATS & Portofolio Builder - server lokal"
 $root = Split-Path -Parent $PSScriptRoot
 $skrip = Join-Path $PSScriptRoot "dev-24jam.ps1"
 
@@ -79,7 +79,7 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Settings $settings `
     -Principal $principal `
-    -Description "Menjalankan PostgreSQL lokal dan Next.js dev server untuk project CV & Portofolio ATS, dan menyalakannya lagi bila mati." | Out-Null
+    -Description "Menjalankan PostgreSQL lokal dan Next.js dev server untuk project CV ATS & Portofolio Builder, dan menyalakannya lagi bila mati." | Out-Null
 
 Write-Output "Tugas `"$nama`" terpasang."
 Write-Output ""

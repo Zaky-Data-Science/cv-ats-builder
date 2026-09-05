@@ -3,7 +3,7 @@
 Berkas ini ditujukan sebagai bahan lampiran laporan: rancangan basis data,
 arsitektur, alur proses, dan rincian aturan penilaian ATS.
 
-Produknya bernama **CV & Portofolio ATS** dan berdiri di dua pilar: CV yang
+Produknya bernama **CV ATS & Portofolio Builder** dan berdiri di dua pilar: CV yang
 aman dibaca ATS, dan portofolio yang membuktikan kemampuan di baliknya.
 Keduanya dibangkitkan dari **satu model data yang sama** - lihat bagian ERD dan
 `src/lib/portfolio/render.ts`, yang menyatukan satu bentuk cetak untuk ketiga
@@ -121,7 +121,7 @@ flowchart LR
     P((Pengguna))
     T((Pengunjung))
 
-    subgraph Sistem["CV & Portofolio ATS"]
+    subgraph Sistem["CV ATS & Portofolio Builder"]
         U1[Mendaftar / Masuk]
         U2[Membuat CV]
         U3[Mengisi data CV]

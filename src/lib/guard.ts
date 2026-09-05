@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 import { auth } from "@/auth";
+import { bacaUlangBilaKoneksiPutus } from "@/lib/db-ulang";
 import { prisma } from "@/lib/db";
 import { isStaleSessionError } from "@/lib/stale-session";
 
@@ -37,10 +38,12 @@ export async function requireOwnedResume<T extends object | undefined>(
   include?: T,
 ) {
   const user = await requireUser();
-  const resume = await prisma.resume.findFirst({
-    where: { id: resumeId, userId: user.id },
-    ...(include ? { include } : {}),
-  });
+  const resume = await bacaUlangBilaKoneksiPutus("memeriksa pemilik CV", () =>
+    prisma.resume.findFirst({
+      where: { id: resumeId, userId: user.id },
+      ...(include ? { include } : {}),
+    }),
+  );
   if (!resume) {
     throw new HttpError(404, "CV tidak ditemukan.");
   }

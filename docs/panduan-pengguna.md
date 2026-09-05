@@ -1,6 +1,6 @@
 # Panduan Pengguna
 
-Petunjuk pemakaian aplikasi **CV & Portofolio ATS** dari awal sampai berkas
+Petunjuk pemakaian aplikasi **CV ATS & Portofolio Builder** dari awal sampai berkas
 siap dikirim. Ditulis untuk pengguna yang baru pertama kali membuat CV
 sekalipun.
 

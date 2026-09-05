@@ -1,5 +1,6 @@
 ﻿import { runAtsEngineTests } from "./ats-engine.test";
 import { runCetakTests } from "./cetak.test";
+import { runDbUlangTests } from "./db-ulang.test";
 import { runDocumentTests } from "./document.test";
 import { runEditPathTests } from "./edit-path.test";
 import { runI18nTests } from "./i18n.test";
@@ -34,6 +35,7 @@ async function main() {
   runPortofolioTests();
   runPasswordResetTests();
   runStaleSessionTests();
+  await runDbUlangTests();
   runCetakTests();
   runAtsEngineTests();
   runSkorBuktiKaryaTests();

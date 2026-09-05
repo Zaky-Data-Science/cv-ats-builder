@@ -9,13 +9,19 @@
  * kata "ATS". Kata itu dipertahankan bukan karena bunyinya, melainkan karena
  * itulah yang benar-benar diketik orang Indonesia di mesin pencari; ia juga
  * masih dipakai di SITE_META.keywords karena alasan yang sama.
+ *
+ * Taglinenya sengaja pendek. Judul halaman disusun `${SITE.name} - ${tagline}`,
+ * dan mesin pencari memotongnya di sekitar 60 karakter - tagline yang mengulang
+ * "CV", "ATS", atau "Portofolio" membuang jatah itu untuk kata yang sudah ada
+ * di namanya sendiri. Kalimat penjualnya tinggal di `description`, tempat yang
+ * memang disediakan untuk itu.
  */
 
 import type { Locale } from "@/lib/i18n/config";
 
 export const SITE = {
-  name: "CV & Portofolio ATS",
-  tagline: "Satu Data, Dua Senjata - CV ATS dan Portofolio Profesional",
+  name: "CV ATS & Portofolio Builder",
+  tagline: "Satu Data, Dua Senjata",
   description:
     "Lamaran kerja dibaca dua kali - pertama oleh mesin penyaring lamaran (ATS), lalu oleh rekruter. Aplikasi ini menyusun CV berstandar ATS yang bersih dari kesalahan pembacaan, sekaligus portofolio yang meyakinkan, hanya dari satu kali pengisian data.",
 } as const;

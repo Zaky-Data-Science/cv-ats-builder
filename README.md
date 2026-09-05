@@ -1,4 +1,4 @@
-# CV & Portofolio ATS
+# CV ATS & Portofolio Builder
 
 Aplikasi web yang berdiri di **dua pilar**: CV yang terbaca sistem *Applicant Tracking
 System* (ATS), dan portofolio yang membuktikan kemampuan di baliknya. Keduanya disusun

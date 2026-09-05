@@ -17,7 +17,7 @@
 export const id = {
   /* ---------------------------------------------------------------- umum */
   common: {
-    appName: "CV & Portofolio ATS",
+    appName: "CV ATS & Portofolio Builder",
     save: "Simpan",
     cancel: "Batal",
     delete: "Hapus",
@@ -521,7 +521,7 @@ export const id = {
   flow: {
     metaTitle: "Alur dan Arsitektur",
     metaDescription:
-      "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV & Portofolio ATS - tersedia juga sebagai berkas gambar SVG dan PNG.",
+      "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV ATS & Portofolio Builder - tersedia juga sebagai berkas gambar SVG dan PNG.",
     title: "Alur dan arsitektur",
     subtitle:
       "Empat diagram: bagaimana pengguna memakainya, bagaimana datanya mengalir, dan bagaimana perubahan kode sampai ke production. Perhatikan bahwa CV dan portofolio berbagi satu jalur data yang sama sampai ke tahap cetak - itu sebabnya sekali mengisi menghasilkan keduanya. Diagram di halaman ini dan berkas gambarnya dibangkitkan dari satu sumber yang sama, sehingga keduanya tidak mungkin bercerita berbeda.",
@@ -1067,6 +1067,15 @@ export const id = {
     errorTitle: "Ada yang tidak beres",
     errorBody:
       "Halaman ini gagal ditampilkan. Tenang - CV Anda tetap aman, karena setiap perubahan sudah tersimpan sendiri begitu Anda berhenti mengetik.",
+    errorSteps: "Yang bisa Anda lakukan sekarang:",
+    errorStep1: "Muat ulang halaman ini - tekan tombol di bawah, atau F5.",
+    errorStep2:
+      "Kalau masih sama setelah dimuat ulang, tunggu sebentar lalu coba lagi. Gangguan sambungan ke basis data biasanya pulih sendiri.",
+    errorReload: "Muat ulang halaman",
+    errorStepDev:
+      "Mode pengembangan: pastikan basis data lokal hidup (npm run db:dev), lalu nyalakan ulang server web. Basis data yang mati lalu hidup lagi menjadi proses baru, dan server web masih memegang koneksi ke proses lama.",
+    errorCodeHint:
+      "Kode di bawah ini untuk ditunjukkan bila Anda melaporkannya - tidak perlu Anda pahami.",
     errorCode: "Kode kesalahan:",
     notFoundTitle: "Halamannya tidak ada",
     notFoundBody:

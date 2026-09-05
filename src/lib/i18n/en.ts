@@ -11,7 +11,7 @@ import type { Dictionary } from "./id";
 
 export const en: Dictionary = {
   common: {
-    appName: "CV & Portofolio ATS",
+    appName: "CV ATS & Portofolio Builder",
     save: "Save",
     cancel: "Cancel",
     delete: "Delete",
@@ -500,7 +500,7 @@ export const en: Dictionary = {
   flow: {
     metaTitle: "Flow and Architecture",
     metaDescription:
-      "User flow, architecture, data flow and development workflow diagrams for CV & Portofolio ATS - also available as SVG and PNG image files.",
+      "User flow, architecture, data flow and development workflow diagrams for CV ATS & Portofolio Builder - also available as SVG and PNG image files.",
     title: "Flow and architecture",
     subtitle:
       "Four diagrams: how people use it, how the data moves, and how a code change reaches production. Note that the CV and the portfolio share one data path all the way to the printing stage - that is why filling things in once produces both. The diagrams on this page and the image files are generated from the same source, so the two can never tell different stories.",
@@ -1029,6 +1029,15 @@ export const en: Dictionary = {
     errorTitle: "Something went wrong",
     errorBody:
       "This page failed to show. Your CV is safe though - every change had already saved itself the moment you stopped typing.",
+    errorSteps: "What you can do right now:",
+    errorStep1: "Reload this page - use the button below, or press F5.",
+    errorStep2:
+      "If it still looks the same after reloading, wait a moment and try once more. A dropped database connection usually clears on its own.",
+    errorReload: "Reload the page",
+    errorStepDev:
+      "Development mode: make sure the local database is running (npm run db:dev), then restart the web server. A database that died and came back is a new process, and the web server is still holding connections to the old one.",
+    errorCodeHint:
+      "The code below is for you to quote if you report this - you are not meant to understand it.",
     errorCode: "Error code:",
     notFoundTitle: "There is no such page",
     notFoundBody:

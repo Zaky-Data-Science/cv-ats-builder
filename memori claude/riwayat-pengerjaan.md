@@ -2246,7 +2246,14 @@ Reposisi tampilan - **Bentuk A** dari `rancangan/06-rencana-dua-pilar...`.
 Tidak ada logika fitur yang disentuh; yang berubah nama, salinan, dan susunan
 beranda. Bentuk B (berkas portofolio terpisah) belum dikerjakan.
 
-Nama produk menjadi **CV & Portofolio ATS**. Kata "ATS" sengaja dipertahankan -
+Nama produk menjadi **CV ATS & Portofolio Builder**. Nama itu sempat berbunyi
+"CV & Portofolio ATS" di tengah sesi lalu diperbaiki: judul tab tersusun
+`nama - tagline`, dan tagline yang ikut menyebut CV, ATS, dan Portofolio
+membuat ketiganya muncul dua kali sekaligus melewati batas potong mesin
+pencari. Taglinenya dipangkas jadi "Satu Data, Dua Senjata"; kalimat penjualnya
+pindah ke meta description, tempat yang memang untuk itu.
+
+Kata "ATS" sengaja dipertahankan -
 alasannya sama dengan penggantian nama skor di sesi 12: itu kata yang benar-
 benar diketik orang Indonesia di mesin pencari, dan ia masih ada di
 `SITE_META.keywords`. Nama repositori GitHub dan `name` di `package.json`
@@ -2309,7 +2316,7 @@ membantahnya.
 
 ### Scheduled Task: nama baru, dan path yang ternyata sudah putus
 
-Tugas `CV ATS Builder - server lokal` diganti menjadi `CV & Portofolio ATS -
+Tugas `CV ATS Builder - server lokal` diganti menjadi `CV ATS & Portofolio Builder -
 server lokal`. Saat memeriksanya sebelum menyentuh apa pun, ketahuan tugas itu
 **sudah rusak sejak folder project diganti nama pagi harinya**: aksinya masih
 menunjuk `D:\Website CV\scripts\dev-24jam.ps1`, folder yang sudah tidak ada.
@@ -2376,6 +2383,124 @@ sungguhan** - pencetak yang sama dengan penghasil PDF dan Word.
 Itu syaratnya, bukan pilihan gaya: kalau gambarnya dikarang, ia akan basi
 diam-diam begitu bentuk cetaknya berubah, dan halaman depan mulai menjanjikan
 sesuatu yang tidak keluar. Dengan cara ini gambarnya ikut berubah sendiri.
+
+### Putaran keempat: nama final, dan galat P1017 yang hampir salah diperbaiki
+
+Nama produk dikunci menjadi **CV ATS & Portofolio Builder**, tagline dipangkas
+jadi "Satu Data, Dua Senjata" - judul tab 52 karakter, di bawah batas potong
+mesin pencari, tanpa kata yang muncul dua kali.
+
+Satu kalimat penjualan ditolak masuk: "melipatgandakan peluang dipanggil
+interview". Tidak ada sumbernya, dan sesi 13 justru dihabiskan membuat skor
+berhenti mengaku bisa memprediksi keputusan ATS. Menjanjikannya di halaman
+depan akan membatalkan pekerjaan itu.
+
+**P1017: kesimpulan pertama saya salah, dan hampir ikut ter-commit.**
+
+Percobaan ulang satu kali untuk galat koneksi dipasang di tiga jalur baca
+(`getResume`, `requireOwnedResume`, daftar CV di dasbor) dengan empat batas:
+sekali saja, hanya kode koneksi, hanya pembacaan, dan selalu dicatat. Batas
+ketiga yang paling penting - P1017 bisa terjadi setelah pernyataan berhasil
+dijalankan tetapi sebelum jawabannya kembali, jadi mengulang penulisan berarti
+membuat baris kembar. Sengaja bukan perluasan klien Prisma yang berlaku
+otomatis: perluasan tidak dapat membedakan kueri lepas dari kueri di dalam
+transaksi.
+
+Yang nyaris salah: saat menguji, `getResume()` gagal P1017 berulang kali, dan
+pengukuran menunjukkan lumbung koneksi 5 selalu gagal sementara 1-3 selalu
+berhasil. Kesimpulan yang tampak jelas - lumbungnya kebesaran untuk Postgres
+lokal - sudah ditulis lengkap dengan komentar panjang di `db.ts`.
+
+Lalu pengukuran diulang, dan **max=2 pun mulai gagal**. Yang berubah bukan
+ukurannya melainkan keadaan servernya. Setelah Postgres lokal dinyalakan ulang,
+ukuran 2 sampai 8 berhasil seluruhnya, tiga putaran. Korelasi tadi palsu:
+servernya yang rusak, bukan lumbungnya yang kebesaran. Perubahan `db.ts`
+dibatalkan seluruhnya.
+
+Pelajarannya bukan tentang Prisma. Angka yang berulang tiga kali masih bisa
+salah kalau variabel yang sebenarnya berubah tidak ikut dikendalikan - dan
+"sudah diukur" bukan alasan yang cukup untuk memasang perbaikan. Yang
+menyelamatkan hanya satu: mengukur sekali lagi setelah mengembalikan keadaan
+awal.
+
+Prisma lokal juga menolak menyala setelah proses lamanya dimatikan paksa -
+`Lock file is already being held`. Yang basi hanya folder `server.lock.lock`;
+tetangganya `durable-streams.sqlite` (1,8 GB) adalah datanya. Prosedurnya
+dicatat di `MULAI-DI-SINI.md` lengkap dengan peringatan itu.
+
+**Halaman galat** kini menyebut langkah nyata - muat ulang halaman, dan tombol
+utamanya benar-benar memuat ulang, bukan `reset()` yang hanya merender ulang di
+peramban. Kode galatnya turun ke bawah disertai keterangan bahwa itu memang
+bukan untuk dipahami penggunanya.
+
+### Akar P1017: basis data yang mati lalu hidup sebagai proses baru
+
+Kesimpulan pertama saya salah dua kali sebelum benar, dan itu pantas dicatat.
+
+Percobaan pertama: "koneksi menganggur yang basi". Salah - tiga permintaan
+berjarak 25 detik semuanya normal.
+
+Percobaan kedua: "lumbung koneksi kebesaran". Pengukuran mendukungnya tiga
+putaran berturut-turut - lumbung 5 selalu gagal, 1-3 selalu berhasil - dan
+perbaikannya sudah ditulis lengkap di `db.ts`. Lalu pengukuran diulang dan
+**max=2 pun mulai gagal**. Yang berubah bukan ukurannya melainkan keadaan
+servernya. Setelah Postgres lokal dinyalakan ulang, ukuran 2 sampai 8 berhasil
+seluruhnya. Korelasi tadi palsu; perubahan `db.ts` dibatalkan seluruhnya.
+
+Yang benar: **prosesnya**. `prisma dev` yang mati lalu hidup lagi adalah proses
+baru dengan PID baru di port yang sama. Server web masih memegang koneksi ke
+proses lama, dan koneksi ke proses yang sudah tidak ada tidak pernah bisa
+disambung. Itu juga menjelaskan polanya - `/` dan `/coba` tetap 200 karena
+tidak menyentuh basis data, sementara penyunting gagal karena menyentuh.
+
+Pelajarannya bukan tentang Prisma. Angka yang berulang tiga kali masih bisa
+salah kalau variabel yang sebenarnya berubah tidak ikut dikendalikan, dan
+"sudah diukur" bukan alasan cukup untuk memasang perbaikan. Yang menyelamatkan
+hanya satu: mengukur sekali lagi setelah mengembalikan keadaan awal.
+
+### Percobaan ulang, dan batas yang jujur
+
+Satu percobaan ulang dipasang di tiga jalur baca dengan empat batas: sekali
+saja, hanya kode koneksi, hanya pembacaan, selalu dicatat. Batas ketiga yang
+paling penting - P1017 bisa terjadi setelah pernyataan berhasil dijalankan
+tetapi sebelum jawabannya kembali, jadi mengulang penulisan berarti membuat
+baris kembar.
+
+Yang ditambahkan setelah akar masalahnya diketahui: **membedakan sambungan yang
+putus dari basis data yang mati**. P1001 dan ECONNREFUSED tidak pernah diulang -
+mengulang permintaan ke server yang prosesnya berhenti hanya menunda pesan yang
+jujur. Fungsinya `basisDataMati()`, dan galat semacam itu dilepas seketika
+dengan satu baris log yang menyebutkan bahwa yang perlu dinyalakan basis
+datanya.
+
+Percobaan ulang ini **bukan tambalan untuk laptop**: di production basis datanya
+Neon, yang tidak ikut mati bersama terminal tetapi tetap memutus koneksi
+menganggur. Keadaan A nyata di sana; keadaan B tidak.
+
+Sengaja bukan perluasan klien Prisma yang berlaku otomatis - perluasan tidak
+dapat membedakan kueri lepas dari kueri di dalam transaksi.
+
+### Pengawas yang memulihkan, bukan sekadar mencatat
+
+`dev-24jam.ps1` diperbaiki tiga hal:
+
+1. **Basis data dinyalakan dan ditunggu lebih dulu**, sebelum server web sekali
+   pun dijalankan. Sebelumnya keduanya menyala pada putaran gelung yang sama,
+   sehingga server web sempat membuka lumbung koneksi ke basis data yang belum
+   siap.
+2. **PID pemilik port basis data diawasi.** Kalau berganti, koneksi yang
+   dipegang server web menunjuk proses yang sudah tidak ada - dan server webnya
+   dinyalakan ulang otomatis. Ini yang menghentikan kejadian berulang hari ini.
+   Tidak bertentangan dengan aturan "tanya portnya" di kepala berkas: port tetap
+   yang menentukan hidup atau mati, PID hanya menentukan apakah ia proses yang
+   sama.
+3. **Log yang terbaca manusia** bila basis data gagal menyala - termasuk
+   petunjuk lock basi - alih-alih hanya tumpukan stack trace Prisma di web.log.
+
+Diuji sungguhan, bukan dibaca ulang: proses basis data dimatikan selagi server
+web hidup. Log mencatat `Basis data berganti proses (PID 18292 -> 24988)`, server
+web dinyalakan ulang sendiri, dan keduanya pulih dalam sekitar 30 detik tanpa
+ada yang membuka layar galat.
 
 ### Catatan kerja
 
