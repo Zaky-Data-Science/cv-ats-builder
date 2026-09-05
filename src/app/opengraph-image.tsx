@@ -32,22 +32,56 @@ export default function OpengraphImage() {
       >
         {/* Kepala */}
         <div style={{ display: "flex", alignItems: "center" }}>
+          {/*
+            Lencana dua lembar bertumpuk, digambar dengan kotak berposisi -
+            penggambarnya (satori) hanya mengenal sebagian kecil SVG. Bentuknya
+            mengikuti `BrandMark` dan `icon.tsx`.
+          */}
           <div
             style={{
               width: 56,
               height: 56,
               borderRadius: 14,
               background: "#ffffff",
-              color: "#0a0a0b",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 26,
-              fontWeight: 700,
+              position: "relative",
               marginRight: 16,
             }}
           >
-            CV
+            <div
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 21,
+                width: 25,
+                height: 25,
+                borderTop: "4px solid #0a0a0b",
+                borderRight: "4px solid #0a0a0b",
+                borderTopRightRadius: 6,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: 18,
+                left: 10,
+                width: 28,
+                height: 29,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 3,
+                background: "#0a0a0b",
+                borderRadius: 6,
+              }}
+            >
+              <div style={{ display: "flex", gap: 3 }}>
+                <div style={{ width: 8, height: 8, background: "#ffffff", borderRadius: 2 }} />
+                <div style={{ width: 8, height: 8, background: "#ffffff", borderRadius: 2 }} />
+              </div>
+              <div style={{ width: 19, height: 3, background: "#ffffff", borderRadius: 2 }} />
+            </div>
           </div>
           <div style={{ display: "flex", color: "#9a9aa2", fontSize: 26 }}>
             {SITE.name}
@@ -65,7 +99,7 @@ export default function OpengraphImage() {
               letterSpacing: "-0.02em",
             }}
           >
-            Isi field-nya. CV yang
+            Satu data. CV yang lolos
           </div>
           <div
             style={{
@@ -77,7 +111,7 @@ export default function OpengraphImage() {
               marginTop: 8,
             }}
           >
-            terbaca mesin tersusun sendiri.
+            mesin, portofolio yang meyakinkan.
           </div>
           <div
             style={{
@@ -87,7 +121,7 @@ export default function OpengraphImage() {
               marginTop: 24,
             }}
           >
-            Pratinjau langsung, penilaian CV beserta sarannya, unduh PDF dan Word.
+            Dua pilar dari data yang sama. Pratinjau langsung, penilaian beserta sarannya, unduh PDF dan Word.
           </div>
         </div>
 

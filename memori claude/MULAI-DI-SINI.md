@@ -161,6 +161,40 @@ npm run db:seed      # membuat akun demo@atscv.local / demo12345
 Bila nomor port `prisma dev` berubah, sesuaikan `DATABASE_URL` dan
 `SHADOW_DATABASE_URL` di berkas `.env`.
 
+### Cara masuk saat menguji di localhost
+
+Basis data lokal hanya berisi **satu akun**, dan itu akun demo:
+
+| | |
+|---|---|
+| Alamat | <http://localhost:3000/login> |
+| Email | `demo@atscv.local` |
+| Kata sandi | `demo12345` |
+
+Kredensialnya memang terbuka - ia juga tercetak di `README.md` dan ditampilkan
+`npm run db:seed` setelah selesai. Akun ini dipakai bersama, jadi **jangan
+menaruh data pribadi di dalamnya**.
+
+Yang tidak perlu akun: `/coba` (penyusun tanpa akun, tersimpan di peramban),
+`/bandingkan`, dan seluruh halaman publik. Jalur yang menuntut akun hanya
+dasbor, CV tersimpan, dan pengaturan akun.
+
+> **Kalau muncul layar "Ada yang tidak beres" dengan kode galat**, dan
+> `web.log` menyebut `DriverAdapterError: ConnectionClosed`: itu bukan cacat
+> kode. Server Next.js masih memegang koneksi ke Postgres lokal yang sudah
+> mati - lazim terjadi setelah basis datanya hidup ulang sementara servernya
+> tidak. Obatnya menyalakan ulang servernya, bukan mengubah apa pun:
+>
+> ```powershell
+> Stop-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal"
+> # Stop-ScheduledTask TIDAK mematikan servernya - lihat JEBAKAN di bawah.
+> # Hentikan prosesnya sendiri, pastikan port 3000 bebas, baru:
+> Start-ScheduledTask -TaskName "CV & Portofolio ATS - server lokal"
+> ```
+>
+> Membuktikan sudah pulih: buka halaman yang **memakai basis data**, bukan
+> beranda. Beranda tetap terbuka meski koneksinya putus.
+
 ### JEBAKAN PALING PENTING
 
 > **Jangan pernah menjalankan `prisma migrate dev` terhadap basis data

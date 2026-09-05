@@ -15,9 +15,9 @@ import type { Locale } from "@/lib/i18n/config";
 
 export const SITE = {
   name: "CV & Portofolio ATS",
-  tagline: "CV yang terbaca mesin, portofolio yang meyakinkan manusia",
+  tagline: "Satu Data, Dua Senjata - CV ATS dan Portofolio Profesional",
   description:
-    "Aplikasi web untuk menyusun CV ramah ATS sekaligus portofolio yang membuktikan kemampuannya - keduanya dari data yang sama, lewat field terstruktur yang mengikuti bentuk pembuktian bidang Anda, dengan pratinjau langsung, penilaian otomatis beserta saran perbaikan, dan penyimpanan permanen.",
+    "Lamaran kerja dibaca dua kali - pertama oleh mesin penyaring lamaran (ATS), lalu oleh rekruter. Aplikasi ini menyusun CV berstandar ATS yang bersih dari kesalahan pembacaan, sekaligus portofolio yang meyakinkan, hanya dari satu kali pengisian data.",
 } as const;
 
 /** Judul dan deskripsi situs untuk metadata, mengikuti bahasa antarmuka. */

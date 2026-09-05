@@ -2335,6 +2335,48 @@ dilihat siapa pun, dan menggantinya hanya membuat log lama terputus dari yang
 baru. `docs/deploy.md` menyebut nama project di konsol Google Cloud, milik pihak
 lain.
 
+### Putaran ketiga: tampilannya masih berpihak ke CV
+
+Peninjauan menemukan lima hal yang masih membantah dua pilar, dan semuanya
+benar. Yang paling mencolok: **kartu portofolio tombolnya berbunyi "Lanjutkan
+ke CV Saya"** saat pengguna sudah masuk - kartu portofolio dengan tombol CV,
+karena label kartu CV dipakai ulang begitu saja.
+
+Ikut dibetulkan: navigasi ("CV Saya" jadi "Dokumen Saya"), dua dari empat angka
+di beranda diganti angka portofolio (5 pola, 21 bidang), dan pembuka `/panduan`,
+`/alur`, serta `/tentang` yang semuanya berkerangka "CV dulu, portofolio
+menyusul".
+
+**"Cek CV Saya" sengaja dibiarkan.** Fitur itu memang hanya memindai berkas CV;
+menamainya lebih luas justru menjanjikan yang tidak ada.
+
+### Lencana: dua lembar bertumpuk
+
+Lencananya dulu harfiah bertuliskan huruf "CV" - benda paling kecil di halaman,
+tetapi yang paling keras menyatakan produk ini soal CV saja. Diganti dua lembar
+bertumpuk: lembar belakang bergaris teks satu kolom (CV), lembar depan berisi
+dua bidang gelap dan satu baris keterangan (portofolio). Bertumpuk, bukan
+berdampingan, karena memang begitu keadaannya - satu data, dua wujud, dan hari
+ini portofolionya masih tinggal di dalam CV yang sama.
+
+Digambar tiga kali dengan alasan yang berbeda: `BrandMark.tsx` sebagai SVG untuk
+antarmuka, lalu `icon.tsx` dan `opengraph-image.tsx` dengan kotak berposisi -
+penggambarnya (satori) hanya mengenal sebagian kecil SVG, dan memaksakan path
+yang sama berisiko menghasilkan gambar kosong tanpa peringatan. Keduanya
+diverifikasi dengan mengambil PNG-nya dan memeriksa header berkasnya, bukan
+dengan menganggap berhasil.
+
+### Wujud portofolio kini terlihat di beranda
+
+Sebelumnya pengunjung melihat contoh CV jadi di hero tetapi tidak pernah melihat
+portofolio - separuh janji halaman itu tidak punya bukti apa pun di layar.
+`PortfolioPreview` menampilkannya, dan yang dirender **`ResumeDocument` yang
+sungguhan** - pencetak yang sama dengan penghasil PDF dan Word.
+
+Itu syaratnya, bukan pilihan gaya: kalau gambarnya dikarang, ia akan basi
+diam-diam begitu bentuk cetaknya berubah, dan halaman depan mulai menjanjikan
+sesuatu yang tidak keluar. Dengan cara ini gambarnya ikut berubah sendiri.
+
 ### Catatan kerja
 
 `npm run diagram` dijalankan dan **hasilnya dibuka**, bukan dipercaya begitu

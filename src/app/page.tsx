@@ -18,6 +18,7 @@ import {
   Upload,
 } from "lucide-react";
 import { HeroStats } from "@/components/home/HeroStats";
+import { PortfolioPreview } from "@/components/home/PortfolioPreview";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { InkBackground } from "@/components/ink/InkBackground";
 import { InkWash } from "@/components/ink/InkWash";
@@ -303,14 +304,14 @@ export default async function LandingPage() {
                       explain: t.home.statSectionsWhy,
                     },
                     {
-                      to: 10,
-                      label: t.home.statTemplates,
-                      explain: t.home.statTemplatesWhy,
+                      to: 5,
+                      label: t.home.statPatterns,
+                      explain: t.home.statPatternsWhy,
                     },
                     {
-                      to: 5,
-                      label: t.home.statDimensions,
-                      explain: t.home.statDimensionsWhy,
+                      to: 21,
+                      label: t.home.statFields,
+                      explain: t.home.statFieldsWhy,
                     },
                     {
                       to: 4,
@@ -408,7 +409,9 @@ export default async function LandingPage() {
                     <div className="mt-5 flex flex-wrap gap-2">
                       <Link href={signedIn ? "/dashboard" : "/login"}>
                         <Button className="press">
-                          {signedIn ? t.home.heroCtaDashboard : t.home.pillarFolioCta}
+                          {signedIn
+                            ? t.home.pillarFolioCtaSignedIn
+                            : t.home.pillarFolioCta}
                           <ArrowRight size={15} />
                         </Button>
                       </Link>
@@ -422,6 +425,37 @@ export default async function LandingPage() {
                 </Interactive>
               </Reveal>
             </div>
+
+            {/* ------------------------------------------------------------ */}
+            {/* Wujud bagian portofolionya, apa adanya                        */}
+            {/* ------------------------------------------------------------ */}
+            {/*
+              Dua pilar tidak cukup dijelaskan; yang satu harus kelihatan.
+              Sebelum ini pengunjung melihat contoh CV jadi di hero, tetapi
+              tidak pernah melihat portofolio - jadi separuh janji halaman ini
+              tidak punya bukti apa pun di layar.
+
+              Yang ditampilkan `ResumeDocument` sungguhan, bukan gambar. Lihat
+              komentar di PortfolioPreview untuk alasannya.
+            */}
+            <Reveal delay={120}>
+              <div className="mt-10 grid gap-6 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+                <div>
+                  <h3 className="text-base font-semibold text-ink-900">
+                    {t.home.folioPreviewTitle}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-600">
+                    {t.home.folioPreviewBody}
+                  </p>
+                </div>
+                <figure>
+                  <PortfolioPreview locale={locale} />
+                  <figcaption className="mt-2 text-center text-[11px] text-ink-500">
+                    {t.home.folioPreviewCaption}
+                  </figcaption>
+                </figure>
+              </div>
+            </Reveal>
 
             {/* ------------------------------------------------------------ */}
             {/* Bedanya, berdampingan                                        */}

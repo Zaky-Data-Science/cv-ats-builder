@@ -524,7 +524,7 @@ export const id = {
       "Diagram alur penggunaan, arsitektur, alur data, dan workflow pengembangan aplikasi CV & Portofolio ATS - tersedia juga sebagai berkas gambar SVG dan PNG.",
     title: "Alur dan arsitektur",
     subtitle:
-      "Empat diagram: bagaimana pengguna memakainya, bagaimana datanya mengalir, dan bagaimana perubahan kode sampai ke production. Diagram di halaman ini dan berkas gambarnya dibangkitkan dari satu sumber data yang sama, sehingga keduanya tidak mungkin bercerita berbeda.",
+      "Empat diagram: bagaimana pengguna memakainya, bagaimana datanya mengalir, dan bagaimana perubahan kode sampai ke production. Perhatikan bahwa CV dan portofolio berbagi satu jalur data yang sama sampai ke tahap cetak - itu sebabnya sekali mengisi menghasilkan keduanya. Diagram di halaman ini dan berkas gambarnya dibangkitkan dari satu sumber yang sama, sehingga keduanya tidak mungkin bercerita berbeda.",
     downloadTitle: "Unduh sebagai gambar",
     downloadNote:
       "Untuk disisipkan ke laporan atau presentasi. SVG tetap tajam pada perbesaran berapa pun; PNG lebih andal ditangani pengolah kata.",
@@ -548,16 +548,16 @@ export const id = {
     heroCtaDashboard: "Lanjutkan ke CV Saya",
     heroCtaCompare: "Cek dulu CV yang sudah saya punya",
     statSections: "bagian CV",
-    statDimensions: "hal yang dinilai",
-    statTemplates: "pilihan desain",
+    statPatterns: "pola portofolio",
+    statFields: "bidang di kamus",
     statFormats: "pilihan unduhan",
     statsPrompt: "Ketuk angkanya untuk tahu maksudnya.",
     statSectionsWhy:
       "Data pribadi, ringkasan, pengalaman kerja, pendidikan, keahlian, proyek, sertifikat, organisasi, penghargaan, bahasa, dan publikasi. Bagian yang tidak Anda isi tidak akan muncul di CV, jadi tidak perlu diisi semua.",
-    statTemplatesWhy:
-      "Sepuluh tampilan berbeda untuk isi yang sama - ada yang bergaris tegas, ada yang polos, dua di antaranya punya tempat pas foto. Ganti kapan saja; data Anda tidak berubah sedikit pun.",
-    statDimensionsWhy:
-      "CV Anda diperiksa dari lima sisi: bisa tidaknya dibaca mesin, kelengkapan isinya, mutu kalimatnya, kerapian susunannya, dan kecocokannya dengan lowongan yang Anda incar.",
+    statPatternsWhy:
+      "Bidang yang berbeda membuktikan pekerjaan dengan cara yang berbeda. Karya & Desain butuh studi kasus bergambar; Proyek Teknis butuh standar dan skala; Publikasi & Kredit butuh sitasi dan indeksasi; Praktik & Pengajaran butuh volume dan lisensi; Dampak & Program butuh metrik. Bentuk isian portofolio mengikuti salah satunya, bukan satu formulir untuk semua orang.",
+    statFieldsWhy:
+      "Ketik jurusan atau profesi Anda - dari Teknik Sipil sampai Tata Boga - dan aplikasi memilihkan pola pembuktiannya sekaligus menyiapkan saran isian yang khas bidang itu, seperti nomor SNI untuk konstruksi.",
     statFormatsWhy:
       "PDF untuk dikirim ke perusahaan, Word kalau lowongannya minta .docx, teks polos untuk disalin-tempel ke formulir online, dan berkas cadangan supaya CV ini bisa dibuka lagi nanti.",
     heroCaption: "Contoh hasil jadi - desain Klasik",
@@ -578,6 +578,11 @@ export const id = {
     pillarFolioNote:
       "Sekarang portofolio menyatu di dalam CV Anda sebagai bagian tersendiri, bukan berkas terpisah. Berkas portofolio yang berdiri sendiri belum ada - itu pekerjaan berikutnya.",
     pillarFolioCta: "Susun portofolio saya",
+    pillarFolioCtaSignedIn: "Buka portofolio di CV saya",
+    folioPreviewTitle: "Wujudnya seperti ini",
+    folioPreviewBody:
+      "Ini bukan gambar promosi - ini keluaran pencetak yang sama dengan yang menghasilkan PDF dan Word Anda. Bagian portofolio tercetak menyatu di CV, dengan baris Detail yang isinya mengikuti pola bidang Anda: standar, skala, tahap keterlibatan, dan perkakas untuk contoh teknik sipil di bawah ini.",
+    folioPreviewCaption: "Contoh bagian portofolio pada pola Proyek Teknis, seperti yang tercetak hari ini",
     cmpColCv: "CV",
     cmpColFolio: "Portofolio",
     cmpReadLabel: "Dibaca",
@@ -905,7 +910,7 @@ export const id = {
     about: "Tentang",
     flowNav: "Alur",
     compare: "Cek CV Saya",
-    dashboard: "CV Saya",
+    dashboard: "Dokumen Saya",
     login: "Masuk",
     register: "Daftar Gratis",
     openMenu: "Buka menu",
@@ -915,7 +920,7 @@ export const id = {
     settingsGroup: "Tampilan",
     breadcrumb: "Anda sedang di sini",
     backHome: "Kembali ke beranda",
-    backDashboard: "Kembali ke daftar CV saya",
+    backDashboard: "Kembali ke daftar dokumen saya",
     homeAria: "beranda",
   },
 

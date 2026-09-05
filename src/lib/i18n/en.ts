@@ -503,7 +503,7 @@ export const en: Dictionary = {
       "User flow, architecture, data flow and development workflow diagrams for CV & Portofolio ATS - also available as SVG and PNG image files.",
     title: "Flow and architecture",
     subtitle:
-      "Four diagrams: how people use it, how the data moves, and how a code change reaches production. The diagrams on this page and the image files are generated from the same source data, so the two can never tell different stories.",
+      "Four diagrams: how people use it, how the data moves, and how a code change reaches production. Note that the CV and the portfolio share one data path all the way to the printing stage - that is why filling things in once produces both. The diagrams on this page and the image files are generated from the same source, so the two can never tell different stories.",
     downloadTitle: "Download as an image",
     downloadNote:
       "For dropping into a report or a slide deck. SVG stays sharp at any size; PNG is handled more reliably by word processors.",
@@ -526,16 +526,16 @@ export const en: Dictionary = {
     heroCtaDashboard: "Back to my CVs",
     heroCtaCompare: "Check the CV I already have",
     statSections: "CV sections",
-    statDimensions: "things we check",
-    statTemplates: "designs to pick from",
+    statPatterns: "portfolio patterns",
+    statFields: "fields in the dictionary",
     statFormats: "ways to download it",
     statsPrompt: "Tap a number to see what it means.",
     statSectionsWhy:
       "Personal details, summary, work experience, education, skills, projects, certificates, organisations, awards, languages, and publications. Sections you leave empty never appear on the CV, so there is no need to fill them all in.",
-    statTemplatesWhy:
-      "Ten different looks for the same content - some ruled and formal, some plain, two of them with a place for a photo. Switch whenever you like; your data does not change at all.",
-    statDimensionsWhy:
-      "Your CV is judged on five things: whether machines can read it, how complete it is, how well the sentences are written, how tidily it is laid out, and how closely it matches the job you are after.",
+    statPatternsWhy:
+      "Different fields prove work in different ways. Visual work needs illustrated case studies; technical projects need standards and scale; published work needs citations and indexing; practice hours need volume and licences; programmes need impact metrics. The portfolio fields follow one of these five, rather than one form for everyone.",
+    statFieldsWhy:
+      "Type your degree or profession - from civil engineering to culinary arts - and the app picks the evidence pattern for you and prepares the suggestions that field actually uses, such as SNI standard numbers for construction.",
     statFormatsWhy:
       "PDF to send to employers, Word when the job ad asks for a .docx, plain text for copying into online forms, and a backup file so this CV can be opened again later.",
     heroCaption: "A finished example - Classic design",
@@ -556,6 +556,11 @@ export const en: Dictionary = {
     pillarFolioNote:
       "For now your portfolio lives inside your CV as its own section, not as a separate file. A standalone portfolio file does not exist yet - that is the next piece of work.",
     pillarFolioCta: "Build my portfolio",
+    pillarFolioCtaSignedIn: "Open the portfolio in my CV",
+    folioPreviewTitle: "This is what it looks like",
+    folioPreviewBody:
+      "Not a marketing mock-up - this comes out of the same renderer that produces your PDF and Word file. The portfolio prints inside the CV, with a Detail line whose contents follow your field's pattern: standards, scale, stage of involvement, and tools in the civil engineering example below.",
+    folioPreviewCaption: "A portfolio entry on the Technical Project pattern, exactly as it prints today",
     cmpColCv: "CV",
     cmpColFolio: "Portfolio",
     cmpReadLabel: "Read by",
@@ -874,7 +879,7 @@ export const en: Dictionary = {
     about: "About",
     flowNav: "Flow",
     compare: "Check My CV",
-    dashboard: "My CVs",
+    dashboard: "My documents",
     login: "Sign in",
     register: "Sign up free",
     openMenu: "Open menu",
@@ -884,7 +889,7 @@ export const en: Dictionary = {
     settingsGroup: "Display",
     breadcrumb: "You are here",
     backHome: "Back to home",
-    backDashboard: "Back to my CVs",
+    backDashboard: "Back to my documents",
     homeAria: "home",
   },
 
