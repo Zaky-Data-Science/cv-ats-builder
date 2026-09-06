@@ -137,7 +137,7 @@ export default async function LandingPage() {
             <HeroGlow />
             <InkBackground />
 
-            <div className="relative z-[1] mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 sm:pt-16 md:px-10 lg:px-12 lg:pt-20 lg:pb-24">
+            <div className="wadah relative z-[1] pt-12 pb-16 sm:pt-16 lg:pt-20 lg:pb-24">
             {/*
               Tiga blok, bukan dua.
 
@@ -206,7 +206,7 @@ export default async function LandingPage() {
               {/* ---------------------------------------------------------- */}
               <Reveal
                 delay={120}
-                className="scene justify-self-center lg:col-start-2 lg:row-span-2 lg:row-start-1"
+                className="scene justify-self-center lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:justify-self-end"
               >
                 <TiltCard className="relative">
                   <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-white shadow-2xl">
@@ -217,7 +217,7 @@ export default async function LandingPage() {
                       ukuran layar, tanpa menyisakan celah kosong.
                     */}
                     <div
-                      className="mx-auto [--doc-scale:0.36] xs:[--doc-scale:0.42] sm:[--doc-scale:0.5]"
+                      className="mx-auto [--doc-scale:0.36] xs:[--doc-scale:0.42] sm:[--doc-scale:0.5] 2xl:[--doc-scale:0.58]"
                       style={{
                         width: "calc(210mm * var(--doc-scale))",
                         aspectRatio: "210 / 297",
@@ -334,7 +334,7 @@ export default async function LandingPage() {
         {/* Dua cara memakainya                                              */}
         {/* ================================================================ */}
         <section className="border-y border-ink-200 bg-ink-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
+          <div className="wadah">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.pathsTitle}
@@ -412,7 +412,7 @@ export default async function LandingPage() {
         {/* Cara kerja                                                       */}
         {/* ================================================================ */}
         <section className="py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
+          <div className="wadah">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.stepsTitle}
@@ -453,7 +453,7 @@ export default async function LandingPage() {
         {/* Fitur                                                            */}
         {/* ================================================================ */}
         <section className="border-y border-ink-200 bg-ink-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
+          <div className="wadah">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.featuresTitle}
@@ -517,7 +517,7 @@ export default async function LandingPage() {
         {/* Template                                                         */}
         {/* ================================================================ */}
         <section className="py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 lg:px-5">
+          <div className="wadah">
             <Reveal>
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.templatesTitle}

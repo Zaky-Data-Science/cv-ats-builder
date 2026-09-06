@@ -79,6 +79,44 @@ export function runResponsifTests(): void {
   }
 
   /* ---------------------------------------------------------------------- */
+  section("Responsif: satu wadah halaman, bukan dua belas");
+
+  /*
+    Aturan 8 panduan itu. Lebar cangkang halaman dulu ditulis sebagai
+    `max-w-6xl` beserta padding-nya masing-masing di dua belas tempat - dan
+    angka yang tersebar begitu tidak pernah dapat diubah sekaligus. Semuanya
+    kini memakai satu kelas `.wadah` di globals.css.
+
+    Yang dijaga bentuk lamanya tidak kembali. `max-w-6xl` dipilih sebagai
+    penandanya karena ia yang dulu dipakai, dan karena tidak ada satu pun
+    alasan sah untuk menuliskannya lagi: yang butuh lebar cangkang memakai
+    `.wadah`, yang butuh lebar bacaan memakai `max-w-2xl`/`max-w-3xl`.
+  */
+  const memakaiWadahLama = berkas.filter((f) =>
+    tanpaKomentar(readFileSync(f, "utf8")).includes("max-w-6xl"),
+  );
+  equal(
+    "tidak ada lagi wadah `max-w-6xl` yang ditulis sendiri",
+    memakaiWadahLama.join(", "),
+    "",
+  );
+
+  // Dan wadahnya memang terpakai - pemeriksaan di atas juga akan lulus bila
+  // seseorang menghapus wadahnya sama sekali.
+  const memakaiWadah = berkas.filter((f) =>
+    // Ditulis sebagai pencarian teks biasa, bukan regex. Versi regex-nya
+    // sempat memuat dua karakter backspace yang terselip saat berkas ini
+    // dibangkitkan, dan hasilnya nol berkas tanpa satu pun tanda bahwa
+    // polanya sendiri yang rusak.
+    readFileSync(f, "utf8").includes('className="wadah'),
+  );
+  check(
+    "kelas `.wadah` dipakai di banyak halaman",
+    memakaiWadah.length >= 8,
+    `${memakaiWadah.length} berkas`,
+  );
+
+  /* ---------------------------------------------------------------------- */
   section("Responsif: lencana peran tidak boleh disembunyikan");
 
   /*

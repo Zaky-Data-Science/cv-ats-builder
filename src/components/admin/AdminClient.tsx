@@ -136,7 +136,7 @@ export function AdminClient({
     });
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-8">
+    <div className="wadah py-8">
       <h1 className="text-xl font-bold text-ink-900">{teks.title}</h1>
       <p className="mt-1 text-sm text-ink-600">{teks.subtitle}</p>
 

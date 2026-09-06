@@ -123,7 +123,7 @@ Politeknik Negeri Samarinda.
 JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6. Angka itu
 berasal dari versi **sebelum** fitur portofolio.
 
-Gerbang kualitas pada `main` saat ini: `npm test` **374 lulus 0 gagal**,
+Gerbang kualitas pada `main` saat ini: `npm test` **376 lulus 0 gagal**,
 typecheck bersih, lint bersih.
 
 ---
@@ -157,7 +157,7 @@ cd "D:\Website CV dan Portofolio"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 374 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 376 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -327,7 +327,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/theme.ts` | Store mode terang/gelap di luar React (useSyncExternalStore), beserta peralihan tinta yang menyebar saat temanya berganti |
 | `src/lib/reveal-init.ts` | Skrip `<head>` yang menyalakan animasi "muncul saat tergulir" - dan menjamin isinya tetap terlihat bila animasinya tidak pernah berjalan |
 | `src/app/(app)/loading.tsx` | Kerangka pemuatan. **Sengaja tidak di root** - alasannya di kepala berkasnya |
-| `tests/` | 374 pemeriksaan; `npm test` |
+| `tests/` | 376 pemeriksaan; `npm test` |
 | `tests/kertas.test.ts` + `tests/fixtures/kertas-acuan.html` | Mengunci markup dokumen CV pada jalur cetak, 10 template x 2 bahasa. Rekam ulang acuannya **hanya** bila tampilannya memang sengaja diubah |
 | `src/lib/resume/guest.ts` | CV tanpa akun: baca-tulis `localStorage`, plus titipan untuk dipindahkan ke akun |
 | `src/app/coba/`, `src/app/cetak/` | Editor dan halaman cetak untuk pengguna tanpa akun |
@@ -342,7 +342,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/components/editor/ResumeEditor.tsx` | Editor, simpan otomatis, tata letak responsif |
 | `src/app/privasi/` dan `src/app/ketentuan/` | Kebijakan privasi dan ketentuan layanan - disyaratkan Google untuk mempublikasikan aplikasi OAuth |
 | `src/proxy.ts` | Pengalihan awal halaman terlindungi (hanya kenyamanan, bukan lapisan keamanan). Dulu bernama `src/middleware.ts`; Next 16 mengganti nama konvensinya |
-| `docs/panduan-responsif.md` | **Delapan aturan tetap untuk tampilan yang menyesuaikan layar.** Ditulis dari kejadian nyata di project ini, dan mengatur setiap perubahan tata letak - bukan selera. Baca sebelum menyentuh tata letak apa pun |
+| `docs/panduan-responsif.md` | **Sembilan aturan tetap untuk tampilan yang menyesuaikan layar.** Ditulis dari kejadian nyata di project ini, dan mengatur setiap perubahan tata letak - bukan selera. Baca sebelum menyentuh tata letak apa pun |
 | `src/components/nav-drawer.tsx` | **Satu-satunya pola laci** di project ini. Dipakai bersama `PublicHeader` dan `AppHeader`; membuat pola kedua melanggar aturan 6 panduan itu, dan dijaga `tests/responsif.test.ts` |
 | `src/components/AppHeader.tsx` | Bilah atas empat halaman berakun. Bentuk ringkas di `/resume/...` - alasannya di kepala berkasnya |
 | `docs/` | Panduan pengguna, dokumentasi teknis, panduan responsif, panduan deploy |
@@ -631,7 +631,7 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
     pengukuran cukup untuk memaksa satu bingkai berjalan; itulah cara angka di
     atas akhirnya diperoleh.
 
-Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 374
+Sudah selesai sejak sesi 4: berkas uji otomatis (`npm test`, kini 376
 pemeriksaan). Sejak sesi 5, jalur peramban diuji dengan menjalankan Chrome
 sungguhan lewat DevTools Protocol - termasuk memeriksa isi berkas PDF yang
 benar-benar dihasilkan, bukan sekadar keberadaannya.
@@ -644,7 +644,7 @@ Cukup sampaikan hal-hal ini:
 
 > Project di `D:\Website CV dan Portofolio`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. **Kalau yang dikerjakan menyentuh tata
-> letak, baca juga `docs/panduan-responsif.md` - delapan aturan tetap yang
+> letak, baca juga `docs/panduan-responsif.md` - sembilan aturan tetap yang
 > mengatur pekerjaan itu, dan cara mengujinya di tiga lebar.** Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
 > basis data lokal, dan jangan menjalankan `npx prettier` - prettier bukan

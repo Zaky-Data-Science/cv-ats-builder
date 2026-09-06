@@ -56,7 +56,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
 
   return (
     <footer className="border-t border-ink-200 bg-white">
-      <div className="mx-auto max-w-6xl px-5 py-10">
+      <div className="wadah py-10">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Identitas aplikasi */}
           <div className="lg:col-span-2">

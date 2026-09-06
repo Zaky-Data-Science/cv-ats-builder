@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { AtsPanel } from "@/components/ats/AtsPanel";
 import { useI18n } from "@/components/i18n";
+import { useMenuLipat } from "@/components/nav-drawer";
 import { Badge, Button, buttonClass, Callout, Input } from "@/components/ui";
 import { analyzeResume } from "@/lib/ats/engine";
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -625,16 +626,40 @@ export function ResumeEditor({
             pengguna masih mengetik, bukan sekali lalu lenyap. */}
         {guest && (
           <div className="shrink-0 border-b border-ink-200 bg-ink-100 px-3 py-2.5 sm:px-4">
-            <div className="flex flex-wrap items-start gap-x-3 gap-y-2">
-              <TriangleAlert
-                size={15}
-                className="mt-0.5 shrink-0 text-warn"
-                aria-hidden
-              />
-              <p className="min-w-0 flex-1 text-[11px] leading-relaxed text-ink-600">
-                <strong className="text-ink-900">{t.guest.bannerTitle}</strong>{" "}
-                {t.guest.bannerBody}
-              </p>
+            {/*
+              Menumpuk ke bawah di layar sempit, berjajar mulai 640 piksel.
+
+              Bentuk sebelumnya satu baris `flex-wrap` berisi ikon, kalimat,
+              dan dua tombol - dan itu tidak pernah membungkus. `flex-wrap`
+              baru memindahkan sesuatu ke baris berikutnya bila lebar
+              TERKECIL-nya sudah tidak muat, sementara kalimatnya memakai
+              `min-w-0` sehingga lebar terkecilnya nol. Yang mengalah karena
+              itu selalu kalimatnya: pada layar 390 piksel ia terjepit menjadi
+              kolom selebar sekitar 110 piksel, satu sampai dua kata per baris,
+              sedangkan kedua tombolnya tetap utuh.
+
+              Yang terjepit itu justru peringatan "datamu bisa hilang" - satu-
+              satunya keterangan di halaman ini yang menjelaskan bahwa CV-nya
+              tidak tersimpan di mana pun. Peringatan yang tidak terbaca sama
+              saja dengan tidak ada.
+
+              Perbaikannya bukan menambah titik henti melainkan mengganti
+              susunannya: kolom di layar sempit, baris begitu ruangnya ada -
+              aturan 1 `docs/panduan-responsif.md`.
+            */}
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:gap-3">
+              <div className="flex min-w-0 items-start gap-2.5 sm:flex-1">
+                <TriangleAlert
+                  size={15}
+                  className="mt-0.5 shrink-0 text-warn"
+                  aria-hidden
+                />
+                <p className="min-w-0 text-[11px] leading-relaxed text-ink-600">
+                  <strong className="text-ink-900">{t.guest.bannerTitle}</strong>{" "}
+                  {t.guest.bannerBody}
+                </p>
+              </div>
+
               <input
                 ref={loadInputRef}
                 type="file"
@@ -642,23 +667,29 @@ export function ResumeEditor({
                 onChange={readJsonFile}
                 className="sr-only"
               />
-              <Button
-                size="sm"
-                variant="outline"
-                className="press shrink-0"
-                onClick={() => loadInputRef.current?.click()}
-                title={t.guest.loadHint}
-              >
-                {t.guest.loadFromJson}
-              </Button>
-              <Button
-                size="sm"
-                className="press shrink-0"
-                onClick={moveToAccount}
-                title={t.guest.moveHint}
-              >
-                {t.guest.moveToAccount}
-              </Button>
+              {/* Kedua tombol tetap berdampingan pada barisnya sendiri:
+                  keduanya jawaban atas peringatan yang sama, dan memisahkan
+                  keduanya ke dua baris membuat yang kedua terbaca sebagai
+                  hal lain. */}
+              <div className="flex shrink-0 gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="press"
+                  onClick={() => loadInputRef.current?.click()}
+                  title={t.guest.loadHint}
+                >
+                  {t.guest.loadFromJson}
+                </Button>
+                <Button
+                  size="sm"
+                  className="press"
+                  onClick={moveToAccount}
+                  title={t.guest.moveHint}
+                >
+                  {t.guest.moveToAccount}
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -1131,47 +1162,39 @@ function IkonAksi({
   );
 }
 
-/** Menu aksi ringkas untuk layar sempit. */
+/**
+ * Menu aksi ringkas untuk layar sempit.
+ *
+ * Perilaku buka-tutupnya kini dipinjam dari `useMenuLipat()` di
+ * `components/nav-drawer.tsx`, bukan ditulis sendiri di sini. Yang hilang
+ * bersama salinan lamanya satu hal yang memang tidak pernah ada padanya:
+ * fokus tidak pulang ke tombol pembukanya. Pengguna papan ketik yang menutup
+ * menu ini dengan Escape kehilangan tempatnya - fokus jatuh ke <body>, dan
+ * Tab berikutnya memulai lagi dari awal halaman, yang di halaman penyunting
+ * berarti menyusuri seluruh formulir CV.
+ */
 function ActionsMenu({ children }: { children: React.ReactNode }) {
   const { t } = useI18n();
-  const [open, setOpen] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!open) return;
-
-    const onPointerDown = (event: PointerEvent) => {
-      if (!ref.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
+  const { terbuka, alih, tutup, pasangPembuka, pasangWadah } = useMenuLipat();
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={pasangWadah} className="relative">
       <Button
+        ref={pasangPembuka}
         size="sm"
         variant="outline"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
+        onClick={alih}
+        aria-expanded={terbuka}
         aria-haspopup="menu"
         aria-label={t.editor.actionsMenu}
       >
         <MoreHorizontal size={16} />
       </Button>
 
-      {open && (
+      {terbuka && (
         <div
           role="menu"
-          onClick={() => setOpen(false)}
+          onClick={tutup}
           className="absolute right-0 z-40 mt-1.5 w-64 overflow-hidden rounded-xl border border-ink-200 bg-white shadow-xl"
         >
           {children}

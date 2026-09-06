@@ -81,7 +81,7 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:h-16 md:px-8 lg:px-5">
+      <div className="wadah flex h-14 items-center justify-between gap-3 sm:h-16">
         {/* Identitas - satu-satunya yang selalu tampil di kedua jalur. */}
         <div className="flex min-w-0 items-center gap-1.5">
           <HeaderBack href="/" />

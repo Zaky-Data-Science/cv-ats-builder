@@ -207,7 +207,7 @@ export function CompareClient() {
   const failed = slots.filter((slot) => slot.state === "error");
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-5 py-10 sm:py-14">
+    <div className="wadah py-10 sm:py-14">
       {/* ---------------------------------------------------------------- */}
       {/* Judul                                                             */}
       {/* ---------------------------------------------------------------- */}

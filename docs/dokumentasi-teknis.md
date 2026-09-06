@@ -543,7 +543,7 @@ npm test
 | `tests/edit-path.test.ts` | Menulis balik ketikan di atas kertas; hanya jalur terdaftar yang boleh ditulis | 65 |
 | `tests/structure.test.ts` | Menambah dan menghapus entri maupun poin dari kertas | 45 |
 | `tests/markup.test.ts` | Tombol tidak bersarang di dalam tautan - pemindaian berkas sumber | 6 |
-| `tests/responsif.test.ts` | Satu pola laci saja; lencana peran tidak disembunyikan; alamat surel tetap dapat dijangkau | 7 |
+| `tests/responsif.test.ts` | Satu pola laci dan satu wadah halaman saja; lencana peran tidak disembunyikan; alamat surel tetap dapat dijangkau | 9 |
 | `tests/password-reset.test.ts` | Tiket pemulihan kata sandi, batas laju, kedaluwarsa | 32 |
 | `tests/stale-session.test.ts` | Sesi yang penggunanya sudah tidak ada | 15 |
 | `tests/admin.test.ts` | Siapa pengelola, dan batas data yang boleh dilihatnya | 13 |
@@ -554,9 +554,9 @@ npm test
 | `tests/document.test.ts` | Penilai berkas unggahan, daftar kelebihan-kekurangan, pemilihan CV terbaik | 18 |
 | `tests/photo.test.ts` | Pas foto: ukuran, pemotongan, susunan transform | 12 |
 | `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom | 13 |
-| **Total** | | **374** |
+| **Total** | | **376** |
 
-Hasil terakhir: **374 dari 374 lulus**.
+Hasil terakhir: **376 dari 376 lulus**.
 
 Berkas PDF ujinya dibangkitkan sendiri oleh `tests/fixtures/make-pdf.ts`, bukan
 disimpan sebagai berkas biner di dalam repositori. Dengan begitu isi berkas
@@ -669,7 +669,7 @@ Disebutkan terbuka agar dapat ditulis pada bab keterbatasan penelitian.
 
 > **Aturan yang berlaku ada di berkas tersendiri: [`panduan-responsif.md`](panduan-responsif.md).**
 >
-> Delapan aturan tetap, seluruhnya ditulis dari kejadian nyata di project ini -
+> Sembilan aturan tetap, seluruhnya ditulis dari kejadian nyata di project ini -
 > termasuk aturan 3 ("tidak meluber bukan berarti muat"), urutan siapa yang
 > hilang duluan di layar sempit, dan cara mengujinya di tiga lebar. Bagian ini
 > menjelaskan *apa* yang dibangun; panduan itu menetapkan *bagaimana* setiap
@@ -1054,6 +1054,35 @@ piksel pun yang terlihat. Pada sakelar tema, `overflow-hidden` ikut dilepas -
 ia akan memangkas daerah tangkap itu kembali ke 36 piksel, dan tidak ada yang
 perlu dipangkas.
 
+### 8.1f Lebar Halaman di Layar Besar
+
+Cangkang halaman - bilah atas, kaki, dan wadah tiap halaman - dulu memakai
+`max-w-6xl` (1152px) yang ditulis ulang beserta padding-nya di dua belas
+tempat. Diukur pada layar 1920: logo di bilah atas duduk **404 piksel** dari
+tepi dan isi halaman 432 piksel, menyisakan pita kosong selebar hampir 400
+piksel di kiri dan kanan.
+
+Kedua belas tempat itu kini memakai satu kelas `.wadah` di `globals.css`,
+berbatas 1920px dengan jarak tepi 16 / 24 / 32 / 48 piksel menurut lebar layar.
+Batasnya sengaja disamakan dengan 1920 supaya pada lebar itu batasnya tidak
+menggigit sama sekali - yang menentukan tinggal padding-nya, dan isinya duduk
+**48 piksel** dari tepi. Pada 2560 batasnya baru berlaku, sehingga kartu dan
+tabel tidak melar tanpa henti.
+
+Satu jebakan yang pantas dicatat: padding berada **di dalam** batas lebar.
+Percobaan pertama memakai batas 1792 dengan harapan menghasilkan 64 piksel;
+yang keluar 112, sebab sisa pembagian itu masih ditambah padding-nya sendiri.
+
+Yang **tidak** ikut melebar adalah blok tulisan - paragraf tetap memakai
+`max-w-2xl`/`max-w-3xl`, atau `.teks-baca` bila sebelumnya tidak berbatas sama
+sekali. Halaman Panduan, Tentang, dan Alur sempat ikut dilebarkan lalu
+dikembalikan setelah dilihat hasilnya pada 1920: diagram alurnya berukuran
+tetap dan tercetak di tengah kartunya, jadi melebarkan wadahnya hanya menambah
+ruang kosong. Wadah lebar hanya berguna bagi isi yang memang ikut melar.
+
+Aturannya ditulis lengkap di `panduan-responsif.md` aturan 8, dan dijaga
+`tests/responsif.test.ts` supaya `max-w-6xl` tidak kembali ditulis sendiri.
+
 ### 8.2 Gerak dan Kedalaman
 
 Halaman depan memakai efek kedalaman: kartu CV miring mengikuti kursor,
@@ -1162,7 +1191,7 @@ diterapkan.
 | `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau sekaligus cetak |
 | `src/components/nav-drawer.tsx` | Satu-satunya pola laci navigasi; dipakai bilah atas publik maupun aplikasi |
 | `src/components/AppHeader.tsx` | Bilah atas empat halaman berakun; bentuk ringkas di halaman penyunting |
-| `docs/panduan-responsif.md` | Delapan aturan tetap untuk tampilan yang menyesuaikan layar |
+| `docs/panduan-responsif.md` | Sembilan aturan tetap untuk tampilan yang menyesuaikan layar |
 | `src/components/editor/` | Formulir per-bagian, panel pratinjau, simpan otomatis |
 | `src/components/motion.tsx` | Efek kedalaman dan kemunculan |
 | `src/components/CursorGlow.tsx` | Cahaya pengikut kursor dan percikan sentuh |
@@ -1170,6 +1199,6 @@ diterapkan.
 | `src/components/Diagram.tsx` | Perender diagram alur sebagai HTML |
 | `scripts/render-diagrams.ts` | Pembangkit berkas SVG dan PNG diagram |
 | `scripts/copy-pdf-worker.mjs` | Menyalin worker pdf.js ke folder public saat pemasangan |
-| `tests/` | Berkas uji otomatis - 374 pemeriksaan |
+| `tests/` | Berkas uji otomatis - 376 pemeriksaan |
 | `docs/diagram/` | Diagram alur dalam bentuk SVG dan PNG, dua bahasa |
 | `docs/panduan-pengguna.md` | Panduan pemakaian lengkap |

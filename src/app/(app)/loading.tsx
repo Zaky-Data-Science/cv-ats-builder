@@ -32,7 +32,7 @@ export default function Loading() {
   const { t } = useI18n();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-8" aria-busy="true">
+    <div className="wadah py-8" aria-busy="true">
       <span className="sr-only">{t.errors.loading}</span>
 
       <div className="h-8 w-48 animate-pulse rounded-lg bg-ink-200" />

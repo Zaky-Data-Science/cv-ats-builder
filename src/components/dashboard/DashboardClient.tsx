@@ -152,7 +152,7 @@ export function DashboardClient({
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-8">
+    <div className="wadah py-8">
       {/* ---------------------------------------------------------------- */}
       {/* Judul dan aksi utama                                              */}
       {/* ---------------------------------------------------------------- */}
@@ -245,7 +245,7 @@ export function DashboardClient({
         /* ---------------------------------------------------------------- */
         /* Daftar CV                                                         */
         /* ---------------------------------------------------------------- */
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {resumes.map((resume) => (
             <Interactive key={resume.id} tilt={3}>
               <Card className="flex h-full flex-col p-5">

@@ -90,7 +90,7 @@ export default async function PanduanPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.flowTitle}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <p className="teks-baca mt-2 text-sm leading-relaxed text-ink-600">
               {content.flowIntro}
             </p>
 
@@ -116,7 +116,7 @@ export default async function PanduanPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.sectionsTitle}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <p className="teks-baca mt-2 text-sm leading-relaxed text-ink-600">
               {content.sectionsIntro}
             </p>
 
@@ -172,7 +172,7 @@ export default async function PanduanPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.scoreTitle}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <p className="teks-baca mt-2 text-sm leading-relaxed text-ink-600">
               {content.scoreIntro}
             </p>
 
@@ -236,7 +236,7 @@ export default async function PanduanPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.bulletTitle}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <p className="teks-baca mt-2 text-sm leading-relaxed text-ink-600">
               {content.bulletIntroLead}
               <strong className="text-ink-800">{content.bulletFormula}</strong>.
             </p>
@@ -279,7 +279,7 @@ export default async function PanduanPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.lengthTitle}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <p className="teks-baca mt-2 text-sm leading-relaxed text-ink-600">
               {content.lengthIntro}
             </p>
             <ul className="mt-4 space-y-3">
@@ -302,7 +302,7 @@ export default async function PanduanPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.compareTitle}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <p className="teks-baca mt-2 text-sm leading-relaxed text-ink-600">
               {content.compareIntro}
             </p>
 

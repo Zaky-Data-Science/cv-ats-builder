@@ -251,6 +251,109 @@ body {
 }
 
 /* ==========================================================================
+   WADAH HALAMAN
+   --------------------------------------------------------------------------
+   Satu kelas untuk seluruh cangkang halaman: bilah atas, kaki, dan badan
+   tiap halaman. Sebelumnya dua belas tempat menuliskan `max-w-6xl` beserta
+   padding-nya masing-masing, dan angka yang tersebar begitu tidak pernah
+   dapat diubah sekaligus.
+
+   MENGAPA 120rem (1920 piksel)
+
+   Diukur pada layar 1920 sebelum perubahan: logo di bilah atas duduk 404
+   piksel dari tepi, dan isi halaman 432 piksel. Yang tersisa di tengah cuma
+   1152 piksel - situsnya terbaca takut memakai layarnya sendiri.
+
+   Batasnya sengaja disamakan dengan 1920, lebar layar besar yang paling
+   lazim, sehingga PADA lebar itu batasnya tidak pernah menggigit sama sekali:
+   yang menentukan jaraknya tinggal padding, dan isinya duduk tepat 48 piksel
+   dari tepi. Itu kira-kira jarak yang dijadikan pembanding - logo sekitar 50
+   piksel dari tepi, bukan 250.
+
+   Satu jebakan yang sempat membuat angkanya meleset, dan pantas dicatat:
+   padding berada DI DALAM batas lebar, bukan di luarnya. Percobaan pertama
+   memakai batas 1792 dengan harapan menghasilkan 64 piksel; yang keluar 112,
+   sebab 64 piksel sisa pembagian itu masih ditambah 48 piksel padding-nya
+   sendiri.
+
+   Batasnya tetap ada dan bukan dihapus: tanpa batas, layar 2560 akan
+   melebarkan kartu dan tabel sampai ukuran yang tidak lagi masuk akal. Pada
+   layar seperti itu isinya berhenti di 1920 dan duduk 368 piksel dari tepi,
+   dan itu memang seharusnya.
+
+   PADDING IKUT MENGECIL DI LAYAR SEMPIT
+
+   16 piksel di bawah 640 - sama persis dengan sebelumnya, sehingga tata letak
+   ponsel tidak bergeser satu piksel pun - lalu 24 mulai 640, 32 mulai 1024,
+   dan 48 mulai 1536. Ditulis sebagai kueri media biasa, bukan clamp():
+   nilainya jadi dapat dibaca langsung, dan tidak ada lebar aneh di antara dua
+   titik henti.
+
+   Jaraknya karena itu: 32 piksel pada 1280, 48 pada 1536, dan 48 pada 1920.
+
+   YANG TIDAK MEMAKAI KELAS INI
+
+   Blok tulisan. Kalimat yang membentang 1900 piksel membuat mata kehilangan
+   barisnya saat kembali ke kiri; batas nyaman sekitar 65-75 karakter. Karena
+   itu paragraf tetap memakai `max-w-2xl` / `max-w-3xl` seperti sebelumnya.
+   Yang melebar cangkangnya, bukan lebar tulisannya.
+
+   Halaman yang SELURUH isinya tulisan tidak memakai kelas ini sama sekali:
+   Kebijakan Privasi, Ketentuan Layanan, formulir Pengaturan, dan - ini yang
+   sempat dicoba lalu dibatalkan - Panduan, Tentang, serta Alur.
+
+   Ketiganya sempat dilebarkan, lalu dikembalikan setelah dilihat hasilnya
+   pada 1920. Sebabnya bukan lebar tulisannya, melainkan isi yang berukuran
+   TETAP: diagram alur di Panduan digambar pada lebar tertentu dan diletakkan
+   di tengah kartunya. Melebarkan wadahnya tidak membuat diagramnya ikut
+   besar - yang bertambah hanya ruang kosong di kiri dan kanannya, dan
+   halamannya justru terbaca lebih kosong daripada sebelumnya. Wadah selebar
+   itu hanya berguna bagi isi yang memang ikut melar.
+   ========================================================================== */
+
+.wadah {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 120rem;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .wadah {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .wadah {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 96rem) {
+  .wadah {
+    padding-inline: 3rem;
+  }
+}
+
+/*
+  Kolom bacaan.
+
+  Dipakai pada paragraf yang selama ini TIDAK punya batas sama sekali, dan
+  karena itu ikut melebar bersama wadahnya. Halaman Panduan, Tentang, dan
+  Alur adalah yang paling terdampak: sebelum perubahan ini pun kalimatnya
+  sudah membentang 896 piksel - sekitar 120 karakter pada ukuran teksnya -
+  jadi melebarkan wadahnya tanpa membatasi paragrafnya akan memperburuk
+  hal yang sudah kurang benar.
+
+  Nilainya disamakan dengan `max-w-3xl` yang sudah dipakai di halaman depan
+  untuk teks sejenis, supaya tidak ada dua ukuran kolom bacaan yang bersaing.
+*/
+.teks-baca {
+  max-width: 48rem;
+}
+
+/* ==========================================================================
    CAHAYA MENGIKUTI KURSOR
    --------------------------------------------------------------------------
    Satu lapisan tetap seukuran layar. Posisinya digerakkan lewat custom

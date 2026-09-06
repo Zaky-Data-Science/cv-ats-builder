@@ -30,14 +30,39 @@ Caranya: buka halamannya, tarik tepi jendela peramban pelan-pelan dari lebar ke
 sempit, dan perhatikan. Di titik mana tampilannya mulai jelek? Di situlah titik
 pindahnya.
 
-Titik pindah yang dipakai proyek ini (bawaan Tailwind):
+Titik pindah yang dipakai proyek ini:
 
 | Nama | Lebar | Dipakai |
 |---|---|---|
+| `xs` | 416px | **milik proyek ini, bukan bawaan Tailwind.** Hanya di bilah pratinjau CV |
 | `sm` | 640px | paling sering |
 | `md` | 768px | jarang |
-| `lg` | 1024px | ambang laci navigasi |
+| `lg` | 1024px | ambang laci navigasi, dan ambang dua panel di penyunting |
 | `xl` | 1280px | sangat jarang |
+| `2xl` | 1536px | hanya untuk memakai layar yang sangat lebar |
+
+Dua di antaranya perlu keterangan, sebab keduanya bukan bawaan yang tinggal
+dipakai.
+
+**`xs` (416px)** ditambahkan sendiri lewat `--breakpoint-xs` di `globals.css`.
+Bawaan Tailwind melompat dari 0 langsung ke 640, padahal ponsel yang lebih
+lebar dari 416px sudah punya ruang untuk label tombol di bilah pratinjau CV
+("Ketik langsung di kertas", "Terpotong per halaman", "Memanjang") sementara
+390px belum. Tanpa `xs` pilihannya cuma dua dan keduanya salah: label
+disembunyikan sampai 640 - merugikan ponsel 414-600px yang jumlahnya banyak -
+atau ditampilkan sejak 390 dan bilahnya kembali pecah.
+
+Angkanya sendiri dicari, bukan dihafal, persis seperti yang diminta aturan ini:
+416px adalah titik ketika ketiga label itu berhenti muat.
+
+**`2xl` (1536px)** dipakai hanya untuk hal yang sebaliknya - ketika layarnya
+terlalu lebar, bukan terlalu sempit. Sejauh ini di dua tempat: kolom keempat
+pada daftar CV di dasbor, dan pratinjau CV di halaman depan yang ikut membesar.
+
+> Menambahkan titik pindah baru harus lewat tabel ini. Titik pindah yang hidup
+> di dalam satu berkas tanpa pernah disebut di sini adalah yang paling mudah
+> terlupakan, lalu ditemukan lagi oleh orang berikutnya sebagai kejanggalan
+> yang tidak jelas asalnya.
 
 ## 3. "Tidak meluber" bukan berarti "muat"
 
@@ -111,7 +136,34 @@ daripada satu header yang penuh.
   ketukan pertama akan terasa tidak berfungsi. Bedakan dengan
   `pointerType === "mouse"`.
 
-## 8. Cara mengujinya
+## 8. Cangkang boleh melebar, tulisan tidak
+
+Layar laptop 1920px memerlukan dua keputusan yang berbeda, dan mencampurnya
+merusak keduanya.
+
+**Cangkang** - bilah atas, kaki halaman, dan wadah tiap halaman - memakai kelas
+`.wadah` di `globals.css`. Satu kelas untuk semuanya, sehingga angkanya dapat
+diubah di satu tempat. Batasnya 1920px dengan jarak tepi yang ikut mengecil di
+layar sempit: 16px di bawah 640, lalu 24, 32, dan 48.
+
+**Tulisan** tidak ikut. Kalimat yang membentang 1900px membuat mata kehilangan
+barisnya saat kembali ke kiri; batas nyaman sekitar 65-75 karakter. Paragraf
+karena itu tetap memakai `max-w-2xl`/`max-w-3xl`, atau `.teks-baca` bila
+sebelumnya tidak punya batas sama sekali.
+
+Ada satu hal yang mudah dikira kelalaian padahal bukan. Halaman yang seluruh
+isinya tulisan - Kebijakan Privasi, Ketentuan Layanan, Pengaturan, Panduan,
+Tentang, Alur - **tidak** memakai `.wadah`. Ketiga yang terakhir sempat
+dilebarkan lalu dikembalikan setelah dilihat hasilnya pada 1920: diagram alur
+di Panduan berukuran tetap dan tercetak di tengah kartunya, jadi melebarkan
+wadahnya tidak membuat diagramnya ikut besar - yang bertambah hanya ruang
+kosong, dan halamannya justru terbaca lebih kosong daripada sebelumnya.
+
+> Wadah lebar hanya berguna bagi isi yang memang ikut melar: kartu, tabel,
+> grid, dan panel. Sebelum melebarkan sesuatu, tanyakan dulu apakah isinya
+> akan mengisi lebar itu - dan buktikan dengan melihat gambarnya.
+
+## 9. Cara mengujinya
 
 Wajib diuji di **tiga lebar**, bukan satu:
 
@@ -143,3 +195,5 @@ Sebelum sebuah tampilan dinyatakan selesai:
 - [ ] Sasaran sentuh minimal 44px
 - [ ] Tidak ada fungsi yang hanya dapat dicapai lewat hover
 - [ ] Memakai pola laci yang sudah ada, bukan pola baru
+- [ ] Cangkangnya memakai `.wadah`; paragrafnya tetap punya batas bacanya
+- [ ] Titik pindah baru sudah dicatat di tabel aturan 2

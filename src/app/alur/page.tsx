@@ -156,7 +156,7 @@ export default async function FlowPage() {
             </Reveal>
           ))}
 
-          <p className="mt-10 text-[11px] leading-relaxed text-ink-500">
+          <p className="teks-baca mt-10 text-[11px] leading-relaxed text-ink-500">
             {t.flow.downloadNote}
           </p>
         </div>

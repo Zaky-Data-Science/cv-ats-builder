@@ -125,7 +125,7 @@ export function AppHeader({
 
   return (
     <header className="sticky top-0 z-30 shrink-0 border-b border-ink-200 bg-white">
-      <div className="flex h-14 items-center gap-2 px-4 sm:px-5">
+      <div className="wadah flex h-14 items-center gap-2">
         {/* ---------------------------------------------------------------- */}
         {/* Identitas - selalu tampil, di lebar mana pun                      */}
         {/* ---------------------------------------------------------------- */}

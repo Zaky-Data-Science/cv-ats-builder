@@ -14,7 +14,7 @@ export default async function AuthLayout({
   return (
     <div className="flex min-h-full flex-col bg-ink-100">
       <header className="border-b border-ink-200 bg-white">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5">
+        <div className="wadah flex h-16 items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink-900 text-white">
               <BrandMark className="h-[18px] w-[18px]" />
