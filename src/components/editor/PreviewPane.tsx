@@ -107,6 +107,28 @@ export function PreviewPane({
   const { t } = useI18n();
 
   const [zoom, setZoom] = React.useState<number | null>(null);
+
+  /*
+    Besar langkah tombol tambah/kurang, dalam persen.
+
+    Dulu tetap 8%, dan itu satu-satunya cara mengubah perbesaran. Terlalu
+    kasar untuk menyetel halus - loncat dari 96% ke 104% padahal yang dicari
+    100% - dan terlalu halus untuk berpindah jauh. Sekarang penggunanya yang
+    memilih, dan bawaannya 1% supaya tombolnya benar-benar dapat dipakai
+    menyetel, bukan sekadar melompat.
+  */
+  const [langkah, setLangkah] = React.useState(1);
+
+  /*
+    Angka yang sedang DIKETIK, terpisah dari perbesaran yang sedang berlaku.
+
+    Tanpa keadaan tersendiri, mengetik "1" dari "100" akan langsung
+    diterapkan sebagai 1% dan kertasnya mengecil sampai tak terbaca sebelum
+    dua angka berikutnya sempat masuk. Yang diketik baru diterapkan saat
+    Enter ditekan atau kotaknya ditinggalkan; `null` berarti "tidak sedang
+    diketik, tampilkan nilai yang berlaku".
+  */
+  const [ketikan, setKetikan] = React.useState<string | null>(null);
   const [pages, setPages] = React.useState(1);
   const [mode, setMode] = React.useState<PreviewMode>("paged");
   const [typing, setTyping] = React.useState(false);
@@ -389,11 +411,19 @@ export function PreviewPane({
   /**
    * Memasang pengamat ukuran pada area gulir.
    *
-   * Perbesaran awal baru dapat dihitung setelah lebar area diketahui, dan
-   * perlu ikut menyesuaikan saat layar diputar. Keduanya ditangani satu
-   * pengamat: perbesaran hanya diturunkan bila kertas menjadi terlalu lebar,
-   * sehingga tingkat perbesaran yang sengaja dipilih pengguna tidak ditimpa
-   * begitu saja saat ukuran jendela berubah sedikit.
+   * Perbesaran awal baru dapat dihitung setelah lebar area diketahui.
+   *
+   * Yang dihitung ulang HANYA nilai awalnya. Pengamat ini dulu juga
+   * menurunkan perbesaran yang sudah dipilih pengguna setiap kali areanya
+   * menyempit - dan itu keliru sejak panelnya dapat diciutkan: menutup
+   * formulir lalu membukanya lagi mengembalikan 140% menjadi 100% tanpa
+   * diminta, padahal angkanya baru saja diketik sendiri.
+   *
+   * Aturan lamanya ada supaya kertas tidak lebih lebar daripada panelnya.
+   * Itu tidak lagi menjadi persoalan: panel kertas kini `min-w-0` dan
+   * menggulir sendiri, jadi kertas yang lebih lebar hanya perlu digeser -
+   * bukan memaksa tata letak di sekitarnya mengalah. Dan bila memang ingin
+   * dipaskan, tombol paskan tepat di sebelahnya.
    */
   const attachScrollArea = React.useCallback(
     (node: HTMLDivElement | null) => {
@@ -413,10 +443,9 @@ export function PreviewPane({
           MAX_ZOOM,
           Math.max(MIN_ZOOM, (width - 32) / pageWidth),
         );
-        setZoom((current) => {
-          if (current === null) return Math.min(0.75, fit);
-          return current > fit ? fit : current;
-        });
+        setZoom((current) =>
+          current === null ? Math.min(0.75, fit) : current,
+        );
       };
 
       apply();
@@ -504,6 +533,35 @@ export function PreviewPane({
   }, [highlight, viewMode]);
 
   const currentZoom = zoom ?? 0.72;
+
+  /** Menggeser perbesaran sekian persen, tetap di dalam batasnya. */
+  const geserZoom = React.useCallback((persen: number) => {
+    setKetikan(null);
+    setZoom((z) => {
+      const sekarang = Math.round((z ?? 0.72) * 100);
+      const baru = sekarang + persen;
+      return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, baru / 100));
+    });
+  }, []);
+
+  /**
+   * Menerapkan angka yang baru saja diketik.
+   *
+   * Angka di luar batas TIDAK ditolak melainkan dijepit ke batas terdekat.
+   * Menolaknya berarti mengembalikan kotaknya ke nilai lama tanpa penjelasan,
+   * dan yang mengetik "500" jelas ingin sebesar-besarnya - memberinya 140%
+   * menjawab maksudnya, sedangkan mengembalikannya ke 59% tidak.
+   */
+  const terapkanKetikan = React.useCallback(() => {
+    setKetikan((teks) => {
+      if (teks === null) return null;
+      const angka = Number.parseInt(teks, 10);
+      if (Number.isFinite(angka)) {
+        setZoom(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, angka / 100)));
+      }
+      return null;
+    });
+  }, []);
 
   const lengthNote =
     pages === 1
@@ -605,29 +663,87 @@ export function PreviewPane({
             variant="ghost"
             title={t.preview.zoomOut}
             aria-label={t.preview.zoomOut}
-            onClick={() =>
-              setZoom((z) => Math.max(MIN_ZOOM, (z ?? 0.72) - 0.08))
-            }
+            onClick={() => geserZoom(-langkah)}
           >
             <Minus size={13} />
           </Button>
-          <span
-            className="w-11 text-center text-[11px] font-medium text-ink-600 tabular-nums"
-            aria-live="polite"
-          >
-            {Math.round(currentZoom * 100)}%
+
+          {/*
+            Perbesarannya dapat diketik langsung.
+
+            Sebelumnya ia cuma angka mati, sehingga menuju 100% dari 59%
+            menuntut menekan tombol tambah berulang kali dan tetap meleset
+            karena langkahnya 8. Sekarang angkanya sebuah kotak isian: ketik,
+            tekan Enter, selesai. Ia tetap tampil sekecil dan setipis
+            sebelumnya supaya tidak berebut perhatian dengan kertasnya.
+
+            `inputMode="numeric"` memunculkan papan angka di ponsel tanpa
+            memakai `type="number"` - yang membawa serta tombol panah bawaan
+            peramban dan lebar yang tidak dapat ditekan.
+          */}
+          <input
+            type="text"
+            inputMode="numeric"
+            value={ketikan ?? String(Math.round(currentZoom * 100))}
+            onChange={(e) => setKetikan(e.target.value.replace(/[^0-9]/g, ""))}
+            onFocus={(e) => {
+              setKetikan(String(Math.round(currentZoom * 100)));
+              e.currentTarget.select();
+            }}
+            onBlur={() => terapkanKetikan()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                terapkanKetikan();
+                e.currentTarget.blur();
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setKetikan(null);
+                e.currentTarget.blur();
+              } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+                setKetikan(null);
+                geserZoom(e.key === "ArrowUp" ? langkah : -langkah);
+              }
+            }}
+            title={t.preview.zoomExact}
+            aria-label={t.preview.zoomExact}
+            className="h-7 w-10 rounded-md border border-transparent bg-transparent text-right text-[11px] font-medium text-ink-600 tabular-nums transition-colors hover:border-ink-300 focus:border-brand-500 focus:bg-white focus:outline-none"
+          />
+          {/* Tanda persennya di luar kotak isian, bukan di dalamnya: yang di
+              dalam akan ikut terseleksi dan terhapus saat angkanya diganti. */}
+          <span aria-hidden className="-ml-0.5 text-[11px] text-ink-500">
+            %
           </span>
+
           <Button
             size="icon"
             variant="ghost"
             title={t.preview.zoomIn}
             aria-label={t.preview.zoomIn}
-            onClick={() =>
-              setZoom((z) => Math.min(MAX_ZOOM, (z ?? 0.72) + 0.08))
-            }
+            onClick={() => geserZoom(langkah)}
           >
             <Plus size={13} />
           </Button>
+
+          {/*
+            Besar langkahnya sendiri dapat dipilih. Ditulis sebagai <select>
+            biasa, bukan menu buatan sendiri: ia jarang disentuh, dan pemilih
+            bawaan peramban sudah benar di ponsel maupun papan ketik.
+          */}
+          <select
+            value={langkah}
+            onChange={(e) => setLangkah(Number(e.target.value))}
+            title={t.preview.zoomStep}
+            aria-label={t.preview.zoomStep}
+            className="h-7 rounded-md border border-transparent bg-transparent px-1 text-[11px] font-medium text-ink-500 tabular-nums transition-colors hover:border-ink-300 focus:border-brand-500 focus:bg-white focus:outline-none"
+          >
+            {[1, 5, 10, 25].map((n) => (
+              <option key={n} value={n}>
+                ±{n}%
+              </option>
+            ))}
+          </select>
           <Button
             size="icon"
             variant="ghost"

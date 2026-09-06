@@ -339,27 +339,39 @@ body {
 /*
   Wadah halaman DOKUMEN - Panduan, Tentang, Alur.
 
-  Ketiganya isinya tulisan, jadi wadah selebar 1920 tidak berguna bagi mereka;
-  sudah dicoba dan hasilnya cuma ruang kosong yang lebih lebar. Tetapi wadah
-  lamanya pun salah dengan cara yang berbeda: 896 piksel DI TENGAH LAYAR,
-  sehingga pada 1920 judulnya duduk 532 piksel dari tepi sementara logo di
-  bilah atas duduk 48. Dua benda yang seharusnya sebaris terlihat tidak
-  berhubungan, dan pita kosong di kiri terbaca sebagai kelalaian.
+  Kolom selebar 1024 piksel, DI TENGAH layar.
 
-  Yang dipakai sekarang kolom selebar 1024 piksel yang RATA KIRI - bukan di
-  tengah. Judul dan paragrafnya karena itu sebaris dengan logo, persis seperti
-  halaman lain, dan ruang kosongnya berkumpul di satu sisi alih-alih terbelah
-  dua. Bentuk yang sama dipakai hampir semua situs dokumentasi, dan alasannya
-  sama: mata mencari awal baris di tempat yang tetap.
+  DUA BENTUK LAIN SUDAH DICOBA DAN DITOLAK
 
-  `margin-inline: 0` ditulis tegas meski itu nilai bawaannya - supaya jelas
-  bahwa TIDAK di tengah adalah pilihan, bukan `mx-auto` yang lupa ditulis.
+  Wadah penuh 1920 piksel: tidak berguna bagi halaman yang isinya tulisan.
+  Diagram alur di Panduan berukuran tetap dan tercetak di tengah kartunya,
+  jadi melebarkan wadahnya tidak membuat diagramnya ikut besar - yang
+  bertambah hanya ruang kosong, dan halamannya justru terbaca lebih kosong
+  daripada sebelumnya.
+
+  Kolom 1024 piksel RATA KIRI: dipakai sebentar, lalu dikembalikan setelah
+  zaky melihat hasilnya sendiri - isinya terbaca "numpuk di kiri". Alasan
+  teknis yang mendasarinya memang benar dan sekarang hilang lagi: pada 1920
+  judul halaman duduk sekitar 448 piksel dari tepi sementara logo di bilah
+  atas duduk 48, sehingga dua benda yang seharusnya sebaris terlihat tidak
+  berhubungan. Itu konsekuensi yang diterima, bukan cacat yang belum
+  diperbaiki.
+
+  Yang tersisa karena itu bentuk yang paling biasa, dan memang paling benar
+  untuk isi seperti ini: kolom bacaan di tengah. Ruang kosong di kiri dan
+  kanannya WAJAR - halaman yang isinya tulisan tidak akan pernah mengisi 1920
+  piksel, dan memaksanya mengisi dengan cara memindahkan seluruh kolom ke satu
+  sisi menghasilkan tumpukan, bukan susunan.
+
+  `margin-inline: auto` ditulis tegas meski `mx-auto` sudah lazim - supaya
+  jelas bahwa di tengah adalah pilihan yang pernah dibatalkan lalu
+  dikembalikan, bukan nilai yang kebetulan tidak pernah disentuh.
 */
 
 .wadah-dokumen {
   width: 100%;
   max-width: 64rem;
-  margin-inline: 0;
+  margin-inline: auto;
   padding-inline: 1rem;
 }
 

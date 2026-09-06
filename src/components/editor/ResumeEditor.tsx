@@ -8,6 +8,8 @@ import {
   AlertTriangle,
   ArrowLeft,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Cloud,
   CloudOff,
   FileDown,
@@ -54,6 +56,7 @@ import {
 } from "@/lib/resume/structure";
 import { resumeFileSchema } from "@/lib/resume/schema";
 import { useRiwayat } from "@/lib/resume/history";
+import { usePembagiPanel } from "@/lib/resume/pembagi-panel";
 import { regenerateIds } from "@/lib/resume/serialize";
 import { SECTION_UI } from "@/lib/resume/section-ui";
 import { sectionCount } from "@/lib/resume/sections";
@@ -95,6 +98,7 @@ export function ResumeEditor({
   const router = useRouter();
   const [data, setData] = React.useState<ResumeData>(initial);
   const riwayat = useRiwayat(initial);
+  const pembagi = usePembagiPanel();
   const [highlight, setHighlight] = React.useState<string | null>(null);
   const [saveState, setSaveState] = React.useState<SaveState>("idle");
   const [savedAt, setSavedAt] = React.useState<Date | null>(null);
@@ -881,14 +885,39 @@ export function ResumeEditor({
         {/* ============================================================ */}
         {/* Dua panel                                                     */}
         {/* ============================================================ */}
-        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(360px,42%)_1fr]">
+        {/*
+          Dua panel yang pembagiannya dapat ditarik - lihat
+          `lib/resume/pembagi-panel.ts` untuk alasannya.
+
+          Susunannya `flex`, bukan `grid`, dan itu bukan selera: kolom `1fr`
+          pada grid berarti "sisa ruang, TETAPI tidak lebih kecil daripada
+          isinya", sehingga kertas yang diperbesar mendesak kolom formulir
+          sampai batas terkecilnya dan kotak isiannya terpotong. Dengan flex,
+          lebar formulir ditulis tegas dan panel kertas memakai `min-w-0`
+          sehingga isinya menggulir alih-alih mendorong tetangganya.
+
+          Di bawah `lg` seluruh pembagian ini tidak berlaku sama sekali: satu
+          panel penuh layar pada satu waktu, berganti lewat bilah bawah.
+        */}
+        <div data-panel-wadah className="flex min-h-0 flex-1 flex-col lg:flex-row">
           {/* ---------------------------------------------------------- */}
           {/* Kiri: formulir                                              */}
           {/* ---------------------------------------------------------- */}
           <div
+            style={
+              {
+                "--lebar-form": `${pembagi.lebarPersen}%`,
+              } as React.CSSProperties
+            }
             className={cn(
               "thin-scrollbar min-h-0 flex-col overflow-y-auto border-r border-ink-200 bg-ink-100 p-3 sm:p-4",
               pane === "form" ? "flex" : "hidden lg:flex",
+              pembagi.mode === "formulir"
+                ? "lg:w-full lg:flex-1"
+                : "lg:w-[var(--lebar-form)] lg:shrink-0 lg:grow-0",
+              // Diciutkan: tetap ada di pohon supaya keadaan formulirnya tidak
+              // hilang, hanya tidak menempati ruang.
+              pembagi.mode === "kertas" && "lg:hidden",
             )}
           >
             <div className="space-y-3">
@@ -957,12 +986,101 @@ export function ResumeEditor({
           </div>
 
           {/* ---------------------------------------------------------- */}
+          {/* Pembagi - hanya layar lebar                                 */}
+          {/* ---------------------------------------------------------- */}
+          {/*
+            Tetap ada meski salah satu panel sedang diciutkan, dan itu
+            disengaja: ia menjadi satu-satunya jalan kembali. Pengendali yang
+            lenyap bersama panel yang disembunyikannya akan membuat keadaan
+            "kertas saja" terasa seperti jalan buntu.
+          */}
+          <div className="relative hidden shrink-0 lg:flex">
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              aria-label={t.editor.splitResize}
+              aria-valuenow={Math.round(pembagi.lebarPersen)}
+              aria-valuemin={22}
+              aria-valuemax={78}
+              tabIndex={pembagi.mode === "dua" ? 0 : -1}
+              onPointerDown={
+                pembagi.mode === "dua" ? pembagi.tarik : undefined
+              }
+              onKeyDown={pembagi.mode === "dua" ? pembagi.tombol : undefined}
+              onDoubleClick={pembagi.setelUlang}
+              title={t.editor.splitResize}
+              className={cn(
+                "w-2.5 touch-none bg-ink-200 outline-none transition-colors",
+                pembagi.mode === "dua"
+                  ? "cursor-col-resize hover:bg-ink-300 focus-visible:bg-ink-400"
+                  : "cursor-default",
+              )}
+            />
+
+            {/* Dua tombol yang menempel di tengah pembagi. Ukurannya kecil
+                supaya tidak merebut perhatian dari kertasnya, tetapi daerah
+                sentuhnya tetap 44 piksel lewat `tap-target`. */}
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 flex -translate-x-1/2 flex-col justify-center gap-1">
+              {pembagi.mode !== "kertas" && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    pembagi.setMode(
+                      pembagi.mode === "formulir" ? "dua" : "kertas",
+                    )
+                  }
+                  title={
+                    pembagi.mode === "formulir"
+                      ? t.editor.splitBoth
+                      : t.editor.splitPaperOnly
+                  }
+                  aria-label={
+                    pembagi.mode === "formulir"
+                      ? t.editor.splitBoth
+                      : t.editor.splitPaperOnly
+                  }
+                  className="tap-target pointer-events-auto grid h-6 w-4 place-items-center rounded-l-md border border-ink-300 bg-white text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900"
+                >
+                  <ChevronLeft size={12} aria-hidden />
+                </button>
+              )}
+              {pembagi.mode !== "formulir" && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    pembagi.setMode(
+                      pembagi.mode === "kertas" ? "dua" : "formulir",
+                    )
+                  }
+                  title={
+                    pembagi.mode === "kertas"
+                      ? t.editor.splitBoth
+                      : t.editor.splitFormOnly
+                  }
+                  aria-label={
+                    pembagi.mode === "kertas"
+                      ? t.editor.splitBoth
+                      : t.editor.splitFormOnly
+                  }
+                  className="tap-target pointer-events-auto grid h-6 w-4 place-items-center rounded-r-md border border-ink-300 bg-white text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900"
+                >
+                  <ChevronRight size={12} aria-hidden />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* ---------------------------------------------------------- */}
           {/* Kanan: pratinjau atau penilaian                              */}
           {/* ---------------------------------------------------------- */}
           <div
             className={cn(
-              "min-h-0 flex-col",
+              // `min-w-0` inilah yang membuat kertas selebar apa pun
+              // menggulir di dalam panelnya sendiri, bukan mendorong panel
+              // formulir menyempit.
+              "min-h-0 min-w-0 flex-col",
               pane === "form" ? "hidden lg:flex" : "flex",
+              pembagi.mode === "formulir" ? "lg:hidden" : "lg:flex lg:flex-1",
             )}
           >
             {/* Tab hanya relevan di layar lebar; di layar sempit navigasinya

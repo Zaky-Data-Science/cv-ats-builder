@@ -209,7 +209,8 @@ export function toggleThemeDari(x: number, y: number): void {
         yang sama, digambar sebagai lapisan biasa, mendarat tepat di ikonnya.
         Yang meleset adalah asumsinya: `clip-path` pada
         `::view-transition-new(root)` diukur dari kotak pseudo-element itu,
-        dan kotak itu **tidak dijamin** seukuran `innerWidth`/`innerHeight`.
+        dan kotak itu **tidak dijamin** seukuran viewport yang dilaporkan
+        `innerWidth`/`innerHeight` - lihat catatan pembagi di bawah.
 
         Ia berbeda setiap kali ada sesuatu di antara keduanya - bilah alamat
         peramban ponsel yang menyusut saat digulir, batang gulir, perbesaran
@@ -222,8 +223,27 @@ export function toggleThemeDari(x: number, y: number): void {
         mendarat di tempat yang sama secara proporsional - dan tempat itu
         adalah tombolnya.
       */
-      const px = (x / window.innerWidth) * 100;
-      const py = (y / window.innerHeight) * 100;
+      /*
+        Pembaginya `clientWidth`/`clientHeight`, BUKAN `innerWidth`/
+        `innerHeight`.
+
+        Keduanya sama persis selama tidak ada batang gulir. Begitu ada -
+        dan di halaman panjang selalu ada - `innerWidth` masih menghitung
+        lebar batang gulirnya, sedangkan kotak tempat `clip-path` ini diukur
+        tidak. Selisihnya cuma sekitar 15 piksel, tetapi karena dibagi lalu
+        dikalikan seratus, titik pusatnya bergeser beberapa piksel dari
+        ikonnya. Dilaporkan begitu: "titik tengahnya gk 100% di tengah, dia
+        berada di atas logo bulan dan matahari itu dikit".
+
+        `document.documentElement.clientWidth` adalah lebar viewport tata
+        letak tanpa batang gulir - kotak yang sama dengan yang dipotong.
+      */
+      const akar = document.documentElement;
+      const lebarKotak = akar.clientWidth || window.innerWidth;
+      const tinggiKotak = akar.clientHeight || window.innerHeight;
+
+      const px = (x / lebarKotak) * 100;
+      const py = (y / tinggiKotak) * 100;
 
       /*
         Jari-jarinya pun persen, dan rumusnya bukan sekadar "jarak dibagi
@@ -232,8 +252,8 @@ export function toggleThemeDari(x: number, y: number): void {
         jarak sudut terjauh harus dibagi angka itu untuk memperoleh
         persentase yang setara.
       */
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = lebarKotak;
+      const h = tinggiKotak;
       const jarak = (dx: number, dy: number) => Math.hypot(dx, dy);
       const jariJariPx = Math.max(
         jarak(x, y),

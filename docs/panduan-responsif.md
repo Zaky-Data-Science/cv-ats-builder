@@ -154,14 +154,22 @@ sebelumnya tidak punya batas sama sekali.
 Halaman yang seluruh isinya tulisan tidak memakai `.wadah`, dan itu bukan
 kelalaian. Ada dua bentuk lain:
 
-**`.wadah-dokumen`** untuk Panduan, Tentang, dan Alur - kolom selebar 1024px
-yang **rata kiri, bukan di tengah**. Ketiganya sempat dicoba memakai `.wadah`
-penuh, dan hasilnya lebih buruk: diagram alur di Panduan berukuran tetap dan
-tercetak di tengah kartunya, jadi wadah yang lebih lebar hanya menambah ruang
-kosong. Tetapi bentuk lamanya - 896px di TENGAH layar - juga salah, dengan cara
-yang berbeda: pada 1920 judulnya duduk 532px dari tepi sementara logo di bilah
-atas duduk 48, sehingga dua benda yang seharusnya sebaris terlihat tidak
-berhubungan. Rata kiri menyelesaikan keduanya sekaligus.
+**`.wadah-dokumen`** untuk Panduan, Tentang, dan Alur - kolom selebar 1024px,
+**di tengah layar**.
+
+Dua bentuk lain sudah dicoba di sini, dan keduanya ditolak. Riwayatnya ditulis
+lengkap supaya tidak ada yang mencobanya untuk ketiga kalinya:
+
+| Yang dicoba | Hasilnya |
+|---|---|
+| `.wadah` penuh 1920px | Lebih buruk. Diagram alur di Panduan berukuran tetap dan tercetak di tengah kartunya, jadi wadah yang lebih lebar hanya menambah ruang kosong - halamannya justru terbaca lebih kosong daripada sebelumnya. |
+| Kolom 1024px **rata kiri** | Ditolak setelah dilihat langsung: isinya terbaca "numpuk di kiri". |
+
+Alasan teknis yang mendasari rata kiri memang benar, dan dengan dikembalikan ke
+tengah ia hilang lagi: pada 1920 judul halaman duduk sekitar 448px dari tepi
+sementara logo di bilah atas duduk 48px, sehingga dua benda yang seharusnya
+sebaris terlihat tidak berhubungan. **Itu konsekuensi yang diterima, bukan
+cacat yang belum diperbaiki.**
 
 **Tanpa wadah khusus** untuk Kebijakan Privasi, Ketentuan Layanan, dan
 Pengaturan - ketiganya memang satu kolom sempit dari ujung ke ujung.
@@ -170,9 +178,12 @@ Pengaturan - ketiganya memang satu kolom sempit dari ujung ke ujung.
 > grid, dan panel. Sebelum melebarkan sesuatu, tanyakan dulu apakah isinya
 > akan mengisi lebar itu - dan buktikan dengan melihat gambarnya.
 >
-> Dan bila jawabannya tidak, pertimbangkan **rata kiri** sebelum menyerah pada
-> "di tengah": ruang kosong yang berkumpul di satu sisi terbaca sebagai
-> susunan, sementara yang terbelah dua terbaca sebagai kelalaian.
+> Dan bila jawabannya tidak, **ruang kosong di kiri dan kanan kolom yang di
+> tengah itu wajar - bukan cacat.** Halaman yang isinya tulisan tidak akan
+> pernah mengisi 1920px, dan memaksanya mengisi dengan cara memindahkan
+> seluruh kolom ke satu sisi menghasilkan tumpukan, bukan susunan. Yang
+> mengurangi ruang kosong itu dengan benar cuma satu: membuat isi yang memang
+> bisa melar - kartu, tabel, grid, diagram - ikut melar.
 
 ## 9. Cara mengujinya
 

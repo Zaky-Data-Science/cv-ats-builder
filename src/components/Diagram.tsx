@@ -88,10 +88,24 @@ export function DiagramView({
               lencana di bawah simpul keputusan, dan urutan bacaannya memang
               lurus - persis seperti yang dibacakan pembaca layar.
             */}
+            {/*
+              Lebar simpulnya naik sedikit mulai `lg`, dari 576 ke 672 piksel.
+
+              Wadah halaman dokumen 1024 piksel, dan simpul 576 membuat
+              kartunya terbaca separuh kosong. Yang dinaikkan hanya lebarnya,
+              BUKAN letaknya: simpulnya tetap di tengah, sehingga garis
+              penyambung tegak di tengahnya tetap menyambung - lihat catatan
+              di atas.
+
+              Tidak dinaikkan sampai memenuhi wadahnya. Garis penyambung
+              antar-simpul panjangnya tetap, dan kotak yang terlalu lebar
+              membuat garis itu terbaca terlalu pendek untuk kotak sebesar
+              itu - rapinya justru hilang.
+            */}
             <div className="flex justify-center">
               <div
                 className={cn(
-                  "w-full max-w-xl rounded-xl border-2 px-4 py-3",
+                  "w-full max-w-xl rounded-xl border-2 px-4 py-3 lg:max-w-2xl",
                   KIND_STYLE[node.kind],
                 )}
               >
