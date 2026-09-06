@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Database, Mail, Search, Trash2, TriangleAlert } from "lucide-react";
+import { useI18n } from "@/components/i18n";
 import { Button, Card } from "@/components/ui";
 import { hapusAkun, kirimTautanReset, type HasilAksi } from "@/app/(app)/admin/actions";
 
@@ -81,6 +82,7 @@ export function AdminClient({
 }) {
   const router = useRouter();
   const params = useSearchParams();
+  const { locale } = useI18n();
   const [kueri, setKueri] = React.useState(cari);
   const [hasil, setHasil] = React.useState<HasilAksi | null>(null);
   const [sibuk, setSibuk] = React.useState(false);
@@ -112,8 +114,22 @@ export function AdminClient({
     }
   };
 
+  /*
+    Tanggal dirapikan memakai bahasa APLIKASI, bukan bahasa peramban.
+
+    Sebelumnya argumen pertamanya `undefined`, yang berarti "pakai bawaan
+    lingkungan". Server dan peramban punya bawaan yang berbeda, sehingga
+    tanggal yang sama tercetak "4 Sept 2026" di satu sisi dan "Sep 4, 2026"
+    di sisi lain - dan React menggagalkan hidrasi seluruh pohon itu lalu
+    menggambarnya ulang di peramban. Galatnya muncul di konsol pada setiap
+    pemuatan halaman ini, tanpa satu pun gejala di layar.
+
+    Menyebut kodenya secara tegas membuat kedua sisi tidak mungkin berbeda,
+    dan sekaligus membuat tanggalnya mengikuti bahasa yang sedang dipilih
+    pengguna - bukan bahasa yang kebetulan dipasang di peramban.
+  */
   const tanggal = (iso: string) =>
-    new Date(iso).toLocaleDateString(undefined, {
+    new Date(iso).toLocaleDateString(locale === "en" ? "en-GB" : "id-ID", {
       year: "numeric",
       month: "short",
       day: "numeric",
