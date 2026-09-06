@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * ============================================================================
- *  KARTU CV DI HALAMAN DEPAN - TIGA SEKALIGUS, YANG TENGAH TAJAM
+ *  KARTU CV DI HALAMAN DEPAN - KESEPULUH DESAIN, SATU PER SATU
  * ============================================================================
  *
  * Hero halaman depan dulu memajang satu contoh saja, desain Klasik, sementara
@@ -18,20 +18,16 @@ import { cn } from "@/lib/utils";
  * tidak, jadi ia tidak boleh menunggu digulir.
  *
  * ---------------------------------------------------------------------------
- * Tiga kartu, bukan satu: yang tepi buram sebagai bocoran
+ * Satu kartu pada satu waktu - dan bentuk yang PERNAH DICOBA lalu dibatalkan
  * ---------------------------------------------------------------------------
  *
- * Yang tampil bukan satu kartu melainkan tiga: desain sebelumnya di kiri dan
- * berikutnya di kanan - lebih kecil, buram, separuh terpotong tepi bingkai -
- * dan desain yang sedang dipilih di tengah, penuh dan tajam.
+ * Yang tampil satu kartu, bergeser mendatar seperti biasa.
  *
- * Bentuk ini menjawab dua hal sekaligus. Ruang kosong di kiri-kanan kartu tidak
- * lagi kosong, dan yang mengisinya bukan hiasan melainkan keterangan: bahwa
- * masih ada desain lain di kedua arah.
- *
- * Bocorannya baru muncul mulai `lg`. Di bawah itu ruangnya memang tidak ada -
- * kartu tunggalnya sendiri sudah hampir selebar layar - jadi kedua tetangganya
- * disembunyikan lewat `--peek-op: 0`, bukan diperkecil sampai tidak terbaca.
+ * Sempat dicoba bentuk lain: tiga kartu sekaligus, dengan tetangga kiri-kanan
+ * diperkecil dan diburamkan sebagai bocoran. Dibatalkan setelah dilihat -
+ * hasilnya dinilai jelek. Jangan mencobanya lagi tanpa diminta; ruang kosong
+ * di sekitar kartu diselesaikan dengan merapatkan hero-nya, bukan dengan
+ * mengisinya memakai kartu yang tidak dapat dibaca.
  *
  * ---------------------------------------------------------------------------
  * Mengapa transform, bukan jalur yang digulir
@@ -87,10 +83,9 @@ export function HeroTemplateCarousel({
    * Lencana melayang yang menempel pada KARTU TENGAH.
    *
    * Diterima sebagai prop, bukan diletakkan pemanggilnya sendiri di sebelah
-   * komponen ini, karena letaknya harus dihitung terhadap kartu tengah -
-   * sementara panggungnya 1,35 kali lebih lebar daripada kartu itu. Ditaruh
-   * di luar, lencananya menempel ke tepi panggung dan terlihat terlepas dari
-   * kartunya.
+   * komponen ini, supaya letaknya dihitung terhadap bingkai kartu - bukan
+   * terhadap pembungkus luar yang juga memuat keterangan dan titik penanda di
+   * bawahnya.
    */
   lencana?: React.ReactNode;
 }) {
@@ -171,30 +166,24 @@ export function HeroTemplateCarousel({
       }}
     >
       {/*
-        Bingkai panggung.
+        Bingkai kartu.
 
-        Lebarnya kelipatan lebar kartu (`--peek-w`), bukan angka tetap:
-        kartunya berukuran fisik - 210mm dikali skala - dan panggung yang
-        lebarnya ditulis terpisah akan meleset setiap kali skalanya berubah di
-        titik henti berikutnya.
+        Lebarnya persis selebar satu kartu - 210mm dikali skalanya - dan
+        `overflow-hidden` memotong tetangga kiri-kanan yang sedang menunggu
+        gilirannya tepat di luar bingkai. Yang terlihat karena itu selalu satu
+        kartu; yang lain masuk dan keluar lewat tepi.
 
-        `overflow-hidden` memang memotong kedua kartu tepi, dan itu disengaja:
-        bocoran yang terpotong tepi bingkai justru yang membuatnya terbaca
-        sebagai "masih ada lagi di sebelah sana". Kartu tengah tetap aman -
-        setengah lebarnya 0,5 kali lebar kartu sementara setengah panggung
-        0,675 kali, jadi bayangannya pun tidak tersentuh.
+        Bayangannya dipasang di sini, pada bingkainya, bukan pada tiap kartu.
+        Bayangan yang ikut menempel di kartu akan terpotong bersamanya, dan
+        yang tersisa cuma garis gelap di tepi.
 
         `touch-action: pan-y` membiarkan gulir tegak halaman tetap jalan
         sementara sapuan mendatar ditangani sendiri.
       */}
       <div
-        className={cn(
-          "relative mx-auto overflow-hidden",
-          "[--peek-w:1] [--peek-op:0] [--peek-blur:0px]",
-          "lg:[--peek-w:1.35] lg:[--peek-op:0.45] lg:[--peek-blur:3px]",
-        )}
+        className="relative mx-auto overflow-hidden rounded-xl shadow-2xl"
         style={{
-          width: "calc(210mm * var(--doc-scale) * var(--peek-w))",
+          width: "calc(210mm * var(--doc-scale))",
           height: "calc(210mm * var(--doc-scale) * 297 / 210)",
           touchAction: "pan-y",
         }}
@@ -230,9 +219,9 @@ export function HeroTemplateCarousel({
 
           const tengah = d === 0;
           const tetangga = Math.abs(d) === 1;
-          // Yang lebih jauh diparkir tepat di belakang tetangganya lalu
-          // disembunyikan, supaya kedatangannya nanti tidak melintasi
-          // panggung.
+          // Yang lebih jauh diparkir tepat di belakang tetangganya, supaya
+          // kedatangannya nanti tidak melintasi panggung - itulah yang dulu
+          // terbaca sebagai "diseruduk sekali jalan".
           const dJepit = Math.max(-1, Math.min(1, d));
 
           return (
@@ -240,23 +229,23 @@ export function HeroTemplateCarousel({
               key={id}
               aria-hidden={!tengah}
               className={cn(
-                "absolute top-0 left-1/2 h-full transition-[transform,opacity,filter] duration-500 ease-out motion-reduce:transition-none",
+                "absolute top-0 left-1/2 h-full transition-[transform,opacity] duration-500 ease-out motion-reduce:transition-none",
                 tengah ? "z-20" : "z-10",
               )}
               style={{
                 width: "calc(210mm * var(--doc-scale))",
-                transform: `translateX(-50%) translateX(${dJepit * 52}%) scale(${
-                  tengah ? 1 : 0.72
-                })`,
-                filter: tengah ? "none" : "blur(var(--peek-blur))",
-                opacity: tengah ? 1 : tetangga ? "var(--peek-op)" : 0,
+                // Sepenuh lebar panggung, bukan sebagian: yang di sebelah
+                // duduk tepat di luar bingkai, lalu masuk utuh menggantikan
+                // yang tengah. Itulah geseran biasa yang dikenali orang.
+                transform: `translateX(-50%) translateX(${dJepit * 100}%)`,
+                opacity: tengah || tetangga ? 1 : 0,
                 // Kartunya pajangan, bukan kendali. Yang dapat ditekan
                 // hanyalah panah dan titik penanda - dan panggungnya sendiri,
                 // yang menangani sapuan.
                 pointerEvents: "none",
               }}
             >
-              <div className="h-full overflow-hidden rounded-xl border border-ink-200 bg-white shadow-2xl">
+              <div className="h-full overflow-hidden border border-ink-200 bg-white">
                 <div
                   style={{
                     width: "210mm",
@@ -273,11 +262,12 @@ export function HeroTemplateCarousel({
       </div>
 
       {/*
-        Kotak sebesar KARTU TENGAH, dipakai menggantung lencana.
+        Kotak sebesar kartunya, dipakai menggantung lencana.
 
         Ia tidak menggambar apa pun sendiri dan tidak menerima tekanan -
         gunanya cuma memberi lencana di dalamnya kerangka acuan yang benar,
-        yaitu kartu tengah, bukan panggung yang lebih lebar.
+        yaitu kartunya, bukan pembungkus luar yang juga memuat keterangan dan
+        titik penanda di bawahnya.
       */}
       {lencana && (
         <div

@@ -167,16 +167,21 @@ export default async function LandingPage() {
               justru menempel ke tepi kiri dan kanan layar. Dilaporkan begitu:
               "terlalu banyak space kosong di tengah".
 
-              Batas 94rem membuat keduanya bergeser masuk sedikit dan
-              mendekat satu sama lain. Kolom kanan pun berubah dari pecahan
-              menjadi `auto`: ia kini selebar kartunya sendiri, bukan separuh
-              layar yang sebagian besar isinya kosong.
+              Batas 88rem membuat keduanya bergeser masuk dan mendekat satu
+              sama lain. Kolom kanan pun berubah dari pecahan menjadi `auto`:
+              ia kini selebar kartunya sendiri, bukan separuh layar yang
+              sebagian besar isinya kosong.
+
+              Angkanya sempat 94rem, dan itu masih menyisakan 218 piksel
+              kosong di tengah - masih terbaca menganga. 88rem menutupnya
+              sampai sekitar seratus piksel, yang terbaca sebagai jarak antar
+              dua blok, bukan sebagai lubang.
 
               Bilah atas tidak ikut - ia tetap memakai `.wadah` penuh, dan
               logonya tetap 48 piksel dari tepi seperti yang diminta
               sebelumnya. Yang dibatasi isi hero-nya saja.
             */}
-            <div className="mx-auto grid w-full max-w-[94rem] gap-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-12 lg:gap-y-0">
+            <div className="mx-auto grid w-full max-w-[88rem] gap-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-12 lg:gap-y-0">
               <Reveal className="lg:col-start-1 lg:row-start-1">
                 <Badge>
                   <Sparkles size={12} className="mr-1" />

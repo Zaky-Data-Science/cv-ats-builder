@@ -1194,24 +1194,25 @@ Yang hilang bersama jalur gulirnya - sapuan jari - ditulis ulang sebagai satu
 ambang seret 40 piksel, dengan `touch-action: pan-y` supaya gulir tegak
 halaman tetap jalan.
 
-**Tiga kartu sekaligus, bukan satu.** Desain sebelumnya di kiri dan berikutnya
-di kanan tampil lebih kecil (skala 0,72), buram (3px), setengah terpotong tepi
-panggung; yang sedang dipilih di tengah, penuh dan tajam. Ruang kosong di
-kiri-kanan kartu karena itu tidak lagi kosong, dan yang mengisinya bukan
-hiasan melainkan keterangan - bahwa masih ada desain lain di kedua arah.
-Bocorannya baru muncul mulai `lg`; di bawah itu ruangnya memang tidak ada,
-jadi kedua tetangganya disembunyikan lewat `--peek-op: 0`.
+**Satu kartu pada satu waktu.** Bingkainya persis selebar satu kartu, dan
+tetangga kiri-kanan menunggu gilirannya tepat di luar bingkai - masuk dan
+keluar lewat tepi, geseran biasa yang dikenali orang.
 
-Lebar panggung ditulis sebagai kelipatan lebar kartu (`--peek-w: 1.35`), bukan
-angka tetap: kartunya berukuran fisik - 210mm dikali skala - dan panggung yang
-lebarnya ditulis terpisah akan meleset setiap kali skalanya berubah di titik
-henti berikutnya.
+Sempat dicoba bentuk lain: tiga kartu sekaligus, tetangganya diperkecil dan
+diburamkan sebagai bocoran. **Dibatalkan setelah dilihat** - hasilnya dinilai
+jelek. Ruang kosong di sekitar kartu diselesaikan dengan merapatkan hero-nya,
+bukan dengan mengisinya memakai kartu yang tidak dapat dibaca.
+
+Bayangannya dipasang pada bingkainya, bukan pada tiap kartu: bayangan yang ikut
+menempel di kartu akan terpotong bersamanya oleh `overflow-hidden`, dan yang
+tersisa cuma garis gelap di tepi.
 
 Lencana melayang ("Nilai CV 98", "Tersimpan otomatis") dititipkan ke carousel
-sebagai prop, bukan diletakkan di sebelahnya: letaknya harus dihitung terhadap
-kartu tengah, sementara panggungnya 1,35 kali lebih lebar. Ia juga perlu
-`z-30`, sebab kartu tengah memakai `z-20` dan elemen ber-z-index selalu menang
-atas tetangganya yang `auto` - berapa pun urutannya di dalam DOM.
+sebagai prop, bukan diletakkan di sebelahnya, supaya letaknya dihitung terhadap
+bingkai kartu - bukan terhadap pembungkus luar yang juga memuat keterangan dan
+titik penanda di bawahnya. Ia juga perlu `z-30`, sebab kartunya memakai `z-20`
+dan elemen ber-z-index selalu menang atas tetangganya yang `auto` - berapa pun
+urutannya di dalam DOM.
 
 **Berhenti sementara, bukan selamanya.** Perpindahannya tiap lima detik, dan
 berhenti selama penunjuk ada di atasnya, fokus ada di dalamnya, atau selama
@@ -1219,12 +1220,14 @@ sepuluh detik sesudah pengunjung menggeser sendiri. Sesudah itu ia
 melanjutkan - yang diminta perpindahan otomatis, bukan sekali jalan lalu
 diam.
 
-**Hero-nya sendiri dibatasi 94rem.** Diukur pada 1920 sebelum dibatasi: tulisan
+**Hero-nya sendiri dibatasi 88rem.** Diukur pada 1920 sebelum dibatasi: tulisan
 di kiri berakhir di 874 piksel sementara kartu baru mulai di 1412 - celah
 kosong 538 piksel tepat di tengah, sementara kedua bloknya justru menempel ke
 tepi kiri dan kanan layar. Sesudah dibatasi dan kolom kanan diubah dari pecahan
-menjadi `auto` (selebar kartunya sendiri), celahnya tinggal 218 piksel. Bilah
-atas tidak ikut - ia tetap `.wadah` penuh dengan logo 48 piksel dari tepi.
+menjadi `auto` (selebar kartunya sendiri), celahnya **122 piksel**. Angkanya
+sempat 94rem dan itu masih menyisakan 218 piksel - masih terbaca menganga.
+Bilah atas tidak ikut dibatasi: ia tetap `.wadah` penuh dengan logo 48 piksel
+dari tepi.
 
 ### 8.2 Gerak dan Kedalaman
 
