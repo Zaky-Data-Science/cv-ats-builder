@@ -30,21 +30,52 @@ import { cn } from "@/lib/utils";
  * isinya. Yang ditulis sendiri di sini hanya penanda posisinya.
  *
  * ---------------------------------------------------------------------------
- * Berjalan sendiri, tetapi berhenti begitu disentuh
+ * Bolak-balik, bukan meloncat kembali ke awal
+ * ---------------------------------------------------------------------------
+ *
+ * Sesampainya di desain terakhir, arahnya BERBALIK - satu per satu kembali ke
+ * awal, lalu maju lagi. Bukan meloncat langsung ke slide pertama.
+ *
+ * Bedanya terlihat jelas. Melompat dari slide kesepuluh ke pertama berarti
+ * melintasi kesembilan slide di antaranya dalam satu gerakan, dan yang
+ * terbaca bukan "kembali ke awal" melainkan seluruh isinya diseruduk sekali
+ * jalan. Diminta begitu: jangan tiba-tiba langsung kembali ke awal, biarkan
+ * satu per satu tanpa ada yang dilewati.
+ *
+ * ---------------------------------------------------------------------------
+ * Berjalan sendiri, berhenti saat sedang diperhatikan
  * ---------------------------------------------------------------------------
  *
  * Perpindahan otomatis ada supaya pengunjung yang diam pun melihat bahwa
- * desainnya lebih dari satu - itulah seluruh alasan bagian ini diubah. Tetapi
- * ia berhenti PERMANEN pada sentuhan pertama: begitu pengunjung menggeser
- * sendiri, ia sedang memilih, dan carousel yang tetap berjalan di bawah
- * jarinya adalah gangguan, bukan bantuan.
+ * desainnya lebih dari satu - itulah seluruh alasan bagian ini diubah. Ia
+ * berpindah tiap lima detik, dan berhenti - bukan selamanya, melainkan selama
+ * ada tanda seseorang sedang memperhatikannya:
  *
- * Ia juga tidak pernah menyala sama sekali bila:
+ * - selama penunjuk berada di atasnya, atau fokus papan ketik ada di dalamnya;
+ * - sepuluh detik sesudah pengunjung menggeser atau memilih sendiri. Ia sedang
+ *   memilih, dan carousel yang berjalan di bawah jarinya adalah gangguan.
+ *   Sesudah itu ia melanjutkan, sebab yang diminta memang perpindahan
+ *   otomatis - bukan sekali jalan lalu diam selamanya.
+ *
+ * Ia tidak pernah menyala sama sekali bila:
  *
  * - `prefers-reduced-motion` menyala - gerak berulang yang tidak diminta
  *   adalah persis yang dihindari setelan itu;
  * - tabnya sedang tidak terlihat - menggeser di latar belakang membuang daya
  *   dan pengunjung kembali ke posisi yang tidak pernah ia tinggalkan.
+ *
+ * ---------------------------------------------------------------------------
+ * Gulirnya dianimasikan sendiri, bukan `behavior: "smooth"`
+ * ---------------------------------------------------------------------------
+ *
+ * Bawaan peramban memakai durasi dan kurva yang tidak dapat diatur, dan untuk
+ * jarak sependek satu slide ia terasa menyentak. Yang dipakai di sini kurva
+ * easeInOutCubic selama 700 milidetik: berangkat pelan, cepat di tengah, lalu
+ * mendarat pelan.
+ *
+ * Yang dianimasikan hanya perpindahan yang DIMINTA program - otomatis, panah,
+ * dan titik penanda. Sapuan jari tetap gulir asli peramban beserta
+ * momentumnya; menimpanya justru membuat sapuan terasa lengket.
  */
 export function HeroTemplateCarousel({
   locale,
@@ -61,28 +92,68 @@ export function HeroTemplateCarousel({
   };
 }) {
   const trackRef = React.useRef<HTMLDivElement>(null);
+  const animRef = React.useRef<number | null>(null);
+  /** +1 maju, -1 mundur. Berbalik di kedua ujungnya. */
+  const arahRef = React.useRef(1);
+  /** Waktu paling awal perpindahan otomatis boleh berjalan lagi. */
+  const jedaSampaiRef = React.useRef(0);
+  /** Penunjuk sedang di atasnya, atau fokus ada di dalamnya. */
+  const diperhatikanRef = React.useRef(false);
   const [aktif, setAktif] = React.useState(0);
-  const [otomatis, setOtomatis] = React.useState(true);
 
   const total = TEMPLATE_ORDER.length;
   const info = TEMPLATE_INFO[locale];
 
-  /** Menggeser ke slide ke-`i`, memutar bila melewati ujungnya. */
-  const keSlide = React.useCallback(
-    (i: number, halus = true) => {
-      const track = trackRef.current;
-      if (!track) return;
-      const indeks = ((i % total) + total) % total;
-      track.scrollTo({
-        left: indeks * track.clientWidth,
-        behavior: halus ? "smooth" : "auto",
-      });
+  /** Menggeser ke slide ke-`i` dengan kurva sendiri. */
+  const keSlide = React.useCallback((i: number, halus = true) => {
+    const track = trackRef.current;
+    if (!track || track.clientWidth === 0) return;
+
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    const tujuan = i * track.clientWidth;
+
+    if (!halus) {
+      track.scrollLeft = tujuan;
+      return;
+    }
+
+    const awal = track.scrollLeft;
+    const jarak = tujuan - awal;
+    if (Math.abs(jarak) < 1) return;
+
+    const mulai = performance.now();
+    const DURASI = 700;
+
+    const langkah = (sekarang: number) => {
+      const p = Math.min(1, (sekarang - mulai) / DURASI);
+      // easeInOutCubic - berangkat pelan, cepat di tengah, mendarat pelan.
+      const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      track.scrollLeft = awal + jarak * e;
+      animRef.current = p < 1 ? requestAnimationFrame(langkah) : null;
+    };
+
+    animRef.current = requestAnimationFrame(langkah);
+  }, []);
+
+  // Membatalkan animasi yang masih berjalan saat komponennya dilepas.
+  React.useEffect(
+    () => () => {
+      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
     },
-    [total],
+    [],
   );
 
-  /** Menghentikan perpindahan otomatis - sekali berhenti, tidak menyala lagi. */
-  const hentikanOtomatis = React.useCallback(() => setOtomatis(false), []);
+  /**
+   * Menunda perpindahan otomatis - sepuluh detik, bukan selamanya.
+   *
+   * Yang baru saja menggeser sendiri sedang memilih, dan carousel yang
+   * berjalan di bawah jarinya adalah gangguan. Tetapi menghentikannya
+   * selamanya juga keliru: yang diminta perpindahan otomatis, dan sekali
+   * sentuh tidak berarti pengunjung ingin ia diam untuk seterusnya.
+   */
+  const tunda = React.useCallback(() => {
+    jedaSampaiRef.current = Date.now() + 10_000;
+  }, []);
 
   /*
     Posisi aktif dibaca DARI gulirnya, bukan disimpan terpisah lalu dipaksakan
@@ -98,8 +169,6 @@ export function HeroTemplateCarousel({
   }, []);
 
   React.useEffect(() => {
-    if (!otomatis) return;
-
     const kurangiGerak = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -109,13 +178,22 @@ export function HeroTemplateCarousel({
       // Tab yang tidak terlihat tidak digeser. Selain membuang daya, ia
       // membuat pengunjung kembali ke desain yang tidak pernah ia tinggalkan.
       if (document.visibilityState !== "visible") return;
+      if (diperhatikanRef.current) return;
+      if (Date.now() < jedaSampaiRef.current) return;
+
       const track = trackRef.current;
       if (!track || track.clientWidth === 0) return;
-      keSlide(Math.round(track.scrollLeft / track.clientWidth) + 1);
-    }, 4200);
+
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      // Berbalik di ujung, bukan meloncat ke awal.
+      if (i >= total - 1) arahRef.current = -1;
+      else if (i <= 0) arahRef.current = 1;
+
+      keSlide(i + arahRef.current);
+    }, 5000);
 
     return () => window.clearInterval(jam);
-  }, [otomatis, keSlide]);
+  }, [keSlide, total]);
 
   return (
     <div
@@ -123,9 +201,21 @@ export function HeroTemplateCarousel({
       aria-roledescription="carousel"
       aria-label={teks.label}
       className="relative"
-      onPointerDown={hentikanOtomatis}
-      onKeyDown={hentikanOtomatis}
-      onWheel={hentikanOtomatis}
+      onPointerDown={tunda}
+      onKeyDown={tunda}
+      onWheel={tunda}
+      onPointerEnter={() => {
+        diperhatikanRef.current = true;
+      }}
+      onPointerLeave={() => {
+        diperhatikanRef.current = false;
+      }}
+      onFocusCapture={() => {
+        diperhatikanRef.current = true;
+      }}
+      onBlurCapture={() => {
+        diperhatikanRef.current = false;
+      }}
     >
       {/*
         Lebar bingkainya dihitung dari skalanya (210mm x skala) - sama seperti
@@ -157,14 +247,37 @@ export function HeroTemplateCarousel({
                 className="w-full shrink-0 snap-center"
                 style={{ aspectRatio: "210 / 297", overflow: "hidden" }}
               >
+                {/*
+                  Slide yang bukan giliran menyusut dan memudar sedikit.
+
+                  Transformnya dipasang pada pembungkus DI DALAM slide, bukan
+                  pada slide-nya sendiri: kotak slide adalah yang dipakai
+                  scroll-snap untuk menghitung titik berhentinya, dan
+                  menskalakannya akan menggeser titik itu sehingga kertas
+                  berhenti tidak di tengah.
+
+                  `motion-reduce:transition-none` menghormati setelan yang
+                  sama dengan yang mematikan perpindahan otomatis - yang
+                  meminta gerak dikurangi tidak sedang meminta gerak yang
+                  lebih halus.
+                */}
                 <div
-                  style={{
-                    width: "210mm",
-                    transformOrigin: "top left",
-                    transform: "scale(var(--doc-scale))",
-                  }}
+                  className={cn(
+                    "h-full origin-center transition-[transform,opacity] duration-500 ease-out motion-reduce:transition-none",
+                    i === aktif
+                      ? "scale-100 opacity-100"
+                      : "scale-[0.965] opacity-70",
+                  )}
                 >
-                  <TemplatePreview template={id} locale={locale} />
+                  <div
+                    style={{
+                      width: "210mm",
+                      transformOrigin: "top left",
+                      transform: "scale(var(--doc-scale))",
+                    }}
+                  >
+                    <TemplatePreview template={id} locale={locale} />
+                  </div>
                 </div>
               </div>
             ))}
@@ -182,7 +295,7 @@ export function HeroTemplateCarousel({
         <button
           type="button"
           onClick={() => {
-            hentikanOtomatis();
+            tunda();
             keSlide(aktif - 1);
           }}
           aria-label={teks.prev}
@@ -194,7 +307,7 @@ export function HeroTemplateCarousel({
         <button
           type="button"
           onClick={() => {
-            hentikanOtomatis();
+            tunda();
             keSlide(aktif + 1);
           }}
           aria-label={teks.next}
@@ -227,7 +340,7 @@ export function HeroTemplateCarousel({
             key={id}
             type="button"
             onClick={() => {
-              hentikanOtomatis();
+              tunda();
               keSlide(i);
             }}
             aria-label={info[id].name}

@@ -1173,6 +1173,37 @@ sepuluh salinan dokumen yang hampir sama adalah bahan terbaik bagi gzip.
 yang digeser jari sama-sama bereaksi terhadap gerak penunjuk yang sama, dan
 keduanya sekaligus membuat kartunya bergoyang justru saat sedang digeser.
 
+Tiga hal disetel ulang sesudah dipakai:
+
+- **Bolak-balik, bukan meloncat ke awal.** Sesampainya di desain terakhir
+  arahnya berbalik, satu per satu kembali. Meloncat dari slide kesepuluh ke
+  pertama berarti melintasi kesembilan slide di antaranya dalam satu gerakan,
+  dan yang terbaca bukan "kembali ke awal" melainkan seluruh isinya diseruduk
+  sekali jalan.
+- **Berhenti sementara, bukan selamanya.** Perpindahannya tiap lima detik, dan
+  berhenti selama penunjuk ada di atasnya, fokus ada di dalamnya, atau selama
+  sepuluh detik sesudah pengunjung menggeser sendiri. Sesudah itu ia
+  melanjutkan - yang diminta perpindahan otomatis, bukan sekali jalan lalu
+  diam.
+- **Gulirnya dianimasikan sendiri** dengan easeInOutCubic 700 ms, bukan
+  `behavior: "smooth"` yang durasi dan kurvanya tidak dapat diatur dan terasa
+  menyentak untuk jarak sependek satu slide. Yang dianimasikan hanya
+  perpindahan yang diminta program; sapuan jari tetap gulir asli peramban
+  beserta momentumnya.
+
+Slide yang bukan giliran menyusut dan memudar sedikit. Transformnya dipasang
+pada pembungkus **di dalam** slide, bukan pada slide-nya sendiri: kotak slide
+adalah yang dipakai scroll-snap untuk menghitung titik berhentinya, dan
+menskalakannya akan menggeser titik itu sehingga kertas berhenti tidak di
+tengah.
+
+**Hero-nya sendiri dibatasi 94rem.** Diukur pada 1920 sebelum dibatasi: tulisan
+di kiri berakhir di 874 piksel sementara kartu baru mulai di 1412 - celah
+kosong 538 piksel tepat di tengah, sementara kedua bloknya justru menempel ke
+tepi kiri dan kanan layar. Sesudah dibatasi dan kolom kanan diubah dari pecahan
+menjadi `auto` (selebar kartunya sendiri), celahnya tinggal 218 piksel. Bilah
+atas tidak ikut - ia tetap `.wadah` penuh dengan logo 48 piksel dari tepi.
+
 ### 8.2 Gerak dan Kedalaman
 
 Halaman depan memakai efek kedalaman: kartu CV miring mengikuti kursor,

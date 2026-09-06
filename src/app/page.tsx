@@ -158,7 +158,25 @@ export default async function LandingPage() {
               dari `lg:mt-8` pada blok tombol - sebab di sana kedua blok itu
               satu kolom yang tidak boleh terpisah sejauh jarak antar-kolom.
             */}
-            <div className="grid gap-9 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-x-10 lg:gap-y-0">
+            {/*
+              Hero-nya tidak memakai seluruh lebar wadahnya.
+
+              Diukur pada 1920 sebelum dibatasi: tulisan di kiri berakhir di
+              874 piksel sementara kartu CV baru mulai di 1412 - celah kosong
+              selebar 538 piksel tepat di tengah, sementara kedua bloknya
+              justru menempel ke tepi kiri dan kanan layar. Dilaporkan begitu:
+              "terlalu banyak space kosong di tengah".
+
+              Batas 94rem membuat keduanya bergeser masuk sedikit dan
+              mendekat satu sama lain. Kolom kanan pun berubah dari pecahan
+              menjadi `auto`: ia kini selebar kartunya sendiri, bukan separuh
+              layar yang sebagian besar isinya kosong.
+
+              Bilah atas tidak ikut - ia tetap memakai `.wadah` penuh, dan
+              logonya tetap 48 piksel dari tepi seperti yang diminta
+              sebelumnya. Yang dibatasi isi hero-nya saja.
+            */}
+            <div className="mx-auto grid w-full max-w-[94rem] gap-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-12 lg:gap-y-0">
               <Reveal className="lg:col-start-1 lg:row-start-1">
                 <Badge>
                   <Sparkles size={12} className="mr-1" />
