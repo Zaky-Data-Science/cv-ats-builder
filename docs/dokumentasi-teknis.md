@@ -1083,6 +1083,52 @@ ruang kosong. Wadah lebar hanya berguna bagi isi yang memang ikut melar.
 Aturannya ditulis lengkap di `panduan-responsif.md` aturan 8, dan dijaga
 `tests/responsif.test.ts` supaya `max-w-6xl` tidak kembali ditulis sendiri.
 
+### 8.1g Setelan Rupa, Laci yang Dapat Ditarik, dan Halaman Cetak di Ponsel
+
+Empat perubahan kecil yang seluruhnya berasal dari memakai aplikasinya di
+ponsel sungguhan.
+
+**Sakelar tema pindah ke dalam laci.** Ia sempat bolak-balik: sesi 8
+memindahkannya ke laci lalu mengeluarkannya lagi karena tenggelam di antara
+tautan halaman. Sekarang ia kembali ke laci, tetapi ke tempat yang berbeda -
+kelompok "Tampilan" bersama pilihan bahasa, satu tempat yang jelas namanya bagi
+setelan rupa. Konsekuensinya diketahui dan diterima: mengganti tema di ponsel
+menuntut dua ketukan. Yang ditukar dengannya bilah atas yang benar-benar
+bersih - identitas di kiri, satu tombol di kanan. Berlaku pada ketiga bilah:
+publik, aplikasi, dan jalur tanpa akun.
+
+**Laci "Atur tampilan CV" dapat diatur ukurannya.** Ukuran tetapnya dulu
+kompromi yang tidak pernah pas - terlalu pendek saat mengatur jarak tepi,
+terlalu tinggi saat hanya ingin mengintip kertasnya. Kini lembar bawah di
+ponsel dapat ditarik naik-turun (28%-92% tinggi layar) dan laci kiri di layar
+lebar dapat ditarik melebar (18-34rem); keduanya juga dapat diubah lewat panah
+papan ketik, dan pilihannya tersimpan per perangkat di `localStorage`. Diukur
+saat pengujian: 429 -> 593 piksel dengan sekali tarik di ponsel, 352 -> 488
+piksel di laptop.
+
+**Menu "..." di penyunting menggulir.** Isinya delapan butir berketerangan, dan
+pada layar pendek butir terakhir jatuh di bawah tepi bawah tanpa dapat
+dijangkau - menu `absolute` tidak ikut menggulir bersama halaman, dan
+halamannya pun terkunci selama menu terbuka. Batasnya kini `100dvh` dikurangi
+tinggi kedua bilah di atasnya. Diuji pada layar 620 piksel: isi 599, tinggi
+508, menggulir.
+
+**Halaman cetak muat di layar ponsel.** Kertas dirender pada ukuran fisiknya,
+210mm alias sekitar 794 piksel, dan di ponsel 390 piksel itu membuat peramban
+melebarkan viewport-nya sendiri lalu mengecilkan seluruh halaman - termasuk
+bilah alatnya, yang tulisannya jadi pecah dua baris. `PrintPaper` menyusutkan
+kertasnya dengan `zoom`, dan `zoom` dipilih bukan `transform: scale()` karena
+ia mengubah tata letaknya sendiri sehingga tidak menyisakan ruang kosong yang
+harus ditambal.
+
+Satu jebakan pantas dicatat: penyusutannya tidak boleh dihitung dari
+`innerWidth`. Nilainya sudah terlanjur melar bersama viewport, sehingga
+hasilnya berputar - diukur, skala 0,71 pada layar 390 yang berarti kertasnya
+masih 560 piksel. Yang dipakai `Math.min(innerWidth, screen.width)`:
+`screen.width` tidak ikut melar. Sesudahnya lebar tata letak kembali 390 dan
+skalanya 0,45. Hasil cetaknya sendiri tidak tersentuh - `zoom` dilepas kembali
+menjadi 1 di dalam `@media print`.
+
 ### 8.2 Gerak dan Kedalaman
 
 Halaman depan memakai efek kedalaman: kartu CV miring mengikuti kursor,

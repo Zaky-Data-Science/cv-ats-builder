@@ -162,24 +162,18 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
         </div>
 
         {/*
-          Sakelar tema tetap di bilah, juga di layar sempit.
+          Di layar sempit tinggal satu tombol: menu.
 
-          Ia sempat ikut pindah ke dalam laci bersama seluruh kendali lain pada
-          sesi 8 - dan itu keliru untuk yang satu ini. Bahasa dan tombol masuk
-          adalah hal yang dicari saat dibutuhkan; mode gelap adalah hal yang
-          diketuk begitu layarnya terasa terlalu terang, dan yang menuntut dua
-          ketukan serta satu gulir untuk sampai ke sana akan disimpulkan tidak
-          ada. Dilaporkan begitu: "di alamat ini gk ada temanya".
+          Sakelar tema pernah bolak-balik. Sesi 8 memindahkannya ke dalam laci
+          bersama seluruh kendali lain, lalu mengeluarkannya kembali karena
+          dilaporkan "di alamat ini gk ada temanya" - ia tenggelam di antara
+          tautan halaman. Kini ia kembali ke laci atas permintaan zaky, tetapi
+          bukan ke tempat yang dulu: ia berdiri di kelompok "Tampilan" bersama
+          pilihan bahasa, satu tempat yang jelas namanya bagi setelan rupa.
 
-          Yang dulu membuat dokumen lebih lebar daripada layarnya bukan tombol
-          semacam ini melainkan satu barisan kendali berlebar tetap 224 piksel.
-          Satu tombol ikon selebar 36 piksel diukur tidak menyentuh masalah itu
-          bahkan pada layar 320.
+          Akibat sampingannya diketahui: mengganti tema di ponsel menuntut dua
+          ketukan. Yang ditukar dengannya bilah atas yang benar-benar bersih.
         */}
-        <div className="lg:hidden">
-          <ThemeToggle />
-        </div>
-
         <TombolLaci
           laci={laci}
           idLaci="menu-ponsel"
@@ -280,17 +274,16 @@ function MobileDrawer({
           ))}
         </ul>
 
-        {/* Bahasa: setelan, bukan tujuan. Dipisahkan garis supaya tidak
-            terbaca sebagai halaman keenam.
-
-            Sakelar temanya tidak ada di sini - ia tinggal di bilah atas,
-            tempat ia dapat dijangkau tanpa membuka laci sama sekali. */}
+        {/* Setelan rupa, bukan tujuan. Dipisahkan garis supaya tidak terbaca
+            sebagai halaman keenam. Bahasa dan mode terang/gelap berdiri
+            berdampingan di sini - lihat catatan di bilahnya. */}
         <div className="mt-4 border-t border-ink-200 pt-4">
           <p className="px-4 pb-2 text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
             {t.nav.settingsGroup}
           </p>
-          <div className="flex items-center gap-2 px-2">
+          <div className="flex items-center gap-1 px-2">
             <LanguageToggle />
+            <ThemeToggle />
           </div>
         </div>
       </nav>

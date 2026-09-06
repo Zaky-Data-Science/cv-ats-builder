@@ -342,6 +342,8 @@ export const en: Dictionary = {
   appearance: {
     drawerTitle: "Adjust how your CV looks",
     drawerHint: "The page beside it changes as you go",
+    resizeHeight: "Drag to set how tall this panel is",
+    resizeWidth: "Drag to set how wide this panel is",
     groupLook: "Design",
     groupText: "Text",
     groupPaper: "Paper and edge spacing",

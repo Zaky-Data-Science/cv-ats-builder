@@ -111,7 +111,7 @@ Politeknik Negeri Samarinda.
 | Tim Vercel | ada di catatan pribadi |
 | Nama project Vercel | `cv-ats-builder` |
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
-| Folder kode | `D:\Website CV dan Portofolio` |
+| Folder kode | `D:\Website CV` - **berganti nama pada sesi 17**, dari `D:\Website CV dan Portofolio`. Kata "Portofolio" dibuang karena fiturnya memang sudah dicabut di sesi 15 |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
 | Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. Terakhir dipicu `212a98b` (sesi 15) |
 | Uji manual 1-5 | **selesai dan lulus** (sesi 13) |
@@ -152,7 +152,7 @@ ponsel di Wi-Fi yang sama ikut dicatat di log pengawas setiap kali menyala.
 Bila ingin menjalankannya dengan tangan:
 
 ```bash
-cd "D:\Website CV dan Portofolio"
+cd "D:\Website CV"
 
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
@@ -533,20 +533,20 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
    perataan tengah yang menyejajarkan ikon panah dengan teksnya. `inline-block`
    karena itu dibuang saat digabung, dan `block` diterjemahkan jadi `flex`.
 
-1. **Pemulihan kata sandi lewat surel sudah ada sejak sesi 10, tetapi belum
-   menyala.** Seluruh alurnya terpasang - `/lupa-sandi`, `/atur-sandi`, dua
-   titik akhir API, tabel tiket, batas laju, dan surel dua bahasa. Yang belum:
-   `BREVO_API_KEY` dan `MAIL_FROM` di Vercel. Selama keduanya kosong, halaman
-   `/lupa-sandi` menampilkan penjelasan jalan lama alih-alih formulir yang
-   tidak akan mengirim apa pun.
+1. ~~Pemulihan kata sandi lewat surel belum menyala.~~ **Sudah menyala sejak
+   sesi 17** - zaky mengisi sendiri `BREVO_API_KEY` dan `MAIL_FROM` di Vercel
+   dan memastikannya berhasil. Seluruh alurnya memang sudah terpasang sejak
+   sesi 10: `/lupa-sandi`, `/atur-sandi`, dua titik akhir API, tabel tiket,
+   batas laju, dan surel dua bahasa.
 
    Hambatan lamanya - surel dari `vercel.app` tanpa SPF/DKIM berakhir di spam -
    dijawab tanpa menunggu domain sendiri: Brevo mengizinkan verifikasi **satu
-   alamat pengirim** biasa, Gmail sekalipun. Langkahnya ada di `.env.example`.
+   alamat pengirim** biasa, Gmail sekalipun.
 
    Yang masih pantas dikerjakan kalau nanti punya domain: pindahkan alamat
    pengirimnya ke domain itu, supaya surelnya tidak lagi datang dari alamat
-   pribadi.
+   pribadi. Untuk memastikan pengirimannya masih sehat kapan saja, ada
+   `npm run mail:test -- alamat@tujuan.com`.
 
 2. **Pencocokan kata kunci masih tidak mengenali kata berimbuhan.**
    "mengembangkan" dan "pengembangan" dihitung berbeda. Perbedaan ejaan dan
@@ -611,12 +611,15 @@ Empat dikerjakan, empat ditolak dengan alasannya - lihat tabel keputusan di
    hanya dipakai untuk membuktikan identitas; datanya tidak disimpan di dalam
    akun Google pengguna.
 
-9. **Pemulihan kata sandi menunggu kunci Brevo.** Lihat butir 1 - seluruh
-   alurnya sudah terpasang dan teruji; yang belum hanya `BREVO_API_KEY` dan
-   `MAIL_FROM`. Ada `npm run mail:test -- alamat@tujuan.com` untuk memastikan
-   pengirimannya benar-benar sampai begitu kuncinya diisi.
+9. ~~Pemulihan kata sandi menunggu kunci Brevo.~~ **Selesai** - lihat butir 1.
 
-10. **Laci pengaturan pada lembar bawah ponsel belum diperiksa di perangkat
+10. ~~Laci pengaturan pada lembar bawah ponsel belum diperiksa.~~ **Selesai di
+    sesi 16**, dan pada sesi 17 tingginya menjadi dapat diatur sendiri oleh
+    penggunanya - ditarik, atau ditekan panah atas/bawah. Catatan lama tentang
+    pengujiannya tetap disimpan karena jebakan `visibilityState`-nya masih
+    berlaku bagi pengukuran apa pun lewat claude-in-chrome:
+
+    Laci pengaturan pada lembar bawah ponsel belum diperiksa di perangkat
     sungguhan.** Kemiringan kartu di layar sentuh sudah - diuji dengan
     mengirim `PointerEvent` bertipe `touch` sungguhan ke kartunya, dan
     terukur `+3,5deg` di pojok kanan atas, `-3,5deg` di kiri bawah, lalu
@@ -642,7 +645,7 @@ benar-benar dihasilkan, bukan sekadar keberadaannya.
 
 Cukup sampaikan hal-hal ini:
 
-> Project di `D:\Website CV dan Portofolio`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
+> Project di `D:\Website CV`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. **Kalau yang dikerjakan menyentuh tata
 > letak, baca juga `docs/panduan-responsif.md` - sembilan aturan tetap yang
 > mengatur pekerjaan itu, dan cara mengujinya di tiga lebar.** Sudah tayang di

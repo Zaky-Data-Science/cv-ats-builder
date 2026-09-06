@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { PrintPaper } from "@/components/preview/PrintPaper";
 import { PrintToolbar } from "@/components/preview/PrintToolbar";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import { paperSpec } from "@/lib/resume/paper";
@@ -65,12 +66,16 @@ export default async function PrintResumePage({
         teksnya menempel ke tepi.
       */}
       <style>{`@page { size: ${paper.cssSize}; margin: 0; }`}</style>
-      <ResumeDocument
-        data={resume}
-        printMode
-        padding="full"
-        className="shadow-lg print:shadow-none"
-      />
+      {/* Kertas disusutkan agar muat di layar sempit - hanya di layar, tidak
+          pada hasil cetaknya. Lihat catatan di PrintPaper. */}
+      <PrintPaper lebarMm={paper.widthMm}>
+        <ResumeDocument
+          data={resume}
+          printMode
+          padding="full"
+          className="shadow-lg print:shadow-none"
+        />
+      </PrintPaper>
     </div>
   );
 }

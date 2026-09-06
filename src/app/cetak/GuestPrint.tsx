@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useI18n } from "@/components/i18n";
+import { PrintPaper } from "@/components/preview/PrintPaper";
 import { PrintToolbar } from "@/components/preview/PrintToolbar";
 import { ResumeDocument } from "@/components/preview/ResumeDocument";
 import {
@@ -50,12 +51,14 @@ export function GuestPrint() {
           sama persis dengan halaman cetak berakun, lihat komentar panjang di
           `src/app/resume/[id]/print/page.tsx`. */}
       <style>{`@page { size: ${paper.cssSize}; margin: 0; }`}</style>
-      <ResumeDocument
-        data={data}
-        printMode
-        padding="full"
-        className="shadow-lg print:shadow-none"
-      />
+      <PrintPaper lebarMm={paper.widthMm}>
+        <ResumeDocument
+          data={data}
+          printMode
+          padding="full"
+          className="shadow-lg print:shadow-none"
+        />
+      </PrintPaper>
     </div>
   );
 }

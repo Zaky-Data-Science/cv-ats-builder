@@ -41,16 +41,39 @@ export function PrintToolbar({ backHref }: { backHref: string }) {
 
   return (
     <div className="no-print fixed inset-x-0 top-0 z-50 border-b border-ink-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-2.5">
+      {/*
+        Kedua tulisannya tidak boleh membungkus.
+
+        Di ponsel keduanya sempat pecah masing-masing menjadi dua baris -
+        "Kembali menyunting CV" dan "Cetak atau Simpan PDF" - sehingga bilah
+        setinggi satu baris menjadi setinggi dua, dan keduanya terbaca sebagai
+        empat potongan kalimat alih-alih dua tombol.
+
+        Yang mengalah label panah kembali: mulai 640 piksel ia bertuliskan
+        namanya, di bawah itu tinggal panahnya saja dengan keterangan yang
+        tetap terbaca pembaca layar. Ini penyembunyian yang sah menurut aturan
+        5 panduan responsif - label yang sudah terwakili ikonnya - dan tujuannya
+        pun bukan satu-satunya jalan pulang: tombol kembali peramban tetap ada.
+
+        Tombol cetaknya tidak pernah menyusut. Ia satu-satunya alasan halaman
+        ini dibuka.
+      */}
+      <div className="wadah flex items-center justify-between gap-3 py-2.5">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-600 transition-colors hover:text-ink-900"
+          title={t.print.backToEditor}
+          className="tap-target inline-flex shrink-0 items-center gap-1.5 text-xs font-medium whitespace-nowrap text-ink-600 transition-colors hover:text-ink-900"
         >
           <ArrowLeft size={13} aria-hidden />
-          {t.print.backToEditor}
+          <span className="hidden sm:inline">{t.print.backToEditor}</span>
+          <span className="sr-only sm:hidden">{t.print.backToEditor}</span>
         </Link>
 
-        <Button size="sm" className="press" onClick={() => window.print()}>
+        <Button
+          size="sm"
+          className="press shrink-0 whitespace-nowrap"
+          onClick={() => window.print()}
+        >
           <Printer size={14} />
           {t.print.printNow}
         </Button>

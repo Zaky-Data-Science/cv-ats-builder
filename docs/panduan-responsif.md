@@ -151,17 +151,28 @@ barisnya saat kembali ke kiri; batas nyaman sekitar 65-75 karakter. Paragraf
 karena itu tetap memakai `max-w-2xl`/`max-w-3xl`, atau `.teks-baca` bila
 sebelumnya tidak punya batas sama sekali.
 
-Ada satu hal yang mudah dikira kelalaian padahal bukan. Halaman yang seluruh
-isinya tulisan - Kebijakan Privasi, Ketentuan Layanan, Pengaturan, Panduan,
-Tentang, Alur - **tidak** memakai `.wadah`. Ketiga yang terakhir sempat
-dilebarkan lalu dikembalikan setelah dilihat hasilnya pada 1920: diagram alur
-di Panduan berukuran tetap dan tercetak di tengah kartunya, jadi melebarkan
-wadahnya tidak membuat diagramnya ikut besar - yang bertambah hanya ruang
-kosong, dan halamannya justru terbaca lebih kosong daripada sebelumnya.
+Halaman yang seluruh isinya tulisan tidak memakai `.wadah`, dan itu bukan
+kelalaian. Ada dua bentuk lain:
+
+**`.wadah-dokumen`** untuk Panduan, Tentang, dan Alur - kolom selebar 1024px
+yang **rata kiri, bukan di tengah**. Ketiganya sempat dicoba memakai `.wadah`
+penuh, dan hasilnya lebih buruk: diagram alur di Panduan berukuran tetap dan
+tercetak di tengah kartunya, jadi wadah yang lebih lebar hanya menambah ruang
+kosong. Tetapi bentuk lamanya - 896px di TENGAH layar - juga salah, dengan cara
+yang berbeda: pada 1920 judulnya duduk 532px dari tepi sementara logo di bilah
+atas duduk 48, sehingga dua benda yang seharusnya sebaris terlihat tidak
+berhubungan. Rata kiri menyelesaikan keduanya sekaligus.
+
+**Tanpa wadah khusus** untuk Kebijakan Privasi, Ketentuan Layanan, dan
+Pengaturan - ketiganya memang satu kolom sempit dari ujung ke ujung.
 
 > Wadah lebar hanya berguna bagi isi yang memang ikut melar: kartu, tabel,
 > grid, dan panel. Sebelum melebarkan sesuatu, tanyakan dulu apakah isinya
 > akan mengisi lebar itu - dan buktikan dengan melihat gambarnya.
+>
+> Dan bila jawabannya tidak, pertimbangkan **rata kiri** sebelum menyerah pada
+> "di tengah": ruang kosong yang berkumpul di satu sisi terbaca sebagai
+> susunan, sementara yang terbelah dua terbaca sebagai kelalaian.
 
 ## 9. Cara mengujinya
 

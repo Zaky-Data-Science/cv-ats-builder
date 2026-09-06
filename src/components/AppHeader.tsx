@@ -207,22 +207,21 @@ export function AppHeader({
         {/* Kendali layar sempit - dan seluruh lebar di halaman penyunting    */}
         {/* ---------------------------------------------------------------- */}
         {/*
-          Sakelar tema tetap di bilah, tidak ikut masuk laci.
+          Di layar sempit tinggal satu tombol: menu.
 
-          Alasannya sama dengan di PublicHeader, dan sudah pernah dilaporkan
-          sebagai keluhan: bahasa dan pengaturan adalah hal yang dicari saat
-          dibutuhkan; mode gelap adalah hal yang diketuk begitu layarnya terasa
-          terlalu terang. Yang menuntut dua ketukan untuk sampai ke sana akan
-          disimpulkan tidak ada.
+          Sakelar tema sempat berdiri di sini - dan sebelumnya lagi ikut masuk
+          laci, lalu dikeluarkan pada sesi 8 karena dilaporkan "di alamat ini
+          gk ada temanya". Ia dikembalikan ke dalam laci atas permintaan zaky,
+          kali ini dengan tempat yang berbeda dari yang dulu: bukan tercecer di
+          antara tombol lain, melainkan berdiri di kelompok "Tampilan" bersama
+          pilihan bahasa - satu tempat yang jelas namanya bagi semua setelan
+          rupa.
 
-          Letaknya sengaja tetap: persis sebelum tombol menu, sehingga di tiap
-          lebar ia punya satu tempat yang jelas - bukan menyempil di tengah
-          barisan seperti sebelumnya. Lingkaran tinta pergantian temanya pun
-          jadi berangkat dari titik yang masuk akal untuk lebar itu, sebab
-          titik pusatnya diambil dari tombolnya sendiri.
+          Akibat sampingannya diketahui dan diterima: mengganti tema di ponsel
+          kini menuntut dua ketukan. Yang ditukar dengannya bilah atas yang
+          benar-benar bersih - identitas di kiri, satu tombol di kanan.
         */}
         <div className={cn("flex items-center gap-1", !ringkas && "lg:hidden")}>
-          <ThemeToggle />
           <TombolLaci
             laci={laci}
             idLaci="laci-aplikasi"
@@ -309,14 +308,17 @@ export function AppHeader({
           ))}
         </ul>
 
-        {/* Bahasa: setelan, bukan tujuan. Dipisahkan garis supaya tidak
-            terbaca sebagai halaman keempat. */}
+        {/* Setelan rupa, bukan tujuan. Dipisahkan garis supaya tidak terbaca
+            sebagai halaman keempat. Bahasa dan mode terang/gelap berdiri
+            berdampingan di sini, sehingga ada satu tempat yang jelas namanya
+            untuk "mengatur tampilan" alih-alih dua tombol yang tercecer. */}
         <div className="mt-4 border-t border-ink-200 pt-4">
           <p className="px-4 pb-2 text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
             {t.nav.settingsGroup}
           </p>
-          <div className="flex items-center gap-2 px-2">
+          <div className="flex items-center gap-1 px-2">
             <LanguageToggle />
+            <ThemeToggle />
           </div>
         </div>
       </Laci>

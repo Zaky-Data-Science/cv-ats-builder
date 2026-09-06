@@ -114,12 +114,10 @@ export function GuestHeader({ signedIn }: { signedIn: boolean }) {
           {pintuMasuk}
         </div>
 
-        {/* Sakelar tema tetap di bilah pada kedua jalur - alasannya sama
-            dengan di kedua bilah lain: ia diketuk begitu layarnya terasa
-            terlalu terang, dan yang menuntut membuka laci lebih dulu akan
-            disimpulkan tidak ada. */}
+        {/* Di layar sempit tinggal satu tombol: menu. Sakelar temanya ada di
+            dalam laci, di kelompok "Tampilan" bersama pilihan bahasa - sama
+            seperti kedua bilah lain. */}
         <div className="flex items-center gap-1 lg:hidden">
-          <ThemeToggle />
           <TombolLaci
             laci={laci}
             idLaci="laci-tamu"
@@ -181,8 +179,9 @@ export function GuestHeader({ signedIn }: { signedIn: boolean }) {
           <p className="px-4 pb-2 text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
             {t.nav.settingsGroup}
           </p>
-          <div className="flex items-center gap-2 px-2">
+          <div className="flex items-center gap-1 px-2">
             <LanguageToggle />
+            <ThemeToggle />
           </div>
         </div>
       </Laci>

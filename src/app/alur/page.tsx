@@ -52,7 +52,7 @@ export default async function FlowPage() {
       <PublicHeader signedIn={Boolean(session?.user?.id)} />
 
       <main className="flex-1">
-        <div className="mx-auto w-full max-w-4xl px-5 py-12 sm:py-16">
+        <div className="wadah-dokumen py-12 sm:py-16">
           <Reveal>
             <Breadcrumb
               label={t.nav.breadcrumb}
@@ -77,7 +77,7 @@ export default async function FlowPage() {
               <h2 className="text-sm font-semibold text-ink-900">
                 {t.flow.legendTitle}
               </h2>
-              <p className="mt-1.5 text-xs leading-relaxed text-ink-600">
+              <p className="teks-baca mt-1.5 text-xs leading-relaxed text-ink-600">
                 {t.flow.legendNote}
               </p>
               {/*

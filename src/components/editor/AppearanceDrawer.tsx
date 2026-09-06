@@ -52,6 +52,13 @@ import {
   templateStyle,
 } from "@/lib/resume/templates";
 import type { ResumeData } from "@/lib/resume/types";
+import {
+  LEBAR_MAKS,
+  LEBAR_MIN,
+  TINGGI_MAKS,
+  TINGGI_MIN,
+  useUkuranLaci,
+} from "@/lib/resume/ukuran-laci";
 import { cn } from "@/lib/utils";
 
 export function AppearanceDrawer({
@@ -72,6 +79,7 @@ export function AppearanceDrawer({
 }) {
   const { t, locale } = useI18n();
   const panelRef = React.useRef<HTMLDivElement>(null);
+  const ukuran = useUkuranLaci();
 
   // Escape menutup laci. Dipasang hanya selagi terbuka supaya Escape tetap
   // bebas dipakai bagian lain aplikasi saat laci tertutup.
@@ -108,22 +116,81 @@ export function AppearanceDrawer({
       role="dialog"
       aria-modal={false}
       aria-label={t.appearance.drawerTitle}
+      /*
+        Ukurannya disalurkan lewat custom property, bukan ditulis langsung
+        sebagai `height` atau `width`. Sebabnya satu elemen ini berperan
+        ganda - lembar bawah di layar sempit, laci kiri di layar lebar - dan
+        gaya sebaris tidak mengenal titik henti. Dengan custom property, CSS
+        yang memilih mana yang dipakai.
+      */
+      style={
+        {
+          "--laci-tinggi": `${ukuran.tinggiVh}vh`,
+          "--laci-lebar": `${ukuran.lebarRem}rem`,
+        } as React.CSSProperties
+      }
       className={cn(
         "fixed z-50 flex flex-col bg-white shadow-2xl outline-none",
-        // Layar sempit: lembar bawah. Tingginya dibatasi supaya kertas di
-        // atasnya tetap terlihat, dan diberi jarak bagi bilah navigasi bawah.
-        "inset-x-0 bottom-0 max-h-[55vh] rounded-t-2xl border-t-2 border-ink-300",
-        // Layar lebar: laci penuh di tepi kiri.
-        "lg:inset-y-0 lg:right-auto lg:left-0 lg:max-h-none lg:w-[22rem] lg:rounded-none lg:border-t-0 lg:border-r-2 lg:border-ink-300",
+        // Layar sempit: lembar bawah setinggi yang diatur penggunanya.
+        "inset-x-0 bottom-0 h-[var(--laci-tinggi)] rounded-t-2xl border-t-2 border-ink-300",
+        // Layar lebar: laci penuh di tepi kiri, selebar yang diatur.
+        "lg:inset-y-0 lg:right-auto lg:left-0 lg:h-auto lg:w-[var(--laci-lebar)] lg:rounded-none lg:border-t-0 lg:border-r-2 lg:border-ink-300",
       )}
     >
+      {/*
+        Pegangan lembar bawah.
+
+        Bentuknya garis pendek di tengah - isyarat yang sudah dikenal orang
+        dari lembar bawah aplikasi ponsel, sehingga tidak perlu diterangkan.
+        Daerah tekannya jauh lebih tinggi daripada garisnya (`py-2.5` pada
+        pembungkus) supaya jempol tidak perlu tepat mengenai garis setebal
+        empat piksel.
+
+        `touch-none` mematikan gulir bawaan selama ditarik; tanpa itu, menarik
+        pegangan justru menggulir halaman di belakangnya.
+      */}
+      <div
+        role="separator"
+        aria-orientation="horizontal"
+        aria-label={t.appearance.resizeHeight}
+        aria-valuenow={Math.round(ukuran.tinggiVh)}
+        aria-valuemin={TINGGI_MIN}
+        aria-valuemax={TINGGI_MAKS}
+        tabIndex={0}
+        onPointerDown={ukuran.tarikTinggi}
+        onKeyDown={ukuran.tombolTinggi}
+        className="group shrink-0 cursor-ns-resize touch-none rounded-t-2xl bg-ink-900 py-2.5 outline-none lg:hidden"
+      >
+        <span
+          aria-hidden
+          className="mx-auto block h-1 w-10 rounded-full bg-white/30 transition-colors group-hover:bg-white/60 group-focus-visible:bg-white"
+        />
+      </div>
+
+      {/*
+        Pegangan tepi laci kiri - hanya layar lebar. Lebarnya cuma beberapa
+        piksel supaya tidak memakan ruang, tetapi daerah tekannya diperlebar
+        ke kiri dan kanan lewat `-mr-1 pr-2`.
+      */}
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t.appearance.resizeWidth}
+        aria-valuenow={Math.round(ukuran.lebarRem)}
+        aria-valuemin={LEBAR_MIN}
+        aria-valuemax={LEBAR_MAKS}
+        tabIndex={0}
+        onPointerDown={ukuran.tarikLebar}
+        onKeyDown={ukuran.tombolLebar}
+        className="absolute inset-y-0 right-0 hidden w-2 cursor-ew-resize touch-none outline-none hover:bg-ink-300/60 focus-visible:bg-ink-400 lg:block"
+      />
       {/*
         Kepala laci berlatar gelap. Panel ini melayang di atas halaman yang
         juga berlatar terang; tanpa satu bidang pekat yang menandai batasnya,
         ia kembali terbaca menyatu dengan yang di belakangnya - persis keluhan
         yang membuatnya dipindahkan ke sini.
       */}
-      <div className="flex shrink-0 items-center justify-between gap-3 rounded-t-2xl border-b border-white/15 bg-ink-900 px-4 py-3 lg:rounded-none">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/15 bg-ink-900 px-4 py-3 lg:rounded-none">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-white">
             {t.appearance.drawerTitle}

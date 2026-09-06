@@ -1192,10 +1192,23 @@ function ActionsMenu({ children }: { children: React.ReactNode }) {
       </Button>
 
       {terbuka && (
+        /*
+          Menunya menggulir sendiri, tidak memanjang tanpa batas.
+
+          Isinya delapan butir berketerangan, dan di ponsel itu lebih tinggi
+          daripada layarnya: butir terakhir jatuh di bawah tepi bawah dan
+          tidak dapat dijangkau sama sekali - menu `absolute` tidak ikut
+          menggulir bersama halaman, dan halaman di belakangnya pun terkunci
+          selama menu terbuka.
+
+          Batasnya dihitung dari tinggi layar dikurangi bilah atas dan bilah
+          alat (sekitar 7rem), bukan angka tetap, supaya di layar pendek pun
+          selalu tersisa ruang untuk melihat bahwa daftarnya memang bersambung.
+        */
         <div
           role="menu"
           onClick={tutup}
-          className="absolute right-0 z-40 mt-1.5 w-64 overflow-hidden rounded-xl border border-ink-200 bg-white shadow-xl"
+          className="thin-scrollbar absolute right-0 z-40 mt-1.5 max-h-[calc(100dvh-7rem)] w-64 overflow-y-auto overscroll-contain rounded-xl border border-ink-200 bg-white shadow-xl"
         >
           {children}
         </div>

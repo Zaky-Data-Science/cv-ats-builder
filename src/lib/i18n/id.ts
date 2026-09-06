@@ -362,6 +362,8 @@ export const id = {
   appearance: {
     drawerTitle: "Atur tampilan CV",
     drawerHint: "Kertas di sebelah langsung ikut berubah",
+    resizeHeight: "Tarik untuk mengatur tinggi laci",
+    resizeWidth: "Tarik untuk mengatur lebar laci",
     groupLook: "Desain",
     groupText: "Tulisan",
     groupPaper: "Kertas dan jarak tepi",

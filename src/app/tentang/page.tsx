@@ -58,7 +58,7 @@ export default async function TentangPage() {
 
       <main id="konten" className="flex-1">
         <section className="border-b border-ink-200 bg-ink-50">
-          <div className="mx-auto max-w-4xl px-4 py-12 sm:px-5 sm:py-16">
+          <div className="wadah-dokumen py-12 sm:py-16">
             <Breadcrumb
               label={t.nav.breadcrumb}
               items={[
@@ -75,7 +75,7 @@ export default async function TentangPage() {
           </div>
         </section>
 
-        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-5 sm:py-16">
+        <div className="wadah-dokumen py-12 sm:py-16">
           {/* ============================================================ */}
           {/* Latar belakang                                               */}
           {/* ============================================================ */}
@@ -83,7 +83,7 @@ export default async function TentangPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.problemTitle}
             </h2>
-            <div className="mt-4 space-y-4 text-sm leading-relaxed text-ink-600">
+            <div className="teks-baca mt-4 space-y-4 text-sm leading-relaxed text-ink-600">
               {content.problemParagraphs.map((paragraph) => (
                 <p key={paragraph.slice(0, 40)}>{paragraph}</p>
               ))}

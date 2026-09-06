@@ -65,7 +65,7 @@ export default async function PanduanPage() {
 
       <main id="konten" className="flex-1">
         <section className="border-b border-ink-200 bg-ink-50">
-          <div className="mx-auto max-w-4xl px-4 py-12 sm:px-5 sm:py-16">
+          <div className="wadah-dokumen py-12 sm:py-16">
             <Breadcrumb
               label={t.nav.breadcrumb}
               items={[
@@ -82,7 +82,7 @@ export default async function PanduanPage() {
           </div>
         </section>
 
-        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-5 sm:py-16">
+        <div className="wadah-dokumen py-12 sm:py-16">
           {/* ============================================================ */}
           {/* 1. Alur                                                      */}
           {/* ============================================================ */}

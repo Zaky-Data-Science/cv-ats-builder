@@ -337,6 +337,51 @@ body {
 }
 
 /*
+  Wadah halaman DOKUMEN - Panduan, Tentang, Alur.
+
+  Ketiganya isinya tulisan, jadi wadah selebar 1920 tidak berguna bagi mereka;
+  sudah dicoba dan hasilnya cuma ruang kosong yang lebih lebar. Tetapi wadah
+  lamanya pun salah dengan cara yang berbeda: 896 piksel DI TENGAH LAYAR,
+  sehingga pada 1920 judulnya duduk 532 piksel dari tepi sementara logo di
+  bilah atas duduk 48. Dua benda yang seharusnya sebaris terlihat tidak
+  berhubungan, dan pita kosong di kiri terbaca sebagai kelalaian.
+
+  Yang dipakai sekarang kolom selebar 1024 piksel yang RATA KIRI - bukan di
+  tengah. Judul dan paragrafnya karena itu sebaris dengan logo, persis seperti
+  halaman lain, dan ruang kosongnya berkumpul di satu sisi alih-alih terbelah
+  dua. Bentuk yang sama dipakai hampir semua situs dokumentasi, dan alasannya
+  sama: mata mencari awal baris di tempat yang tetap.
+
+  `margin-inline: 0` ditulis tegas meski itu nilai bawaannya - supaya jelas
+  bahwa TIDAK di tengah adalah pilihan, bukan `mx-auto` yang lupa ditulis.
+*/
+
+.wadah-dokumen {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: 0;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .wadah-dokumen {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .wadah-dokumen {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 96rem) {
+  .wadah-dokumen {
+    padding-inline: 3rem;
+  }
+}
+
+/*
   Kolom bacaan.
 
   Dipakai pada paragraf yang selama ini TIDAK punya batas sama sekali, dan
@@ -911,6 +956,20 @@ body {
     transform: translate(-50%, -50%);
     /* Tidak menghalangi apa pun secara rupa - hanya menangkap sentuhan. */
     background: transparent;
+  }
+}
+
+/*
+  Penyusutan kertas di halaman cetak - lihat components/preview/PrintPaper.tsx.
+
+  Nilainya dipasang lewat gaya sebaris, dan DILEPAS di sini saat mencetak.
+  Tanpa baris ini, kertas yang disusutkan supaya muat di layar ponsel akan
+  ikut menyusut pada PDF-nya - dan PDF 210mm adalah satu-satunya hal yang
+  benar-benar penting dari halaman itu.
+*/
+@media print {
+  .cetak-muat {
+    zoom: 1 !important;
   }
 }
 
