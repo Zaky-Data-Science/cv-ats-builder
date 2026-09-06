@@ -238,47 +238,48 @@ export default async function LandingPage() {
                   digeser. Yang dipertahankan gerak yang membawa keterangan -
                   perpindahan slide-nya - bukan yang sekadar hiasan.
                 */}
-                <div className="relative">
-                  <HeroTemplateCarousel
-                    locale={locale}
-                    teks={{
-                      caption: t.home.heroCaption,
-                      prev: t.home.heroPrevTemplate,
-                      next: t.home.heroNextTemplate,
-                      label: t.home.heroCarousel,
-                    }}
-                  />
+                <HeroTemplateCarousel
+                  locale={locale}
+                  teks={{
+                    caption: t.home.heroCaption,
+                    prev: t.home.heroPrevTemplate,
+                    next: t.home.heroNextTemplate,
+                    label: t.home.heroCarousel,
+                  }}
+                  /*
+                    Lencana melayang dititipkan ke carousel-nya, bukan
+                    diletakkan di sebelahnya. Letaknya harus dihitung terhadap
+                    kartu TENGAH, sementara panggungnya lebih lebar daripada
+                    kartu itu - ditaruh di luar, keduanya menempel ke tepi
+                    panggung dan terlihat terlepas dari kartunya.
+                  */
+                  lencana={
+                    <>
+                      <div className="layer-front float-slow absolute -top-4 -left-3 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-top-5 sm:-left-5">
+                        <div className="flex items-center gap-2">
+                          <span className="grid h-8 w-8 place-items-center rounded-full bg-ink-900 text-xs font-bold text-white">
+                            98
+                          </span>
+                          <span className="text-[11px] leading-tight font-semibold text-ink-700">
+                            {t.home.heroBadgeScore}
+                            <span className="block font-normal text-ink-500">
+                              {t.home.heroBadgeGrade}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
 
-                  {/* Lencana yang melayang di depan kartu. */}
-                  <div
-                    aria-hidden
-                    className="layer-front float-slow absolute -top-4 -left-3 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-top-5 sm:-left-5"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="grid h-8 w-8 place-items-center rounded-full bg-ink-900 text-xs font-bold text-white">
-                        98
-                      </span>
-                      <span className="text-[11px] leading-tight font-semibold text-ink-700">
-                        {t.home.heroBadgeScore}
-                        <span className="block font-normal text-ink-500">
-                          {t.home.heroBadgeGrade}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-
-                  <div
-                    aria-hidden
-                    className="layer-mid absolute right-0 bottom-16 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-right-4"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <CheckCircle2 size={14} className="text-good" />
-                      <span className="text-[11px] font-semibold text-ink-700">
-                        {t.home.heroBadgeSaved}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                      <div className="layer-mid absolute -right-3 bottom-6 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-right-5">
+                        <div className="flex items-center gap-1.5">
+                          <CheckCircle2 size={14} className="text-good" />
+                          <span className="text-[11px] font-semibold text-ink-700">
+                            {t.home.heroBadgeSaved}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  }
+                />
               </Reveal>
 
               <Reveal delay={60} className="lg:col-start-1 lg:row-start-2">

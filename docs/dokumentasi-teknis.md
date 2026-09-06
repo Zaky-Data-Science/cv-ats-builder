@@ -1173,29 +1173,51 @@ sepuluh salinan dokumen yang hampir sama adalah bahan terbaik bagi gzip.
 yang digeser jari sama-sama bereaksi terhadap gerak penunjuk yang sama, dan
 keduanya sekaligus membuat kartunya bergoyang justru saat sedang digeser.
 
-Tiga hal disetel ulang sesudah dipakai:
+**Bentuknya berubah dua kali, dan alasan perubahan kedua pantas dicatat.**
 
-- **Bolak-balik, bukan meloncat ke awal.** Sesampainya di desain terakhir
-  arahnya berbalik, satu per satu kembali. Meloncat dari slide kesepuluh ke
-  pertama berarti melintasi kesembilan slide di antaranya dalam satu gerakan,
-  dan yang terbaca bukan "kembali ke awal" melainkan seluruh isinya diseruduk
-  sekali jalan.
-- **Berhenti sementara, bukan selamanya.** Perpindahannya tiap lima detik, dan
-  berhenti selama penunjuk ada di atasnya, fokus ada di dalamnya, atau selama
-  sepuluh detik sesudah pengunjung menggeser sendiri. Sesudah itu ia
-  melanjutkan - yang diminta perpindahan otomatis, bukan sekali jalan lalu
-  diam.
-- **Gulirnya dianimasikan sendiri** dengan easeInOutCubic 700 ms, bukan
-  `behavior: "smooth"` yang durasi dan kurvanya tidak dapat diatur dan terasa
-  menyentak untuk jarak sependek satu slide. Yang dianimasikan hanya
-  perpindahan yang diminta program; sapuan jari tetap gulir asli peramban
-  beserta momentumnya.
+Versi pertama memakai `overflow-x: auto` + `scroll-snap`, dan itu memberi
+sapuan jari beserta momentumnya secara cuma-cuma. Tetapi jalur gulir punya
+UJUNG: di kartu terakhir tidak ada lagi yang bisa dituju, dan satu-satunya cara
+kembali ke awal adalah melompat melintasi kesembilan kartu di antaranya - yang
+terbaca bukan "kembali ke awal" melainkan seluruh isinya diseruduk sekali
+jalan. Perbaikan pertama membuatnya bolak-balik di ujung; permintaan
+berikutnya menuntut lebih: tidak boleh ada ujung sama sekali.
 
-Slide yang bukan giliran menyusut dan memudar sedikit. Transformnya dipasang
-pada pembungkus **di dalam** slide, bukan pada slide-nya sendiri: kotak slide
-adalah yang dipakai scroll-snap untuk menghitung titik berhentinya, dan
-menskalakannya akan menggeser titik itu sehingga kertas berhenti tidak di
-tengah.
+Versi sekarang karena itu memakai **transform**, bukan gulir. Letak tiap kartu
+dihitung dari **jarak melingkarnya** terhadap kartu yang sedang aktif, jadi
+tidak ada ujung karena tidak ada jalur: dari desain kesepuluh, desain pertama
+memang sudah berdiri di sebelah kanan sebagai bocoran, dan "berikutnya" cukup
+menggesernya satu langkah ke tengah. Perputarannya tidak pernah terlihat
+sebagai lompatan, dan kesepuluh kartunya tidak perlu disalin.
+
+Yang hilang bersama jalur gulirnya - sapuan jari - ditulis ulang sebagai satu
+ambang seret 40 piksel, dengan `touch-action: pan-y` supaya gulir tegak
+halaman tetap jalan.
+
+**Tiga kartu sekaligus, bukan satu.** Desain sebelumnya di kiri dan berikutnya
+di kanan tampil lebih kecil (skala 0,72), buram (3px), setengah terpotong tepi
+panggung; yang sedang dipilih di tengah, penuh dan tajam. Ruang kosong di
+kiri-kanan kartu karena itu tidak lagi kosong, dan yang mengisinya bukan
+hiasan melainkan keterangan - bahwa masih ada desain lain di kedua arah.
+Bocorannya baru muncul mulai `lg`; di bawah itu ruangnya memang tidak ada,
+jadi kedua tetangganya disembunyikan lewat `--peek-op: 0`.
+
+Lebar panggung ditulis sebagai kelipatan lebar kartu (`--peek-w: 1.35`), bukan
+angka tetap: kartunya berukuran fisik - 210mm dikali skala - dan panggung yang
+lebarnya ditulis terpisah akan meleset setiap kali skalanya berubah di titik
+henti berikutnya.
+
+Lencana melayang ("Nilai CV 98", "Tersimpan otomatis") dititipkan ke carousel
+sebagai prop, bukan diletakkan di sebelahnya: letaknya harus dihitung terhadap
+kartu tengah, sementara panggungnya 1,35 kali lebih lebar. Ia juga perlu
+`z-30`, sebab kartu tengah memakai `z-20` dan elemen ber-z-index selalu menang
+atas tetangganya yang `auto` - berapa pun urutannya di dalam DOM.
+
+**Berhenti sementara, bukan selamanya.** Perpindahannya tiap lima detik, dan
+berhenti selama penunjuk ada di atasnya, fokus ada di dalamnya, atau selama
+sepuluh detik sesudah pengunjung menggeser sendiri. Sesudah itu ia
+melanjutkan - yang diminta perpindahan otomatis, bukan sekali jalan lalu
+diam.
 
 **Hero-nya sendiri dibatasi 94rem.** Diukur pada 1920 sebelum dibatasi: tulisan
 di kiri berakhir di 874 piksel sementara kartu baru mulai di 1412 - celah
