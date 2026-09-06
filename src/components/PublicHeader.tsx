@@ -1,10 +1,13 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
-import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import {
+  Laci,
+  TombolLaci,
+  useLaci,
+  type KeadaanLaci,
+} from "@/components/nav-drawer";
 import { HeaderBack } from "@/components/HeaderBack";
 import { BrandMark } from "@/components/BrandMark";
 import { useI18n, LanguageToggle } from "@/components/i18n";
@@ -51,6 +54,16 @@ import { cn } from "@/lib/utils";
  * Kedua gejala itu tidak tertangkap pengukuran lebar dokumen, hanya oleh
  * melihat gambarnya. Ambangnya karena itu digeser ke 1024: tablet ikut
  * memakai laci, dan navigasi lengkap baru muncul ketika ruangnya memang ada.
+ *
+ * ---------------------------------------------------------------------------
+ * Lacinya sendiri sekarang tinggal di berkas lain
+ * ---------------------------------------------------------------------------
+ *
+ * Mekanisme lacinya - portal, lapisan gelap, penguncian gulir, Escape, dan
+ * pemulangan fokus - pindah ke `components/nav-drawer.tsx` ketika bilah atas
+ * halaman aplikasi membutuhkan pola yang sama. Perilakunya tidak berubah;
+ * seluruh catatan alasannya ikut pindah ke sana. Lihat aturan 6
+ * `docs/panduan-responsif.md`: satu pola, dipakai ulang.
  */
 export function PublicHeader({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
@@ -64,40 +77,7 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
     { href: "/alur", label: t.nav.flowNav },
   ];
 
-  // Yang disimpan bukan "menu terbuka", melainkan "menu dibuka di halaman
-  // mana". Dengan begitu berpindah halaman otomatis menutup menu tanpa
-  // memerlukan effect yang memanggil setState - pola yang memicu render
-  // berantai dan mudah terlewat saat halaman baru ditambahkan.
-  const [openedAt, setOpenedAt] = React.useState<string | null>(null);
-  const open = openedAt === pathname;
-
-  const tutup = React.useCallback(() => setOpenedAt(null), []);
-
-  /*
-    Selama laci terbuka: Escape menutupnya, dan halaman di belakangnya tidak
-    ikut tergulir.
-
-    Penguncian gulir memakai `overflow` pada <html>, bukan `position: fixed`
-    pada <body>. Cara kedua itu memang lazim, tetapi ia membuang posisi gulir
-    pengguna - laci ditutup dan halaman melompat kembali ke atas.
-  */
-  React.useEffect(() => {
-    if (!open) return;
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") tutup();
-    };
-    document.addEventListener("keydown", onKey);
-
-    const akar = document.documentElement;
-    const sebelumnya = akar.style.overflow;
-    akar.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      akar.style.overflow = sebelumnya;
-    };
-  }, [open, tutup]);
+  const laci = useLaci();
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/85 backdrop-blur-md">
@@ -107,7 +87,7 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
           <HeaderBack href="/" />
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-2"
+            className="tap-target flex min-w-0 items-center gap-2"
             aria-label={`${SITE.name} - ${t.nav.homeAria}`}
           >
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ink-900 text-white">
@@ -200,20 +180,16 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
           <ThemeToggle />
         </div>
 
-        {/* Tombol menu - sasaran sentuhnya 44 piksel, bukan sebesar ikonnya. */}
-        <button
-          type="button"
-          onClick={() => setOpenedAt(open ? null : pathname)}
-          aria-expanded={open}
-          aria-controls="menu-ponsel"
-          aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
-          className="-mr-2 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-700 transition-colors hover:bg-ink-100 lg:hidden"
-        >
-          <Menu size={20} aria-hidden />
-        </button>
+        <TombolLaci
+          laci={laci}
+          idLaci="menu-ponsel"
+          labelBuka={t.nav.openMenu}
+          labelTutup={t.nav.closeMenu}
+          className="lg:hidden"
+        />
       </div>
 
-      {open && <MobileDrawer nav={nav} signedIn={signedIn} onClose={tutup} />}
+      <MobileDrawer nav={nav} signedIn={signedIn} laci={laci} />
     </header>
   );
 }
@@ -223,133 +199,101 @@ export function PublicHeader({ signedIn }: { signedIn: boolean }) {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Laci yang menutupi layar, bukan panel yang mendorong isi halaman.
- *
- * Panel yang menggeser halaman ke samping menambah lebar dokumen - persoalan
- * yang sama dengan yang baru saja diperbaiki. Laci ini `fixed`, sehingga tidak
- * pernah ikut menghitung lebar dokumen.
- *
- * Digambar lewat portal ke <body>, bukan sebagai anak <header>. Bilah atas
- * memakai `backdrop-blur`, dan penyaring latar menjadikan elemennya blok
- * penampung bagi keturunan `position: fixed` - laci yang berada di dalamnya
- * karena itu terpotong setinggi bilahnya sendiri, bukan setinggi layar.
- * Gejalanya menipu: `inset-0` terlihat benar di kode, tetapi "nol" yang
- * dimaksud peramban adalah nol terhadap bilah.
+ * Isi lacinya saja. Kerangkanya - portal, lapisan gelap, penguncian gulir,
+ * Escape, dan pemulangan fokus - ada di `components/nav-drawer.tsx`, dipakai
+ * bersama dengan bilah atas halaman aplikasi.
  */
 function MobileDrawer({
   nav,
   signedIn,
-  onClose,
+  laci,
 }: {
   nav: { href: string; label: string }[];
   signedIn: boolean;
-  onClose: () => void;
+  laci: KeadaanLaci;
 }) {
   const pathname = usePathname();
   const { t } = useI18n();
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Lapisan gelap: menutup laci saat disentuh, dan meredam isi di
-          belakangnya supaya jelas mana yang sedang aktif. */}
-      <button
-        type="button"
-        aria-label={t.nav.closeMenu}
-        onClick={onClose}
-        className="drawer-overlay absolute inset-0 bg-ink-900/50 backdrop-blur-[2px]"
-      />
-
-      <div
-        id="menu-ponsel"
-        role="dialog"
-        aria-modal="true"
-        aria-label={t.nav.mobileNav}
-        className="drawer-panel absolute inset-y-0 right-0 flex w-[min(21rem,86vw)] flex-col border-l border-ink-200 bg-white shadow-2xl"
-      >
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-ink-200 pr-2 pl-5">
-          <span className="text-sm font-semibold text-ink-900">{SITE.name}</span>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={t.nav.closeMenu}
-            className="grid h-11 w-11 place-items-center rounded-lg text-ink-600 transition-colors hover:bg-ink-100"
+  return (
+    <Laci
+      id="menu-ponsel"
+      judul={SITE.name}
+      labelTutup={t.nav.closeMenu}
+      laci={laci}
+      className="lg:hidden"
+      kaki={
+        signedIn ? (
+          <Link
+            href="/dashboard"
+            onClick={laci.tutup}
+            className={buttonClass({ className: "press w-full flex" })}
           >
-            <X size={20} aria-hidden />
-          </button>
-        </div>
-
-        <nav
-          className="min-h-0 flex-1 overflow-y-auto p-3"
-          aria-label={t.nav.mobileNav}
-        >
-          <ul className="space-y-1">
-            {nav.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={onClose}
-                  aria-current={pathname === item.href ? "page" : undefined}
-                  className={cn(
-                    "flex min-h-11 items-center rounded-xl px-4 text-[15px] transition-colors",
-                    pathname === item.href
-                      ? "bg-ink-100 font-semibold text-ink-900"
-                      : "text-ink-700 hover:bg-ink-50",
-                  )}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Bahasa: setelan, bukan tujuan. Dipisahkan garis supaya tidak
-              terbaca sebagai halaman keenam.
-
-              Sakelar temanya tidak ada di sini lagi - ia pindah ke bilah atas,
-              tempat ia dapat dijangkau tanpa membuka laci sama sekali. */}
-          <div className="mt-4 border-t border-ink-200 pt-4">
-            <p className="px-4 pb-2 text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
-              {t.nav.settingsGroup}
-            </p>
-            <div className="flex items-center gap-2 px-2">
-              <LanguageToggle />
-            </div>
-          </div>
-        </nav>
-
-        <div className="shrink-0 space-y-2 border-t border-ink-200 p-4">
-          {signedIn ? (
+            {t.nav.dashboard}
+          </Link>
+        ) : (
+          <>
+            {/*
+              Dua pilihan selalu berdampingan, bukan hanya "Daftar Gratis".
+              Dulu tombol Masuk disembunyikan di layar sempit, dan yang sudah
+              punya akun mengira harus mendaftar ulang.
+            */}
             <Link
-              href="/dashboard"
-              onClick={onClose}
+              href="/register"
+              onClick={laci.tutup}
               className={buttonClass({ className: "press w-full flex" })}
             >
-              {t.nav.dashboard}
+              {t.nav.register}
             </Link>
-          ) : (
-            <>
+            <Link
+              href="/login"
+              onClick={laci.tutup}
+              className={buttonClass({
+                variant: "outline",
+                className: "w-full flex",
+              })}
+            >
+              {t.nav.login}
+            </Link>
+          </>
+        )
+      }
+    >
+      <nav aria-label={t.nav.mobileNav}>
+        <ul className="space-y-1">
+          {nav.map((item) => (
+            <li key={item.href}>
               <Link
-                href="/register"
-                onClick={onClose}
-                className={buttonClass({ className: "press w-full flex" })}
+                href={item.href}
+                onClick={laci.tutup}
+                aria-current={pathname === item.href ? "page" : undefined}
+                className={cn(
+                  "flex min-h-11 items-center rounded-xl px-4 text-[15px] transition-colors",
+                  pathname === item.href
+                    ? "bg-ink-100 font-semibold text-ink-900"
+                    : "text-ink-700 hover:bg-ink-50",
+                )}
               >
-                {t.nav.register}
+                {item.label}
               </Link>
-              <Link
-                href="/login"
-                onClick={onClose}
-                className={buttonClass({
-                  variant: "outline",
-                  className: "w-full flex",
-                })}
-              >
-                {t.nav.login}
-              </Link>
-            </>
-          )}
+            </li>
+          ))}
+        </ul>
+
+        {/* Bahasa: setelan, bukan tujuan. Dipisahkan garis supaya tidak
+            terbaca sebagai halaman keenam.
+
+            Sakelar temanya tidak ada di sini - ia tinggal di bilah atas,
+            tempat ia dapat dijangkau tanpa membuka laci sama sekali. */}
+        <div className="mt-4 border-t border-ink-200 pt-4">
+          <p className="px-4 pb-2 text-[11px] font-semibold tracking-wide text-ink-500 uppercase">
+            {t.nav.settingsGroup}
+          </p>
+          <div className="flex items-center gap-2 px-2">
+            <LanguageToggle />
+          </div>
         </div>
-      </div>
-    </div>,
-    document.body,
+      </nav>
+    </Laci>
   );
 }

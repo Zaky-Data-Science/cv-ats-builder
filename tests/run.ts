@@ -10,6 +10,7 @@ import { runMarkupTests } from "./markup.test";
 import { runPasswordResetTests } from "./password-reset.test";
 import { runPdfTests } from "./pdf.test";
 import { runPhotoTests } from "./photo.test";
+import { runResponsifTests } from "./responsif.test";
 import { runStaleSessionTests } from "./stale-session.test";
 import { runStructureTests } from "./structure.test";
 import { runTemplateTests } from "./templates.test";
@@ -28,6 +29,7 @@ async function main() {
   runEditPathTests();
   runStructureTests();
   runMarkupTests();
+  runResponsifTests();
   runPasswordResetTests();
   runStaleSessionTests();
   runAdminTests();

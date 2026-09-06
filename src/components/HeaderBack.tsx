@@ -37,7 +37,7 @@ export function HeaderBack({
       aria-label={href === "/" ? t.nav.backHome : t.nav.backDashboard}
       title={href === "/" ? t.nav.backHome : t.nav.backDashboard}
       className={cn(
-        "grid h-8 w-8 shrink-0 place-items-center rounded-lg text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900",
+        "tap-target grid h-8 w-8 shrink-0 place-items-center rounded-lg text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900",
         className,
       )}
     >

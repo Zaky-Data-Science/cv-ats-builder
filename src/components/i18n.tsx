@@ -81,7 +81,7 @@ export function LanguageToggle({ className }: { className?: string }) {
         aria-haspopup="listbox"
         aria-label={t.prefs.languageToggleLabel}
         title={t.prefs.language}
-        className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900"
+        className="tap-target inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900"
       >
         <Globe size={15} aria-hidden />
         {LOCALE_SHORT[locale]}

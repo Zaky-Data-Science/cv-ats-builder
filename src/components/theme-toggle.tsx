@@ -60,7 +60,12 @@ export function ThemeToggle({ className }: { className?: string }) {
       role="switch"
       aria-checked={dark}
       className={cn(
-        "relative grid h-9 w-9 place-items-center overflow-hidden rounded-lg text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900",
+        // `tap-target` menambah daerah sentuh 44 piksel tanpa mengubah ukuran
+        // yang terlihat - lihat .tap-target di globals.css. `overflow-hidden`
+        // dilepas justru karenanya: ia akan memangkas daerah sentuh itu
+        // kembali ke 36 piksel, dan tidak ada yang perlu dipangkas - kedua
+        // ikonnya 16 piksel di dalam kotak 36 piksel, bahkan saat diputar.
+        "tap-target relative grid h-9 w-9 place-items-center rounded-lg text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900",
         className,
       )}
     >

@@ -333,6 +333,8 @@ export const id = {
       "Seluruh isi CV ini akan diganti dengan contoh yang sudah lengkap. Bagus untuk melihat bentuk CV jadi dan tahu setiap isian muncul di sebelah mana, tapi yang sudah kamu ketik akan hilang.",
     fillSampleYes: "Ya, tampilkan contohnya",
     matchJob: "Cocokkan dengan iklan lowongan",
+    matchJobHint:
+      "Tempel isi iklan lowongannya, lalu lihat kata apa saja yang belum ada di CV ini.",
     moreActions: "Tindakan lain",
     print: "Cetak atau simpan PDF",
     downloadDocx: "Unduh Word (.docx)",
@@ -751,6 +753,8 @@ export const id = {
     adminBadge: "Pengelola",
     adminBadgeHint:
       "Akun ini terdaftar sebagai pengelola, jadi panel pengelola dapat dibuka.",
+    accountMenu: "Akun saya",
+    signedInAs: "Sedang masuk sebagai",
   },
 
   /* ------------------------------------------------------------- dashboard */

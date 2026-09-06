@@ -314,6 +314,8 @@ export const en: Dictionary = {
       "Everything in this CV will be replaced with a complete worked example. Good for seeing what a finished CV looks like and where each box ends up, but anything you have typed will be lost.",
     fillSampleYes: "Yes, show me the example",
     matchJob: "Match against a job ad",
+    matchJobHint:
+      "Paste the job ad, then see which of its words are still missing from this CV.",
     moreActions: "More actions",
     print: "Print or save as PDF",
     downloadDocx: "Download Word (.docx)",
@@ -719,6 +721,8 @@ export const en: Dictionary = {
     adminBadge: "Maintainer",
     adminBadgeHint:
       "This account is registered as the maintainer, so the maintainer panel can be opened.",
+    accountMenu: "My account",
+    signedInAs: "Signed in as",
   },
 
   dashboard: {

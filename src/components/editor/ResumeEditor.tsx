@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Check,
+  Cloud,
   CloudOff,
   FileDown,
   FileJson,
@@ -522,6 +523,27 @@ export function ResumeEditor({
 
   const actions = (
     <>
+      {/*
+        "Cocokkan dengan iklan lowongan" ada di sini, bukan lagi sebagai
+        tautan tersendiri di bawah bilah alat.
+
+        Ia dulu menempati satu baris penuh bersama status simpan - baris kedua
+        yang, di ponsel, menjadi baris kendali ketiga sebelum penggunanya
+        sempat melihat kertasnya sendiri. Ia memang berpindah halaman, jadi
+        tempatnya di menu bersama aksi lain yang juga meninggalkan halaman
+        ini, bukan di bilah yang dipakai sambil mengetik.
+      */}
+      {/* Tidak ditawarkan pada jalur tanpa akun: halaman itu menuntut login,
+          dan menu yang menawarkan jalan buntu lebih buruk daripada menu yang
+          lebih pendek. */}
+      {!guest && (
+        <ActionItem
+          icon={ScanSearch}
+          href={`/resume/${initial.id}/ats`}
+          label={t.editor.matchJob}
+          hint={t.editor.matchJobHint}
+        />
+      )}
       <ActionItem
         icon={Sparkles}
         label={t.editor.actionSampleLabel}
@@ -662,7 +684,21 @@ export function ResumeEditor({
               aria-label={t.editor.titleAria}
             />
 
-            <div className="hidden lg:block">
+            {/*
+              Status simpan, di semua ukuran layar.
+
+              Ia dulu punya dua tempat: di sini pada layar lebar, dan pada
+              barisnya sendiri di bawah bilah pada layar sempit. Baris kedua
+              itu yang dibuang - di ponsel ia menjadi baris kendali ketiga
+              sebelum kertasnya sendiri terlihat.
+
+              Yang menyusut di layar sempit hanya kalimatnya, bukan
+              penunjuknya: ikonnya tetap ada, dan kalimatnya tetap terbaca
+              pembaca layar lewat `sr-only`. Menyembunyikan label yang sudah
+              terwakili ikonnya memang satu-satunya penyembunyian yang sah -
+              aturan 5 `docs/panduan-responsif.md`.
+            */}
+            <div className="shrink-0">
               <SaveIndicator
                 state={saveState}
                 savedAt={savedAt}
@@ -760,18 +796,6 @@ export function ResumeEditor({
             <div className="lg:hidden">
               <ActionsMenu>{actions}</ActionsMenu>
             </div>
-          </div>
-
-          {/* Status simpan di layar sempit - diberi baris sendiri agar tidak
-              menekan lebar kolom judul. */}
-          <div className="mt-1.5 flex items-center justify-between gap-3 lg:hidden">
-            <SaveIndicator state={saveState} savedAt={savedAt} t={t} locale={locale} />
-            <Link
-              href={`/resume/${initial.id}/ats`}
-              className="text-[11px] font-medium text-ink-700 underline"
-            >
-              {t.editor.matchJob}
-            </Link>
           </div>
 
           {confirmSample && (
@@ -925,13 +949,18 @@ export function ResumeEditor({
                 <ScoreBadge score={analysis.score} />
               </TabButton>
 
-              <Link
-                href={`/resume/${initial.id}/ats`}
-                className="ml-auto flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline"
-              >
-                <ScanSearch size={13} />
-                {t.editor.matchJob}
-              </Link>
+              {/* Jalur tanpa akun tidak diberi tautan ini: halamannya menuntut
+                  login, jadi yang menekannya hanya akan sampai di halaman
+                  masuk. */}
+              {!guest && (
+                <Link
+                  href={`/resume/${initial.id}/ats`}
+                  className="ml-auto flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline"
+                >
+                  <ScanSearch size={13} />
+                  {t.editor.matchJob}
+                </Link>
+              )}
             </div>
 
             <div className={cn("min-h-0 flex-1", pane === "ats" && "hidden")}>
@@ -1157,19 +1186,17 @@ function ActionItem({
   label,
   hint,
   onClick,
+  href,
 }: {
   icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   hint: string;
-  onClick: () => void;
+  onClick?: () => void;
+  /** Bila diisi, butirnya berupa tautan - bukan tombol. */
+  href?: string;
 }) {
-  return (
-    <button
-      type="button"
-      role="menuitem"
-      onClick={onClick}
-      className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-ink-50"
-    >
+  const isi = (
+    <>
       <Icon size={16} className="mt-0.5 shrink-0 text-ink-500" />
       <span className="min-w-0">
         <span className="block text-sm font-medium text-ink-900">{label}</span>
@@ -1177,11 +1204,43 @@ function ActionItem({
           {hint}
         </span>
       </span>
+    </>
+  );
+
+  const kelas =
+    "flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-ink-50";
+
+  // Butir yang berpindah halaman ditulis sebagai <Link>, bukan tombol yang
+  // memanggil router: klik tengah, "buka di tab baru", dan menyalin alamatnya
+  // baru bekerja pada tautan sungguhan.
+  if (href) {
+    return (
+      <Link href={href} role="menuitem" className={kelas}>
+        {isi}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" role="menuitem" onClick={onClick} className={kelas}>
+      {isi}
     </button>
   );
 }
 
-/** Penunjuk status simpan - inti dari janji "data Anda tidak hilang". */
+/**
+ * Penunjuk status simpan - inti dari janji "data Anda tidak hilang".
+ *
+ * Di layar sempit yang tampil hanya ikonnya; kalimatnya tetap ada bagi
+ * pembaca layar lewat `sr-only`, dan bagi kursor lewat `title`. Ini satu-
+ * satunya bentuk penyembunyian yang disahkan aturan 5
+ * `docs/panduan-responsif.md`: label yang sudah terwakili ikonnya.
+ *
+ * Keadaan "gagal menyimpan" dikecualikan - kalimatnya tetap dicetak pada lebar
+ * berapa pun. Ikon awan tercoret tidak menjelaskan dirinya sendiri kepada
+ * orang yang belum pernah melihatnya, dan inilah satu-satunya keadaan yang
+ * menuntut penggunanya berbuat sesuatu.
+ */
 function SaveIndicator({
   state,
   savedAt,
@@ -1196,12 +1255,19 @@ function SaveIndicator({
   guest?: boolean;
 }) {
   const base = "flex items-center gap-1.5 text-[11px]";
+  // Kalimat yang menyusut: tersembunyi di bawah `sm`, tampil mulai dari sana.
+  const teks = "hidden sm:inline";
 
   if (state === "saving") {
     return (
-      <span className={cn(base, "text-ink-500")} role="status">
-        <Loader2 size={13} className="animate-spin" />
-        {t.editor.saveSaving}
+      <span
+        className={cn(base, "text-ink-500")}
+        role="status"
+        title={t.editor.saveSaving}
+      >
+        <Loader2 size={13} className="shrink-0 animate-spin" aria-hidden />
+        <span className={teks}>{t.editor.saveSaving}</span>
+        <span className="sr-only sm:hidden">{t.editor.saveSaving}</span>
       </span>
     );
   }
@@ -1209,7 +1275,7 @@ function SaveIndicator({
   if (state === "error") {
     return (
       <span className={cn(base, "font-medium text-bad")} role="status">
-        <CloudOff size={13} />
+        <CloudOff size={13} className="shrink-0" aria-hidden />
         {t.editor.saveError}
       </span>
     );
@@ -1217,25 +1283,37 @@ function SaveIndicator({
 
   if (state === "dirty") {
     return (
-      <span className={cn(base, "text-ink-500")}>
-        <AlertTriangle size={13} />
-        {t.editor.saveNotYet}
+      <span className={cn(base, "text-ink-500")} title={t.editor.saveNotYet}>
+        <AlertTriangle size={13} className="shrink-0" aria-hidden />
+        <span className={teks}>{t.editor.saveNotYet}</span>
+        <span className="sr-only sm:hidden">{t.editor.saveNotYet}</span>
       </span>
     );
   }
 
   if (savedAt) {
+    const jam = savedAt.toLocaleTimeString(locale === "en" ? "en-GB" : "id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const kalimat = `${guest ? t.guest.savedLocal : t.editor.saveSaved} ${jam}`;
     return (
-      <span className={cn(base, "text-good")} role="status">
-        <Check size={13} />
-        {guest ? t.guest.savedLocal : t.editor.saveSaved}{" "}
-        {savedAt.toLocaleTimeString(locale === "en" ? "en-GB" : "id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
+      <span className={cn(base, "text-good")} role="status" title={kalimat}>
+        <Check size={13} className="shrink-0" aria-hidden />
+        <span className={cn(teks, "whitespace-nowrap")}>{kalimat}</span>
+        <span className="sr-only sm:hidden">{kalimat}</span>
       </span>
     );
   }
 
-  return <span className="text-[11px] text-ink-400">{t.editor.saveAuto}</span>;
+  return (
+    <span
+      className={cn(base, "text-ink-400")}
+      title={t.editor.saveAuto}
+    >
+      <Cloud size={13} className="shrink-0" aria-hidden />
+      <span className={cn(teks, "whitespace-nowrap")}>{t.editor.saveAuto}</span>
+      <span className="sr-only sm:hidden">{t.editor.saveAuto}</span>
+    </span>
+  );
 }

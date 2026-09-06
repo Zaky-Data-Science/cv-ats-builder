@@ -539,13 +539,24 @@ npm test
 | Berkas | Yang diuji | Pemeriksaan |
 |---|---|---:|
 | `tests/i18n.test.ts` | Kelengkapan kamus dwibahasa; menangkap kalimat yang belum diterjemahkan | 3 |
+| `tests/keywords.test.ts` | Ekstraksi kata kunci, perbedaan ejaan, singkatan | 38 |
+| `tests/edit-path.test.ts` | Menulis balik ketikan di atas kertas; hanya jalur terdaftar yang boleh ditulis | 65 |
+| `tests/structure.test.ts` | Menambah dan menghapus entri maupun poin dari kertas | 45 |
+| `tests/markup.test.ts` | Tombol tidak bersarang di dalam tautan - pemindaian berkas sumber | 6 |
+| `tests/responsif.test.ts` | Satu pola laci saja; lencana peran tidak disembunyikan; alamat surel tetap dapat dijangkau | 7 |
+| `tests/password-reset.test.ts` | Tiket pemulihan kata sandi, batas laju, kedaluwarsa | 32 |
+| `tests/stale-session.test.ts` | Sesi yang penggunanya sudah tidak ada | 15 |
+| `tests/admin.test.ts` | Siapa pengelola, dan batas data yang boleh dilihatnya | 13 |
+| `tests/cetak.test.ts` | Margin `@page`, pemenggalan halaman, kop peramban | 13 |
 | `tests/ats-engine.test.ts` | Kalibrasi skor CV terstruktur, saran satu halaman, pengaruh iklan lowongan, kesamaan skor antar-bahasa | 14 |
 | `tests/templates.test.ts` | Kesepuluh template dirender dan menghasilkan teks yang identik; keempat ukuran kertas; margin per halaman | 63 |
+| `tests/kertas.test.ts` | Markup dokumen CV pada jalur cetak, dikunci ke berkas acuan | 17 |
 | `tests/document.test.ts` | Penilai berkas unggahan, daftar kelebihan-kekurangan, pemilihan CV terbaik | 18 |
-| `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom | 9 |
-| **Total** | | **107** |
+| `tests/photo.test.ts` | Pas foto: ukuran, pemotongan, susunan transform | 12 |
+| `tests/pdf.test.ts` | Pembacaan PDF sungguhan, termasuk deteksi tata letak dua kolom | 13 |
+| **Total** | | **374** |
 
-Hasil terakhir: **107 dari 107 lulus**.
+Hasil terakhir: **374 dari 374 lulus**.
 
 Berkas PDF ujinya dibangkitkan sendiri oleh `tests/fixtures/make-pdf.ts`, bukan
 disimpan sebagai berkas biner di dalam repositori. Dengan begitu isi berkas
@@ -655,6 +666,14 @@ Disebutkan terbuka agar dapat ditulis pada bab keterbatasan penelitian.
 ## 8. Rancangan Antarmuka
 
 ### 8.1 Tata Letak Responsif
+
+> **Aturan yang berlaku ada di berkas tersendiri: [`panduan-responsif.md`](panduan-responsif.md).**
+>
+> Delapan aturan tetap, seluruhnya ditulis dari kejadian nyata di project ini -
+> termasuk aturan 3 ("tidak meluber bukan berarti muat"), urutan siapa yang
+> hilang duluan di layar sempit, dan cara mengujinya di tiga lebar. Bagian ini
+> menjelaskan *apa* yang dibangun; panduan itu menetapkan *bagaimana* setiap
+> tata letak baru harus dibangun dan diuji.
 
 Aplikasi ini kemungkinan besar dibuka dari ponsel - pencarian kerja kerap
 dilakukan sambil bepergian. Karena itu tata letaknya tidak sekadar
@@ -969,6 +988,72 @@ berkurangnya gerak, bukan hilangnya umpan balik.
 
 Tidak satu pun efek tinta ikut tercetak.
 
+### 8.1e Bilah Atas Halaman Aplikasi
+
+Empat halaman berbagi satu bilah atas: dasbor, penyunting CV, pengaturan, dan
+panel pengelola. Bilah itu semula menjajarkan sepuluh kendali dalam satu baris
+pada setiap ukuran layar, dan menyembunyikan sebagian dengan `hidden sm:inline`
+begitu ruangnya habis.
+
+**Cara gejalanya terukur.** Pada layar 390 piksel, keempat halaman itu memaksa
+lebar tata letak menjadi **455 piksel**. Bukan meluber: peramban ponsel justru
+melebarkan viewport-nya sendiri ketika isi halaman tidak muat, lalu mengecilkan
+seluruh halaman supaya tetap terlihat. Akibatnya pengukuran "ada luberan
+mendatar atau tidak" menjawab TIDAK - `document.scrollWidth` sama persis dengan
+`innerWidth` - sementara layarnya jelas berantakan: strip bilahnya berhenti
+sebelum tepi kanan, tulisannya mengecil, dan "Panel pengelola" pecah menjadi
+dua baris di dalam bilah setinggi 56 piksel.
+
+Karena itu pengukurannya kini membandingkan `screen.width` dengan `innerWidth`,
+bukan `scrollWidth` dengan `innerWidth`. Yang pertama menangkap pelebaran
+viewport itu; yang kedua tidak akan pernah menangkapnya. Ini bentuk lain dari
+aturan 3 panduan responsif.
+
+**Susunannya sekarang.** Urutan kepentingannya ditentukan lebih dulu - aturan 4
+panduan itu - bukan diputuskan saat kehabisan ruang:
+
+| Lapis | Isi |
+|---|---|
+| Wajib terlihat | logo, lencana pengelola, sakelar tema, tombol menu |
+| Penting | nama aplikasi (mulai 640 piksel), Beranda, Panel pengelola (mulai 1024 piksel) |
+| Masuk laci | bahasa, nama, alamat surel, Pengaturan, Ganti akun, Keluar |
+
+Lencana pengelola ada di lapis pertama dengan alasan yang tertulis: penanda
+yang tersembunyi membuat penggunanya tidak tahu ia sedang masuk sebagai siapa.
+Alamat surel tidak hilang melainkan pindah - ia tetap dicetak utuh di dalam
+laci maupun di dalam menu akun, sebab dua akun Google dapat bernama sama persis
+sementara alamatnya selalu berbeda.
+
+Lacinya bukan pola baru. Mekanismenya - portal ke `<body>`, lapisan gelap,
+penguncian gulir lewat `overflow` pada `<html>`, Escape menutup, dan fokus
+pulang ke tombol pembukanya - dipindahkan keluar dari `PublicHeader.tsx` ke
+`src/components/nav-drawer.tsx` dan kini dipakai keduanya. `tests/responsif.test.ts`
+menjaga agar tetap hanya ada satu.
+
+**Halaman penyunting memakai bentuk ringkas di semua lebar.** Di `/resume/...`
+penggunanya sedang mengerjakan satu dokumen, bukan menavigasi, dan bilah
+penyuntingnya sendiri sudah menuntut sudut kanan atas yang sama. Dua barisan
+kendali penuh yang memperebutkan satu sudut itulah yang membuatnya pecah. Di
+sana bilah aplikasi karena itu menyusut menjadi identitas + tema + satu tombol
+menu, pada lebar berapa pun; tidak ada isi yang hilang, seluruhnya ada di dalam
+laci yang sama. Panah kembali ikut dilepas karena bilah penyunting di bawahnya
+sudah punya panah kembali ke tempat yang sama.
+
+Sejalan dengan itu, baris kedua bilah penyunting di layar sempit dibuang.
+Status simpan pindah ke baris utama - menyusut menjadi ikon saja di bawah 640
+piksel, dengan kalimatnya tetap terbaca pembaca layar - dan "Cocokkan dengan
+iklan lowongan" pindah ke menu "...", tempat aksi lain yang juga meninggalkan
+halaman itu berada. Di ponsel, baris itu adalah baris kendali ketiga sebelum
+penggunanya sempat melihat kertasnya sendiri.
+
+**Sasaran sentuh.** Sakelar tema (36 piksel), pemilih bahasa (36 piksel), panah
+kembali (32 piksel), dan tautan logo (28 piksel) seluruhnya di bawah 44 piksel
+yang dituntut jari. Keempatnya kini memakai kelas `tap-target`, yang menambah
+daerah tangkap 44 piksel hanya pada `pointer: coarse` tanpa mengubah satu
+piksel pun yang terlihat. Pada sakelar tema, `overflow-hidden` ikut dilepas -
+ia akan memangkas daerah tangkap itu kembali ke 36 piksel, dan tidak ada yang
+perlu dipangkas.
+
 ### 8.2 Gerak dan Kedalaman
 
 Halaman depan memakai efek kedalaman: kartu CV miring mengikuti kursor,
@@ -1075,6 +1160,9 @@ diterapkan.
 | `src/lib/rate-limit.ts` | Pembatasan laju berbasis basis data |
 | `src/lib/docx/build.ts` | Pembangun berkas Word |
 | `src/components/preview/ResumeDocument.tsx` | Dokumen CV - dipakai pratinjau sekaligus cetak |
+| `src/components/nav-drawer.tsx` | Satu-satunya pola laci navigasi; dipakai bilah atas publik maupun aplikasi |
+| `src/components/AppHeader.tsx` | Bilah atas empat halaman berakun; bentuk ringkas di halaman penyunting |
+| `docs/panduan-responsif.md` | Delapan aturan tetap untuk tampilan yang menyesuaikan layar |
 | `src/components/editor/` | Formulir per-bagian, panel pratinjau, simpan otomatis |
 | `src/components/motion.tsx` | Efek kedalaman dan kemunculan |
 | `src/components/CursorGlow.tsx` | Cahaya pengikut kursor dan percikan sentuh |
@@ -1082,6 +1170,6 @@ diterapkan.
 | `src/components/Diagram.tsx` | Perender diagram alur sebagai HTML |
 | `scripts/render-diagrams.ts` | Pembangkit berkas SVG dan PNG diagram |
 | `scripts/copy-pdf-worker.mjs` | Menyalin worker pdf.js ke folder public saat pemasangan |
-| `tests/` | Berkas uji otomatis - 99 pemeriksaan |
+| `tests/` | Berkas uji otomatis - 374 pemeriksaan |
 | `docs/diagram/` | Diagram alur dalam bentuk SVG dan PNG, dua bahasa |
 | `docs/panduan-pengguna.md` | Panduan pemakaian lengkap |
