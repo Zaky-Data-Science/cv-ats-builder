@@ -952,6 +952,17 @@ body {
 
   Hanya berlaku pada `pointer: coarse`, sehingga tampilan dan perilaku di
   desktop sama persis seperti sebelumnya.
+
+  JEBAKAN: kelas ini menyetel `position: relative`, dan karena ia kelas biasa
+  di luar layer Tailwind, ia MENANG atas utilitas posisi seperti `absolute`.
+  Menempelkannya pada elemen yang sengaja diposisikan absolut akan
+  mengembalikan elemen itu ke aliran normal - dan hanya di perangkat sentuh,
+  sehingga di komputer semuanya terlihat baik-baik saja. Sudah terjadi sekali
+  pada tombol panah carousel di halaman depan: keduanya bertumpuk di bawah
+  kartu, hanya di ponsel.
+
+  Obatnya bukan `!important` melainkan memindahkan letaknya: bungkus tombolnya
+  dengan elemen yang menangani posisi, dan biarkan tombolnya sendiri statis.
 */
 @media (pointer: coarse) {
   .tap-target {

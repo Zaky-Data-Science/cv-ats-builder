@@ -259,6 +259,64 @@ export function HeroTemplateCarousel({
             </div>
           );
         })}
+
+        {/*
+          Tombol panah, DI DALAM bingkai kartu.
+
+          Semula keduanya digantung pada pembungkus terluar. Itu keliru, dan
+          gejalanya baru terlihat di ponsel: pembungkus terluar juga memuat
+          keterangan dan sepuluh titik penanda di bawah kartunya, sehingga
+          tingginya jauh melebihi tinggi kartu - dan `top` berpersen ikut
+          meleset turun. Lebarnya pun lebih lebar daripada kartu, jadi `left-0`
+          dan `right-0` menempel ke tepi kolom, bukan ke tepi kartu. Hasilnya
+          keduanya jatuh di bawah kartu dan bertumpuk di pojok, tidak lagi
+          terbaca sebagai kendali kartunya.
+
+          Di dalam bingkai, acuannya kartu itu sendiri: `top-1/2` selalu
+          berarti setengah tinggi kartu di lebar berapa pun, dan keduanya tidak
+          lagi menuntut ruang di luar kartu - yang di ponsel memang tidak ada.
+
+          Latarnya setengah tembus supaya kertas di belakangnya tetap terbaca.
+
+          SATU JEBAKAN YANG SEMPAT MENJADIKANNYA BERANTAKAN
+
+          Letaknya dipasang pada `<span>` pembungkus, bukan pada tombolnya
+          sendiri, dan itu bukan gaya penulisan melainkan keharusan. Kelas
+          `tap-target` menyetel `position: relative` - dan hanya pada
+          `pointer: coarse`. Karena ia kelas biasa di luar layer Tailwind, ia
+          MENANG atas utilitas `absolute`, sehingga di ponsel kedua tombol ini
+          kembali ke aliran normal dan bertumpuk di bawah kartu, sementara di
+          komputer semuanya terlihat benar. Dengan letaknya di pembungkus,
+          tombolnya boleh tetap statis dan `tap-target` bekerja apa adanya.
+        */}
+        <span className="absolute top-1/2 left-2 z-40 -translate-y-1/2">
+          <button
+            type="button"
+            onClick={() => {
+              tunda();
+              geser(-1);
+            }}
+            aria-label={teks.prev}
+            title={teks.prev}
+            className="tap-target grid h-9 w-9 place-items-center rounded-full border border-ink-200 bg-white/85 text-ink-700 shadow-lg backdrop-blur-sm transition-colors hover:bg-white"
+          >
+            <ChevronLeft size={18} aria-hidden />
+          </button>
+        </span>
+        <span className="absolute top-1/2 right-2 z-40 -translate-y-1/2">
+          <button
+            type="button"
+            onClick={() => {
+              tunda();
+              geser(1);
+            }}
+            aria-label={teks.next}
+            title={teks.next}
+            className="tap-target grid h-9 w-9 place-items-center rounded-full border border-ink-200 bg-white/85 text-ink-700 shadow-lg backdrop-blur-sm transition-colors hover:bg-white"
+          >
+            <ChevronRight size={18} aria-hidden />
+          </button>
+        </span>
       </div>
 
       {/*
@@ -287,38 +345,6 @@ export function HeroTemplateCarousel({
           {lencana}
         </div>
       )}
-
-      {/*
-        Tombol panah menempel di tepi panggung.
-
-        Diletakkan di luar panggung supaya tidak ikut terpotong
-        `overflow-hidden`, dan supaya tetap dapat ditekan sementara kartunya
-        sedang bergerak.
-      */}
-      <button
-        type="button"
-        onClick={() => {
-          tunda();
-          geser(-1);
-        }}
-        aria-label={teks.prev}
-        title={teks.prev}
-        className="tap-target absolute top-[35%] left-0 z-30 grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full border border-ink-200 bg-white text-ink-700 shadow-lg transition-colors hover:bg-ink-100"
-      >
-        <ChevronLeft size={18} aria-hidden />
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          tunda();
-          geser(1);
-        }}
-        aria-label={teks.next}
-        title={teks.next}
-        className="tap-target absolute top-[35%] right-0 z-30 grid h-9 w-9 translate-x-1/2 place-items-center rounded-full border border-ink-200 bg-white text-ink-700 shadow-lg transition-colors hover:bg-ink-100"
-      >
-        <ChevronRight size={18} aria-hidden />
-      </button>
 
       {/* ------------------------------------------------------------- */}
       {/* Keterangan dan titik penanda                                   */}
