@@ -439,7 +439,10 @@ export const id = {
       "CV-mu diperiksa dari lima sisi: bisa tidaknya dibaca mesin, kelengkapan isinya, mutu kalimatnya, kerapian susunannya, dan kecocokannya dengan lowongan yang kamu incar.",
     statFormatsWhy:
       "PDF buat dikirim ke perusahaan, Word kalau lowongannya minta .docx, teks polos buat disalin-tempel ke formulir online, dan berkas cadangan supaya CV ini bisa dibuka lagi nanti.",
-    heroCaption: "Contoh hasil jadi, desain Klasik",
+    heroCaption: "Contoh hasil jadi",
+    heroCarousel: "Kesepuluh pilihan desain CV",
+    heroPrevTemplate: "Desain sebelumnya",
+    heroNextTemplate: "Desain berikutnya",
     heroBadgeScore: "Nilai CV",
     heroBadgeGrade: "Nilai A",
     heroBadgeSaved: "Tersimpan otomatis",

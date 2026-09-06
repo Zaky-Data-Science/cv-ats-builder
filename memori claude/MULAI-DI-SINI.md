@@ -346,6 +346,10 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `docs/panduan-responsif.md` | **Sembilan aturan tetap untuk tampilan yang menyesuaikan layar.** Ditulis dari kejadian nyata di project ini, dan mengatur setiap perubahan tata letak - bukan selera. Baca sebelum menyentuh tata letak apa pun |
 | `src/components/nav-drawer.tsx` | **Satu-satunya pola laci** di project ini. Dipakai bersama `PublicHeader` dan `AppHeader`; membuat pola kedua melanggar aturan 6 panduan itu, dan dijaga `tests/responsif.test.ts` |
 | `src/components/AppHeader.tsx` | Bilah atas empat halaman berakun. Bentuk ringkas di `/resume/...` - alasannya di kepala berkasnya |
+| `src/lib/resume/pembagi-panel.ts` | Pembagian dua panel penyunting: dapat ditarik, dapat diciutkan, tersimpan per perangkat. Juga alasan susunannya `flex` dan bukan `grid` |
+| `src/lib/resume/ukuran-laci.ts` | Tinggi lembar bawah dan lebar laci "Tampilan CV" yang dapat ditarik |
+| `src/components/home/HeroTemplateCarousel.tsx` | Kartu CV di hero - kesepuluh desain, digeser dengan gulir sungguhan. Perpindahan otomatisnya berhenti permanen begitu disentuh |
+| `src/components/preview/PrintPaper.tsx` | Menyusutkan kertas agar muat di layar ponsel - **hanya di layar**, dilepas saat mencetak |
 | `docs/` | Panduan pengguna, dokumentasi teknis, panduan responsif, panduan deploy |
 
 ---

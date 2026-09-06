@@ -1096,6 +1096,22 @@ body {
 }
 
 /* Scrollbar tipis untuk panel yang punya area gulir sendiri. */
+/*
+  Jalur gulir tanpa batang gulirnya.
+
+  Dipakai carousel desain di halaman depan: gulirnya sungguhan - itulah yang
+  memberi sapuan jari, momentum, dan roda trackpad secara cuma-cuma - tetapi
+  batang gulirnya sendiri tidak perlu terlihat, sebab posisinya sudah
+  ditunjukkan titik penanda di bawah kartunya.
+*/
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .thin-scrollbar::-webkit-scrollbar {
   width: 10px;
   height: 10px;

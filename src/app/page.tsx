@@ -17,6 +17,7 @@ import {
   Upload,
 } from "lucide-react";
 import { HeroStats } from "@/components/home/HeroStats";
+import { HeroTemplateCarousel } from "@/components/home/HeroTemplateCarousel";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { InkBackground } from "@/components/ink/InkBackground";
 import { HeroGlow } from "@/components/ink/HeroGlow";
@@ -208,39 +209,32 @@ export default async function LandingPage() {
                 delay={120}
                 className="scene justify-self-center lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:justify-self-end"
               >
-                <TiltCard className="relative">
-                  <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-white shadow-2xl">
-                    {/*
-                      Lebar wadah dihitung dari skalanya (210mm x skala),
-                      bukan ditetapkan terpisah. Dengan begitu halaman A4 yang
-                      diperkecil selalu mengisi wadahnya dengan pas di setiap
-                      ukuran layar, tanpa menyisakan celah kosong.
-                    */}
-                    <div
-                      className="mx-auto [--doc-scale:0.36] xs:[--doc-scale:0.42] sm:[--doc-scale:0.5] 2xl:[--doc-scale:0.58]"
-                      style={{
-                        width: "calc(210mm * var(--doc-scale))",
-                        aspectRatio: "210 / 297",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "210mm",
-                          transformOrigin: "top left",
-                          transform: "scale(var(--doc-scale))",
-                        }}
-                      >
-                        <TemplatePreview template="CLASSIC" locale={locale} />
-                      </div>
-                    </div>
-                    <span className="tilt-sheen" aria-hidden />
-                  </div>
+                {/*
+                  Kesepuluh desainnya, bukan satu - lihat catatan panjang di
+                  `HeroTemplateCarousel`.
+
+                  `TiltCard` tidak lagi membungkusnya. Kemiringan yang
+                  mengikuti kursor dan jalur yang digeser jari sama-sama
+                  bereaksi terhadap gerak penunjuk yang sama, dan keduanya
+                  sekaligus membuat kartunya bergoyang justru saat sedang
+                  digeser. Yang dipertahankan gerak yang membawa keterangan -
+                  perpindahan slide-nya - bukan yang sekadar hiasan.
+                */}
+                <div className="relative">
+                  <HeroTemplateCarousel
+                    locale={locale}
+                    teks={{
+                      caption: t.home.heroCaption,
+                      prev: t.home.heroPrevTemplate,
+                      next: t.home.heroNextTemplate,
+                      label: t.home.heroCarousel,
+                    }}
+                  />
 
                   {/* Lencana yang melayang di depan kartu. */}
                   <div
                     aria-hidden
-                    className="layer-front float-slow absolute -top-4 -left-4 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-top-5 sm:-left-6"
+                    className="layer-front float-slow absolute -top-4 -left-3 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-top-5 sm:-left-5"
                   >
                     <div className="flex items-center gap-2">
                       <span className="grid h-8 w-8 place-items-center rounded-full bg-ink-900 text-xs font-bold text-white">
@@ -257,7 +251,7 @@ export default async function LandingPage() {
 
                   <div
                     aria-hidden
-                    className="layer-mid absolute -right-3 -bottom-4 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-right-6"
+                    className="layer-mid absolute right-0 bottom-16 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-right-4"
                   >
                     <div className="flex items-center gap-1.5">
                       <CheckCircle2 size={14} className="text-good" />
@@ -266,11 +260,7 @@ export default async function LandingPage() {
                       </span>
                     </div>
                   </div>
-                </TiltCard>
-
-                <p className="mt-5 text-center text-[11px] text-ink-500">
-                  {t.home.heroCaption}
-                </p>
+                </div>
               </Reveal>
 
               <Reveal delay={60} className="lg:col-start-1 lg:row-start-2">

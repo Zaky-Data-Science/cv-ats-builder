@@ -417,7 +417,10 @@ export const en: Dictionary = {
       "Your CV is checked on five things: whether machines can read it, how complete it is, how well the sentences are written, how tidily it is laid out, and how closely it matches the job you are after.",
     statFormatsWhy:
       "PDF to send to employers, Word when the job ad asks for a .docx, plain text for pasting into online forms, and a backup file so this CV can be opened again later.",
-    heroCaption: "A finished example, Classic design",
+    heroCaption: "A finished example",
+    heroCarousel: "All ten CV designs",
+    heroPrevTemplate: "Previous design",
+    heroNextTemplate: "Next design",
     heroBadgeScore: "CV score",
     heroBadgeGrade: "Grade A",
     heroBadgeSaved: "Saved automatically",

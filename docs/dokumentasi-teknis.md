@@ -1129,6 +1129,50 @@ masih 560 piksel. Yang dipakai `Math.min(innerWidth, screen.width)`:
 skalanya 0,45. Hasil cetaknya sendiri tidak tersentuh - `zoom` dilepas kembali
 menjadi 1 di dalam `@media print`.
 
+### 8.1h Penyunting yang Dapat Diatur Sendiri, dan Kartu Hero Berisi Sepuluh Desain
+
+**Pembagian dua panel penyunting dapat ditarik dan diciutkan.** Pembatasnya
+digeser 22%-78%, ketukan ganda mengembalikannya ke 42%, panah kiri/kanan
+menggesernya lewat papan ketik, dan dua tombol di tengahnya menciutkan salah
+satu panel - sehingga penggunanya dapat memilih formulir saja, kertas saja,
+atau keduanya. Pilihannya tersimpan per perangkat.
+
+Perubahan ini sekaligus menutup cacat terpisah: pada perbesaran 140%, kotak
+isian di panel kiri menyempit sampai teksnya terpotong. Sebabnya kolom `1fr`
+pada CSS grid berarti "sisa ruang, **tetapi** tidak lebih kecil daripada
+isinya" - kertas yang membesar karena itu mendesak kolom formulir sampai batas
+360 pikselnya. Susunannya diganti `flex` dengan lebar formulir yang ditulis
+tegas dan panel kertas ber-`min-w-0`. Terukur: lebar formulir tetap 605 piksel
+pada 75% maupun 140%.
+
+**Perbesaran pratinjau dapat diketik.** Angkanya kini kotak isian, langkahnya
+turun dari 8% menjadi 1%, dan besar langkahnya sendiri dapat dipilih
+(1/5/10/25). Angka di luar batas dijepit alih-alih ditolak - yang mengetik
+"500" jelas ingin sebesar-besarnya. Pengamat ukuran juga berhenti menurunkan
+perbesaran yang sudah dipilih pengguna; aturan lamanya ada supaya kertas tidak
+melebihi panelnya, dan itu tidak lagi menjadi persoalan sejak panelnya
+`min-w-0` dan menggulir sendiri.
+
+**Kartu CV di hero memajang kesepuluh desain, bukan satu.** Sebelumnya hanya
+desain Klasik, sementara sisanya baru terlihat di galeri jauh di bawah -
+padahal jumlah pilihan desain termasuk yang paling menentukan orang mau
+mencoba atau tidak.
+
+Perpindahannya memakai `overflow-x: auto` + `scroll-snap`, bukan `transform`
+yang dihitung sendiri. Yang didapat cuma-cuma karenanya: sapuan jari beserta
+momentumnya, gulir mendatar dengan roda dan trackpad, papan ketik, dan pembaca
+layar yang tetap dapat menyusuri seluruh isinya. Perpindahan otomatisnya
+berhenti **permanen** pada sentuhan pertama, dan tidak pernah menyala bila
+`prefers-reduced-motion` menyala atau tabnya sedang tidak terlihat.
+
+Biayanya diukur, bukan diperkirakan: sepuluh dokumen tambahan menambah 52 KB
+HTML mentah tetapi hanya **3,6 KB setelah dikompresi** (50,8 -> 54,4 KB), sebab
+sepuluh salinan dokumen yang hampir sama adalah bahan terbaik bagi gzip.
+
+`TiltCard` dilepas dari kartu itu: kemiringan yang mengikuti kursor dan jalur
+yang digeser jari sama-sama bereaksi terhadap gerak penunjuk yang sama, dan
+keduanya sekaligus membuat kartunya bergoyang justru saat sedang digeser.
+
 ### 8.2 Gerak dan Kedalaman
 
 Halaman depan memakai efek kedalaman: kartu CV miring mengikuti kursor,
