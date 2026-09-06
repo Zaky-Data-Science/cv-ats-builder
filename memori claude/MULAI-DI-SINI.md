@@ -94,11 +94,12 @@ Politeknik Negeri Samarinda.
 > berlaku lagi - ia disimpan sebagai catatan perjalanan, bukan sebagai
 > gambaran keadaan sekarang.
 >
-> Satu hal dari sesi 14 yang **masih hidup**: Scheduled Task di Windows
-> masih bernama `CV ATS & Portofolio Builder - server lokal`. Namanya sengaja
-> tidak ikut dikembalikan - mengganti nama tugas terjadwal membuat perintah
-> lama menggantung, dan nama itu tidak pernah dilihat pengguna. Perintah
-> di bagian bawah memakai nama itu apa adanya.
+> Sisa nama dari sesi 14 sudah habis. Scheduled Task di Windows sempat
+> bernama `CV ATS & Portofolio Builder - server lokal`; ia terdaftar ulang
+> pada sesi 17 - folder projectnya berganti nama, sehingga tugas lamanya
+> menunjuk ke jalur yang sudah tidak ada dan memang harus dipasang ulang.
+> Namanya sekarang mengikuti `scripts/pasang-tugas.ps1`, yang sejak dulu
+> memang menulis `CV ATS Builder - server lokal`.
 >
 > Catatan untuk lain kali: basis data lokal bisa tertinggal dari skema.
 > Terapkan dengan **`npx prisma migrate deploy`**, jangan `migrate dev` -
@@ -131,15 +132,15 @@ typecheck bersih, lint bersih.
 ## 3. Cara menjalankan lagi di komputer
 
 **Sejak sesi 10, biasanya tidak perlu.** Server lokal berjalan sendiri:
-sebuah Scheduled Task bernama `CV ATS & Portofolio Builder - server lokal` menyalakannya
+sebuah Scheduled Task bernama `CV ATS Builder - server lokal` menyalakannya
 setiap masuk Windows, dan menyalakannya lagi bila mati.
 
 ```powershell
 # Melihat statusnya
-Get-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal" | Get-ScheduledTaskInfo
+Get-ScheduledTask -TaskName "CV ATS Builder - server lokal" | Get-ScheduledTaskInfo
 
 # Menyalakan sekarang tanpa masuk ulang
-Start-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
+Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
 
 # Membatalkan pemasangannya
 powershell -ExecutionPolicy Bypass -File "scripts\pasang-tugas.ps1" -Hapus
@@ -194,10 +195,10 @@ dasbor, CV tersimpan, dan pengaturan akun.
 > tidak. Obatnya menyalakan ulang servernya, bukan mengubah apa pun:
 >
 > ```powershell
-> Stop-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
+> Stop-ScheduledTask -TaskName "CV ATS Builder - server lokal"
 > # Stop-ScheduledTask TIDAK mematikan servernya - lihat JEBAKAN di bawah.
 > # Hentikan prosesnya sendiri, pastikan port 3000 bebas, baru:
-> Start-ScheduledTask -TaskName "CV ATS & Portofolio Builder - server lokal"
+> Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
 > ```
 >
 > Membuktikan sudah pulih: buka halaman yang **memakai basis data**, bukan
