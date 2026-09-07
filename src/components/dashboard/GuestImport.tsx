@@ -1,5 +1,23 @@
 "use client";
 
+/*
+  ============================================================================
+   AJAKAN MEMINDAHKAN CV TAMU KE AKUN
+  ============================================================================
+
+  Muncul di dasbor HANYA bila ada CV yang tertinggal di penyimpanan peramban -
+  yaitu ketika seseorang menyusun CV tanpa akun lebih dulu, lalu mendaftar.
+
+  Tanpa ini, CV yang sudah susah payah diisi akan tetap tertinggal di
+  `localStorage` sementara dasbornya kosong, dan orangnya menyimpulkan datanya
+  hilang. Titipannya disimpan `lib/resume/guest.ts` di bawah kunci
+  `PENDING_IMPORT_KEY`.
+
+  Ajakannya lenyap sendiri sesudah dipindahkan atau ditolak - ia menempel pada
+  keberadaan titipan itu, bukan pada penanda terpisah yang bisa berselisih
+  dengannya.
+*/
+
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Upload } from "lucide-react";

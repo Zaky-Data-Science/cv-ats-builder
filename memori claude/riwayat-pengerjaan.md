@@ -3903,6 +3903,55 @@ Tidak ada satu pun perilaku yang berubah - seluruhnya komentar. Dibuktikan: 382
 uji tetap lulus, typecheck dan lint bersih, dan halaman penyunting tetap
 terbuka.
 
+### Halaman bandingkan dan dasbor dirapikan komentarnya
+
+Lanjutan yang sama, empat berkas. Tiga di antaranya sebelumnya **tanpa kepala
+sama sekali**.
+
+**`CompareClient.tsx`** sudah punya blok penjelasan, tetapi letaknya menempel
+pada fungsinya - di baris 57, sesudah impor dan konstanta. Yang membuka berkas
+di VS Code melihat impor lebih dulu, bukan penjelasannya. Blok itu karena itu
+**dipindahkan ke paling atas** dan diringkas di tempat lamanya supaya tidak
+kembar, lalu ditambah `PETA SETELAN`:
+
+| Yang ingin diubah | Ubah di mana | Nilai |
+|---|---|---|
+| Berapa CV boleh dibandingkan | `MAX_FILES` | 5 |
+| Batas ukuran satu berkas | `MAX_FILE_BYTES` di `lib/intake/extract.ts` | 8 MB |
+| Jenis berkas yang diterima | atribut `accept` | pdf, docx, txt, md |
+
+Dua peringatan ikut ditulis, sebab keduanya bukan sekadar mengganti angka.
+Menaikkan `MAX_FILES` menuntut pemeriksaan tampilan di 1280x720 - kartu
+hasilnya berjajar mendatar dan lima yang muat sekarang belum tentu enam.
+Menaikkan `MAX_FILE_BYTES` berarti tab yang membeku lebih lama di ponsel kelas
+bawah, sebab seluruh penguraian terjadi di peramban pengunjung.
+
+Kepalanya juga menegaskan satu hal yang mudah tergoda diubah: **tidak ada satu
+byte pun CV yang dikirim ke server**, dan itu janji yang dicetak di halamannya
+sendiri. Kalau suatu saat penguraiannya dipindah ke server demi hasil yang
+lebih baik, kalimat di layar harus ikut diubah lebih dulu.
+
+**`DashboardClient.tsx`** mendapat kepala berisi alasan "mulai dari contoh" ada
+- halaman kosong penghalang terbesar bagi yang belum pernah menyusun CV -
+beserta `PETA SETELAN` empat baris. Yang paling berguna catatan tentang jumlah
+kolom: kolom keempat sengaja baru muncul di `2xl` (1536px), sebab pada wadah
+selebar itu tiga kolom memberi tiap kartu sekitar 580 piksel, jauh lebih lebar
+daripada isinya. Ditutup satu peringatan: kalau menambah isi ke kartu, periksa
+kartu yang JUDULNYA PANJANG - judul CV ditulis pengguna dan tidak dibatasi.
+
+**`GuestImport.tsx`** mendapat kepala yang menjelaskan kapan ia muncul dan
+kenapa ia perlu ada: tanpa ajakan itu, CV yang disusun tanpa akun tetap
+tertinggal di `localStorage` sementara dasbornya kosong, dan orangnya
+menyimpulkan datanya hilang.
+
+**`extract.ts`** - batas 8 MB kini menyebutkan akibatnya, bukan cuma
+alasannya: yang melampauinya hampir selalu PDF hasil pindaian, dan pindaian
+memang tidak dapat dibaca sebab isinya gambar.
+
+Tidak ada perilaku yang berubah. Dibuktikan: 382 uji tetap lulus, typecheck dan
+lint bersih, dan ketiga halaman - beranda, bandingkan, dasbor - tetap membalas
+200.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya

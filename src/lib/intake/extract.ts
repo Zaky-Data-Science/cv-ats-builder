@@ -61,7 +61,18 @@ export class IntakeError extends Error {
   }
 }
 
-/** Batas ukuran berkas. CV yang sehat tidak pernah sebesar ini. */
+/*
+  SETELAN batas ukuran satu berkas yang diunggah: 8 MB.
+
+  CV yang sehat tidak pernah sebesar ini - yang melampauinya hampir selalu PDF
+  hasil pindaian, dan pindaian memang tidak dapat dibaca alat ini sebab isinya
+  gambar, bukan teks.
+
+  Menaikkannya bukan sekadar mengganti angka: SELURUH penguraian terjadi di
+  peramban pengunjung, jadi berkas yang lebih besar berarti tab yang membeku
+  lebih lama - dan yang paling terdampak ponsel kelas bawah, bukan komputer
+  yang dipakai menguji.
+*/
 export const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
 export function detectKind(file: File): IntakeKind | null {

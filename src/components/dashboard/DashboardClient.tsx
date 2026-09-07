@@ -1,5 +1,43 @@
 "use client";
 
+/*
+  ============================================================================
+   DASBOR - DAFTAR CV MILIK PENGGUNA
+  ============================================================================
+
+  Halaman pertama sesudah masuk. Isinya daftar CV beserta tindakan yang dapat
+  dilakukan pada masing-masing: buka, ganti nama, gandakan, hapus. Ditambah dua
+  cara membuat CV baru - kosong, atau langsung terisi contoh.
+
+  KENAPA ADA "MULAI DARI CONTOH"
+
+  Halaman kosong adalah penghalang terbesar bagi orang yang belum pernah
+  menyusun CV. CV contoh memperlihatkan bentuk jadinya lebih dulu, sehingga
+  setiap kotak isian punya rujukan - bukan sekadar label yang harus ditebak
+  maksudnya.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah            | Ubah di mana                            | Nilai sekarang           |
+  |------------------------------|-----------------------------------------|--------------------------|
+  | Jumlah kolom kartu CV        | `grid ... sm/lg/2xl:grid-cols-*` di sini | 1 / 2 / 3 / 4 kolom     |
+  | Isi kartu CV                 | blok "Daftar CV" di berkas ini           | judul, nama, skor, waktu |
+  | Desain awal CV baru          | `emptyResume()` di `lib/resume/factory.ts` | CLASSIC                |
+  | Isi CV contoh                | `lib/resume/sample.ts`                   | -                        |
+
+  CATATAN TENTANG JUMLAH KOLOM
+
+  Kolom keempat sengaja baru muncul di `2xl` (1536px). Diukur saat
+  ditambahkan: pada wadah selebar itu, tiga kolom memberi tiap kartu sekitar
+  580 piksel - jauh lebih lebar daripada isinya, sehingga kartunya terbaca
+  kosong. Jangan menurunkannya ke `xl` tanpa memeriksa ulang di 1280.
+
+  Kalau menambah isi ke dalam kartu, periksa kartu yang JUDULNYA PANJANG -
+  bukan yang pendek. Judul CV ditulis pengguna dan tidak dibatasi panjangnya.
+*/
+
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -245,6 +283,9 @@ export function DashboardClient({
         /* ---------------------------------------------------------------- */
         /* Daftar CV                                                         */
         /* ---------------------------------------------------------------- */
+        /* SETELAN jumlah kolom kartu CV: 1 di ponsel, 2 mulai sm, 3 mulai
+           lg, 4 mulai 2xl. Kolom keempat sengaja menunggu 1536px - lihat
+           catatan di kepala berkas. */
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {resumes.map((resume) => (
             <Interactive key={resume.id} tilt={3}>

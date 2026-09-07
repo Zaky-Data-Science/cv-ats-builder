@@ -1,5 +1,46 @@
 "use client";
 
+/*
+  ============================================================================
+   HALAMAN BANDINGKAN - PEMINDAI DAN PEMBANDING CV
+  ============================================================================
+
+  Satu halaman, dua kegunaan. SATU berkas berarti "pindai CV saya"; DUA berkas
+  atau lebih berarti "bandingkan". Keduanya tidak dipisah menjadi dua halaman
+  karena mesin penilaiannya sama persis - yang berbeda hanya ada atau tidaknya
+  pembanding - dan memecahnya akan memaksa pengguna memilih lebih dulu hal yang
+  bisa disimpulkan sendiri dari jumlah berkas yang ia jatuhkan.
+
+  SELURUH PEMBACAAN BERKAS BERJALAN DI PERAMBAN
+
+  Tidak ada satu byte pun CV yang dikirim ke server. Itu bukan kebetulan
+  melainkan janji yang dicetak di halamannya sendiri, dan janji itu yang
+  membuat halaman ini dapat dipakai tanpa akun. Kalau suatu saat ada yang ingin
+  memindahkan penguraiannya ke server demi hasil yang lebih baik, kalimat di
+  layar harus ikut diubah lebih dulu.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah              | Ubah di mana                          | Nilai sekarang        |
+  |--------------------------------|---------------------------------------|-----------------------|
+  | Berapa CV boleh dibandingkan   | `MAX_FILES` di berkas ini             | 5                     |
+  | Batas ukuran satu berkas       | `MAX_FILE_BYTES` di `lib/intake/extract.ts` | 8 MB           |
+  | Jenis berkas yang diterima     | atribut `accept` pada `<input file>`   | pdf, docx, txt, md    |
+
+  YANG PERLU DIPERIKSA KALAU `MAX_FILES` DINAIKKAN
+
+  Kartu hasilnya berjajar mendatar. Lima masih muat pada layar laptop; lebih
+  dari itu menuntut kartunya menyusut atau barisnya menggulir - dan keduanya
+  belum pernah diuji. Naikkan hanya bersama pemeriksaan tampilan di 1280x720,
+  yang paling sempit menurut aturan 10 `docs/panduan-responsif.md`.
+
+  Menaikkan `MAX_FILE_BYTES` juga bukan sekadar mengganti angka: seluruh
+  penguraian terjadi di peramban pengunjung, jadi berkas yang lebih besar
+  berarti tab yang membeku lebih lama pada ponsel kelas bawah.
+*/
+
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -43,6 +84,14 @@ import {
 } from "@/lib/intake/extract";
 import { cn } from "@/lib/utils";
 
+/*
+  SETELAN berapa banyak CV boleh diunggah sekaligus.
+
+  Lima, bukan angka bulat sembarang: satu berkas sudah cukup untuk memindai,
+  dan lima memberi ruang membandingkan beberapa versi lamaran yang sama tanpa
+  membuat barisan kartunya menyusut sampai tidak terbaca. Lihat catatan di
+  kepala berkas sebelum menaikkannya.
+*/
 const MAX_FILES = 5;
 
 interface Slot {
@@ -54,18 +103,11 @@ interface Slot {
 }
 
 /**
- * ============================================================================
- *  PEMBANDING DAN PEMINDAI CV
- * ============================================================================
+ * Seluruh isi halaman bandingkan.
  *
- * Satu halaman, dua kegunaan. Satu berkas berarti "pindai CV saya"; dua
- * berkas atau lebih berarti "bandingkan". Keduanya tidak dipisah menjadi dua
- * halaman karena mesin penilaiannya sama persis - yang berbeda hanya ada atau
- * tidaknya pembanding - dan memecahnya akan memaksa pengguna memilih lebih
- * dulu hal yang bisa disimpulkan sendiri dari jumlah berkas yang ia jatuhkan.
- *
- * Seluruh pembacaan berkas berjalan di peramban. Lihat komentar di
- * lib/intake/extract.ts untuk alasan lengkapnya.
+ * Alasan bentuknya - satu halaman untuk dua kegunaan, dan kenapa
+ * penguraiannya di peramban - ada di kepala berkas ini. Cara berkasnya dibaca
+ * ada di `lib/intake/extract.ts`.
  */
 export function CompareClient() {
   const { locale, t } = useI18n();
