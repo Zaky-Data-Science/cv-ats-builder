@@ -410,6 +410,169 @@ body {
   max-width: 48rem;
 }
 
+/*
+  Pengantar bagian - satu paragraf yang berdiri tepat di bawah judul bagian.
+
+  BEDANYA DENGAN `.teks-baca`, DAN KENAPA BATASNYA BOLEH DILEPAS
+
+  `.teks-baca` dipakai pada tubuh tulisan: paragraf yang berurutan, dibaca
+  dari atas ke bawah. Di sana batas 45-90 karakter per baris memang penting,
+  sebab yang melelahkan bukan panjang barisnya melainkan *sapuan balik* -
+  mata harus menemukan awal baris berikutnya, berulang kali.
+
+  Pengantar bagian bukan itu. Ia satu atau dua baris di bawah judul yang
+  membentang hampir selebar halaman, dan pada satu baris tidak ada sapuan
+  balik sama sekali. Batas 42rem justru merugikan di sana: diukur pada layar
+  1920, paragrafnya berhenti di 672 piksel di dalam wadah 1809 piksel, pecah
+  jadi dua sampai lima baris, dan terbaca menumpuk di bawah judul yang jauh
+  lebih lebar - dengan lebih dari seribu piksel kosong di sebelahnya.
+
+  Karena itu batasnya dilepas di sini, bukan diperbesar ke angka lain: yang
+  membatasinya `.wadah` (120rem) berikut jarak tepinya, sehingga pada layar
+  selebar apa pun ia tidak pernah melampaui lebar halaman itu sendiri. Di
+  bawah 64rem tidak ada yang berubah sama sekali - wadahnya memang sudah
+  lebih sempit daripada 42rem.
+
+  Jangan memakai ini untuk paragraf yang berurutan. Itu tetap `.teks-baca`.
+*/
+.teks-intro {
+  max-width: none;
+}
+
+/* ==========================================================================
+   HERO SATU LAYAR
+   --------------------------------------------------------------------------
+   Hero halaman depan harus muat dalam satu pandang di laptop - navbar, judul,
+   penjelasan, tombol, statistik, dan pratinjau CV sekaligus, tanpa menggulir.
+
+   Diukur sebelum diperbaiki, dan inilah yang membuatnya perlu: hero setinggi
+   790-880 piksel dengan jarak tepi tetap (`pt-20 pb-24` = 176 piksel) melebihi
+   ruang yang tersedia pada hampir setiap laptop nyata.
+
+     1920x1080  hero 880  -> muat
+     1600x900   hero 880  -> LEBIH 45 piksel
+     1440x900   hero 790  -> muat
+     1366x768   hero 790  -> LEBIH 87 piksel
+     1280x720   hero 790  -> LEBIH 135 piksel
+     1024x768   hero 823  -> LEBIH 120 piksel
+
+   Yang menentukan bukan lebar layar melainkan TINGGI-nya, dan itu sebabnya
+   jarak serta ukuran di sini memakai satuan tinggi (`svh`, `vh`) dan media
+   query `min-height` - bukan titik pindah lebar seperti sisa situs ini.
+
+   `svh`, bukan `vh`: di peramban ponsel `100vh` menghitung layar seolah bilah
+   alamatnya sudah tersembunyi, sehingga hero yang "pas satu layar" justru
+   terpotong selama bilah itu masih terlihat. `svh` memakai ukuran terkecil -
+   yang berarti selalu muat, bukan kadang-kadang.
+   ========================================================================== */
+
+/*
+  Tinggi bilah atas, disimpan sebagai variabel supaya hero dapat mengurangkan
+  dirinya terhadap angka yang sama. Nilainya mengikuti `h-14 sm:h-16` di
+  `PublicHeader.tsx`; kalau tinggi bilah itu diubah, ubah juga di sini.
+*/
+:root {
+  /* +1px = garis bawah bilah. Tanpa itu hero meleset persis satu piksel, dan
+     satu piksel sudah cukup untuk memunculkan batang gulir. */
+  --tinggi-bilah: calc(3.5rem + 1px);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --tinggi-bilah: calc(4rem + 1px);
+  }
+}
+
+/*
+  Batas bawah 600px disengaja dan bukan hiasan: pada jendela yang sangat pendek
+  (peramban dengan banyak bilah, atau layar 1280x600), memaksa hero mengikuti
+  tinggi layar akan meremas isinya sampai berhimpitan. Di bawah 600 piksel ia
+  berhenti menyusut dan halamannya boleh digulir - menggulir sedikit lebih baik
+  daripada isi yang bertumpuk.
+
+  Hanya mulai `lg`. Di ponsel dan tablet portrait, memaksa seluruh hero masuk
+  satu layar menuntut pengecilan yang justru merusak keterbacaan; di sana yang
+  dikejar urutan prioritas, bukan satu layar.
+*/
+@media (min-width: 64rem) {
+  .hero-satu-layar {
+    display: flex;
+    align-items: center;
+    min-height: max(600px, calc(100svh - var(--tinggi-bilah)));
+  }
+}
+
+/*
+  Takik dan bilah gestur pada ponsel.
+
+  Bilah atas sudah `sticky` di bawah takiknya, jadi yang perlu dilindungi tepi
+  BAWAH hero - di sana bilah gestur iPhone menutupi sekitar 34 piksel terakhir.
+  `env()` bernilai nol di perangkat yang tidak punya takik, sehingga baris ini
+  tidak mengubah apa pun di komputer.
+*/
+@media (max-width: 63.99rem) {
+  .hero-satu-layar {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/*
+  Ukuran kertas CV di hero mengikuti TINGGI layar.
+
+  Ini pengungkit terbesar dari semuanya - kertas A4 pada skala 0,5 setinggi 561
+  piksel, dan itu sendiri sudah melebihi ruang yang tersisa pada layar 720
+  piksel. Mengecilkan yang lain tidak akan pernah cukup selama kertasnya tetap.
+
+  Yang dipakai media query `min-height`, bukan `clamp()` dengan `svh`. CSS
+  tidak dapat membagi satu panjang dengan panjang lain, sehingga skala tanpa
+  satuan memang tidak mungkin dihitung dari `svh` - dan tangga bertingkat
+  seperti ini justru lebih dapat diuji: tiap anak tangga punya angka yang bisa
+  dibuktikan pada viewport tertentu.
+
+  Batas bawahnya 0,42 dan itu bukan angka bebas: di bawah itu tulisan di dalam
+  kertas berhenti terbaca sebagai tulisan dan tinggal menyerupai garis abu -
+  padahal seluruh alasan kertas ini dipajang justru supaya isinya terlihat.
+*/
+.kertas-hero {
+  --doc-scale: 0.36;
+}
+
+@media (min-width: 26rem) {
+  .kertas-hero {
+    --doc-scale: 0.42;
+  }
+}
+
+@media (min-width: 40rem) {
+  .kertas-hero {
+    --doc-scale: 0.5;
+  }
+}
+
+@media (min-width: 64rem) {
+  .kertas-hero {
+    --doc-scale: 0.42;
+  }
+}
+
+@media (min-width: 64rem) and (min-height: 47.5rem) {
+  .kertas-hero {
+    --doc-scale: 0.46;
+  }
+}
+
+@media (min-width: 64rem) and (min-height: 53.75rem) {
+  .kertas-hero {
+    --doc-scale: 0.52;
+  }
+}
+
+@media (min-width: 64rem) and (min-height: 62.5rem) {
+  .kertas-hero {
+    --doc-scale: 0.56;
+  }
+}
+
 /* ==========================================================================
    CAHAYA MENGIKUTI KURSOR
    --------------------------------------------------------------------------

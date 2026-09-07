@@ -90,7 +90,8 @@ export function runResponsifTests(): void {
     Yang dijaga bentuk lamanya tidak kembali. `max-w-6xl` dipilih sebagai
     penandanya karena ia yang dulu dipakai, dan karena tidak ada satu pun
     alasan sah untuk menuliskannya lagi: yang butuh lebar cangkang memakai
-    `.wadah`, yang butuh lebar bacaan memakai `max-w-2xl`/`max-w-3xl`.
+    `.wadah`, tubuh tulisan memakai `max-w-2xl`/`max-w-3xl` atau
+    `.teks-baca`, dan pengantar bagian memakai `.teks-intro`.
   */
   const memakaiWadahLama = berkas.filter((f) =>
     tanpaKomentar(readFileSync(f, "utf8")).includes("max-w-6xl"),
@@ -114,6 +115,35 @@ export function runResponsifTests(): void {
     "kelas `.wadah` dipakai di banyak halaman",
     memakaiWadah.length >= 8,
     `${memakaiWadah.length} berkas`,
+  );
+
+  /*
+    Pengantar bagian memakai `.teks-intro`, bukan batas bacaan.
+
+    Dilaporkan zaky dengan tujuh tangkapan layar: pada 1920 paragraf pengantar
+    berhenti di 672px di dalam wadah 1809px dan pecah menjadi dua sampai lima
+    baris, sementara judul di atasnya membentang hampir selebar halaman.
+
+    Ini gejala yang tidak pernah muncul sebagai galat - halamannya terbentuk
+    normal - jadi yang menjaganya harus pemindaian sumber, bukan perenderan.
+    Dua-duanya diperiksa: kelasnya memang ada di CSS, dan ia memang dipakai.
+    Pemeriksaan kedua saja akan lulus juga bila seseorang menghapus definisi
+    kelasnya sehingga ia tidak berpengaruh apa-apa.
+  */
+  const css = readFileSync(join(AKAR, "app/globals.css"), "utf8");
+  check(
+    "kelas `.teks-intro` ada di globals.css",
+    /\.teks-intro\s*\{[^}]*max-width:\s*none/.test(css),
+    "melepas batas lebar, dibatasi `.wadah`",
+  );
+
+  const memakaiTeksIntro = berkas.filter((f) =>
+    readFileSync(f, "utf8").includes("teks-intro"),
+  );
+  check(
+    "`.teks-intro` dipakai pada pengantar bagian",
+    memakaiTeksIntro.length >= 2,
+    `${memakaiTeksIntro.length} berkas`,
   );
 
   /* ---------------------------------------------------------------------- */

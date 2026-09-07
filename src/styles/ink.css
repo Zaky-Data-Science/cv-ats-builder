@@ -576,7 +576,13 @@
 }
 
 .ink-latar[data-siap="true"] {
-  opacity: 1;
+  /*
+    Bukan 1 lagi. Titik dan garis penghubungnya memang disukai dan tetap
+    dipertahankan, tetapi pada kepekatan penuh ia bersaing dengan tulisan hero
+    yang sekarang duduk lebih rapat di atasnya. 0,72 menyisakan teksturnya utuh
+    sementara tulisan tetap jelas yang paling depan.
+  */
+  opacity: 0.72;
 }
 
 /* --------------------------------------------------------------------------

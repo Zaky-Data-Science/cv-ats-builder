@@ -76,7 +76,7 @@ export default async function PanduanPage() {
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
               {content.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-600 sm:text-base">
+            <p className="teks-intro mt-3 text-sm leading-relaxed text-ink-600 sm:text-base">
               {content.intro}
             </p>
           </div>

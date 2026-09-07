@@ -39,8 +39,8 @@ export function HeroStats({
   const [active, setActive] = React.useState<number | null>(null);
 
   return (
-    <div className="mt-10 max-w-lg">
-      <dl className="grid grid-cols-2 gap-y-6 border-t border-ink-200 pt-6 sm:grid-cols-4 sm:gap-y-0">
+    <div className="max-w-lg">
+      <dl className="grid grid-cols-2 gap-y-5 border-t border-ink-200 pt-5 sm:grid-cols-4 sm:gap-y-0">
         {stats.map((stat, i) => (
           /*
             Garis pemisah dipasang per butir, bukan lewat `divide-x` pada
@@ -104,7 +104,7 @@ export function HeroStats({
                 active !== null && active !== i && "opacity-50",
               )}
             >
-              <dt className="text-2xl font-bold tabular-nums text-ink-900 sm:text-3xl">
+              <dt className="text-2xl font-bold tabular-nums text-ink-900 sm:text-[1.75rem]">
                 <CountUp to={stat.to} />
               </dt>
               <dd

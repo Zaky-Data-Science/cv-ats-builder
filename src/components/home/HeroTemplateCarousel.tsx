@@ -142,10 +142,14 @@ export function HeroTemplateCarousel({
       role="group"
       aria-roledescription="carousel"
       aria-label={teks.label}
-      className={cn(
-        "relative",
-        "[--doc-scale:0.36] xs:[--doc-scale:0.42] sm:[--doc-scale:0.5] 2xl:[--doc-scale:0.58]",
-      )}
+      /*
+        Skala kertasnya tidak lagi ditulis di sini sebagai tangga LEBAR layar.
+        Ia pindah ke `.kertas-hero` di globals.css, dan di sana tangganya
+        mengikuti TINGGI layar mulai `lg` - sebab yang menentukan kertas ini
+        muat atau tidak memang tingginya, bukan lebarnya. Alasan lengkapnya
+        ada di komentar kelas itu.
+      */
+      className={cn("kertas-hero relative")}
       onPointerEnter={() => {
         diperhatikanRef.current = true;
       }}

@@ -134,11 +134,11 @@ export default async function LandingPage() {
           garis berdampingan.
         */}
         <section>
-          <div className="hero-panel relative isolate overflow-hidden">
+          <div className="hero-panel hero-satu-layar relative isolate overflow-hidden">
             <HeroGlow />
             <InkBackground />
 
-            <div className="wadah relative z-[1] pt-12 pb-16 sm:pt-16 lg:pt-20 lg:pb-24">
+            <div className="wadah relative z-[1] w-full py-10 sm:py-12 lg:py-[clamp(1.5rem,4vh,3rem)]">
             {/*
               Tiga blok, bukan dua.
 
@@ -181,24 +181,60 @@ export default async function LandingPage() {
               logonya tetap 48 piksel dari tepi seperti yang diminta
               sebelumnya. Yang dibatasi isi hero-nya saja.
             */}
-            <div className="mx-auto grid w-full max-w-[88rem] gap-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-12 lg:gap-y-0">
-              <Reveal className="lg:col-start-1 lg:row-start-1">
+            <div className="mx-auto grid w-full max-w-[88rem] gap-7 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-12">
+              {/*
+                Kolom kiri dibungkus SATU wadah, dan wadah itu `display:contents`
+                di bawah `lg`.
+
+                Sebabnya jarak tegak. Sebelum ini ketiga blok kiri menempati tiga
+                baris grid tersendiri, sementara kartu CV di kanan membentang
+                menutupi ketiganya - sehingga tinggi kartu itulah yang menentukan
+                tinggi ketiga baris tadi. Diukur pada 1920: jarak antara tombol
+                dan statistik melar sampai sekitar 160 piksel, jauh dari 36-48
+                yang dimaksudkan, dan barisan angkanya terbaca terlepas dari
+                tombol di atasnya.
+
+                Dengan wadah ini kolom kiri menjadi satu sel yang tingginya
+                ditentukan isinya sendiri, jadi jaraknya kembali persis seperti
+                yang ditulis. `display:contents` menjaga susunan ponsel tetap
+                utuh: di bawah `lg` wadahnya tidak menghasilkan kotak apa pun,
+                sehingga ketiga blok tetap menjadi anak langsung grid dan
+                `order-*` masih dapat menyelipkan pratinjau CV di antaranya.
+              */}
+              <div className="contents lg:col-start-1 lg:row-start-1 lg:block">
+              <Reveal className="order-1">
                 <Badge>
                   <Sparkles size={12} className="mr-1" />
                   {t.home.heroBadge}
                 </Badge>
 
                 {/*
-                  Ukuran judul ikut lebar layar, dengan batas atas dan bawah.
+                  Ukuran judul ikut lebar layar, dengan batas atas dan bawah -
+                  di DUA ujung, dan alasannya berbeda di masing-masing.
 
-                  Nilai tetap 2,1rem terlalu besar untuk layar 320 piksel:
-                  judulnya pecah menjadi lima baris dan mendorong tombol utama
-                  keluar dari layar pertama. clamp() menahannya di 1,7rem pada
-                  layar paling sempit dan mengembalikannya ke 2,1rem begitu ada
-                  ruang. Mulai 640 piksel ukurannya diambil alih `sm:` seperti
-                  sebelumnya, jadi tampilan lebar tidak bergeser sedikit pun.
+                  Di layar sempit: nilai tetap 2,1rem terlalu besar untuk layar
+                  320 piksel - judulnya pecah menjadi lima baris dan mendorong
+                  tombol utama keluar dari layar pertama. clamp() menahannya di
+                  1,7rem pada layar paling sempit dan mengembalikannya ke 2,1rem
+                  begitu ada ruang.
+
+                  Di layar lebar: nilai tetapnya dulu 3,4rem, dan pada 1920 itu
+                  meleset 18 piksel. Diukur langsung - kolom hero 900 piksel,
+                  sementara "Format ATS-nya biar kami yang urus" menuntut 918.
+                  Selisih setipis itu membuat satu kata jatuh sendirian ke baris
+                  ketiga. Dilaporkan zaky: "yang atas benar tapi 2 dan 3 nya
+                  agak numpuk sendiri".
+
+                  Yang dipakai karena itu clamp() lagi, bukan angka tetap yang
+                  lebih kecil: kolom hero ikut menyempit bersama layarnya - 900
+                  piksel pada 1920, 756 pada 1280 - sehingga satu angka tetap
+                  yang muat di salah satunya pasti meleset di yang lain.
+
+                  `text-wrap: balance` sempat dicoba lebih dulu dan TIDAK
+                  berpengaruh sama sekali: Chromium mematikannya begitu blok
+                  itu memuat `<br>`, dan judul ini memang punya satu.
                 */}
-                <h1 className="mt-4 text-[clamp(1.7rem,7.4vw,2.1rem)] leading-[1.12] font-bold tracking-tight text-ink-900 sm:text-5xl lg:text-[3.4rem]">
+                <h1 className="mt-4 text-[clamp(1.7rem,7.4vw,2.1rem)] leading-[1.12] font-bold tracking-tight text-ink-900 sm:text-5xl lg:text-[clamp(2.2rem,3.4vw,3.25rem)]">
                   {t.home.heroTitleLine1}
                   <br />
                   {/*
@@ -209,8 +245,38 @@ export default async function LandingPage() {
                   */}
                   <span className="underline decoration-ink-300 decoration-[3px] underline-offset-[6px]">
                     {t.home.heroTitleLine2}
-                  </span>
-                  <br />
+                  </span>{" "}
+                  {/*
+                    Baris ketiga tidak dipatahkan sendiri DI LAYAR LEBAR, dan
+                    ini sengaja.
+
+                    Sebelumnya ada `<br />` di sini, sehingga judulnya selalu
+                    tiga baris: satu baris panjang lalu dua baris pendek yang
+                    berhenti jauh sebelum baris pertama. Dilaporkan zaky sambil
+                    melihat layarnya - "yang atas benar tapi 2 dan 3 nya agak
+                    numpuk sendiri". Ia benar: "Format ATS-nya biar kami yang
+                    urus" satu kalimat, dan mematahkannya di tengah membuat
+                    baloknya bertangga tanpa alasan.
+
+                    Sekarang patahan yang dipaksakan tinggal satu - sesudah
+                    kalimat pertama, tempat kalimatnya memang berakhir. Sisanya
+                    mengalir sendiri: di layar lebar ia jatuh menjadi dua baris
+                    yang panjangnya berdekatan, dan di layar sempit ia membungkus
+                    sendiri sesuai ruang yang ada.
+
+                    Patahannya dipertahankan DI BAWAH `lg` saja. Di sana kolomnya
+                    memang tidak cukup lebar untuk memuat kalimat itu utuh, dan
+                    tanpa patahan yang ditentukan sendiri ia membelah di tempat
+                    yang kebetulan - "Format ATS-nya biar kami / yang urus" -
+                    sementara dengan patahan ini ia membelah di sendi
+                    kalimatnya. Jumlah barisnya sama saja; yang berbeda tempat
+                    belahnya. Tampilan ponsel sudah benar sebelum perubahan ini
+                    dan tidak ada alasan mengubahnya.
+
+                    Garis bawahnya tetap hanya pada "Format ATS-nya" - yang
+                    ditekankan bagian itu, bukan seluruh kalimatnya.
+                  */}
+                  <br className="lg:hidden" />
                   {t.home.heroTitleLine3}
                 </h1>
 
@@ -220,17 +286,87 @@ export default async function LandingPage() {
                   dapat diverifikasi. Yang disampaikan hanya mekanisme yang
                   memang dapat dibuktikan kerjanya oleh aplikasi ini.
                 */}
-                <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-600 sm:text-base">
+                <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-600 sm:text-base lg:max-w-none">
                   {t.home.heroBody}
                 </p>
               </Reveal>
 
+
+              {/*
+                Tombol dan statistik DIPISAH menjadi dua blok, padahal dulu satu.
+
+                Sebabnya urutan di ponsel. Yang diminta: judul, penjelasan,
+                tombol, pratinjau CV, lalu statistik - sehingga ajakan
+                bertindaknya berdiri sebelum gambar, bukan sesudahnya. Selama
+                keduanya masih satu blok, statistik ikut ke mana pun tombolnya
+                pergi, dan pratinjau tidak dapat disisipkan di antaranya.
+
+                Urutannya diatur `order-*`, bukan dengan memindahkan JSX-nya.
+                Mulai `lg` ketiganya ditempatkan tegas ke baris dan kolomnya
+                masing-masing, dan penempatan tegas itu mengabaikan `order`
+                sepenuhnya - jadi susunan dua kolom di layar lebar tidak
+                tersentuh sama sekali.
+              */}
+              <Reveal delay={60} className="order-2">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-7">
+                  <Link
+                    href={signedIn ? "/dashboard" : "/login"}
+                    className={buttonClass({
+                      size: "lg",
+                      className: "press w-full sm:w-auto",
+                    })}
+                  >
+                    {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
+                    <ArrowRight size={18} />
+                  </Link>
+                  <Link
+                    href="/coba"
+                    title={t.guest.ctaTryHint}
+                    className={buttonClass({
+                      variant: "outline",
+                      size: "lg",
+                      className: "press w-full sm:w-auto",
+                    })}
+                  >
+                    {t.guest.ctaTry}
+                  </Link>
+                </div>
+              </Reveal>
+
+              <Reveal delay={90} className="order-4 mt-1 lg:mt-9">
+                <HeroStats
+                  prompt={t.home.statsPrompt}
+                  stats={[
+                    {
+                      to: 11,
+                      label: t.home.statSections,
+                      explain: t.home.statSectionsWhy,
+                    },
+                    {
+                      to: 10,
+                      label: t.home.statTemplates,
+                      explain: t.home.statTemplatesWhy,
+                    },
+                    {
+                      to: 5,
+                      label: t.home.statDimensions,
+                      explain: t.home.statDimensionsWhy,
+                    },
+                    {
+                      to: 4,
+                      label: t.home.statFormats,
+                      explain: t.home.statFormatsWhy,
+                    },
+                  ]}
+                />
+              </Reveal>
+              </div>
               {/* ---------------------------------------------------------- */}
               {/* Kartu CV 3D                                                 */}
               {/* ---------------------------------------------------------- */}
               <Reveal
                 delay={120}
-                className="scene justify-self-center lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:justify-self-end"
+                className="order-3 scene justify-self-center lg:col-start-2 lg:row-start-1 lg:justify-self-end"
               >
                 {/*
                   Kesepuluh desainnya, bukan satu - lihat catatan panjang di
@@ -260,12 +396,12 @@ export default async function LandingPage() {
                   */
                   lencana={
                     <>
-                      <div className="layer-front float-slow absolute -top-4 -left-3 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-top-5 sm:-left-5">
-                        <div className="flex items-center gap-2">
-                          <span className="grid h-8 w-8 place-items-center rounded-full bg-ink-900 text-xs font-bold text-white">
+                      <div className="layer-front float-slow absolute -top-3.5 -left-2.5 rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 shadow-lg sm:-top-4 sm:-left-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="grid h-7 w-7 place-items-center rounded-full bg-ink-900 text-[11px] font-bold text-white">
                             98
                           </span>
-                          <span className="text-[11px] leading-tight font-semibold text-ink-700">
+                          <span className="text-[10px] leading-tight font-semibold text-ink-700">
                             {t.home.heroBadgeScore}
                             <span className="block font-normal text-ink-500">
                               {t.home.heroBadgeGrade}
@@ -274,69 +410,16 @@ export default async function LandingPage() {
                         </div>
                       </div>
 
-                      <div className="layer-mid absolute -right-3 bottom-6 rounded-xl border border-ink-200 bg-white px-3 py-2 shadow-xl sm:-right-5">
+                      <div className="layer-mid absolute -right-2.5 bottom-6 rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 shadow-lg sm:-right-4">
                         <div className="flex items-center gap-1.5">
-                          <CheckCircle2 size={14} className="text-good" />
-                          <span className="text-[11px] font-semibold text-ink-700">
+                          <CheckCircle2 size={13} className="text-good" />
+                          <span className="text-[10px] font-semibold text-ink-700">
                             {t.home.heroBadgeSaved}
                           </span>
                         </div>
                       </div>
                     </>
                   }
-                />
-              </Reveal>
-
-              <Reveal delay={60} className="lg:col-start-1 lg:row-start-2">
-
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-8">
-                  <Link
-                    href={signedIn ? "/dashboard" : "/login"}
-                    className={buttonClass({
-                      size: "lg",
-                      className: "press w-full sm:w-auto",
-                    })}
-                  >
-                    {signedIn ? t.home.heroCtaDashboard : t.home.heroCtaNew}
-                    <ArrowRight size={18} />
-                  </Link>
-                  <Link
-                    href="/coba"
-                    title={t.guest.ctaTryHint}
-                    className={buttonClass({
-                      variant: "outline",
-                      size: "lg",
-                      className: "press w-full sm:w-auto",
-                    })}
-                  >
-                    {t.guest.ctaTry}
-                  </Link>
-                </div>
-
-                <HeroStats
-                  prompt={t.home.statsPrompt}
-                  stats={[
-                    {
-                      to: 11,
-                      label: t.home.statSections,
-                      explain: t.home.statSectionsWhy,
-                    },
-                    {
-                      to: 10,
-                      label: t.home.statTemplates,
-                      explain: t.home.statTemplatesWhy,
-                    },
-                    {
-                      to: 5,
-                      label: t.home.statDimensions,
-                      explain: t.home.statDimensionsWhy,
-                    },
-                    {
-                      to: 4,
-                      label: t.home.statFormats,
-                      explain: t.home.statFormatsWhy,
-                    },
-                  ]}
                 />
               </Reveal>
             </div>
@@ -353,7 +436,7 @@ export default async function LandingPage() {
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.pathsTitle}
               </h2>
-              <p className="mt-2 max-w-2xl text-sm text-ink-600">
+              <p className="teks-intro mt-2 text-sm text-ink-600">
                 {t.home.pathsBody}
               </p>
             </Reveal>
@@ -431,7 +514,7 @@ export default async function LandingPage() {
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.stepsTitle}
               </h2>
-              <p className="mt-2 max-w-2xl text-sm text-ink-600">
+              <p className="teks-intro mt-2 text-sm text-ink-600">
                 {t.home.stepsBody}
               </p>
             </Reveal>
@@ -472,7 +555,7 @@ export default async function LandingPage() {
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.featuresTitle}
               </h2>
-              <p className="mt-2 max-w-2xl text-sm text-ink-600">
+              <p className="teks-intro mt-2 text-sm text-ink-600">
                 {t.home.featuresBody}
               </p>
             </Reveal>
@@ -512,7 +595,7 @@ export default async function LandingPage() {
               CV yang ditolak.
             */}
             <Reveal>
-              <p className="mx-auto mt-10 max-w-3xl border-t border-ink-200 pt-6 text-[13px] leading-relaxed text-ink-500">
+              <p className="teks-intro mt-10 border-t border-ink-200 pt-6 text-[13px] leading-relaxed text-ink-500 lg:text-center">
                 {t.rujukan.matchNote}{" "}
                 <a
                   href={RUJUKAN.harvard.pdf}
@@ -536,7 +619,7 @@ export default async function LandingPage() {
               <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
                 {t.home.templatesTitle}
               </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-600">
+              <p className="teks-intro mt-2 text-sm leading-relaxed text-ink-600">
                 {t.home.templatesBody}
               </p>
 
@@ -548,7 +631,7 @@ export default async function LandingPage() {
                 yang dapat diklik terbaca persis seperti klaim viral yang
                 selama ini ditolak halaman ini.
               */}
-              <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-500">
+              <p className="teks-intro mt-3 text-[13px] leading-relaxed text-ink-500">
                 {t.rujukan.formatNote}{" "}
                 <a
                   href={RUJUKAN.usc}
@@ -693,7 +776,7 @@ function TemplateGrid({
       </div>
 
       {note && (
-        <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-600">
+        <p className="teks-intro mt-3 text-[13px] leading-relaxed text-ink-600">
           {note}
         </p>
       )}

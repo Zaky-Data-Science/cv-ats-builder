@@ -65,7 +65,7 @@ export default async function FlowPage() {
             <h1 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
               {t.flow.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-600">
+            <p className="teks-intro mt-3 text-sm leading-relaxed text-ink-600">
               {t.flow.subtitle}
             </p>
           </Reveal>
@@ -121,7 +121,7 @@ export default async function FlowPage() {
               <h2 className="text-lg font-bold text-ink-900">
                 {diagram.title[locale]}
               </h2>
-              <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-ink-600">
+              <p className="teks-intro mt-2 text-[13px] leading-relaxed text-ink-600">
                 {diagram.description[locale]}
               </p>
 

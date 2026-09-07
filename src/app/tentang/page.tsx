@@ -69,7 +69,7 @@ export default async function TentangPage() {
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
               {content.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-600 sm:text-base">
+            <p className="teks-intro mt-3 text-sm leading-relaxed text-ink-600 sm:text-base">
               {content.intro}
             </p>
           </div>
@@ -123,7 +123,7 @@ export default async function TentangPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.stackTitle}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm text-ink-600">
+            <p className="teks-intro mt-2 text-sm text-ink-600">
               {content.stackIntro}
             </p>
 
@@ -156,7 +156,7 @@ export default async function TentangPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {content.comparisonTitle}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm text-ink-600">
+            <p className="teks-intro mt-2 text-sm text-ink-600">
               {content.comparisonIntro}
             </p>
 
@@ -206,7 +206,7 @@ export default async function TentangPage() {
                 {content.limitsTitle}
               </h2>
             </div>
-            <p className="mt-2 max-w-2xl text-sm text-ink-600">
+            <p className="teks-intro mt-2 text-sm text-ink-600">
               {content.limitsIntro}
             </p>
             <ul className="mt-4 space-y-3">
@@ -238,7 +238,7 @@ export default async function TentangPage() {
             <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">
               {t.rujukan.heading}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-600">
+            <p className="teks-intro mt-2 text-sm leading-relaxed text-ink-600">
               {t.rujukan.intro}
             </p>
 
@@ -312,7 +312,7 @@ export default async function TentangPage() {
               <h2 className="text-lg font-bold text-ink-900">
                 {content.ctaTitle}
               </h2>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-600">
+              <p className="teks-intro mt-2 text-sm leading-relaxed text-ink-600">
                 {content.ctaBody}
               </p>
               <Link
