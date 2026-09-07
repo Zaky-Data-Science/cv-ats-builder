@@ -822,7 +822,7 @@ function TemplateGrid({
                 template={id}
                 signedIn={signedIn}
                 label={info.name}
-                className="group rounded-xl focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="group"
               >
               <TiltCard maxTilt={6}>
                 <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm transition-shadow group-hover:shadow-md">

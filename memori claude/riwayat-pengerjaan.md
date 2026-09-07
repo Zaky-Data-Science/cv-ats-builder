@@ -3734,6 +3734,74 @@ aturan `@media (hover: none)`, dan bahwa ia memang dipakai di kedua tempat.
 Gerbang kualitas: typecheck bersih, lint bersih, 381 uji lulus 0 gagal. Keenam
 viewport laptop/desktop tetap muat satu layar dengan sisa 0.
 
+### Intro samurai yang cuma berkedip di production
+
+Dilaporkan zaky: *"di localhost animasi refresh yang samurai benar, tapi di
+vercel kok gk ada kayak kedip doang."*
+
+Dugaan pertama - CSS atau skripnya tidak ikut terkirim - **salah, dan
+dibuktikan salah lebih dulu**: berkas CSS production memuat seluruh aturan
+intro, dan HTML-nya memuat markup beserta skrip `<head>`-nya dengan timer 2200
+yang benar. Ketiganya identik dengan lokal.
+
+Yang membuka jalan pengukuran waktu, bukan pembacaan kode:
+
+| | Lokal | Production |
+|---|---:|---:|
+| `data-intro` bertahan | 419 ms | **206 ms** |
+| Terlihat sesudah halaman digambar | 282 ms | **88 ms** |
+
+Dua-duanya jauh di bawah 2200 ms yang dimaksudkan - **lokal pun sebenarnya
+sudah rusak**, hanya production yang cukup parah untuk terbaca sebagai
+kedipan. Dan tidak ada satu baris kode pun yang menghapus atribut itu lebih
+awal; pengait pada `removeAttribute` tidak menangkap apa-apa.
+
+### Sebabnya cacat yang lahir di sesi ini juga
+
+Konsol production menjawabnya dalam satu kalimat:
+
+```
+In HTML, <a> cannot be a descendant of <a>.
+This will cause a hydration error.
+... As a result this tree will be regenerated on the client.
+```
+
+Kartu desain yang baru saja dibuat dapat ditekan membungkus pratinjau CV di
+dalam `<Link>` - sementara pratinjau itu memuat tautan kontaknya sendiri di
+`ResumeDocument.tsx`: surel, LinkedIn, situs. Hasilnya `<a>` di dalam `<a>`,
+yang dilarang HTML dan **menggagalkan hidrasi seluruh halaman**.
+
+Akibatnya jauh melampaui kartunya. React membangun ulang seluruh pohon di
+peramban, dan atribut `data-intro` yang dipasang skrip `<head>` ikut lenyap
+bersamanya. Intronya mati bukan karena animasinya salah, melainkan karena
+sesuatu yang tampaknya tidak berhubungan sama sekali.
+
+Pantas dicatat sebagai kelas kesalahan: **satu pelanggaran HTML di satu kartu
+mematikan sesuatu di ujung halaman yang lain.** Hidrasi gagal itu tidak
+berhenti di tempat pelanggarannya.
+
+### Bentuk yang benar: menutupi, bukan membungkus
+
+Kendalinya kini saudara kartu yang dibentangkan `absolute inset-0`
+menutupinya. Tidak ada yang bersarang, tautan di dalam kertas tertutup lapisan
+itu sehingga ketukan tetap sampai ke tujuan yang benar, dan bagi pengunjung
+yang belum masuk ia tetap `<a>` sungguhan - klik tengah dan "buka di tab baru"
+tetap bekerja.
+
+Terukur sesudahnya di lokal:
+
+| | Sebelum | Sesudah |
+|---|---:|---:|
+| `data-intro` bertahan | 419 ms | **2131 ms** |
+| Galat hidrasi di konsol | ada | **nol** |
+| Kedalaman `<a>` maksimum di HTML | 2 | **1** |
+
+Ketukan pada desain tetap bekerja: menekan "Akademik" tetap membawa ke `/coba`
+dengan `template: "ACADEMIC"` tersimpan.
+
+`tests/responsif.test.ts` bertambah satu pemeriksaan (381 -> 382) yang menjaga
+bentuknya: kendali dibentangkan, bukan membungkus.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya
@@ -3786,7 +3854,7 @@ supaya sesi berikutnya dapat mengulanginya dan membandingkannya dengan jujur.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 381 |
+| Pemeriksaan otomatis | 382 |
 
 Cara menghitungnya:
 

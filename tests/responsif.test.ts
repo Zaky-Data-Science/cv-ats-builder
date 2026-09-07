@@ -147,6 +147,38 @@ export function runResponsifTests(): void {
   );
 
   /* ---------------------------------------------------------------------- */
+  section("Markup: kendali desain menutupi kartu, tidak membungkusnya");
+
+  /*
+    Kartu desain memuat pratinjau CV, dan pratinjau itu memuat tautan kontaknya
+    sendiri - surel, LinkedIn, situs. Membungkus kartu di dalam `<Link>` karena
+    itu menghasilkan `<a>` di dalam `<a>`, yang dilarang HTML dan DITOLAK React
+    saat menghidrasi:
+
+      In HTML, <a> cannot be a descendant of <a>. This will cause a hydration
+      error. ... this tree will be regenerated on the client.
+
+    Akibatnya jauh melampaui kartunya. Seluruh pohon halaman dibangun ulang di
+    peramban, dan atribut `data-intro` yang dipasang skrip di `<head>` ikut
+    lenyap bersamanya - intro samurai hanya sempat berkedip. Terukur: atributnya
+    bertahan 206 milidetik di production, dari 2200 yang dimaksudkan.
+
+    Sudah terjadi sekali. Yang dijaga di sini bentuk yang benar: kendalinya
+    saudara kartu yang dibentangkan menutupinya, bukan pembungkusnya.
+  */
+  const pilih = readFileSync(
+    join(AKAR, "components/home/PilihDesain.tsx"),
+    "utf8",
+  );
+  check(
+    "kendali desain dibentangkan `absolute inset-0`, bukan membungkus",
+    pilih.includes("absolute inset-0") &&
+      !/<Link[^>]*>\s*\{children\}/.test(pilih) &&
+      !/<button[^>]*>\s*\{children\}/.test(pilih),
+    "membungkusnya menghasilkan <a> di dalam <a> dan mematikan hidrasi",
+  );
+
+  /* ---------------------------------------------------------------------- */
   section("Responsif: ajakan pakai desain harus terlihat di layar sentuh");
 
   /*

@@ -107,31 +107,53 @@ export function PilihDesain({
 
   const nama = t.home.pilihDesainAria.replace("{desain}", label);
 
-  if (!signedIn) {
-    return (
-      <Link
-        href={`/coba?desain=${template}`}
-        aria-label={nama}
-        className={cn("block text-left", className)}
-      >
-        {children}
-      </Link>
-    );
-  }
+  /*
+    Kendalinya MENUTUPI kartu, bukan membungkusnya.
+
+    Bentuk pertama membungkus seluruh kartu di dalam `<Link>`, dan itu cacat
+    yang mahal: pratinjau CV di dalamnya memuat tautan kontaknya sendiri -
+    surel, LinkedIn, situs - sehingga hasilnya `<a>` di dalam `<a>`. HTML
+    melarangnya, dan React menolak menghidrasi pohon yang melanggarnya:
+
+      In HTML, <a> cannot be a descendant of <a>. This will cause a hydration
+      error. ... As a result this tree will be regenerated on the client.
+
+    Akibatnya jauh melampaui kartu ini. Seluruh pohon halaman dibangun ulang
+    di peramban, dan bersamanya atribut `data-intro` yang dipasang skrip di
+    `<head>` ikut lenyap - sehingga intro samurai hanya sempat berkedip
+    sebelum hilang. Dilaporkan zaky: "di vercel kok gk ada, kayak kedip
+    doang". Terukur: atributnya hanya bertahan 206 milidetik dari 2200 yang
+    dimaksudkan.
+
+    Bentuk sekarang menempatkan kendalinya sebagai SAUDARA kartu, dibentangkan
+    `absolute inset-0` menutupi seluruhnya. Tidak ada yang bersarang, tautan di
+    dalam kertas tertutup lapisan ini sehingga ketukan tetap sampai ke tujuan
+    yang benar, dan bagi pengunjung yang belum masuk ia tetap `<a>` sungguhan -
+    klik tengah dan "buka di tab baru" tetap bekerja.
+  */
+  const kelasKendali =
+    "absolute inset-0 z-20 rounded-xl focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:outline-none";
 
   return (
-    <button
-      type="button"
-      onClick={() => void mulai(template)}
-      disabled={sibuk}
-      aria-label={nama}
-      aria-busy={sibuk}
-      className={cn(
-        "block w-full text-left disabled:cursor-progress",
-        className,
-      )}
-    >
+    <div className={cn("relative", className)}>
       {children}
-    </button>
+
+      {signedIn ? (
+        <button
+          type="button"
+          onClick={() => void mulai(template)}
+          disabled={sibuk}
+          aria-label={nama}
+          aria-busy={sibuk}
+          className={cn(kelasKendali, "disabled:cursor-progress")}
+        />
+      ) : (
+        <Link
+          href={`/coba?desain=${template}`}
+          aria-label={nama}
+          className={kelasKendali}
+        />
+      )}
+    </div>
   );
 }
