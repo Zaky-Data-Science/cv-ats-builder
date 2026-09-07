@@ -3952,6 +3952,53 @@ Tidak ada perilaku yang berubah. Dibuktikan: 382 uji tetap lulus, typecheck dan
 lint bersih, dan ketiga halaman - beranda, bandingkan, dasbor - tetap membalas
 200.
 
+### Mesin penilaian dan panel pengelola dirapikan komentarnya
+
+Dua berkas, dan keduanya kasus yang sama seperti `CompareClient.tsx`
+sebelumnya: penjelasannya **sudah bagus tetapi salah letak** - menempel di
+bawah impor, sehingga yang membukanya di VS Code melihat daftar impor lebih
+dulu. Keduanya dipindahkan ke paling atas lalu ditambah `PETA SETELAN`.
+
+**`lib/ats/engine.ts`** - inti kebaruan project ini, dan satu-satunya berkas
+`lib/ats/*` yang belum berkepala di paling atas. Peta setelannya delapan baris,
+tetapi yang paling berharga bagian di bawahnya: **empat hal yang wajib
+diketahui sebelum mengubah bobot.**
+
+| | |
+|---|---|
+| Jumlah bobot harus 100 | Tidak ada yang menormalkannya - kalau totalnya 90, skor tertinggi yang mungkin diperoleh siapa pun ikut menjadi 90 |
+| `keywordMatch` sering tidak berlaku | Tanpa iklan lowongan, bobotnya dialihkan ke dimensi lain - jadi angka yang tertulis adalah bobot saat lowongan diisi |
+| Mengubah bobot mengubah skor CV yang SUDAH ADA | Skor lama tidak dihitung ulang, sehingga angka lama dan baru berdampingan tanpa keterangan |
+| `tests/ats-engine.test.ts` mengunci sebagiannya | Kalau gagal sesudah perubahan yang disengaja, perbarui angkanya di sana - jangan melonggarkan ujinya |
+
+`DIMENSION_WEIGHTS` diberi tabel yang menyebutkan tiap dimensi menilai apa,
+beserta alasan dua yang teratas sengaja sama besar: CV yang lengkap tetapi
+tidak terbaca mesin sama tidak bergunanya dengan CV yang terbaca sempurna
+tetapi kosong.
+
+`gradeOf()` juga diberi keterangan - ambang A/B/C sengaja tidak berjarak rata
+(85/70/55), sebab naik dari D ke C memang jauh lebih mudah daripada naik dari
+B ke A. Ditutup peringatan: `verdictOf()` tepat di bawahnya memakai ambang yang
+SAMA dan harus ikut diubah, kalau tidak akan ada CV bernilai B yang kalimat
+vonisnya berkata "cukup".
+
+**Panel pengelola** (`app/(app)/admin/page.tsx`) - kepalanya sudah memuat
+alasan terkuat project ini soal privasi (panel melihat data akun, tidak pernah
+isi CV), dan itu dipertahankan utuh. Yang ditambahkan peta setelan empat baris
+plus satu **batas yang tidak boleh dilanggar**: setiap kolom baru yang
+ditambahkan ke `select` harus lolos satu pertanyaan - apakah pengelola
+benar-benar memerlukannya untuk menjawab keluhan? Kalau jawabannya "mungkin
+berguna", jawabannya tidak.
+
+`PER_HALAMAN` diberi alasan angkanya: kuerinya menghitung jumlah CV tiap akun,
+jadi satu kueri agregat per baris - menaikkannya menambah beban basis data
+secara langsung, sementara pengelola hampir selalu mencari SATU akun.
+
+Dibuktikan tidak ada yang rusak: 382 uji tetap lulus (termasuk
+`ats-engine.test.ts` yang memang menguji berkas yang disentuh), typecheck dan
+lint bersih, dan panel pengelolanya dibuka sungguhan - membalas 200 dan
+benar-benar dirender, sebab `ADMIN_EMAIL` lokal memang diisi akun demo.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya

@@ -1,3 +1,59 @@
+/*
+  ============================================================================
+   MESIN PENILAIAN ATS - INTI KEBARUAN PROJECT INI
+  ============================================================================
+
+  Menghasilkan satu skor 0-100 dari lima dimensi berbobot, beserta daftar saran
+  perbaikan yang dapat langsung ditindaklanjuti.
+
+  Seluruh aturannya DETERMINISTIK dan berbasis kaidah, bukan model bahasa.
+  Tiga akibat yang ketiganya disengaja:
+
+    - hasilnya dapat direproduksi dan dibandingkan antar-percobaan,
+    - setiap angka dapat ditelusuri ke aturan yang jelas, dan
+    - penilaian berjalan tanpa biaya maupun koneksi ke layanan pihak ketiga.
+
+  Skornya TIDAK bergantung bahasa: masukan yang sama selalu menghasilkan angka
+  yang sama. Kalimat sarannya tinggal di `messages.ts`, sehingga berkas ini
+  murni berisi angka dan syarat - dan bahasa antarmuka dapat berganti tanpa
+  satu pun aturan penilaian ikut tersentuh.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah          | Ubah di mana                    | Nilai sekarang       |
+  |----------------------------|---------------------------------|----------------------|
+  | Bobot tiap dimensi         | `DIMENSION_WEIGHTS` di bawah    | 25/25/20/20/10       |
+  | Batas nilai huruf A-D      | `gradeOf()` di berkas ini       | 85 / 70 / 55         |
+  | Kalimat vonis A-D          | `verdictOf()` + `messages.ts`   | ambang yang sama     |
+  | Panjang ringkasan ideal    | dimensi `completeness`          | 30-120 kata          |
+  | Ukuran huruf yang dianggap aman | dimensi `parseability`     | 9-12 pt              |
+  | Panjang poin ideal         | dimensi `contentQuality`        | 40-220 karakter      |
+  | Kata kerja aksi dan klise  | `vocabulary.ts`                 | murni data           |
+  | Padanan singkatan          | `aliases.ts`                    | murni data           |
+
+  ----------------------------------------------------------------------------
+   YANG WAJIB DIKETAHUI SEBELUM MENGUBAH BOBOT
+  ----------------------------------------------------------------------------
+
+  1. **Jumlahnya harus 100.** Tidak ada yang menormalkannya - kalau totalnya
+     90, skor tertinggi yang mungkin diperoleh siapa pun ikut menjadi 90.
+
+  2. **`keywordMatch` sering tidak berlaku.** Tanpa deskripsi lowongan, dimensi
+     itu tidak dinilai dan bobotnya DIALIHKAN ke dimensi lain. Jadi bobot yang
+     tertulis di sini adalah bobot saat lowongan diisi; tanpa lowongan,
+     perbandingan keempat dimensi sisanya yang menentukan.
+
+  3. **Mengubah bobot mengubah skor SELURUH CV yang sudah ada**, termasuk yang
+     tersimpan di dasbor pengguna. Skor lama tidak dihitung ulang, sehingga
+     angka lama dan baru akan berdampingan tanpa keterangan apa pun.
+
+  4. `tests/ats-engine.test.ts` mengunci sebagian angkanya. Kalau uji itu gagal
+     sesudah perubahan yang memang disengaja, perbarui angkanya di sana -
+     jangan melonggarkan ujinya.
+*/
+
 import type { Locale } from "@/lib/i18n/config";
 import { allBullets, groupSkills, resumeToPlainText } from "@/lib/resume/plaintext";
 import { paperSpec } from "@/lib/resume/paper";
@@ -21,27 +77,6 @@ import {
   SKILL_LEVEL_NOISE,
 } from "./vocabulary";
 
-/**
- * ============================================================================
- *  MESIN PENILAIAN ATS
- * ============================================================================
- *
- * Skor 0-100 disusun dari lima dimensi berbobot. Seluruh aturan bersifat
- * deterministik dan berbasis kaidah, bukan model bahasa, sehingga:
- *  - hasil pengujian dapat direproduksi dan dibandingkan antar-percobaan,
- *  - setiap angka dapat ditelusuri ke aturan yang jelas, dan
- *  - penilaian berjalan tanpa biaya maupun koneksi ke layanan pihak ketiga.
- *
- * Setiap aturan mengembalikan bukan hanya nilai, tetapi juga saran perbaikan
- * yang dapat langsung ditindaklanjuti pengguna. Inilah pembeda utamanya dari
- * pembuat CV yang hanya menyimpan data.
- *
- * Kalimat sarannya sendiri tidak ditulis di sini melainkan di messages.ts,
- * sehingga berkas ini murni berisi angka dan syarat - dan bahasa antarmuka
- * dapat berganti tanpa satu pun aturan penilaian ikut tersentuh. Perhatikan
- * bahwa skornya sendiri tidak bergantung bahasa: masukan yang sama selalu
- * menghasilkan angka yang sama.
- */
 
 export type {
   AtsFinding,
@@ -52,6 +87,24 @@ export type {
   Severity,
 };
 
+/*
+  SETELAN bobot tiap dimensi. WAJIB berjumlah 100.
+
+  | Dimensi          | Bobot | Menilai apa                                    |
+  |------------------|------:|------------------------------------------------|
+  | `completeness`   |    25 | Kelengkapan isi - bagian yang wajib ada terisi  |
+  | `parseability`   |    25 | Kemudahan dibaca mesin - huruf, margin, struktur|
+  | `contentQuality` |    20 | Mutu tulisan - kata kerja aksi, angka, panjang  |
+  | `keywordMatch`   |    20 | Kecocokan dengan iklan lowongan                 |
+  | `structure`      |    10 | Urutan dan penamaan bagian                      |
+
+  Dua yang teratas sengaja sama besar: CV yang lengkap tetapi tidak terbaca
+  mesin sama tidak bergunanya dengan CV yang terbaca sempurna tetapi kosong.
+
+  `keywordMatch` bernilai 0 bobot efektif bila pengguna tidak menempelkan iklan
+  lowongan - bobotnya dialihkan ke dimensi lain. Lihat catatan lengkapnya di
+  kepala berkas sebelum mengubah angka mana pun di sini.
+*/
 export const DIMENSION_WEIGHTS: Record<DimensionKey, number> = {
   completeness: 25,
   parseability: 25,
@@ -819,6 +872,18 @@ function monthIndex(value: string): number {
   return year * 12 + month;
 }
 
+/*
+  SETELAN ambang nilai huruf.
+
+  A >= 85, B >= 70, C >= 55, sisanya D. Jaraknya sengaja tidak rata: naik dari
+  D ke C jauh lebih mudah daripada naik dari B ke A, dan itu memang
+  mencerminkan kenyataannya - kesalahan besar cepat hilang, sedangkan
+  kesempurnaan menuntut memperbaiki banyak hal kecil sekaligus.
+
+  Kalau ambang ini diubah, `verdictOf()` tepat di bawahnya memakai ambang yang
+  SAMA dan harus ikut diubah - kalau tidak, akan ada CV bernilai B yang
+  kalimat vonisnya berkata "cukup".
+*/
 function gradeOf(score: number): "A" | "B" | "C" | "D" {
   if (score >= 85) return "A";
   if (score >= 70) return "B";

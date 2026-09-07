@@ -1,3 +1,48 @@
+/*
+  ============================================================================
+   PANEL PENGELOLA
+  ============================================================================
+
+  Panel ini melihat **data akun**, tidak pernah **isi CV**.
+
+  Bedanya bukan soal rasa. Isi CV adalah kumpulan data pribadi paling lengkap
+  yang dimiliki seseorang: nama, nomor telepon, alamat, riwayat kerja, kadang
+  pas foto. Masalah nyata yang sampai ke pengelola bentuknya "tidak bisa
+  masuk", "lupa kata sandi", "minta akun dihapus", "akun ganda" - tidak satu
+  pun menuntut membaca isi CV seseorang.
+
+  Karena itu kuerinya di bawah menyebut kolomnya satu per satu, dan tidak satu
+  pun berasal dari tabel isi CV. Menyertakan `resumes: { select: { title } }`
+  pun ditolak: judul CV kerap memuat nama orang dan nama perusahaan yang
+  dilamar. Yang diambil hanya **jumlahnya**.
+
+  Halaman ini memanggil `notFound()` bagi yang bukan pengelola, bukan
+  menampilkan pesan penolakan. Pesan penolakan justru memberi tahu ada sesuatu
+  di alamat ini; halaman yang seolah tidak ada tidak mengungkapkan apa pun.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah         | Ubah di mana                        | Nilai sekarang |
+  |---------------------------|-------------------------------------|----------------|
+  | Baris per halaman         | `PER_HALAMAN` di berkas ini         | 20             |
+  | Siapa yang jadi pengelola | `ADMIN_EMAIL` di env, lihat `lib/admin.ts` | - (env) |
+  | Rentang "sekian hari terakhir" | konstanta batas waktu di bawah | lihat di tempatnya |
+  | Kolom yang ditampilkan    | `select` pada kueri di berkas ini   | tanpa isi CV   |
+
+  BATAS YANG TIDAK BOLEH DILANGGAR SAAT MENAMBAH KOLOM
+
+  Setiap kolom baru yang ditambahkan ke `select` harus lolos satu pertanyaan:
+  apakah pengelola benar-benar memerlukannya untuk menjawab keluhan? Kalau
+  jawabannya "mungkin berguna", jawabannya tidak. Menambah kolom dari tabel
+  isi CV - judul sekalipun - membatalkan seluruh alasan panel ini dirancang
+  begini.
+
+  `ADMIN_EMAIL` yang kosong berarti **tidak ada seorang pun** pengelola, bukan
+  semua orang. Lihat `lib/admin.ts`.
+*/
+
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
@@ -5,28 +50,6 @@ import { isAdminRequest } from "@/lib/guard";
 import { getT } from "@/lib/i18n/server";
 import { AdminClient } from "@/components/admin/AdminClient";
 
-/**
- * ============================================================================
- *  PANEL PENGELOLA
- * ============================================================================
- *
- * Panel ini melihat **data akun**, tidak pernah **isi CV**.
- *
- * Bedanya bukan soal rasa. Isi CV adalah kumpulan data pribadi paling lengkap
- * yang dimiliki seseorang: nama, nomor telepon, alamat, riwayat kerja, kadang
- * pas foto. Masalah nyata yang sampai ke pengelola bentuknya "tidak bisa
- * masuk", "lupa kata sandi", "minta akun dihapus", "akun ganda" - tidak satu
- * pun menuntut membaca isi CV seseorang.
- *
- * Karena itu kuerinya di bawah menyebut kolomnya satu per satu, dan tidak satu
- * pun berasal dari tabel isi CV. Menyertakan `resumes: { select: { title } }`
- * pun ditolak: judul CV kerap memuat nama orang dan nama perusahaan yang
- * dilamar. Yang diambil hanya **jumlahnya**.
- *
- * Halaman ini memanggil `notFound()` bagi yang bukan pengelola, bukan
- * menampilkan pesan penolakan. Pesan penolakan justru memberi tahu ada sesuatu
- * di alamat ini; halaman yang seolah tidak ada tidak mengungkapkan apa pun.
- */
 
 export const metadata: Metadata = {
   title: "Panel pengelola",
@@ -36,6 +59,14 @@ export const metadata: Metadata = {
 /** Dibaca ulang tiap permintaan: angkanya tidak berguna kalau basi. */
 export const dynamic = "force-dynamic";
 
+/*
+  SETELAN jumlah baris akun per halaman.
+
+  Dua puluh, bukan lebih: kuerinya menghitung jumlah CV tiap akun, dan itu
+  berarti satu kueri agregat per baris. Menaikkannya menambah beban basis data
+  secara langsung, sementara pengelola hampir selalu mencari SATU akun -
+  bukan membaca daftarnya dari atas ke bawah.
+*/
 const PER_HALAMAN = 20;
 
 /**
