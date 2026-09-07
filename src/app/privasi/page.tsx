@@ -1,3 +1,13 @@
+/*
+  Halaman Kebijakan Privasi.
+
+  Isinya di `content.tsx` di sebelah; tata letaknya dipakai bersama halaman
+  Ketentuan Layanan lewat `components/LegalPage.tsx`.
+
+  Halaman ini membaca sesi HANYA untuk menentukan bilah atas mana yang tampil -
+  isinya sendiri sama bagi siapa pun.
+*/
+
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { LegalPage } from "@/components/LegalPage";

@@ -1,3 +1,11 @@
+/*
+  Halaman menyetel kata sandi baru dari tautan pemulihan.
+
+  Tiketnya diperiksa di sisi server saat formulirnya dikirim, bukan saat
+  halaman dibuka - tiket yang sudah dipakai atau kedaluwarsa ditolak di sana.
+  Lihat `lib/password-reset-store.ts`.
+*/
+
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ResetPasswordForm } from "@/components/auth/PasswordResetForms";

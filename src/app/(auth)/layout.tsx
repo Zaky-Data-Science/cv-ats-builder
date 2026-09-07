@@ -1,3 +1,39 @@
+/*
+  ============================================================================
+   KERANGKA HALAMAN AUTH - MASUK, DAFTAR, LUPA SANDI, ATUR SANDI
+  ============================================================================
+
+  Kerangka yang dipakai bersama keempat halaman itu: bilah atas berisi logo dan
+  jalan pulang, lalu satu kartu sempit di tengah layar.
+
+  KENAPA KERANGKANYA SENDIRI, BUKAN `PublicHeader`
+
+  Bilah atas halaman publik memuat navigasi lengkap - Beranda, Cek CV Saya,
+  Panduan, Tentang, Alur, pemilih bahasa, sakelar tema. Semuanya adalah
+  tawaran untuk PERGI, dan menawarkannya kepada orang yang sedang mengetik
+  kata sandi justru mengalihkannya dari satu hal yang sedang ia kerjakan.
+
+  Yang tersisa di sini cuma dua: logo yang membawa pulang, dan satu tautan
+  "kembali ke beranda" yang menyebutkan dirinya. Tautan itu ada karena halaman
+  masuk kerap dibuka langsung dari tautan yang dibagikan - tombol kembali
+  peramban tidak punya riwayat untuk dimundurkan.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah        | Ubah di mana                  | Nilai sekarang |
+  |--------------------------|-------------------------------|----------------|
+  | Lebar kartu formulir     | `max-w-sm` pada `<main>`      | 24rem (384px)  |
+  | Tinggi bilah atas        | `h-16` pada bilahnya          | 64px           |
+  | Jarak tegak kartu        | `py-12` pada `<main>`         | 48px           |
+
+  `max-w-sm` sengaja sempit. Formulir masuk isinya dua kotak isian; kartu yang
+  lebih lebar membuat kotak isiannya membentang jauh melebihi panjang teks yang
+  diketik ke dalamnya, dan itu terbaca sebagai formulir yang belum selesai
+  dirapikan.
+*/
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -37,6 +73,8 @@ export default async function AuthLayout({
         </div>
       </header>
 
+      {/* SETELAN lebar kartu formulir (24rem) dan jarak tegaknya (48px).
+          Lihat alasan lebarnya di kepala berkas. */}
       <main className="flex flex-1 items-center justify-center px-5 py-12">
         <div className="w-full max-w-sm">{children}</div>
       </main>

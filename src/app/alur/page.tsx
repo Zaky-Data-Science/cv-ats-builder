@@ -1,3 +1,37 @@
+/*
+  ============================================================================
+   HALAMAN ALUR - DIAGRAM CARA KERJA APLIKASI
+  ============================================================================
+
+  Empat diagram: alur menyusun CV, alur membandingkan CV, arsitektur dan alur
+  data, serta workflow pengembangan. Masing-masing dwibahasa.
+
+  SUMBERNYA SATU, KELUARANNYA TIGA
+
+  Isi diagramnya tinggal di `lib/diagrams.ts`, dan dari sana pula berkas gambar
+  SVG dan PNG di `public/diagram/` dibangkitkan lewat
+  `scripts/render-diagrams.ts`. Halaman ini, gambar yang diunduh, dan gambar
+  yang dipakai di dokumen lain karena itu tidak mungkin berselisih.
+
+  Kalau mengubah urutan langkah, ubah di `lib/diagrams.ts` lalu jalankan ulang
+  skrip perendernya - jangan menyunting SVG-nya langsung, sebab ia akan
+  tertimpa pada pembangkitan berikutnya.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah      | Ubah di mana                      | Nilai sekarang        |
+  |------------------------|-----------------------------------|-----------------------|
+  | Isi dan urutan diagram | `lib/diagrams.ts`                 | 4 diagram, dua bahasa |
+  | Lebar simpul diagram   | `Diagram.tsx`                     | 36rem, 42rem mulai lg |
+  | Lebar kolom halaman    | `.wadah-dokumen` di `globals.css` | 64rem, di tengah      |
+
+  Lebar simpul sengaja tidak dinaikkan sampai memenuhi kolomnya: garis
+  penyambung antar-simpul panjangnya tetap, dan kotak yang terlalu lebar
+  membuat garis itu terbaca terlalu pendek.
+*/
+
 import type { Metadata } from "next";
 import { Download, FileImage, FileType2 } from "lucide-react";
 import { auth } from "@/auth";

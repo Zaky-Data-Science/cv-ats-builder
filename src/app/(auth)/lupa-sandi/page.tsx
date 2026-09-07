@@ -1,3 +1,14 @@
+/*
+  Halaman meminta tautan pemulihan kata sandi.
+
+  Jawabannya SELALU sama - "kalau alamatnya terdaftar, tautannya sudah
+  dikirim" - baik alamatnya ada maupun tidak. Membedakan keduanya berarti
+  memberi tahu siapa pun bahwa sebuah alamat surel terdaftar di sini, dan itu
+  bocoran yang tidak perlu.
+
+  Alur lengkap beserta pembuatan tiketnya ada di `lib/password-reset.ts`.
+*/
+
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth, googleEnabled } from "@/auth";

@@ -1,4 +1,34 @@
 import Link from "next/link";
+/*
+  ============================================================================
+   HALAMAN TENTANG - KENAPA APLIKASI INI DIBUAT
+  ============================================================================
+
+  Prosanya di `content.ts` di sebelahnya, tata letaknya di sini - pemisahan
+  yang sama dengan halaman Panduan, dan karena alasan yang sama.
+
+  SATU HAL YANG SENGAJA TIDAK ADA DI HALAMAN INI
+
+  Keterangan bahwa aplikasi ini Tugas Akhir kuliah. Dihapus dari SELURUH teks
+  yang dilihat pengguna sejak sesi 4, dan alasannya ada di komentar
+  `lib/site.ts`: aplikasinya dipakai orang sungguhan untuk melamar kerja, dan
+  keterangan bahwa ini pekerjaan kampus membuatnya terbaca sebagai purwarupa
+  yang belum tentu bertahan. Identitas pembuatnya tetap dicantumkan.
+
+  Jangan menambahkannya kembali tanpa diminta.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah   | Ubah di mana                       | Nilai sekarang   |
+  |---------------------|------------------------------------|------------------|
+  | Lebar kolom halaman | `.wadah-dokumen` di `globals.css`  | 64rem, di tengah |
+  | Jarak tegak isi     | `py-12 sm:py-16` di berkas ini     | 48px / 64px      |
+  | Seluruh kalimatnya  | `content.ts` di sebelah            | dua bahasa       |
+  | Identitas pembuat   | `lib/site.ts`                      | -                |
+*/
+
 import type { Metadata } from "next";
 import {
   ArrowRight,

@@ -3999,6 +3999,54 @@ Dibuktikan tidak ada yang rusak: 382 uji tetap lulus (termasuk
 lint bersih, dan panel pengelolanya dibuka sungguhan - membalas 200 dan
 benar-benar dirender, sebab `ADMIN_EMAIL` lokal memang diisi akun demo.
 
+### Halaman auth dan halaman statis dirapikan komentarnya
+
+Sembilan berkas, seluruhnya sebelumnya **tanpa kepala**. Berbeda dari
+putaran-putaran sebelumnya, di sini tidak ada satu pun kasus "penjelasan bagus
+tapi salah letak" - berkasnya memang polos sejak awal.
+
+**Kerangka auth** (`(auth)/layout.tsx`) mendapat alasan keberadaannya, dan itu
+yang paling berguna: kenapa halaman masuk tidak memakai `PublicHeader`. Bilah
+atas halaman publik memuat Beranda, Cek CV Saya, Panduan, Tentang, Alur,
+pemilih bahasa, sakelar tema - semuanya tawaran untuk PERGI, dan menawarkannya
+kepada orang yang sedang mengetik kata sandi justru mengalihkannya. Yang
+tersisa cuma logo dan satu tautan pulang.
+
+Peta setelannya tiga baris, dan `max-w-sm` diberi alasannya: formulir masuk
+isinya dua kotak isian, dan kartu yang lebih lebar membuat kotak isiannya
+membentang jauh melebihi panjang teks yang diketik - terbaca sebagai formulir
+yang belum selesai dirapikan.
+
+**Keempat halaman auth** mendapat kepala pendek yang menyebutkan satu hal
+penting masing-masing:
+
+| Halaman | Yang dicatat |
+|---|---|
+| `login` | Yang sudah masuk dialihkan di SERVER, sebelum satu piksel digambar; `Suspense` ada karena `useSearchParams` menuntutnya |
+| `register` | `googleEnabled` dibaca di server lalu dikirim sebagai prop - komponen klien tidak boleh memeriksa setelan server sendiri |
+| `lupa-sandi` | Jawabannya SELALU sama baik alamatnya terdaftar maupun tidak - membedakannya membocorkan alamat mana yang terdaftar |
+| `atur-sandi` | Tiket diperiksa saat formulir dikirim, bukan saat halaman dibuka |
+
+**Halaman statis** - Panduan, Tentang, Alur, Privasi, Ketentuan. Ketiganya yang
+pertama mendapat peta setelan, dan dua catatan yang paling mungkin menyelamatkan
+sesi berikutnya:
+
+- **Panduan**: jangan melebarkan kolomnya. Wadah penuh 1920px dan kolom 1024px
+  rata kiri sama-sama pernah dipasang lalu dikembalikan; riwayatnya ada di
+  aturan 8 panduan responsif. Ruang kosong di kiri-kanan kolom yang di tengah
+  itu wajar.
+- **Alur**: isi diagram tinggal di `lib/diagrams.ts`, dan dari sana pula berkas
+  SVG/PNG dibangkitkan. Menyunting SVG-nya langsung sia-sia - ia tertimpa pada
+  pembangkitan berikutnya.
+
+**Tentang** mendapat satu peringatan yang sebelumnya cuma hidup di memori dan
+di `lib/site.ts`: keterangan "Tugas Akhir" sengaja tidak ada di seluruh teks
+yang dilihat pengguna, dan jangan ditambahkan kembali tanpa diminta.
+
+Dibuktikan: 382 uji tetap lulus, typecheck dan lint bersih, dan kesembilan
+halaman dibuka sungguhan - beranda, panduan, tentang, alur, privasi, ketentuan,
+login, register, lupa-sandi - seluruhnya 200.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya

@@ -1,3 +1,10 @@
+/*
+  Halaman Ketentuan Layanan.
+
+  Isinya di `content.tsx` di sebelah; tata letaknya dipakai bersama halaman
+  Kebijakan Privasi lewat `components/LegalPage.tsx`.
+*/
+
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { LegalPage } from "@/components/LegalPage";

@@ -1,4 +1,41 @@
 import Link from "next/link";
+/*
+  ============================================================================
+   HALAMAN PANDUAN - CARA MEMAKAI APLIKASI INI
+  ============================================================================
+
+  Isi prosanya TIDAK ada di berkas ini melainkan di `content.ts` di sebelahnya,
+  sama seperti halaman Tentang. Berkas ini hanya tata letaknya.
+
+  Pemisahan itu bukan selera: prosanya dwibahasa dan panjang, dan mencampurnya
+  dengan JSX membuat menyunting satu kalimat berarti menyusuri tata letak
+  lebih dulu. Yang ingin memperbaiki kalimatnya cukup membuka `content.ts` dan
+  tidak perlu memahami satu baris pun React.
+
+  Diagram alurnya tidak diulang di sini - ia membaca `lib/diagrams.ts`, sumber
+  yang sama dengan berkas gambar SVG/PNG. Dengan begitu panduan dan gambarnya
+  tidak mungkin menjelaskan urutan langkah yang berbeda.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  | Yang ingin diubah        | Ubah di mana                       | Nilai sekarang |
+  |--------------------------|------------------------------------|----------------|
+  | Lebar kolom halaman      | `.wadah-dokumen` di `globals.css`  | 64rem, di tengah |
+  | Jarak tegak isi          | `py-12 sm:py-16` di berkas ini     | 48px / 64px    |
+  | Lebar simpul diagram     | `Diagram.tsx`                      | 36rem, 42rem mulai lg |
+  | Seluruh kalimatnya       | `content.ts` di sebelah            | dua bahasa     |
+
+  JANGAN MELEBARKAN KOLOMNYA - SUDAH DICOBA DUA KALI DAN DITOLAK
+
+  Wadah penuh 1920px dan kolom 1024px rata kiri sama-sama pernah dipasang lalu
+  dikembalikan. Alasannya beserta angkanya ada di aturan 8
+  `docs/panduan-responsif.md`. Ruang kosong di kiri-kanan kolom yang di tengah
+  itu WAJAR; yang menguranginya dengan benar cuma membuat isi yang memang bisa
+  melar ikut melar - dan di halaman ini yang bisa melar hanya diagramnya.
+*/
+
 import type { Metadata } from "next";
 import {
   ArrowRight,
