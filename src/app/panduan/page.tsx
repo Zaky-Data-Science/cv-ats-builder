@@ -390,9 +390,32 @@ export default async function PanduanPage() {
                   </p>
                 </div>
               </div>
+              {/*
+                `shrink-0` dan `whitespace-nowrap` di sini bukan hiasan.
+
+                Kartu ini `sm:flex-row sm:justify-between`, jadi tombolnya
+                sebuah flex item - dan flex item boleh MENYUSUT di bawah lebar
+                isinya sendiri. Terukur pada 1920 bagi pengguna yang sudah
+                masuk: tombolnya 141 piksel sementara "Buka CV Saya" beserta
+                ikon dan paddingnya menuntut 150. Kurang sembilan piksel, dan
+                labelnya pecah dua baris di dalam kotak setinggi 40 piksel yang
+                tidak ikut memanjang - ikon panahnya pun terlempar ke tepi
+                kanan, terlepas dari tulisannya.
+
+                Tidak terlihat saat keluar akun, sebab label "Mulai Sekarang"
+                memang lebih pendek dan muat. Itu sebabnya ia lolos sekian lama.
+
+                Kedua kelas ini dipasang bersama dengan sengaja: `shrink-0`
+                menjaga lebarnya, `whitespace-nowrap` menjaga labelnya tetap
+                satu baris kalau suatu saat terjemahannya memanjang. Di bawah
+                `sm` keduanya tidak berpengaruh - di sana tombolnya `w-full`
+                pada susunan menurun.
+              */}
               <Link
                 href="/login"
-                className={buttonClass({ className: "press w-full sm:w-auto" })}
+                className={buttonClass({
+                  className: "press w-full shrink-0 whitespace-nowrap sm:w-auto",
+                })}
               >
                 {signedIn ? content.ctaButtonSignedIn : content.ctaButton}
                 <ArrowRight size={16} />

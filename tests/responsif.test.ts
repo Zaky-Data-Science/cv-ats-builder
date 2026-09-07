@@ -147,6 +147,38 @@ export function runResponsifTests(): void {
   );
 
   /* ---------------------------------------------------------------------- */
+  section("Responsif: tombol tidak boleh diperas oleh tetangganya");
+
+  /*
+    Tombol yang menjadi flex item boleh MENYUSUT di bawah lebar isinya sendiri -
+    itu perilaku bawaan flexbox, `flex-shrink` bernilai 1.
+
+    Terjadi sungguhan di kartu ajakan halaman Panduan. Kartunya
+    `sm:flex-row sm:justify-between`, dan pada 1920 tombolnya terukur 141 piksel
+    sementara "Buka CV Saya" beserta ikon dan paddingnya menuntut 150. Kurang
+    sembilan piksel, dan labelnya pecah dua baris di dalam kotak setinggi 40
+    piksel yang tidak ikut memanjang; ikon panahnya terlempar ke tepi kanan,
+    terlepas dari tulisannya.
+
+    Yang membuatnya lolos sekian lama: hanya terlihat bagi pengguna yang SUDAH
+    MASUK. Label bagi yang belum masuk - "Mulai Sekarang" - memang lebih pendek
+    dan muat, jadi memeriksanya tanpa akun tidak menemukan apa pun.
+
+    Pemeriksaannya sengaja sempit dan menyebut satu berkas: ia menjaga satu
+    kejadian nyata, bukan mencoba menebak pola. Bila kelak ada kartu lain
+    berbentuk sama, tambahkan barisnya di sini.
+  */
+  const panduan = readFileSync(join(AKAR, "app/panduan/page.tsx"), "utf8");
+  const tombolAjakan = panduan.slice(panduan.indexOf('href="/login"'));
+  const kelasTombol = tombolAjakan.slice(0, 400);
+  check(
+    "tombol ajakan Panduan tidak dapat diperas tetangganya",
+    kelasTombol.includes("shrink-0") &&
+      kelasTombol.includes("whitespace-nowrap"),
+    "`shrink-0` menjaga lebarnya, `whitespace-nowrap` menjaga satu barisnya",
+  );
+
+  /* ---------------------------------------------------------------------- */
   section("Responsif: lencana peran tidak boleh disembunyikan");
 
   /*

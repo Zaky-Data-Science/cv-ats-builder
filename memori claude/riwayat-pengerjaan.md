@@ -3532,6 +3532,73 @@ kekurangan.
 **Hero pada 1024-1279 masih menampilkan judul tiga baris**, sebab kolom kirinya
 di sana paling sempit. Muat satu layar tetap tercapai.
 
+### Tombol yang diperas tetangganya - dan hanya terlihat kalau sudah masuk
+
+Dilaporkan zaky dengan satu potongan layar kecil: *"rapikan ini jelek sekali"*.
+Yang terlihat sebuah tombol gelap bertuliskan "Buka CV / Saya" pecah dua baris,
+dengan ikon panahnya terlempar ke tepi kanan, terlepas dari tulisannya.
+
+### Mencarinya memakan waktu, dan sebabnya pantas dicatat
+
+Labelnya "Buka CV Saya", dan di seluruh kode hanya ada dua tempat yang
+memakainya: `errors.openDashboard` (halaman galat dan halaman tidak ditemukan)
+dan `ctaButtonSignedIn` pada kartu ajakan halaman Panduan. Yang pertama tidak
+punya ikon panah sama sekali, jadi tersisa yang kedua.
+
+Tetapi diperiksa di peramban, tombol Panduan itu **tidak pecah** - pada 640,
+700, 768, 820, 900, 1024, maupun 1280. Semuanya setinggi 40 piksel, satu baris.
+
+Sebabnya baru terlihat setelah masuk akun: **label yang pecah hanya muncul bagi
+pengguna yang sudah masuk.** Bagi yang belum, labelnya "Mulai Sekarang" - lebih
+pendek, dan muat. Peramban uji yang dipakai memeriksa selalu dalam keadaan
+keluar akun, sehingga cacat ini tidak pernah muncul di sana.
+
+Yang menutup pencarian: cookie sesi dipasang ke peramban uji lewat
+`Network.setCookie`, halaman dibuka ulang, dan potongan layarnya keluar persis
+sama dengan yang dikirim zaky.
+
+### Sebabnya sembilan piksel
+
+Kartunya `sm:flex-row sm:justify-between`, jadi tombolnya sebuah flex item -
+dan flex item boleh **menyusut di bawah lebar isinya sendiri**, sebab
+`flex-shrink` bernilai 1 secara bawaan.
+
+Terukur pada 1920:
+
+| | |
+|---|---:|
+| Lebar tombol | 141px |
+| Yang dituntut label + ikon + padding | 150px |
+| **Kurang** | **9px** |
+| `flex-shrink` | 1 |
+
+Sembilan piksel, dan labelnya pecah dua baris di dalam kotak `h-10` yang
+tingginya tetap - jadi tulisannya meluber, bukan kotaknya yang memanjang.
+
+Obatnya `shrink-0` beserta `whitespace-nowrap`. Keduanya dipasang bersama
+dengan sengaja: yang pertama menjaga lebarnya, yang kedua menjaga labelnya
+tetap satu baris kalau suatu saat terjemahannya memanjang. Di bawah `sm`
+keduanya tidak berpengaruh - di sana tombolnya `w-full` pada susunan menurun.
+Terukur sesudahnya: 150 piksel, satu baris, di 640 sampai 1440.
+
+### Disapu, bukan diperbaiki satu lalu ditinggal
+
+Seluruh tombol di tujuh halaman diperiksa dalam keadaan **sudah masuk akun**,
+pada 390, 768, 1024, dan 1920 - beranda, Panduan, Tentang, Alur, Bandingkan,
+Coba, dan dasbor. Cara memeriksanya membandingkan tinggi kotak teks di dalam
+tombol dengan tinggi satu barisnya, bukan melihat gambarnya satu per satu.
+
+Hasilnya nol tombol yang labelnya membungkus di 24 kombinasi halaman x lebar.
+Kartu Panduan itu memang satu-satunya yang berbentuk `justify-between` dengan
+tombol di salah satu ujungnya - diperiksa dengan memindai seluruh berkas.
+
+`tests/responsif.test.ts` bertambah satu pemeriksaan (378 -> 379). Ia sengaja
+menyebut satu berkas dan satu tombol, bukan mencoba menebak pola: yang dijaga
+satu kejadian nyata. Bila kelak ada kartu lain berbentuk sama, barisnya
+ditambahkan di sana.
+
+Gerbang kualitas: typecheck bersih, lint bersih, 379 uji lulus 0 gagal.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya
@@ -3584,7 +3651,7 @@ supaya sesi berikutnya dapat mengulanginya dan membandingkannya dengan jujur.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 378 |
+| Pemeriksaan otomatis | 379 |
 
 Cara menghitungnya:
 
@@ -3618,7 +3685,8 @@ Dua baris berubah bukan karena kodenya menyusut:
   `src/lib/portfolio/` sudah tidak ada, dan `DIMENSION_WEIGHTS` memang berisi
   lima kunci.
 
-Route 32 -> 31 memang perubahan kode sesi 16-18, dan pemeriksaan 367 -> 378
-perubahan sesi 16-19 (dua yang terakhir menjaga `.teks-intro`).
+Route 32 -> 31 memang perubahan kode sesi 16-18, dan pemeriksaan 367 -> 379
+perubahan sesi 16-19 (dua menjaga `.teks-intro`, satu menjaga tombol yang
+tidak boleh diperas tetangganya).
 
 ---
