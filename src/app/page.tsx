@@ -295,11 +295,18 @@ export default async function LandingPage() {
               {/*
                 Tombol dan statistik DIPISAH menjadi dua blok, padahal dulu satu.
 
-                Sebabnya urutan di ponsel. Yang diminta: judul, penjelasan,
-                tombol, pratinjau CV, lalu statistik - sehingga ajakan
-                bertindaknya berdiri sebelum gambar, bukan sesudahnya. Selama
-                keduanya masih satu blok, statistik ikut ke mana pun tombolnya
-                pergi, dan pratinjau tidak dapat disisipkan di antaranya.
+                Sebabnya urutan di ponsel: judul, penjelasan, pratinjau CV,
+                tombol, lalu statistik. Selama tombol dan statistik masih satu
+                blok, statistik ikut ke mana pun tombolnya pergi - dan
+                pratinjau tidak dapat disisipkan di antara keduanya.
+
+                Urutan itu sempat DIBALIK sekali, menaruh tombol sebelum
+                pratinjau, atas permintaan tertulis. Zaky lalu melihatnya di
+                ponsel sungguhan dan mengembalikannya: "harusnya kertasnya di
+                atas, tombolnya di bawah kertas itu". Jangan membaliknya lagi
+                tanpa diminta - pratinjau CV yang menjelaskan apa yang
+                sebenarnya ditawarkan, dan tombol lebih meyakinkan sesudah
+                orangnya melihat hasilnya.
 
                 Urutannya diatur `order-*`, bukan dengan memindahkan JSX-nya.
                 Mulai `lg` ketiganya ditempatkan tegas ke baris dan kolomnya
@@ -307,7 +314,7 @@ export default async function LandingPage() {
                 sepenuhnya - jadi susunan dua kolom di layar lebar tidak
                 tersentuh sama sekali.
               */}
-              <Reveal delay={60} className="order-2">
+              <Reveal delay={60} className="order-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-7">
                   <Link
                     href={signedIn ? "/dashboard" : "/login"}
@@ -366,7 +373,7 @@ export default async function LandingPage() {
               {/* ---------------------------------------------------------- */}
               <Reveal
                 delay={120}
-                className="order-3 scene justify-self-center lg:col-start-2 lg:row-start-1 lg:justify-self-end"
+                className="order-2 scene justify-self-center lg:col-start-2 lg:row-start-1 lg:justify-self-end"
               >
                 {/*
                   Kesepuluh desainnya, bukan satu - lihat catatan panjang di

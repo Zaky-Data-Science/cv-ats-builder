@@ -3381,18 +3381,31 @@ statistik" karena itu ikut menelan kartunya, dan seluruh susunan dua kolom
 runtuh menjadi satu kolom. Blok kartunya harus benar-benar dipindahkan keluar,
 bukan sekadar dibungkus melewatinya.
 
-### Urutan ponsel dibalik, atas permintaan
+### Urutan ponsel: dibalik, lalu dikembalikan lagi
 
-Yang diminta: judul, penjelasan, **tombol**, pratinjau CV, statistik. Sesi 9
-menaruh pratinjau sebelum tombol, dan itu keputusan yang disengaja waktu itu.
-Sekarang dibalik atas permintaan tegas zaky - ajakan bertindak berdiri sebelum
-gambar.
+Yang diminta tertulis: judul, penjelasan, **tombol**, pratinjau CV, statistik -
+ajakan bertindak berdiri sebelum gambar. Sesi 9 menaruh pratinjau sebelum
+tombol, jadi ini membalik keputusan lama, dan dikerjakan apa adanya.
 
-Tombol dan statistik karena itu dipisah menjadi dua blok; selama keduanya masih
-satu, statistik ikut ke mana pun tombolnya pergi dan pratinjau tidak dapat
-disisipkan di antaranya. Urutannya diatur `order-*`, bukan dengan memindahkan
-JSX - dan mulai `lg` penempatan baris/kolom yang tegas mengabaikan `order`
-sepenuhnya, sehingga susunan dua kolom tidak tersentuh.
+**Lalu dikembalikan lagi di hari yang sama.** Zaky melihatnya di ponsel
+sungguhan - bukan di emulasi - dan menolaknya: *"di hp ketukar dia, kembali
+harusnya kertasnya di atas, tombolnya di bawah kertas itu."* Urutan sesi 9
+karena itu berlaku lagi: judul, penjelasan, **pratinjau CV**, tombol,
+statistik.
+
+Pantas dicatat karena dua kali salah menebaknya: pratinjau CV yang menjelaskan
+apa yang sebenarnya ditawarkan, dan tombol lebih meyakinkan sesudah orangnya
+melihat hasilnya. Yang di layar sungguhan mengalahkan yang di daftar
+prioritas.
+
+Pemisahan tombol dan statistik menjadi dua blok **tetap dipertahankan** meski
+urutannya kembali seperti semula - selama keduanya satu blok, pratinjau tidak
+dapat disisipkan di antaranya, dan itu berarti urutannya tidak dapat diubah
+lagi tanpa membongkar ulang. Urutannya diatur `order-*`, bukan dengan
+memindahkan JSX; mulai `lg` penempatan baris/kolom yang tegas mengabaikan
+`order` sepenuhnya, sehingga susunan dua kolom tidak pernah tersentuh oleh
+perubahan mana pun di antara keduanya. Terbukti: seluruh angka enam viewport
+laptop/desktop identik sebelum dan sesudah pembalikan.
 
 ### Hasilnya
 
