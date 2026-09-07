@@ -53,3 +53,8 @@ next-env.d.ts
 # Baris ini tinggal sebagai jaring pengaman bila suatu saat ada yang
 # mengembalikannya ke sini.
 /logs
+
+# Cadangan basis data LOKAL, dibuat sebelum me-reset PostgreSQL lokal.
+# Isinya CV milik akun demo - tidak rahasia, tetapi juga tidak ada gunanya
+# di repositori: siapa pun dapat membuatnya lagi dengan `npm run db:seed`.
+/cadangan-db-lokal

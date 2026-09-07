@@ -284,6 +284,52 @@ dasbor, CV tersimpan, dan pengaturan akun.
 > privat tidak menyentuh `npm run dev` sama sekali - kode, `node_modules`, dan
 > basis datanya semua di disk lokal.
 
+### PENYIMPANAN DRIVE C
+
+Source-nya di `D:`, tetapi dua alat menyimpan datanya di folder pengguna di
+`C:` - dan keduanya tumbuh tanpa pernah membersihkan diri:
+
+| Yang memakan C | Letaknya | Pernah tercatat |
+|---|---|---|
+| PostgreSQL lokal `prisma dev` | `%LOCALAPPDATA%\prisma-dev-nodejs` | **3,15 GB** |
+| Singgahan npm | `%LOCALAPPDATA%
+pm-cache` | 1,57 GB |
+
+**Singgahan npm sudah dipindahkan ke `D:
+pm-cache`** pada 7 September 2026
+(`npm config set cache "D:
+pm-cache"`), jadi yang tersisa di C tinggal yang
+pertama.
+
+Yang perlu diketahui tentang 3,15 GB itu: **data CV-nya sendiri cuma beberapa
+MB.** Diperiksa saat kejadian - `Datatscv\.pglite` (data Postgres yang
+sesungguhnya) berukuran belasan MB, sementara
+`Data\durable-streamstscv\durable-streams.sqlite` menumpuk sampai **3,08
+GB**. Berkas itu catatan internal Prisma, bukan CV-mu, dan ia tidak pernah
+dipangkas sendiri.
+
+Cara mengosongkannya - **menghapus seluruh basis data lokal**, jadi lakukan
+hanya kalau isinya memang tidak penting:
+
+```powershell
+# 1. Cadangkan dulu kalau ada CV yang belum ada di production
+# 2. Hentikan semuanya
+Stop-ScheduledTask -TaskName "CV ATS Builder - server lokal"
+Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
+  Where-Object { $_.CommandLine -match 'Website CV' } |
+  ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+# 3. Hapus
+Remove-Item "$env:LOCALAPPDATA\prisma-dev-nodejs" -Recurse -Force
+# 4. Bangun ulang
+npm run db:dev          # catat portnya, sesuaikan .env bila berubah
+npx prisma migrate deploy   # BUKAN migrate dev - lihat jebakan di bawah
+npm run db:seed
+Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
+```
+
+Dikerjakan sekali pada sesi 19 dan portnya kebetulan sama (51214), jadi `.env`
+tidak perlu disentuh. Jangan berasumsi begitu - periksa lognya.
+
 ### JEBAKAN PALING PENTING
 
 > **Jangan pernah menjalankan `prisma migrate dev` terhadap basis data
