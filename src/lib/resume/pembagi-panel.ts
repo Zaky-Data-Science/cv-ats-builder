@@ -35,7 +35,23 @@ import * as React from "react";
 const KUNCI_LEBAR = "atscv-panel-lebar";
 const KUNCI_MODE = "atscv-panel-mode";
 
-/** Persen lebar panel formulir terhadap seluruh lebar penyunting. */
+/*
+  SETELAN lebar panel formulir, dalam PERSEN terhadap lebar penyunting.
+
+  | Setelan        | Nilai | Artinya                                        |
+  |----------------|------:|------------------------------------------------|
+  | `LEBAR_BAWAAN` |  42%  | Yang dilihat orang sebelum ia menarik apa pun   |
+  | `LEBAR_MIN`    |  22%  | Sekecil-kecilnya - formulir masih terbaca       |
+  | `LEBAR_MAKS`   |  78%  | Sebesar-besarnya - kertas tinggal sepotong      |
+
+  Persen, bukan piksel, supaya pembagiannya tetap sama saat jendela diubah
+  ukurannya - 42% pada layar 1920 dan pada layar 1280 sama-sama terbaca
+  sebagai "sedikit kurang dari separuh".
+
+  Angka ini menentukan lebar kertas yang tersisa di sebelahnya. Menaikkannya
+  berarti kertas menyempit, dan perbesaran otomatis kertas ikut turun sampai
+  menyentuh `MIN_ZOOM` di `PreviewPane.tsx`.
+*/
 export const LEBAR_BAWAAN = 42;
 export const LEBAR_MIN = 22;
 export const LEBAR_MAKS = 78;

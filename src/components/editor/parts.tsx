@@ -1,5 +1,23 @@
 "use client";
 
+/*
+  ============================================================================
+   POTONGAN YANG DIPAKAI ULANG DI FORMULIR PENYUNTING
+  ============================================================================
+
+  Bukan sebuah layar, melainkan kumpulan potongan yang dipakai berkali-kali oleh
+  `sections.tsx`: kepala bagian yang dapat dilipat, tombol tambah/hapus entri,
+  penggeser urutan, dan sejenisnya.
+
+  Alasan keberadaannya sederhana: sebelas bagian CV punya bentuk yang sama -
+  judul, daftar entri, tombol tambah - dan menulis ulang bentuk itu sebelas kali
+  berarti sebelas tempat yang harus diubah setiap kali rupanya digeser sedikit.
+
+  Kalau menambah potongan baru di sini, pastikan ia memang dipakai lebih dari
+  satu tempat. Yang cuma dipakai sekali lebih baik tinggal di tempat ia dipakai,
+  supaya membacanya tidak menuntut melompat berkas.
+*/
+
 import * as React from "react";
 import {
   ChevronDown,

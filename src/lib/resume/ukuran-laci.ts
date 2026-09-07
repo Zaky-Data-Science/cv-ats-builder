@@ -35,12 +35,36 @@ import * as React from "react";
 const KUNCI_TINGGI = "atscv-laci-tinggi";
 const KUNCI_LEBAR = "atscv-laci-lebar";
 
-/** Persen tinggi layar untuk lembar bawah di layar sempit. */
+/*
+  SETELAN ukuran laci "Atur tampilan CV". DUA satuan, sebab dua bentuk.
+
+  LEMBAR BAWAH DI LAYAR SEMPIT - persen tinggi layar
+
+  | Setelan         | Nilai | Artinya                                         |
+  |-----------------|------:|-------------------------------------------------|
+  | `TINGGI_BAWAAN` |  55%  | Setengah layar lebih sedikit                     |
+  | `TINGGI_MIN`    |  28%  | Cukup untuk satu baris setelan, kertas terlihat  |
+  | `TINGGI_MAKS`   |  92%  | Menyisakan sedikit kertas - JANGAN dibuat 100%   |
+
+  `TINGGI_MAKS` sengaja tidak 100%: kalau lacinya menutupi seluruh layar,
+  hilang alasan lacinya dibuat dapat ditarik - yaitu melihat kertas berubah
+  sementara diatur.
+
+  LACI KIRI DI LAYAR LEBAR - rem, bukan persen
+
+  | Setelan        | Nilai | Artinya                                          |
+  |----------------|------:|--------------------------------------------------|
+  | `LEBAR_BAWAAN` | 22rem | Sekitar 352 piksel                                |
+  | `LEBAR_MIN`    | 18rem | Label setelan masih muat satu baris               |
+  | `LEBAR_MAKS`   | 34rem | Lebih dari ini kertas terdesak tanpa guna         |
+
+  Rem, bukan persen, karena isinya tulisan berukuran tetap - laci yang ikut
+  melebar bersama layar 2560 akan penuh ruang kosong.
+*/
 export const TINGGI_BAWAAN = 55;
 export const TINGGI_MIN = 28;
 export const TINGGI_MAKS = 92;
 
-/** Rem untuk laci kiri di layar lebar. */
 export const LEBAR_BAWAAN = 22;
 export const LEBAR_MIN = 18;
 export const LEBAR_MAKS = 34;

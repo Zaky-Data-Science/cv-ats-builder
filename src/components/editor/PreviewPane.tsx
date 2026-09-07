@@ -1,5 +1,32 @@
 "use client";
 
+/*
+  ============================================================================
+   PANEL KERTAS - SISI KANAN PENYUNTING
+  ============================================================================
+
+  Menampilkan CV sebagai kertas seukuran aslinya, beserta kendali yang mengatur
+  cara melihatnya: perbesaran, mode per halaman lawan menggulir menerus, dan
+  tombol "ketik di kertas".
+
+  Kertasnya dirender pada ukuran FISIK (210mm untuk A4) lalu diperkecil dengan
+  transform. Itulah sebabnya angka perbesaran di sini berarti sesuatu yang
+  nyata - 1,0 berarti sebesar kertas sungguhan di layar, bukan sekadar
+  "ukuran bawaan".
+
+  SETELAN yang ada di berkas ini - MIN_ZOOM, MAX_ZOOM, dan SHEET_GAP -
+  dijelaskan satu per satu di tempatnya masing-masing, tepat di bawah impor.
+  Peta setelan seluruh penyunting ada di kepala `ResumeEditor.tsx`.
+
+  SATU HAL YANG PERNAH SALAH DAN JANGAN DIULANG
+
+  Pengamat ukuran panel dulu menurunkan perbesaran yang SUDAH DIPILIH pengguna
+  setiap kali panelnya berubah lebar. Akibatnya menutup formulir lalu membukanya
+  lagi mengembalikan 140% menjadi 100% tanpa diminta. Sekarang pengamat itu
+  hanya menghitung perbesaran OTOMATIS; pilihan yang diketik pengguna tidak
+  disentuh.
+*/
+
 import * as React from "react";
 import {
   Columns2,
@@ -26,10 +53,29 @@ import { resumeMargins } from "@/lib/resume/templates";
 import type { ResumeData } from "@/lib/resume/types";
 import { cn } from "@/lib/utils";
 
+/*
+  SETELAN batas perbesaran kertas.
+
+  MIN 0,28 - di bawah itu tulisan di dalam kertas berhenti terbaca sebagai
+  tulisan. Ia juga menjadi lantai bagi perbesaran OTOMATIS: kalau panel
+  formulir ditarik sangat lebar, kertas berhenti mengecil di angka ini lalu
+  menggulir mendatar, bukan mengecil terus sampai tidak berguna.
+
+  MAKS 1,4 - lebih dari itu satu halaman A4 tidak lagi muat tegak pada layar
+  laptop mana pun, sehingga menggulir menjadi satu-satunya cara melihatnya.
+
+  Pengguna boleh MENGETIK angka di luar rentang ini; yang diketik dijepit,
+  bukan ditolak - yang mengetik "500" jelas ingin sebesar-besarnya.
+*/
 const MIN_ZOOM = 0.28;
 const MAX_ZOOM = 1.4;
 
-/** Jarak antar-lembar pada mode per halaman, dalam piksel sebelum diperbesar. */
+/*
+  SETELAN jarak antar-lembar pada mode per halaman, dalam piksel SEBELUM
+  diperbesar - jadi jarak yang terlihat ikut mengecil bersama kertasnya.
+  Menaikkannya memperjelas batas antar halaman; menurunkannya membuat CV dua
+  halaman terbaca sebagai satu gulungan panjang.
+*/
 const SHEET_GAP = 28;
 
 export type PreviewMode = "paged" | "continuous";

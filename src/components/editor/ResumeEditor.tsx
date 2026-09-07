@@ -1,5 +1,65 @@
 "use client";
 
+/*
+  ============================================================================
+   PENYUNTING CV - BERKAS INDUKNYA
+  ============================================================================
+
+  Satu komponen yang menyatukan seluruh penyunting: bilah alat, panel formulir
+  di kiri, kertas di kanan, panel penilaian, dan penyimpanan otomatis. Dipakai
+  DUA jalur sekaligus - pengguna berakun (`/resume/[id]`) dan pengguna tanpa
+  akun (`/coba`) - dan yang membedakan keduanya cuma prop `guest`.
+
+  ----------------------------------------------------------------------------
+   PETA SETELAN
+  ----------------------------------------------------------------------------
+
+  Angka-angka yang mengatur rupa dan perilaku penyunting, beserta letaknya.
+  Cari di sini dulu sebelum menebak dari kelas Tailwind - beberapa di antaranya
+  tinggal di berkas lain.
+
+  | Yang ingin diubah              | Ubah di mana                              | Nilai sekarang |
+  |--------------------------------|-------------------------------------------|----------------|
+  | Jeda simpan otomatis           | `AUTOSAVE_DELAY_MS` di berkas ini         | 800 ms         |
+  | Tinggi penyunting              | `h-[calc(100dvh-3.5rem)]` di berkas ini   | layar - bilah  |
+  | Lebar panel formulir (bawaan)  | `LEBAR_BAWAAN` di `lib/resume/pembagi-panel.ts` | 42%      |
+  | Batas tarik panel formulir     | `LEBAR_MIN` / `LEBAR_MAKS` di berkas sama  | 22% - 78%      |
+  | Perbesaran kertas terkecil     | `MIN_ZOOM` di `PreviewPane.tsx`           | 0,28           |
+  | Perbesaran kertas terbesar     | `MAX_ZOOM` di `PreviewPane.tsx`           | 1,40           |
+  | Jarak antar halaman kertas     | `SHEET_GAP` di `PreviewPane.tsx`          | 28 px          |
+  | Tinggi laci "Atur tampilan"    | `TINGGI_*` di `lib/resume/ukuran-laci.ts` | 28% - 92%, bawaan 55% |
+  | Lebar laci "Atur tampilan"     | `LEBAR_*` di berkas sama                  | 18 - 34 rem, bawaan 22 |
+
+  ----------------------------------------------------------------------------
+   YANG SALING MENARIK - ubah satu, periksa yang lain
+  ----------------------------------------------------------------------------
+
+  1. **Lebar panel formulir menentukan lebar kertas yang tersisa.** Menyempitkan
+     kertas membuat perbesaran otomatisnya ikut turun, dan di bawah `MIN_ZOOM`
+     ia berhenti mengecil lalu kertasnya menggulir mendatar.
+
+  2. **Tinggi penyunting dikunci ke tinggi bilah aplikasi** (`3.5rem`). Kalau
+     tinggi bilah di `AppHeader.tsx` diubah, angka di sini WAJIB ikut diubah -
+     kalau tidak, penyunting akan lebih tinggi daripada layar dan halamannya
+     menggulir dua kali.
+
+  3. **Jeda simpan otomatis menentukan berapa banyak yang hilang saat tab
+     ditutup mendadak.** Memperkecilnya berarti lebih banyak permintaan ke
+     server; memperbesarnya berarti lebih banyak ketikan yang belum tersimpan.
+
+  ----------------------------------------------------------------------------
+   YANG TIDAK BOLEH DIUBAH TANPA MEMBACA ALASANNYA
+  ----------------------------------------------------------------------------
+
+  - Susunan panelnya `flex`, **bukan** `grid`. Kolom `1fr` pada grid berarti
+    "sisa ruang, tetapi tidak lebih kecil daripada isinya", sehingga kertas yang
+    diperbesar mendesak kolom formulir sampai teksnya terpotong. Alasan
+    lengkapnya ada di komentar tempat susunannya ditulis.
+  - Pengamat ukuran TIDAK menurunkan perbesaran yang sudah dipilih pengguna.
+    Aturan lama itu membuat 140% kembali menjadi 100% setiap kali panel ditutup
+    lalu dibuka.
+*/
+
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -75,7 +135,14 @@ type SaveState = "idle" | "dirty" | "saving" | "saved" | "error";
 /** Panel yang sedang ditampilkan. Di layar lebar, formulir selalu terlihat. */
 type Pane = "form" | "preview" | "ats";
 
-/** Jeda sebelum perubahan dikirim ke server. */
+/**
+ * SETELAN jeda simpan otomatis.
+ *
+ * Dihitung sejak ketikan TERAKHIR, bukan sejak yang pertama - mengetik terus
+ * menerus karena itu tidak menghasilkan satu permintaan pun sampai jarinya
+ * berhenti. Memperkecilnya membuat lebih sedikit ketikan yang berisiko hilang
+ * saat tab ditutup mendadak, dengan ongkos lebih banyak permintaan ke server.
+ */
 const AUTOSAVE_DELAY_MS = 800;
 
 export function ResumeEditor({
@@ -621,6 +688,11 @@ export function ResumeEditor({
         kedua kerangka yang memuat editor ini, baik jalur tanpa akun maupun
         jalur berakun.
       */}
+      {/* SETELAN tinggi penyunting: setinggi layar dikurangi bilah aplikasi
+          (3.5rem). Angka itu HARUS sama dengan tinggi bilah di AppHeader -
+          kalau berbeda, penyunting jadi lebih tinggi daripada layar dan
+          halamannya menggulir dua kali. `100dvh`, bukan `100vh`, supaya bilah
+          alamat peramban ponsel tidak memotong bagian bawahnya. */}
       <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden">
         {/* ============================================================ */}
         {/* Bilah alat                                                    */}

@@ -1,5 +1,31 @@
 "use client";
 
+/*
+  ============================================================================
+   FORMULIR PENYUNTING - SEBELAS BAGIAN CV
+  ============================================================================
+
+  Isi panel kiri penyunting: ringkasan, pengalaman, pendidikan, keahlian,
+  proyek, sertifikat, organisasi, penghargaan, bahasa, publikasi, dan bagian
+  tambahan.
+
+  Berkas ini panjang karena memang berisi sebelas formulir, bukan karena satu
+  hal yang rumit. Tiap bagian berdiri sendiri dan dapat dibaca terpisah -
+  potongan yang dipakai bersama sudah dipindahkan ke `parts.tsx`.
+
+  YANG PALING MUDAH TERLEWAT SAAT MENAMBAH FIELD
+
+  1. Teksnya WAJIB masuk kedua kamus bahasa: `lib/i18n/id.ts` dan `en.ts`.
+     Kunci yang terlewat menggagalkan typecheck; kalimat yang disalin tanpa
+     diterjemahkan ditangkap `npm test`.
+  2. Kalau field itu ikut tercetak, `ResumeDocument.tsx` harus tahu - dan
+     `tests/kertas.test.ts` mengunci markup cetaknya, jadi acuannya perlu
+     direkam ulang bila tampilannya memang sengaja berubah.
+  3. Kalau field itu boleh diketik langsung di atas kertas, jalurnya harus
+     didaftarkan di `lib/resume/edit-path.ts` - hanya jalur terdaftar yang
+     boleh ditulis balik.
+*/
+
 import * as React from "react";
 import { useI18n } from "@/components/i18n";
 import { Field, Input, Select, Switch, Textarea, Callout } from "@/components/ui";

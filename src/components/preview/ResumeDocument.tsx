@@ -1,3 +1,30 @@
+/*
+  ============================================================================
+   DOKUMEN CV - SATU-SATUNYA TEMPAT KERTAS DIGAMBAR
+  ============================================================================
+
+  Komponen ini yang menghasilkan kertas CV, dan ia dipakai oleh SEMUA jalur
+  yang menampilkannya: pratinjau di penyunting, halaman cetak, pratinjau
+  template di halaman depan, dan kartu di hero. Satu berkas, sehingga tidak
+  mungkin ada dua tampilan CV yang berselisih.
+
+  Konsekuensinya perlu disadari sebelum mengubah apa pun di sini: **sekecil
+  apa pun perubahan di berkas ini ikut mengubah hasil cetak PDF.**
+  `tests/kertas.test.ts` mengunci markup-nya untuk sepuluh template x dua
+  bahasa; kalau uji itu gagal sesudah perubahan yang memang disengaja,
+  acuannya perlu direkam ulang - bukan ujinya yang dilonggarkan.
+
+  DUA HAL YANG SERING SALAH DIINGAT
+
+  1. Kertasnya memakai putih HARFIAH (`.paper`, `.paper-sheet`), bukan
+     `bg-white` Tailwind. Mode gelap bekerja dengan membalik token warna, jadi
+     `bg-white` ikut menjadi gelap dan kertasnya berubah hitam.
+  2. Seluruh template bertata letak SATU kolom. Yang membedakan hanya
+     tipografi, jarak, garis, dan penempatan foto - bukan struktur bacaannya.
+     Dua kolom sengaja tidak disediakan: mesin penyaring lamaran kerap
+     membacanya menyatu menjadi satu baris yang berantakan.
+*/
+
 import * as React from "react";
 import { paperSpec } from "@/lib/resume/paper";
 import { groupSkills, proficiencyLabel } from "@/lib/resume/plaintext";

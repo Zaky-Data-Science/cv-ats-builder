@@ -3857,6 +3857,52 @@ Tidak ada satu pun perilaku yang berubah - seluruhnya komentar. Dibuktikan:
 382 uji tetap lulus dan keenam viewport laptop/desktop tetap muat satu layar
 dengan sisa 0, angka yang identik dengan sebelum perubahan.
 
+### Penyunting CV dirapikan komentarnya
+
+Lanjutan aturan yang baru dikunci. Yang dikerjakan tujuh berkas inti penyunting,
+dan bentuknya mengikuti pola yang sama seperti halaman depan.
+
+**`ResumeEditor.tsx`** - berkas induk penyunting, 1.473 baris, dan sebelumnya
+tanpa kepala sama sekali. Sekarang memuat:
+
+- keterangan bahwa satu komponen ini melayani DUA jalur, berakun dan tanpa akun
+- `PETA SETELAN` berisi sembilan setelan beserta letaknya - dan empat di
+  antaranya ternyata tinggal di berkas LAIN, yang justru itulah gunanya tabel
+  ini: tanpa peta, mencari batas perbesaran kertas berarti menebak berkas
+- **tiga hal yang saling menarik**: lebar panel formulir menentukan lebar
+  kertas yang tersisa sehingga perbesaran otomatisnya ikut turun; tinggi
+  penyunting dikunci ke tinggi bilah aplikasi sehingga mengubah salah satunya
+  tanpa yang lain membuat halaman menggulir dua kali; jeda simpan otomatis
+  menentukan berapa banyak ketikan yang hilang bila tab ditutup mendadak
+- dua hal yang tidak boleh diubah tanpa membaca alasannya: susunannya `flex`
+  bukan `grid`, dan pengamat ukuran tidak boleh menurunkan perbesaran yang
+  sudah dipilih pengguna
+
+**Angka-angkanya diberi tabel di tempatnya**, bukan sekadar disebut:
+
+| Berkas | Yang dijelaskan |
+|---|---|
+| `PreviewPane.tsx` | `MIN_ZOOM` 0,28 - lantai supaya tulisan tetap terbaca, sekaligus lantai bagi perbesaran otomatis; `MAX_ZOOM` 1,4 - lebih dari itu A4 tidak muat tegak; `SHEET_GAP` 28 |
+| `pembagi-panel.ts` | Lebar panel formulir 22-78%, bawaan 42%, dan kenapa persen bukan piksel |
+| `ukuran-laci.ts` | Dua satuan untuk dua bentuk: persen tinggi layar bagi lembar bawah, rem bagi laci kiri - berikut alasan `TINGGI_MAKS` sengaja 92%, bukan 100% |
+
+**Empat berkas yang sebelumnya tanpa kepala kini punya.** `PreviewPane.tsx`,
+`parts.tsx`, `sections.tsx`, dan `ResumeDocument.tsx`. Yang terakhir paling
+penting: ia satu-satunya tempat kertas CV digambar dan dipakai SELURUH jalur -
+pratinjau, cetak, galeri, kartu hero - sehingga sekecil apa pun perubahan di
+sana ikut mengubah hasil cetak PDF. Kepalanya menyebutkan itu terang-terangan,
+beserta dua hal yang sering salah diingat: kertas memakai putih harfiah bukan
+`bg-white` Tailwind, dan seluruh template bertata letak satu kolom dengan
+sengaja.
+
+`sections.tsx` mendapat daftar tiga hal yang paling mudah terlewat saat
+menambah field: kedua kamus bahasa, `ResumeDocument.tsx` beserta acuan
+`tests/kertas.test.ts`, dan pendaftaran jalur di `edit-path.ts`.
+
+Tidak ada satu pun perilaku yang berubah - seluruhnya komentar. Dibuktikan: 382
+uji tetap lulus, typecheck dan lint bersih, dan halaman penyunting tetap
+terbuka.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya
