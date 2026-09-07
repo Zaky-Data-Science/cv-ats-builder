@@ -7,7 +7,7 @@ Berkas ini **tidak memuat kata sandi, token, maupun kredensial apa pun.**
 Semua rahasia ada di dashboard Vercel dan di berkas `.env` lokal yang tidak
 ikut masuk ke Git.
 
-Terakhir diperbarui: **5 September 2026** (sesi 15)
+Terakhir diperbarui: **7 September 2026** (sesi 19)
 
 ---
 
@@ -68,6 +68,32 @@ terikat kerahasiaan, dan penanda bahasa orang pertama. Angkanya pun berubah
 bentuk - satu "Skor ATS" digantikan **dua angka**, Kekuatan CV dan Kecocokan
 Lowongan, sebab keduanya mengukur hal yang berbeda.
 
+> **Seluruh paragraf sesi 12 di atas sudah tidak berlaku.** Fitur portofolio
+> dicabut di sesi 15 dan `src/lib/portfolio/` sudah tidak ada; mesin
+> penilaiannya kembali ke lima dimensi dan satu skor. Paragrafnya disimpan
+> sebagai catatan perjalanan - lihat bagian 2 di bawah.
+
+Sesi 16 membereskan bilah atas yang selama ini menjajarkan sepuluh kendali
+dalam satu baris di setiap ukuran layar. Keempat halaman berakun ternyata
+memaksa lebar tata letak menjadi 455 piksel di layar 390 - bukan meluber,
+melainkan peramban ponsel yang melebarkan viewport-nya sendiri lalu
+mengecilkan seluruh halaman. Lacinya kini satu pola untuk semua bilah, dan
+lebar halaman dipegang satu kelas `.wadah`, bukan `max-w-6xl` yang ditulis
+ulang di dua belas tempat.
+
+Sesi 17 mengumpulkan setelan rupa - tema dan bahasa - ke dalam laci, dan
+membuat laci "Atur tampilan CV" dapat ditarik sendiri oleh penggunanya, sebab
+ukuran tetap apa pun selalu salah bagi sebagian orang. Halaman cetak akhirnya
+muat di layar ponsel, pemulihan kata sandi lewat surel menyala, dan folder
+projectnya berganti nama menjadi `D:\Website CV`.
+
+Sesi 18 mengganti kartu contoh di halaman depan menjadi kesepuluh desain yang
+dapat diputar tanpa ujung - dari desain terakhir, "berikutnya" membawa kembali
+ke yang pertama. Bentuknya sempat dicoba dalam empat rupa dan dua di antaranya
+dibatalkan setelah dilihat; urutannya ada di riwayat supaya tidak diulang.
+Panel penyunting juga jadi dapat diatur sendiri: pembatasnya ditarik,
+diciutkan, dan perbesarannya diketik.
+
 Dibangun oleh **Muhammad Agus Riyadh Zaky**, Mahasiswa D3 Teknik Komputer,
 Politeknik Negeri Samarinda.
 
@@ -84,7 +110,7 @@ Politeknik Negeri Samarinda.
 > ### Keadaan sekarang
 >
 > **Uji manual 1-5 sudah selesai seluruhnya dan lulus.** Seluruh pekerjaan
-> sampai sesi 15 **sudah ter-push dan tayang di production** (`212a98b`).
+> sampai sesi 18 **sudah ter-push dan tayang di production** (`4eb96d0`).
 > Tidak ada komit lokal yang menunggu.
 >
 > **Fitur portofolio dan reposisi dua pilar sudah dibatalkan seluruhnya**
@@ -114,7 +140,7 @@ Politeknik Negeri Samarinda.
 | Basis data | Neon Postgres (`neon-cerulean-anchor`), region Singapore, lewat integrasi Storage di Vercel |
 | Folder kode | `D:\Website CV` - **berganti nama pada sesi 17**, dari `D:\Website CV dan Portofolio`. Kata "Portofolio" dibuang karena fiturnya memang sudah dicabut di sesi 15 |
 | Repositori GitHub | <https://github.com/Zaky-Data-Science/cv-ats-builder> - **publik** sejak 3 September 2026, branch `main`, berlisensi MIT |
-| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. Terakhir dipicu `212a98b` (sesi 15) |
+| Deploy otomatis | aktif - setiap `git push` ke `main` memicu deploy sendiri. Terakhir dipicu `4eb96d0` (sesi 18) |
 | Uji manual 1-5 | **selesai dan lulus** (sesi 13) |
 | Nama produk | **CV ATS Builder** - sempat berganti di sesi 14 lalu dikembalikan di sesi 15. Nama repo GitHub dan `name` di package.json memang tidak pernah ikut berganti - itu plumbing |
 | Login Google | **aktif dan sudah diuji** - status OAuth "In production", dapat dipakai akun Google siapa pun |
@@ -124,7 +150,7 @@ Politeknik Negeri Samarinda.
 JavaScript.** Rinciannya ada di `docs/dokumentasi-teknis.md` bagian 6. Angka itu
 berasal dari versi **sebelum** fitur portofolio.
 
-Gerbang kualitas pada `main` saat ini: `npm test` **376 lulus 0 gagal**,
+Gerbang kualitas pada `main` saat ini: `npm test` **378 lulus 0 gagal**,
 typecheck bersih, lint bersih.
 
 ---
@@ -146,9 +172,12 @@ Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
 powershell -ExecutionPolicy Bypass -File "scripts\pasang-tugas.ps1" -Hapus
 ```
 
-Lognya di `logs/` - `dev-24jam.log` untuk pengawasnya, `web.log` dan
-`database.log` untuk keluaran masing-masing. Alamat yang dapat dibuka dari
-ponsel di Wi-Fi yang sama ikut dicatat di log pengawas setiap kali menyala.
+Lognya **bukan** di dalam project melainkan di
+`%LOCALAPPDATA%\cv-ats-builder\logs` - `dev-24jam.log` untuk pengawasnya,
+`web.log` dan `database.log` untuk keluaran masing-masing. Alasan
+pemindahannya ada di kepala `scripts/dev-24jam.ps1`. Alamat yang dapat
+dibuka dari ponsel di Wi-Fi yang sama ikut dicatat di log pengawas setiap
+kali menyala.
 
 Bila ingin menjalankannya dengan tangan:
 
@@ -158,7 +187,7 @@ cd "D:\Website CV"
 npm install          # bila node_modules terhapus
 npm run db:dev       # nyalakan PostgreSQL lokal (catat nomor port-nya)
 npm run dev          # buka http://localhost:3000
-npm test             # 376 pemeriksaan, tidak perlu server maupun basis data
+npm test             # 378 pemeriksaan, tidak perlu server maupun basis data
 ```
 
 Bila basis data lokal kosong (mis. setelah komputer di-restart):
@@ -222,6 +251,39 @@ dasbor, CV tersimpan, dan pengaturan akun.
 > ukuran 2 sampai 8 berhasil seluruhnya. Jadi jangan mengecilkan lumbungnya -
 > yang perlu dinyalakan ulang basis datanya.
 
+> **Kalau SETIAP alamat membalas halaman "Halamannya tidak ada"** - beranda,
+> `/login`, `/coba`, sampai `/api/health` - dan `web.log` mencatat `404` untuk
+> semuanya, itu bukan kode yang hilang. Periksa dulu bahwa `src/app/` memang
+> utuh dan `git status` bersih; kalau ya, yang kehilangan peta rutenya proses
+> dev-nya sendiri. Terjadi di sesi 19, dugaan terkuatnya singgahan Turbopack
+> yang basi setelah folder projectnya berganti nama di sesi 17 - Turbopack
+> menyimpan jalur mutlak.
+>
+> Obatnya menyalakan ulang dengan singgahannya dibuang:
+>
+> ```powershell
+> Stop-ScheduledTask -TaskName "CV ATS Builder - server lokal"
+> # matikan HANYA proses Next - biarkan `npm run db:dev` hidup,
+> # sebab mematikan prisma dev secara paksa meninggalkan lock basi
+> Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
+>   Where-Object { $_.CommandLine -match 'next' -and $_.CommandLine -notmatch 'prisma' } |
+>   ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+> Remove-Item "D:\Website CV\.next" -Recurse -Force
+> Start-ScheduledTask -TaskName "CV ATS Builder - server lokal"
+> ```
+>
+> Kandidat penyebab yang kedua, dan mungkin lebih masuk akal: **`npm run build`
+> dan `npm run dev` sama-sama menulis ke `.next/`.** Build yang dijalankan
+> sementara server dev hidup dapat menimpa manifest rute yang sedang dipakai
+> server itu. Belum terbukti - build sekali dijalankan di sesi 19 justru saat
+> dev hidup, dan servernya tetap menjawab 200 - tetapi bila 404 itu muncul
+> lagi tepat sesudah sebuah build, di sanalah tempat mencari. Yang aman:
+> hentikan dev dulu sebelum build.
+>
+> Yang **bukan** penyebabnya: keterlihatan repositori GitHub. Publik atau
+> privat tidak menyentuh `npm run dev` sama sekali - kode, `node_modules`, dan
+> basis datanya semua di disk lokal.
+
 ### JEBAKAN PALING PENTING
 
 > **Jangan pernah menjalankan `prisma migrate dev` terhadap basis data
@@ -284,12 +346,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | Lokasi | Isi |
 |---|---|
 | `prisma/schema.prisma` | 17 tabel beserta relasinya |
-| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian 6 dimensi untuk CV terstruktur; menghasilkan dua angka terpisah, dan bobotnya bergeser saat portofolio aktif |
-| `src/lib/ats/bukti-karya.ts` | Rubrik P x Q x R untuk dimensi keenam. Pemetaan field ke syarat R dibaca dari penanda `rubrik` di pola-schemas.ts, bukan ditulis di sini |
-| `src/lib/portfolio/pola-schemas.ts` | Registry **bentuk** formulir - lima pola pembuktian plus satu cadangan. Kode perlu tahu isinya |
-| `src/lib/portfolio/kamus-bidang.ts` | Registry **isi** saran - 21 bidang. Kode tidak perlu tahu isinya. Menambah profesi = menambah satu entri di sini, bukan menulis skema baru |
-| `src/lib/portfolio/render.ts` | Item portofolio menjadi bentuk siap cetak. `verifikator` dan `refleksi` sengaja tidak punya tempat di sana, sehingga tidak ada penghasil keluaran yang **dapat** mencetaknya |
-| `src/lib/portfolio/redaksi.ts` | Mode Redaksi. Ada cacat sempit yang diketahui - lihat akhir sesi 12 di riwayat |
+| `src/lib/ats/engine.ts` | **Inti kebaruan project.** Mesin penilaian **lima** dimensi untuk CV terstruktur, menghasilkan **satu** skor 0-100. Bobotnya di `DIMENSION_WEIGHTS`; bila tidak ada deskripsi lowongan, bobot `keywordMatch` dialihkan ke dimensi lain |
 | `src/lib/ats/messages.ts` | Seluruh kalimat keluaran mesin penilaian, dua bahasa. engine.ts tinggal berisi angka dan syarat |
 | `src/lib/ats/document.ts` | Penilai **berkas CV yang diunggah** - menebak strukturnya dari teks. Sengaja terpisah dari engine.ts; alasannya ada di komentar berkasnya |
 | `src/lib/ats/document-messages.ts` | Kalimat kelebihan/kekurangan untuk penilai berkas |
@@ -305,6 +362,7 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/lib/resume/structure.ts` | Menambah/menghapus entri dan poin dari kertas. Terpisah dari edit-path.ts karena mengubah panjang larik, bukan isi untaian |
 | `src/components/editor/DatePopover.tsx` | Pemilih bulan yang muncul di atas periode. Digambar lewat portal ke `<body>` agar tidak ikut mengecil bersama kertas |
 | `src/components/PublicHeader.tsx` | Bilah atas semua halaman publik **dan** laci navigasi ponsel. Satu-satunya penyebab luberan mendatar sebelum sesi 8 |
+| `.wadah` / `.wadah-dokumen` / `.teks-baca` / `.teks-intro` di `globals.css` | Empat lebar yang mengatur seluruh situs. `.wadah` cangkang halaman (1920). `.wadah-dokumen` kolom 1024 di tengah untuk Panduan/Tentang/Alur. `.teks-baca` (768) untuk **tubuh tulisan** - paragraf yang berurutan. `.teks-intro` **tanpa batas** untuk **pengantar bagian** - satu paragraf di bawah judul, yang batas bacaannya justru merugikan. Beda keduanya dijelaskan di aturan 8 `docs/panduan-responsif.md` |
 | `src/styles/ink.css` | Seluruh gerak efek tinta - intro, bercak, jejak, latar. Warnanya satu: `var(--ink)` di globals.css |
 | `src/components/ink/SamuraiIntro.tsx` | Markup intro pembuka - komponen server tanpa satu pun hook, dikirim bersama HTML. Siluetnya SVG sebaris, bukan berkas gambar |
 | `src/components/ink/InkBackground.tsx` | Jaring partikel di kanvas - titik beserta garis penghubung. `absolute`, milik panel hero, bukan menutupi halaman |
@@ -343,9 +401,10 @@ data production selalu mengikuti berkas migrasi tanpa langkah manual.
 | `src/components/editor/ResumeEditor.tsx` | Editor, simpan otomatis, tata letak responsif |
 | `src/app/privasi/` dan `src/app/ketentuan/` | Kebijakan privasi dan ketentuan layanan - disyaratkan Google untuk mempublikasikan aplikasi OAuth |
 | `src/proxy.ts` | Pengalihan awal halaman terlindungi (hanya kenyamanan, bukan lapisan keamanan). Dulu bernama `src/middleware.ts`; Next 16 mengganti nama konvensinya |
-| `docs/panduan-responsif.md` | **Sembilan aturan tetap untuk tampilan yang menyesuaikan layar.** Ditulis dari kejadian nyata di project ini, dan mengatur setiap perubahan tata letak - bukan selera. Baca sebelum menyentuh tata letak apa pun |
+| `docs/panduan-responsif.md` | **Sepuluh aturan tetap untuk tampilan yang menyesuaikan layar.** Ditulis dari kejadian nyata di project ini, dan mengatur setiap perubahan tata letak - bukan selera. Baca sebelum menyentuh tata letak apa pun |
 | `src/components/nav-drawer.tsx` | **Satu-satunya pola laci** di project ini. Dipakai bersama `PublicHeader` dan `AppHeader`; membuat pola kedua melanggar aturan 6 panduan itu, dan dijaga `tests/responsif.test.ts` |
 | `src/components/AppHeader.tsx` | Bilah atas empat halaman berakun. Bentuk ringkas di `/resume/...` - alasannya di kepala berkasnya |
+| `src/app/coba/GuestHeader.tsx` | Bilah atas jalur tanpa akun. Bilah ketiga yang memakai `nav-drawer.tsx` yang sama; tingginya terkunci `h-14` sebab penyunting di bawahnya memakai `calc(100dvh - 3.5rem)` |
 | `src/lib/resume/pembagi-panel.ts` | Pembagian dua panel penyunting: dapat ditarik, dapat diciutkan, tersimpan per perangkat. Juga alasan susunannya `flex` dan bukan `grid` |
 | `src/lib/resume/ukuran-laci.ts` | Tinggi lembar bawah dan lebar laci "Tampilan CV" yang dapat ditarik |
 | `src/components/home/HeroTemplateCarousel.tsx` | Kartu CV di hero - kesepuluh desain, digeser dengan gulir sungguhan. Perpindahan otomatisnya berhenti permanen begitu disentuh |
@@ -652,7 +711,7 @@ Cukup sampaikan hal-hal ini:
 
 > Project di `D:\Website CV`. Baca `memori claude/MULAI-DI-SINI.md` lebih dulu,
 > lalu `docs/dokumentasi-teknis.md`. **Kalau yang dikerjakan menyentuh tata
-> letak, baca juga `docs/panduan-responsif.md` - sembilan aturan tetap yang
+> letak, baca juga `docs/panduan-responsif.md` - sepuluh aturan tetap yang
 > mengatur pekerjaan itu, dan cara mengujinya di tiga lebar.** Sudah tayang di
 > cv-ats-builder-henna.vercel.app. Jangan jalankan `prisma migrate dev` di
 > basis data lokal, dan jangan menjalankan `npx prettier` - prettier bukan

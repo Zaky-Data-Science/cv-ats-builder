@@ -146,10 +146,40 @@ merusak keduanya.
 diubah di satu tempat. Batasnya 1920px dengan jarak tepi yang ikut mengecil di
 layar sempit: 16px di bawah 640, lalu 24, 32, dan 48.
 
-**Tulisan** tidak ikut. Kalimat yang membentang 1900px membuat mata kehilangan
-barisnya saat kembali ke kiri; batas nyaman sekitar 65-75 karakter. Paragraf
-karena itu tetap memakai `max-w-2xl`/`max-w-3xl`, atau `.teks-baca` bila
-sebelumnya tidak punya batas sama sekali.
+**Tubuh tulisan** tidak ikut. Kalimat yang membentang 1900px membuat mata
+kehilangan barisnya saat kembali ke kiri; batas nyaman sekitar 65-75 karakter.
+Paragraf yang berurutan karena itu tetap memakai `max-w-2xl`/`max-w-3xl`, atau
+`.teks-baca` bila sebelumnya tidak punya batas sama sekali.
+
+**Pengantar bagian adalah pengecualiannya, dan alasannya bukan selera.** Yang
+melelahkan pada baris panjang bukan panjangnya melainkan *sapuan balik* - mata
+harus menemukan awal baris berikutnya, berulang kali. Satu paragraf pendek di
+bawah judul bagian tidak punya sapuan balik sama sekali begitu ia muat dalam
+satu baris, sehingga batas 65-75 karakter tidak berlaku di sana.
+
+Yang berlaku justru sebaliknya. Diukur pada 1920 sebelum diperbaiki: pengantar
+tiap bagian berhenti di 672px di dalam wadah 1809px, pecah menjadi dua sampai
+lima baris, dan terbaca menumpuk di bawah judul yang membentang hampir selebar
+halaman - dengan lebih dari seribu piksel kosong di sebelahnya. Dilaporkan zaky
+dengan tujuh tangkapan layar: *"teks dibawah bisa nyambung aja kesamping"*.
+
+Pengantar bagian karena itu memakai **`.teks-intro`**, yang melepas batasnya
+dan menyerahkannya pada `.wadah`. Hasilnya diukur di lima lebar:
+
+| Lebar | Pengantar bagian, sebelum | Sesudah |
+|---|---|---|
+| 390 | 343px, tidak berubah | 343px, **tidak berubah** |
+| 768 | 672px / 2 baris | 705px / 2 baris |
+| 1024 | 672px / 2 baris | 945px / 1-2 baris |
+| 1280 | 672px / 2 baris | 1201px / **1 baris** |
+| 1920 | 672px / 2 baris | 1809px / **1 baris** |
+
+Di ponsel tidak ada satu piksel pun yang bergeser - wadahnya memang sudah lebih
+sempit daripada batas yang dilepas itu.
+
+Garis pemisahnya begini: **paragraf yang berurutan `.teks-baca`, paragraf
+tunggal di bawah judul `.teks-intro`.** Kalau ragu, hitung barisnya pada 1920 -
+kalau lebih dari tiga, ia tubuh tulisan, bukan pengantar.
 
 Halaman yang seluruh isinya tulisan tidak memakai `.wadah`, dan itu bukan
 kelalaian. Ada dua bentuk lain:
@@ -205,6 +235,107 @@ memastikan susunannya tidak bergantung pada lebar yang dilaporkan saja, dan
 menerima bahwa hasilnya tetap rapat.
 
 ---
+
+## 10. Ada layar yang habis ke bawah, bukan ke samping
+
+Aturan 1-8 di atas seluruhnya bicara soal **lebar**. Itu cukup selama yang
+dikhawatirkan luberan mendatar - tetapi ada satu golongan halaman yang justru
+kehabisan ruang ke **bawah**, dan pada golongan itu titik pindah lebar tidak
+menjawab apa pun.
+
+Hero halaman depan contohnya. Ia dituntut muat dalam satu pandang: bilah atas,
+judul, penjelasan, tombol, statistik, dan pratinjau CV sekaligus, tanpa
+menggulir. Yang menentukan tuntutan itu terpenuhi atau tidak bukan lebar layar
+melainkan tingginya - dan tinggi laptop nyata jauh lebih beragam daripada yang
+biasa dibayangkan:
+
+| Layar | Tinggi | Sisa sesudah bilah 65px |
+|---|---:|---:|
+| 1920x1080 | 1080 | 1015 |
+| 1600x900 | 900 | 835 |
+| 1440x900 | 900 | 835 |
+| 1366x768 | 768 | 703 |
+| 1280x720 | 720 | 655 |
+
+Selisih antara yang terlapang dan yang tersempit **360 piksel** - lebih dari
+separuh tinggi kertas CV di dalamnya. Satu ukuran tetap yang pas di 1080 pasti
+meleset di 720.
+
+Diukur sebelum diperbaiki, dengan jarak tepi tetap `pt-20 pb-24`:
+
+```
+1920x1080  hero 880  -> muat
+1600x900   hero 880  -> LEBIH 45 piksel
+1440x900   hero 790  -> muat
+1366x768   hero 790  -> LEBIH 87 piksel
+1280x720   hero 790  -> LEBIH 135 piksel
+1024x768   hero 823  -> LEBIH 120 piksel
+```
+
+Perhatikan 1440 muat sementara 1366 dan 1600 tidak. Urutannya tidak menurut
+lebar sama sekali - itu tanda paling jelas bahwa yang salah bukan titik pindah
+lebarnya.
+
+### Yang dipakai
+
+**`svh`, bukan `vh`.** Di peramban ponsel `100vh` menghitung layar seolah bilah
+alamatnya sudah tersembunyi, sehingga hero yang "pas satu layar" justru
+terpotong selama bilah itu masih terlihat. `svh` memakai ukuran terkecil - yang
+berarti selalu muat, bukan kadang-kadang.
+
+**Tinggi bilah atas sebagai variabel.** `--tinggi-bilah` di `globals.css`,
+berikut satu piksel garis bawahnya. Tanpa piksel itu hero meleset persis satu
+piksel, dan satu piksel sudah cukup memunculkan batang gulir.
+
+**Media query `min-height` untuk yang tidak dapat dihitung `clamp()`.** Skala
+kertas CV di hero perlu berupa angka tanpa satuan, sementara CSS tidak dapat
+membagi satu panjang dengan panjang lain - jadi ia tidak mungkin diturunkan
+dari `svh`. Yang dipakai tangga bertingkat:
+
+```css
+@media (min-width: 64rem) { .kertas-hero { --doc-scale: 0.42; } }
+@media (min-width: 64rem) and (min-height: 47.5rem) { --doc-scale: 0.46 }
+@media (min-width: 64rem) and (min-height: 53.75rem) { --doc-scale: 0.52 }
+@media (min-width: 64rem) and (min-height: 62.5rem) { --doc-scale: 0.56 }
+```
+
+Tangga seperti ini justru lebih dapat diuji daripada rumus: tiap anak tangga
+punya angka yang bisa dibuktikan pada viewport tertentu.
+
+**Batas bawah yang menyerah.** `min-height: max(600px, calc(100svh - bilah))`.
+Pada jendela yang sangat pendek, memaksa hero mengikuti tinggi layar akan
+meremas isinya sampai berhimpitan. Di bawah 600 piksel ia berhenti menyusut dan
+halamannya boleh digulir - **menggulir sedikit lebih baik daripada isi yang
+bertumpuk.**
+
+### Batasnya
+
+Satu layar dikejar mulai `lg` saja. Di ponsel dan tablet portrait, memaksa
+seluruh hero masuk satu layar menuntut pengecilan yang merusak keterbacaan; di
+sana yang dikejar **urutan prioritas** - apa yang terlihat lebih dulu - bukan
+semuanya sekaligus.
+
+> Sebelum menambah `padding` atau `margin` tegak yang besar pada bagian yang
+> dituntut muat satu layar, tanyakan dulu: pada 1280x720 masih tersisa berapa?
+> Jarak tetap 176 piksel terdengar wajar sampai diingat bahwa seluruh ruang
+> yang ada cuma 655.
+
+## Daftar viewport yang diuji
+
+Lebar saja tidak cukup sejak aturan 10 - tingginya ikut menentukan. Dua belas
+pasang ini yang dipakai:
+
+| Golongan | Ukuran |
+|---|---|
+| Desktop | 1920x1080, 1600x900 |
+| Laptop | 1440x900, 1366x768, 1280x720 |
+| Tablet | 1024x768, 768x1024, 820x1180 |
+| Ponsel | 430x932, 414x896, 390x844, 375x812 |
+
+`scripts/` tidak memuat alatnya - pengukurannya dilakukan lewat Chrome
+sungguhan (DevTools Protocol) dan skripnya sekali pakai. Yang penting bukan
+alatnya melainkan bahwa angkanya **diukur**, bukan ditaksir dari tangkapan
+layar.
 
 ## Daftar periksa singkat
 

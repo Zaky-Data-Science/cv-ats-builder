@@ -2683,25 +2683,847 @@ Gerbang kualitas: `npm test` 367 lulus 0 gagal, typecheck bersih, lint bersih.
 
 ---
 
+## Sesi 16 - 6 September 2026: bilah atas memakai pola laci, dan satu wadah untuk seluruh halaman
+
+### Tanggal yang dirangkai dua lingkungan berbeda
+
+`fe27d1d`. Setiap pemuatan `/admin` melempar galat hidrasi ke konsol tanpa
+satu pun gejala di layar. Penyebabnya satu argumen:
+
+```
+new Date(iso).toLocaleDateString(undefined, { ... })
+```
+
+`undefined` berarti "pakai bawaan lingkungan", dan lingkungannya ada dua. Node
+merangkai "4 Sept 2026", peramban merangkai "Sep 4, 2026", React mendapati
+keduanya berbeda lalu membuang seluruh pohon itu dan menggambarnya ulang di
+peramban. Ditemukan sambil memotret keempat halaman aplikasi pada empat lebar:
+empat pemuatan halaman, empat galat.
+
+Kodenya kini menyebut bahasanya tegas dan mengikuti bahasa yang sedang dipilih
+pengguna. Dua sisi jadi tidak mungkin berbeda, dan tanggalnya sekalian ikut
+berganti bersama sakelar bahasa seperti seluruh teks lain.
+
+### Tidak meluber, tetapi juga tidak muat
+
+`da69b18`. Bilah atas empat halaman berakun - dasbor, penyunting, pengaturan,
+panel pengelola - menjajarkan sepuluh kendali dalam satu baris pada setiap
+ukuran layar. Dilaporkan pecah di ponsel.
+
+Yang terukur di layar 390 piksel: keempat halaman memaksa lebar tata letak
+menjadi **455 piksel**. Bukan meluber - `scrollWidth` sama persis dengan
+`innerWidth`, sehingga pengukuran luberan mendatar menjawab TIDAK ADA. Yang
+terjadi peramban ponsel melebarkan viewport-nya sendiri ketika isi halaman
+tidak muat, lalu mengecilkan seluruh halaman supaya tetap terlihat.
+
+Pengukurannya karena itu diubah: `screen.width` dibandingkan `innerWidth`,
+bukan `scrollWidth` dengan `innerWidth`. Yang kedua tidak akan pernah
+menangkap pelebaran itu.
+
+Urutan siapa yang hilang duluan ditentukan lebih dulu, bukan ditemukan sambil
+jalan:
+
+```
+Wajib terlihat : logo, lencana pengelola, sakelar tema, tombol menu
+Penting        : nama aplikasi, Beranda, Panel pengelola
+Masuk laci     : bahasa, nama, alamat surel, Pengaturan, Ganti akun, Keluar
+```
+
+Lencana pengelola tetap di bilah pada kedua ukuran layar: penanda yang
+tersembunyi membuat penggunanya tidak tahu ia sedang masuk sebagai siapa.
+Alamat surel tidak hilang melainkan pindah, sebab dua akun Google dapat
+bernama sama persis sementara alamatnya selalu berbeda.
+
+Mekanisme lacinya **tidak ditulis ulang**. Ia dipindahkan keluar dari
+`PublicHeader.tsx` ke `components/nav-drawer.tsx` dan dipakai kedua bilah.
+Satu hal ditambahkan sekalian: fokus pulang ke tombol pembukanya saat laci
+ditutup. Sebelumnya fokus jatuh ke `<body>`, dan Tab berikutnya memulai lagi
+dari awal halaman.
+
+Di `/resume/...` bilah aplikasi menyusut menjadi identitas + tema + satu
+tombol menu pada lebar berapa pun. Penggunanya sedang mengerjakan satu
+dokumen, bukan menavigasi, dan bilah penyunting di bawahnya sudah menuntut
+sudut kanan atas yang sama.
+
+Sasaran sentuh: sakelar tema (36 piksel), pemilih bahasa (36), panah kembali
+(32), dan tautan logo (28) seluruhnya di bawah 44 yang dituntut jari.
+Keempatnya kini memakai `tap-target`, yang menambah daerah tangkap hanya pada
+`pointer: coarse` tanpa mengubah satu piksel pun yang terlihat.
+
+`tests/responsif.test.ts` lahir di sini. Ia memindai berkas sumber - seperti
+`markup.test.ts`, dan karena alasan yang sama: gejalanya tidak pernah muncul
+sebagai galat.
+
+Butir 10 daftar tertunda ikut ditutup: laci "Tampilan CV" di lembar bawah
+ponsel diperiksa, tingginya 429 dari 780 piksel, kertasnya tetap terlihat di
+atasnya, dan ia memang bukan modal.
+
+### Situs yang takut memakai layarnya sendiri
+
+`beaea2b`. Diukur pada 1920: logo di bilah atas duduk 404 piksel dari tepi,
+isi halaman 432. Yang tersisa di tengah cuma 1152 piksel - lebar `max-w-6xl`
+yang ditulis ulang beserta padding-nya di **dua belas tempat**, sehingga tidak
+pernah dapat diubah sekaligus.
+
+Kedua belas tempat itu kini memakai satu kelas `.wadah` di `globals.css`.
+Batasnya 1920px, jarak tepinya 16 / 24 / 32 / 48 piksel menurut lebar layar.
+Tata letak ponsel tidak bergeser satu piksel pun, sebab 16 piksel di bawah 640
+sama persis dengan sebelumnya.
+
+Satu jebakan yang membuat angkanya meleset dan pantas dicatat: **padding
+berada di dalam batas lebar**. Percobaan pertama memakai batas 1792 dengan
+harapan menghasilkan 64 piksel; yang keluar 112, sebab 64 piksel sisa
+pembagian itu masih ditambah 48 piksel padding-nya sendiri.
+
+Halaman Panduan, Tentang, dan Alur sempat ikut dilebarkan lalu
+**dikembalikan** setelah dilihat hasilnya pada 1920. Sebabnya bukan lebar
+tulisannya melainkan isi yang berukuran tetap: diagram alurnya digambar pada
+lebar tertentu, jadi melebarkan wadahnya tidak membuat diagramnya ikut besar -
+yang bertambah hanya ruang kosong. Wadah lebar hanya berguna bagi isi yang
+memang ikut melar.
+
+Empat temuan yang dicatat sesi sebelumnya ikut ditutup di komit yang sama:
+
+1. **Spanduk mode tamu di `/coba` pecah di 390.** Kalimatnya terjepit jadi
+   kolom sekitar 110 piksel sementara kedua tombolnya tetap utuh. Penyebabnya
+   `flex-wrap` yang tidak pernah membungkus - ia baru memindahkan sesuatu ke
+   baris berikutnya bila lebar terkecilnya tidak muat, sedangkan kalimatnya
+   memakai `min-w-0` sehingga lebar terkecilnya nol. Yang terjepit justru
+   peringatan "datamu bisa hilang". Terukur sesudahnya: 341 piksel dalam 5
+   baris.
+2. **Bilah atas `/coba` tidak punya laci sama sekali** - satu-satunya bilah
+   yang begitu. Kini memakai `nav-drawer.tsx` yang sama, bukan pola ketiga.
+3. **`ActionsMenu` di penyunting** menulis sendiri perilaku buka-tutupnya, dan
+   fokus tidak pulang ke tombol "...". Kini memakai `useMenuLipat()`.
+4. **Titik pindah `xs` (416px) dipertahankan**, dan ditulis ke tabel aturan 2
+   panduan responsif - bukan dihapus. Ia bukan angka dari daftar perangkat
+   melainkan titik yang dicari: 416 adalah lebar ketika ketiga label di bilah
+   pratinjau berhenti muat.
+
+`docs/panduan-responsif.md` lahir di sesi ini dan bertambah aturan 8
+("Cangkang boleh melebar, tulisan tidak").
+
+Gerbang kualitas: typecheck bersih, lint bersih, 376 uji lulus. Empat halaman
+x empat lebar x dua bahasa diperiksa dengan melihat gambarnya, bukan hanya
+mengukur; 0 galat JavaScript.
+
+---
+
+## Sesi 17 - 6 September 2026: setelan rupa berkumpul, laci yang dapat ditarik, dan folder yang berganti nama
+
+### Sakelar tema pindah ke dalam laci - untuk kedua kalinya
+
+`3067fe9`. Urutannya pantas dicatat karena ia sudah bolak-balik. Sesi 8
+memindahkannya ke dalam laci lalu **mengeluarkannya lagi** karena dilaporkan
+"di alamat ini gk ada temanya" - ia tenggelam di antara tautan halaman.
+
+Sekarang ia kembali ke laci atas permintaan zaky, tetapi bukan ke tempat yang
+dulu: ia berdiri di kelompok "Tampilan" bersama pilihan bahasa. Konsekuensinya
+diketahui dan diterima - mengganti tema di ponsel kini menuntut dua ketukan.
+Yang ditukar dengannya bilah atas yang benar-benar bersih.
+
+### Ukuran yang tepat bukan angka yang lebih baik, melainkan angka yang dapat diubah
+
+Laci "Atur tampilan CV" punya ukuran tetap - 55% tinggi layar di ponsel, 22rem
+di layar lebar - dan itu kompromi yang tidak pernah pas: terlalu pendek saat
+mengatur jarak tepi, terlalu tinggi saat hanya ingin mengintip kertas yang
+berubah di belakangnya.
+
+Lembar bawah kini ditarik naik-turun lewat pegangan di tepi atasnya (28%-92%),
+dan laci kiri ditarik melebar lewat tepi kanannya (18-34rem). Keduanya juga
+menerima panah papan ketik - menarik menuntut tangan yang mantap, dan papan
+ketik tidak punya cara lain sama sekali kalau tidak disediakan. Pilihannya
+tersimpan **per perangkat**, bukan per akun (`src/lib/resume/ukuran-laci.ts`):
+yang menentukan senyaman apa memandangnya adalah layarnya.
+
+Dibuktikan dengan menarik sungguhan lewat DevTools Protocol, bukan dengan
+memanggil fungsinya: 429 -> 593 piksel di ponsel, 352 -> 488 piksel di laptop,
+dan panah bawah mengembalikannya 593 -> 554.
+
+Menu "..." ikut dibetulkan. Delapan butir berketerangan lebih tinggi daripada
+layar ponsel, dan butir terakhir jatuh di bawah tepi bawah tanpa dapat
+dijangkau sama sekali. Batasnya kini `100dvh` dikurangi tinggi kedua bilah di
+atasnya.
+
+### Halaman cetak yang muat di layar ponsel
+
+Kertas dirender pada ukuran fisiknya - 210mm, sekitar 794 piksel - dan di
+ponsel 390 piksel itu membuat peramban melebarkan viewport-nya sendiri lalu
+mengecilkan seluruh halaman, termasuk bilah alatnya.
+
+`PrintPaper` menyusutkannya dengan `zoom`, **bukan** `transform: scale()` -
+yang kedua hanya menggambar ulang, jadi luberannya tidak hilang dan di bawah
+kertas tersisa ruang kosong yang harus ditambal dengan mengukur terus-menerus.
+
+Satu jebakan yang membuat percobaan pertama gagal: penyusutannya **tidak boleh
+dihitung dari `innerWidth`**. Nilai itu sudah terlanjur melar bersama
+viewport, jadi hasilnya berputar - terukur skala 0,71 pada layar 390, yang
+berarti kertasnya masih 560 piksel. Yang dipakai
+`Math.min(innerWidth, screen.width)`; `screen.width` tidak ikut melar. Lebar
+tata letak kembali 390 dan skalanya 0,45.
+
+Hasil cetaknya sendiri tidak tersentuh: `zoom` dilepas kembali menjadi 1 di
+dalam `@media print`. PDF 210mm adalah satu-satunya hal yang benar-benar
+penting dari halaman itu.
+
+### Brevo menyala
+
+Pemulihan kata sandi lewat surel akhirnya hidup - zaky mengisi sendiri
+`BREVO_API_KEY` dan `MAIL_FROM` di Vercel. Butir 1 dan 9 daftar tertunda
+ditutup. Seluruh alurnya memang sudah terpasang sejak sesi 10; yang kurang
+hanya kuncinya.
+
+### Folder project berganti nama
+
+`0d94346`. `D:\Website CV dan Portofolio` menjadi **`D:\Website CV`**. "dan
+Portofolio" dibuang karena fiturnya memang sudah dicabut di sesi 15 dan nama
+produknya pun sudah kembali menjadi CV ATS Builder.
+
+Yang ikut terdampak: **Scheduled Task Windows menyimpan jalur mutlak**, jadi
+ia menunjuk ke folder yang sudah tidak ada dan harus didaftarkan ulang dari
+lokasi baru. Namanya sekaligus kembali bersih - `scripts/pasang-tugas.ps1`
+sejak dulu memang menulis "CV ATS Builder - server lokal", dan yang bernama
+"CV ATS & Portofolio Builder" cuma sisa pendaftaran sesi 14.
+
+Skripnya sendiri tidak perlu diubah sama sekali: `pasang-tugas.ps1` dan
+`dev-24jam.ps1` memakai `$PSScriptRoot`, bukan jalur yang ditulis tangan.
+
+Satu hal yang **tidak** terpikir di sini dan baru terasa akibatnya di sesi 19:
+singgahan Turbopack di `.next` menyimpan jalur mutlak juga, dan ia tidak ikut
+dibersihkan.
+
+Gerbang kualitas: typecheck bersih, lint bersih, 376 uji lulus, build hijau.
+
+---
+
+## Sesi 18 - 6 September 2026: kartu hero yang berputar, dan penyunting yang dapat diatur sendiri
+
+### Satu keputusan sesi lalu yang dibatalkan
+
+`1077a3d`. Sesi 17 mengubah Panduan, Tentang, dan Alur dari kolom di tengah
+menjadi kolom 1024px yang **rata kiri**. Zaky melihat hasilnya dan menolaknya:
+isinya terbaca "numpuk di kiri". `.wadah-dokumen` karena itu kembali
+`margin-inline: auto`.
+
+Alasan teknis yang mendasari rata kiri memang benar, dan dengan pembatalan ini
+ia hilang lagi: pada 1920 judul halaman kembali duduk 448px dari tepi
+sementara logo di bilah atas duduk 48px. Itu dicatat apa adanya di komentar
+kelasnya sebagai konsekuensi yang **diterima** - bukan dipakai untuk
+membatalkan keputusan zaky.
+
+Riwayat kedua percobaan yang ditolak - wadah penuh 1920px dan kolom rata kiri
+- ditulis berdampingan di panduan responsif, supaya sesi berikutnya tidak
+mencobanya untuk ketiga kalinya.
+
+Yang tetap dipertahankan: diagram melar sedikit, dari 576px ke 672px mulai
+`lg`. Dinaikkan lebarnya saja, bukan letaknya, sehingga garis penyambung tegak
+di tengahnya tetap menyambung.
+
+### Titik pusat pergantian tema yang meleset
+
+Dilaporkan meleset sedikit ke atas dari ikon bulan/mataharinya. Pembaginya
+`innerWidth`/`innerHeight`, yang masih menghitung lebar batang gulir sedangkan
+kotak tempat `clip-path` itu diukur tidak. Selisihnya cuma sekitar 15 piksel,
+tetapi dibagi lalu dikalikan seratus ia menggeser titiknya beberapa piksel.
+Diganti `documentElement.clientWidth`/`clientHeight` - viewport tata letak
+tanpa batang gulir, kotak yang sama dengan yang dipotong.
+
+### Pembagian panel yang dapat diatur dan diciutkan
+
+Diminta begini: *"terserah orang mau pake field aja fokusnya atau 2 2 nya atau
+langsung di kertas"*. Pembatasnya kini dapat ditarik (22%-78%), ketukan ganda
+mengembalikannya ke bawaan, panah kiri/kanan menggesernya lewat papan ketik,
+dan dua tombol di tengahnya menciutkan salah satu panel
+(`src/lib/resume/pembagi-panel.ts`). Pembatasnya tetap ada meski satu panel
+sedang diciutkan - ia satu-satunya jalan kembali.
+
+Sekaligus menutup cacat yang dilaporkan terpisah: pada perbesaran 140% kotak
+isian di kiri menyempit sampai teksnya terpotong, "Frontend Develo|". Sebabnya
+kolom `1fr` pada grid berarti "sisa ruang, **tetapi tidak lebih kecil daripada
+isinya**", sehingga kertas yang membesar mendesak kolom formulir sampai batas
+360px-nya. Susunannya diganti `flex` dengan lebar formulir yang ditulis tegas
+dan panel kertas ber-`min-w-0`. Terukur: lebar formulir tetap 605px pada 75%
+maupun 140%.
+
+Satu jebakan yang sempat membalik arah seretan: **wadahnya harus dicari lewat
+penanda, bukan `parentElement`**. Pegangan itu duduk di dalam pembungkus
+selebar sepuluh piksel, jadi `parentElement` menunjuk pembungkus itu dan
+persennya dihitung terhadap sepuluh piksel. Gejalanya terbalik - menyeret ke
+kanan justru menyempitkan formulir.
+
+Perbesaran ikut jadi kotak isian: ketik, Enter, selesai. Angka di luar batas
+dijepit, bukan ditolak - yang mengetik "500" jelas ingin sebesar-besarnya.
+
+### Kartu hero: empat bentuk dicoba, dua ditolak
+
+Ini bagian yang paling banyak bolak-balik dalam satu sesi, dan urutannya
+penting supaya tidak diulang.
+
+**`e5869f2` - sepuluh desain, digeser kiri-kanan.** Sebelumnya satu contoh
+saja sementara kesembilan lainnya baru terlihat di galeri jauh di bawah.
+Diminta begini: *"gk semua mau baca sampe bawah dan liat templatenya"*.
+Slide-nya berpindah lewat `overflow-x: auto` + `scroll-snap`, bukan
+`transform` yang dihitung sendiri - yang didapat cuma-cuma karenanya sapuan
+jari beserta momentumnya, gulir mendatar dengan roda dan trackpad, papan
+ketik, dan pembaca layar. Biayanya diukur, bukan diperkirakan: sepuluh dokumen
+tambahan menambah 52 KB HTML mentah tetapi hanya **3,6 KB** setelah
+dikompresi. `TiltCard` dilepas dari kartu itu - kemiringan yang mengikuti
+kursor dan jalur yang digeser jari sama-sama bereaksi terhadap gerak penunjuk
+yang sama.
+
+**`8c426d7` - celah di tengah hero, dan arah yang berbalik.** Diukur pada
+1920: tulisan di kiri berakhir di 874 piksel sementara kartu baru mulai di
+1412 - celah kosong 538 piksel tepat di tengah. Isinya dibatasi 94rem dan
+dipusatkan, dan kolom kanan berubah dari `0.98fr` menjadi `auto`. Sesudahnya
+celah itu 218 piksel. Perpindahan otomatisnya juga berubah dari berhenti
+**permanen** pada sentuhan pertama menjadi berhenti **sepuluh detik**: sekali
+sentuh tidak berarti pengunjung ingin ia diam untuk seterusnya.
+
+**`5055a98` - tiga kartu, tepinya buram.** Jalur gulir diganti transform
+dengan jarak melingkar, sebab jalur gulir punya **ujung**: di kartu terakhir
+tidak ada lagi yang bisa dituju. Tetangga kiri-kanan tampil lebih kecil (0,72)
+dan buram (3px).
+
+**`3bf36aa` - tiga kartu buram dibatalkan.** Dilihat lalu ditolak, hasilnya
+dinilai jelek: tetangga yang diperkecil dan diburamkan tidak jadi mengisi
+ruang kosong melainkan meramaikannya. Kembali satu kartu.
+
+Yang **dipertahankan** dari percobaan yang dibatalkan itu mekanismenya:
+putaran melingkar. Diminta terpisah - sampai di kartu terakhir pun harus tetap
+dapat lanjut ke kartu pertama, sebab tidak bisa kembali ke awal itu *"jelek gk
+fleksibel"*. Batas hero turun lagi dari 94rem ke 88rem, dan celah di tengah
+menjadi **122 piksel**: 538 sebelum dibatasi sama sekali, 218 pada 94rem, 122
+sekarang.
+
+### Kelas yang menang atas utilitas, hanya di perangkat sentuh
+
+`299638a`. Dilaporkan dari HP: kedua tombol panah jatuh di bawah kartu,
+bertumpuk di pojok kiri. Di komputer semuanya terlihat benar - dan itu justru
+yang membuatnya lolos sampai sekarang.
+
+Penyebabnya kelas `tap-target` sendiri. Ia menyetel `position: relative`, dan
+**hanya** di bawah `@media (pointer: coarse)`. Karena ia kelas biasa di luar
+layer Tailwind, ia menang atas utilitas `absolute` - jadi di perangkat sentuh
+kedua tombol itu kembali ke aliran normal, sementara di perangkat berkursor
+`absolute`-nya tetap berlaku.
+
+Obatnya bukan `!important` melainkan memindahkan letaknya: tombolnya dibungkus
+elemen yang menangani posisi, dan tombolnya sendiri dibiarkan statis sehingga
+`tap-target` bekerja apa adanya. Jebakan ini ditulis di komentar `.tap-target`,
+sebab ia berlaku bagi **setiap** elemen absolut yang diberi kelas itu.
+
+`4eb96d0` menutup akibat sampingannya: panah yang kini di dalam bingkai kartu
+mendarat tepat di atas tulisan CV-nya dan menutupi bagian PENDIDIKAN. Keduanya
+sekarang menunggangi tepi kartu - hanya 18 piksel yang masuk, dan 18 piksel
+itu jatuh di jarak tepi kertas, tempat memang tidak ada tulisan.
+
+Gerbang kualitas: typecheck bersih, lint bersih, 376 uji lulus, build hijau.
+Sebelas halaman publik disapu pada 390/768/1280 tanpa luberan, 0 galat
+JavaScript.
+
+---
+
+## Sesi 19 - 7 September 2026: server lokal yang membalas 404, catatan yang tertinggal tiga sesi, dan hero yang akhirnya muat satu layar
+
+### Gejalanya: bukan galat, melainkan "Halamannya tidak ada"
+
+Dilaporkan begini: *"localnya gk jalan kenapa apa gara gara aku sempat privat
+repositorynya di github dan sekarang sudah aku publick kok"*.
+
+Dugaan itu keliru, dan pantas dicatat sebabnya. **Keterlihatan repositori
+GitHub tidak menyentuh `npm run dev` sama sekali** - kode, `node_modules`, dan
+basis datanya seluruhnya di disk lokal. Git baru berperan kalau repositorinya
+di-`clone` ulang atau Vercel yang menariknya. Dibuktikan sebelum menyentuh apa
+pun: `git status` bersih dan `origin/main` sama persis dengan lokal, 0 komit
+selisih di kedua arah.
+
+Yang sebenarnya terjadi: proses `next dev` yang menyala sejak pagi membalas
+**404 untuk setiap alamat** - `/`, `/login`, `/coba`, `/bandingkan`, bahkan
+`/api/health`. Yang tampil di layar halaman "Halamannya tidak ada" milik
+aplikasi sendiri, jadi ia tidak terbaca sebagai kerusakan.
+
+```
+GET / 404 in 6.5s
+GET /login 404 in 565ms
+GET /coba 404 in 289ms
+```
+
+Padahal `src/app/` utuh - `page.tsx`, `not-found.tsx`, dan kedua puluh route
+lainnya ada di tempatnya, dan `proxy.ts` hanya memasang `matcher` pada tiga
+jalur berakun. Bukan kodenya yang hilang; proses dev-nya yang kehilangan peta
+rutenya.
+
+### Yang dikerjakan, dan apa yang sebenarnya terbukti
+
+Scheduled Task dihentikan, ketiga proses Next dimatikan, `.next` dihapus,
+server dinyalakan ulang, lalu dikembalikan ke Scheduled Task supaya tetap
+hidup. Sesudahnya `/`, `/login`, `/coba`, dan `/bandingkan` seluruhnya 200.
+
+**Basis data sengaja tidak disentuh.** `npm run db:dev` dibiarkan hidup persis
+karena jebakan yang sudah tercatat: mematikan `prisma dev` secara paksa
+meninggalkan lock basi, dan memulihkannya menuntut menghapus berkas di sebelah
+data yang sesungguhnya.
+
+Sebab persisnya **tidak terbukti**, dan itu ditulis apa adanya: dugaan
+terkuatnya singgahan Turbopack di `.next` yang basi setelah folder projectnya
+berganti nama di sesi 17 - Turbopack menyimpan jalur mutlak - tetapi
+menghapus `.next` dan menyalakan ulang dilakukan bersamaan, sehingga tidak
+dapat dipisahkan mana yang menyembuhkan. Prosesnya sudah mati sebelum
+pertanyaan itu terpikir.
+
+Yang terbukti sehat sesudahnya, satu per satu:
+
+| Pemeriksaan | Hasil |
+|---|---|
+| `/`, `/login`, `/coba`, `/bandingkan` | 200 seluruhnya |
+| Postgres lokal + migrasi | tersambung, "Database schema is up to date" |
+| Masuk akun demo lalu `/dashboard` | 302, sesi terbaca `Pengguna Demo`, dasbor 200 |
+| `npm test` | 376 lulus, 0 gagal |
+
+Jalur basis datanya sengaja dibuktikan lewat login sungguhan sampai dasbor,
+bukan lewat beranda: beranda tetap terbuka meski koneksinya putus, jadi ia
+tidak membuktikan apa pun.
+
+Satu temuan sampingan yang dikejar lalu **ditutup sebagai bukan cacat**: log
+peramban memuat `ReferenceError: otomatis is not defined` dan
+`hentikanOtomatis is not defined` dari `HeroTemplateCarousel.tsx`. Keduanya
+sisa keadaan setengah jadi saat carousel disunting di sesi 18; kedua nama itu
+sudah tidak ada di berkasnya sekarang.
+
+### Catatan yang tertinggal tiga sesi
+
+`riwayat-pengerjaan.md` berhenti di sesi 15 sementara ada 13 komit sesi 16-18
+yang tidak tercatat. `MULAI-DI-SINI.md` memang diperbarui tiap sesi, tetapi
+menyimpan beberapa klaim yang sudah **salah**, bukan sekadar usang - dan yang
+paling menyesatkan bukan yang tertinggal melainkan yang menunjuk ke berkas
+yang sudah tidak ada:
+
+- **Lima baris "Peta kode" menunjuk berkas yang dihapus di sesi 15** -
+  `src/lib/portfolio/pola-schemas.ts`, `kamus-bidang.ts`, `render.ts`,
+  `redaksi.ts`, dan `src/lib/ats/bukti-karya.ts`. Seluruh folder
+  `src/lib/portfolio/` sudah tidak ada.
+- **`engine.ts` disebut "6 dimensi" dan "dua angka terpisah".** Dibaca
+  langsung dari `DIMENSION_WEIGHTS`: yang ada **lima** dimensi
+  (`completeness` 25, `parseability` 25, `contentQuality` 20, `keywordMatch`
+  20, `structure` 10) dan **satu** skor 0-100. Baris itu tertinggal dari sesi
+  12 dan lolos dari pembatalan sesi 15.
+- **Jalur log salah.** Disebut `logs/` di dalam project; sebenarnya
+  `%LOCALAPPDATA%\cv-ats-builder\logs`, dan `scripts/dev-24jam.ps1` sendiri
+  mencatat alasan pemindahannya. Kesalahan ini sempat menyesatkan pencarian
+  di sesi ini sendiri.
+- **Komit terakhir masih tertulis `212a98b` (sesi 15).** Sebenarnya `4eb96d0`.
+
+Angka rangkuman dihitung ulang, bukan disalin, dan metodenya sekalian ditulis
+di bawah tabelnya supaya sesi berikutnya dapat mengulanginya dan
+membandingkannya dengan jujur. Dua angka lama tidak dapat direproduksi dengan
+metode mana pun yang dicoba - berkas 189 dan ~45.000 baris - jadi keduanya
+diganti hasil hitungan baru berikut cara menghitungnya, tanpa berpura-pura
+selisihnya berasal dari perubahan kode.
+
+---
+### Pengantar bagian yang berhenti di sepertiga halaman
+
+Dilaporkan zaky dengan tujuh tangkapan layar sekaligus, seluruhnya dari laptop:
+*"teks dibawah bisa nyambung aja kesamping"*, *"numpuk sekali di samping
+kiri"*, dan untuk satu paragraf yang lain, *"ini buat jadi center aja"*.
+Ponsel disebut sudah pas; tablet disebut "agak kurang".
+
+Diukur di Chrome sungguhan lewat DevTools Protocol sebelum menyentuh apa pun,
+pada lebar 1920 - dan angkanya membenarkan laporan itu sepenuhnya:
+
+| Pengantar bagian | Lebar | Wadahnya | Baris |
+|---|---:|---:|---:|
+| Hero | 576 | 900 | 5 |
+| "2 Cara Jitu Memastikan..." | 672 | 1809 | 2 |
+| "Cuma Butuh 4 Langkah..." | 672 | 1809 | 2 |
+| "Tinggalkan Cara Lama..." | 672 | 1809 | 2 |
+| Catatan riset ATS | 768 | 1809 | 5 |
+| "10 Pilihan Desain Elegan..." | 768 | 1809 | 3 |
+| Catatan sumber format | 768 | 1809 | 3 |
+| "PAKAI PAS FOTO" | 768 | 1809 | 2 |
+| `/bandingkan` | 672 | 1905 | 3 |
+
+Seribu piksel lebih kosong di sebelah kanan tiap paragraf, sementara judul di
+atasnya membentang hampir selebar halaman.
+
+### Kenapa batas bacaan itu benar untuk tubuh tulisan, tetapi keliru di sini
+
+Aturan 8 panduan responsif melarang tulisan ikut melebar bersama cangkangnya,
+dan alasannya benar - tetapi berlaku pada hal yang berbeda dari ini.
+
+Yang melelahkan pada baris panjang bukan panjangnya, melainkan **sapuan
+balik**: mata harus menemukan awal baris berikutnya, berulang kali. Itulah
+yang membuat 65-75 karakter menjadi batas nyaman bagi paragraf yang berurutan.
+
+Pengantar bagian bukan itu. Ia satu paragraf pendek di bawah judul, dan begitu
+ia muat dalam satu baris, sapuan baliknya nol. Batas 42rem di sana tidak
+membeli keterbacaan apa pun - ia hanya memecah satu kalimat menjadi dua sampai
+lima baris di bawah judul yang jauh lebih lebar.
+
+Karena itu yang dibuat bukan angka baru melainkan kelas baru,
+**`.teks-intro`**, yang melepas batasnya dan menyerahkannya pada `.wadah`.
+Batas atasnya tetap ada dan tetap satu tempat: `.wadah` sendiri berhenti di
+120rem, jadi pada layar 2560 pun paragrafnya tidak pernah melampaui lebar
+halaman.
+
+Garis pemisahnya ditulis di aturan 8 supaya tidak kabur lagi: **paragraf yang
+berurutan `.teks-baca`, paragraf tunggal di bawah judul `.teks-intro`.**
+
+Terukur sesudahnya:
+
+| Lebar | Pengantar bagian, sebelum | Sesudah |
+|---|---|---|
+| 390 | 343px | 343px - **tidak bergeser satu piksel pun** |
+| 768 | 672px / 2 baris | 705px / 2 baris |
+| 1024 | 672px / 2 baris | 945px / 1-2 baris |
+| 1280 | 672px / 2 baris | 1201px / **1 baris** |
+| 1920 | 672px / 2 baris | 1809px / **1 baris** |
+
+Ponsel tidak berubah sama sekali, dan itu bukan kebetulan melainkan sifat
+perubahannya: pada 343px batas yang dilepas itu memang tidak pernah menggigit.
+
+Hero mendapat perlakuan terpisah - `lg:max-w-none`, bukan `.teks-intro`. Yang
+membatasinya di sana kolom gridnya sendiri, bukan wadah halaman, dan itu justru
+yang diminta: *"jangan mepet sama contoh cv itu"*. Terukur 576 -> 900px dan 5
+-> 3 baris, dengan jarak 84 piksel ke kartu CV yang tidak berubah.
+
+Catatan riset ATS dipusatkan, tetapi **hanya mulai `lg`**. Dengan `text-center`
+tanpa syarat ia menjadi sepuluh baris rata tengah di layar 390 - rata tengah
+terbaca disengaja pada dua sampai tiga baris, dan terbaca berantakan pada
+sepuluh. Yang diminta zaky adalah tampilan laptop; ponselnya memang sudah pas.
+
+Halaman dokumen - Panduan, Tentang, Alur - ikut dirapikan dengan kelas yang
+sama, sembilan paragraf. Di sana `.teks-intro` dibatasi `.wadah-dokumen`
+(1024px), bukan `.wadah`, sehingga pengantarnya mengisi kolomnya sendiri:
+672 -> 928px. **Lebar kolomnya sendiri tidak disentuh** - keputusan itu sudah
+dicoba dan ditolak dua kali (sesi 17 dan 18), dan tidak ada alasan baru untuk
+membukanya lagi.
+
+### Judul hero yang meleset 18 piksel
+
+Dilaporkan terpisah, dan lebih halus daripada yang sebelumnya: *"judulnya yang
+atas benar tapi 2 dan 3 nya kurang agak numpuk sendiri padahal atasnya benar"*.
+
+Judulnya dipatahkan tangan menjadi tiga baris lewat dua `<br />`:
+
+```
+Fokus ceritakan pengalamanmu.
+Format ATS-nya
+biar kami yang urus
+```
+
+Baris kedua dan ketiga sebenarnya **satu kalimat**, dan mematahkannya di tengah
+membuat baloknya bertangga: 29 huruf, lalu 14, lalu 19.
+
+Patahan kedua karena itu dibuang - tetapi hasilnya justru lebih buruk, dan itu
+baru terlihat setelah dilihat gambarnya:
+
+```
+Fokus ceritakan pengalamanmu.
+Format ATS-nya biar kami yang
+urus
+```
+
+Satu kata jatuh sendirian ke baris ketiga. `text-wrap: balance` dicoba untuk
+menyeimbangkannya dan **tidak berpengaruh sama sekali** - Chromium mematikannya
+begitu blok itu memuat `<br>`, dan judul ini memang masih punya satu.
+
+Yang menjawabnya pengukuran, bukan tebakan. Diukur di halaman dengan merangkai
+kalimat itu pada gaya yang sama persis lalu membandingkannya dengan lebar kolom:
+
+| | |
+|---|---:|
+| Lebar kolom hero pada 1920 | 900px |
+| Lebar "Format ATS-nya biar kami yang urus" | 918px |
+| **Kurang** | **18px** |
+| Ukuran huruf yang muat | 53,3px (dari 54,4px) |
+
+Meleset 18 piksel - dua persen. Itulah seluruh sebabnya.
+
+**Yang dipakai `clamp()`, bukan angka tetap yang lebih kecil.** Kolom hero ikut
+menyempit bersama layarnya - 900px pada 1920, 756 pada 1280 - sehingga satu
+angka tetap yang muat di salah satunya pasti meleset di yang lain.
+`lg:text-[clamp(2.2rem,3.4vw,3.25rem)]` menyisakan margin di kedua ujungnya:
+
+| Lebar | Kolom | Huruf | Kalimat menuntut | Sisa | Baris |
+|---|---:|---:|---:|---:|---:|
+| 1280 | 756 | 43,5px | 734 | 22 | **2** |
+| 1440 | 916 | 49,0px | 826 | 90 | **2** |
+| 1920 | 900 | 52,0px | 877 | 23 | **2** |
+| 2560 | 900 | 52,0px | 877 | 23 | **2** |
+
+Percobaan pertama memakai `3.5vw` dengan batas `3.3rem` dan itu **pas mepet** -
+pada 1280 kalimatnya menuntut 756 piksel di dalam kolom 756 piksel. Nol margin
+berarti perbedaan sekecil apa pun pada perenderan huruf antar-mesin akan
+memecahnya lagi, jadi angkanya diturunkan sedikit sampai ada 22 piksel sisa.
+
+Bahasa Inggris ikut diperiksa, bukan diasumsikan: "The ATS formatting is on us"
+menyisakan 201 piksel pada 1280 dan 236 pada 1920.
+
+**Patahannya dipertahankan di bawah `lg`.** Di layar sempit kolomnya memang
+tidak cukup, dan tanpa patahan yang ditentukan sendiri kalimatnya membelah di
+tempat yang kebetulan - "Format ATS-nya biar kami / yang urus" - sementara
+dengan `<br className="lg:hidden" />` ia membelah di sendi kalimatnya. Jumlah
+barisnya sama, empat; yang berbeda hanya tempat belahnya. Tampilan ponsel sudah
+benar sebelum ini dan tidak ada alasan mengubahnya.
+
+Batasan yang tersisa dan diketahui: pada **1024-1279** judulnya tetap empat
+baris, sebab kolom hero di sana cuma 500px - kartu CV di sebelahnya berukuran
+tetap. Sama seperti pengantar hero, memperbaikinya menuntut mengecilkan kartu
+itu.
+
+### Satu bentuk yang dicoba lalu dibatalkan
+
+Hero pada 1024 memang sempit - kolom kirinya hanya 500 piksel, sebab kartu CV
+di sebelahnya berukuran tetap 390. Dicoba menumpuknya sampai `xl` supaya
+tulisannya mendapat lebar penuh, dan tulisannya memang membaik: 6 baris menjadi
+3.
+
+**Dibatalkan setelah dilihat gambarnya.** Kartu CV yang pindah ke bawah membuat
+hero setinggi lebih dari 1400 piksel di layar yang tingginya 1080 - pengunjung
+harus menggulir jauh sebelum sampai ke bagian berikutnya. Tulisan yang lebih
+lega tidak sebanding dengan itu. Bentuk dua kolom `lg` dari sesi 18 karena itu
+dipertahankan apa adanya, beserta angka celah 122 piksel yang sudah diukur di
+sana.
+
+Yang tersisa dicatat sebagai batasan yang diketahui, bukan cacat: pada
+1024-1279 pengantar hero tetap 6 baris. Melebarkannya menuntut mengecilkan
+kartu CV, dan kartu itu ada justru untuk dibaca.
+
+### Hero yang muat satu layar
+
+Diminta panjang lebar dan sangat rinci oleh zaky, dengan satu kalimat sebagai
+sasarannya: *"ketika user membuka website di laptop, mereka langsung melihat
+navbar, heading, description, CTA, statistics, dan CV preview dalam SATU
+PANDANGAN tanpa harus scroll"* - tanpa mengubah identitas visualnya, dan tanpa
+menjadi sesak.
+
+### Yang ternyata salah bukan lebarnya
+
+Diukur lebih dulu di Chrome sungguhan pada dua belas viewport. Angkanya
+langsung menunjukkan bahwa titik pindah lebar - satu-satunya alat yang dipakai
+project ini selama ini - tidak menjawab persoalannya:
+
+```
+1920x1080  hero 880  -> muat
+1600x900   hero 880  -> LEBIH 45 piksel
+1440x900   hero 790  -> muat
+1366x768   hero 790  -> LEBIH 87 piksel
+1280x720   hero 790  -> LEBIH 135 piksel
+1024x768   hero 823  -> LEBIH 120 piksel
+```
+
+1440 muat sementara 1366 **dan** 1600 tidak. Urutannya tidak menurut lebar sama
+sekali. Yang menentukan tingginya, dan tinggi laptop nyata berselisih 360
+piksel antara yang terlapang dan yang tersempit - lebih dari separuh tinggi
+kertas CV di dalamnya.
+
+Itulah yang melahirkan aturan 10 di `docs/panduan-responsif.md`, dan itu
+tambahan prinsip pertama sejak panduan itu ditulis: **ada layar yang habis ke
+bawah, bukan ke samping.**
+
+### Empat pengungkit, diurutkan menurut besarnya
+
+**1. Kertas CV mengikuti tinggi layar.** Ini yang terbesar - kertas A4 pada
+skala 0,5 setinggi 561 piksel, dan itu sendiri sudah melebihi ruang yang
+tersisa pada layar 720 piksel. Mengecilkan yang lain tidak akan pernah cukup
+selama kertasnya tetap. Skalanya pindah dari tangga LEBAR di `className`
+menjadi tangga TINGGI di `.kertas-hero`:
+
+| Tinggi layar | Skala | Kertas |
+|---|---:|---:|
+| < 760 | 0,42 | 471px |
+| >= 760 | 0,46 | 516px |
+| >= 860 | 0,52 | 583px |
+| >= 1000 | 0,56 | 628px |
+
+Batas bawah 0,42 bukan angka bebas: di bawah itu tulisan di dalam kertas
+berhenti terbaca sebagai tulisan dan tinggal menyerupai garis abu - padahal
+seluruh alasan kertas ini dipajang justru supaya isinya terlihat.
+
+Media query `min-height`, bukan `clamp()`. CSS tidak dapat membagi satu panjang
+dengan panjang lain, sehingga skala tanpa satuan memang **tidak mungkin**
+dihitung dari `svh`. Tangga bertingkat justru lebih dapat diuji.
+
+**2. Panel hero setinggi satu layar.**
+`min-height: max(600px, calc(100svh - var(--tinggi-bilah)))`, isinya di tengah
+tegak, mulai `lg` saja. `svh` bukan `vh` - di ponsel `100vh` menghitung layar
+seolah bilah alamatnya sudah tersembunyi. Batas 600px membuatnya menyerah pada
+jendela yang sangat pendek: menggulir sedikit lebih baik daripada isi yang
+bertumpuk.
+
+`--tinggi-bilah` memuat satu piksel garis bawah bilah. Tanpa piksel itu hero
+meleset persis satu piksel di **seluruh** viewport, dan satu piksel sudah cukup
+memunculkan batang gulir - terlihat sebagai "sisa +1" pada pengukuran pertama.
+
+**3. Jarak tepi ikut tinggi layar.** `pt-20 pb-24` (176 piksel tetap) menjadi
+`lg:py-[clamp(1.5rem,4vh,3rem)]`. Jarak tetap 176 piksel terdengar wajar sampai
+diingat bahwa seluruh ruang yang ada di 1280x720 cuma 655.
+
+**4. Statistik dan lencana dirapatkan.** `mt-10` dan `pt-6` menjadi `pt-5`,
+angka `text-3xl` menjadi `1.75rem`, lencana skor dari `h-8` menjadi `h-7`
+dengan bayangan lebih ringan.
+
+### Satu jebakan struktural yang memakan dua percobaan
+
+Kolom kiri sempat menempati **tiga baris grid** tersendiri - teks, tombol,
+statistik - sementara kartu CV di kanan membentang menutupi ketiganya. Akibatnya
+tinggi kartu itulah yang menentukan tinggi ketiga baris tadi: pada 1920 jarak
+antara tombol dan statistik melar sampai sekitar 160 piksel, jauh dari 36-48
+yang dimaksudkan, dan barisan angkanya terbaca terlepas dari tombol di atasnya.
+
+Perbaikannya membungkus kolom kiri menjadi **satu sel**, dengan
+`display: contents` di bawah `lg` supaya susunan ponsel tetap utuh.
+
+Percobaan pertama gagal dan pantas dicatat sebabnya: kartu CV berdiri di antara
+teks dan tombol di dalam JSX - urutan itu peninggalan sesi 9, ketika pratinjau
+memang diminta muncul sebelum tombol di ponsel. Membungkus "dari teks sampai
+statistik" karena itu ikut menelan kartunya, dan seluruh susunan dua kolom
+runtuh menjadi satu kolom. Blok kartunya harus benar-benar dipindahkan keluar,
+bukan sekadar dibungkus melewatinya.
+
+### Urutan ponsel dibalik, atas permintaan
+
+Yang diminta: judul, penjelasan, **tombol**, pratinjau CV, statistik. Sesi 9
+menaruh pratinjau sebelum tombol, dan itu keputusan yang disengaja waktu itu.
+Sekarang dibalik atas permintaan tegas zaky - ajakan bertindak berdiri sebelum
+gambar.
+
+Tombol dan statistik karena itu dipisah menjadi dua blok; selama keduanya masih
+satu, statistik ikut ke mana pun tombolnya pergi dan pratinjau tidak dapat
+disisipkan di antaranya. Urutannya diatur `order-*`, bukan dengan memindahkan
+JSX - dan mulai `lg` penempatan baris/kolom yang tegas mengabaikan `order`
+sepenuhnya, sehingga susunan dua kolom tidak tersentuh.
+
+### Hasilnya
+
+| Viewport | Sebelum | Sesudah |
+|---|---|---|
+| 1920x1080 | muat | muat, sisa **0** |
+| 1600x900 | lebih 45px | muat, sisa **0** |
+| 1440x900 | muat | muat, sisa **0** |
+| 1366x768 | lebih 87px | muat, sisa **0** |
+| 1280x720 | lebih 135px | muat, sisa **0** |
+| 1024x768 | lebih 120px | muat, sisa **0** |
+
+"Sisa 0" berarti tepi bawah hero mendarat persis di tepi bawah layar - bukan
+kebetulan, melainkan akibat langsung `100svh` dikurangi tinggi bilah.
+
+Tablet dan ponsel **sengaja tidak** dipaksa satu layar; di sana yang dikejar
+urutan prioritas. Hero ponsel turun dari 1415 menjadi 1351 piksel, dan yang
+terlihat tanpa menggulir pada 390x844 kini judul, penjelasan, kedua tombol, dan
+kepala kertas CV - persis urutan yang diminta.
+
+Tidak ada luberan mendatar di satu pun dari dua belas viewport, sebelum maupun
+sesudah.
+
+### Yang TIDAK dikerjakan, dan sebabnya
+
+**Proporsi kolom 52-55% / 45-48% tidak tercapai**, dan itu bertabrakan langsung
+dengan sasaran utamanya. Kolom kanan selebar kartunya sendiri; supaya mencapai
+45% pada 1366 kartu itu harus selebar 600 piksel, yang berarti setinggi 850 -
+sementara seluruh ruang yang tersedia 703. Kolom kanan yang lebih lebar berarti
+kertas yang lebih tinggi, dan kertas yang lebih tinggi berarti hero yang tidak
+muat satu layar. Yang dipilih sasaran yang zaky sendiri sebut TARGET UTAMA.
+Perbandingannya sekarang sekitar 63/37 pada 1920 dan 66/34 pada 1366.
+
+**Ruang kosong di dalam kertas CV tidak dipangkas.** Kertas A4 di hero terisi
+sekitar dua pertiganya; memangkas sepertiga bawahnya akan membebaskan sekitar
+140 piksel yang dapat dipakai memperbesar kertasnya. Tidak dikerjakan karena
+tidak diperlukan - satu layar sudah tercapai tanpa itu - dan karena kertas yang
+terpotong menuntut gradasi memudar supaya tidak terbaca sebagai cacat. Dicatat
+sebagai langkah lanjutan yang tersedia, bukan sebagai kekurangan.
+
+**Hero pada 1024-1279 masih menampilkan judul tiga baris**, sebab kolom kirinya
+di sana paling sempit. Muat satu layar tetap tercapai.
+
+### Dijaga
+
+`tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya
+memindai sumber, bukan merender, karena alasan yang sama seperti pemeriksaan
+lain di berkas itu: gejalanya tidak pernah muncul sebagai galat - halamannya
+terbentuk normal dan tidak ada yang berteriak.
+
+Yang pertama memastikan `.teks-intro` benar-benar ada di `globals.css` dengan
+`max-width: none`; yang kedua memastikan ia memang dipakai. Pemeriksaan kedua
+saja akan lulus juga bila seseorang menghapus definisi kelasnya, sehingga
+kelasnya tinggal nama yang tidak berpengaruh apa-apa.
+
+Gerbang kualitas: typecheck bersih, lint bersih, **378 uji lulus 0 gagal**,
+build hijau.
+
+### Satu risiko yang ditemukan sambil bekerja
+
+`npm run build` dan `npm run dev` sama-sama menulis ke `.next/`. Menjalankan
+build sementara server dev hidup karena itu berpotensi menimpa manifest rute
+yang sedang dipakai server itu - dan gejalanya persis seperti yang dilaporkan
+pagi ini: 404 untuk setiap alamat, tanpa satu pun galat.
+
+Ini **belum terbukti** sebagai penyebab kejadian pagi tadi, dan sengaja tidak
+ditulis seolah-olah terbukti: build dijalankan sekali di sesi ini justru saat
+server dev sedang hidup, dan server itu tetap menjawab 200 sesudahnya. Jadi ia
+kandidat penyebab yang lebih masuk akal daripada singgahan yang basi karena
+folder berganti nama, tetapi tetap kandidat.
+
+Yang aman: hentikan server dev dulu sebelum `npm run build`, atau terima bahwa
+sesudah build server dev mungkin perlu dinyalakan ulang.
+
+---
 ## Rangkuman angka
 
-Angka di bawah ini per akhir sesi 15, dihitung ulang setelah fitur portofolio dibatalkan.
+Angka di bawah ini **per akhir sesi 19**, dihitung ulang dari kode - bukan
+disalin dari tabel sebelumnya. Cara menghitungnya ditulis di bawah tabel
+supaya sesi berikutnya dapat mengulanginya dan membandingkannya dengan jujur.
 
 | Ukuran | Nilai |
 |---|---:|
-| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 189 |
-| Baris kode termasuk berkas uji dan skrip | ~45.000 |
+| Berkas kode (TypeScript, TSX, Prisma), di luar hasil bangkitan | 175 |
+| Baris kode termasuk berkas uji dan skrip | ~37.500 |
 | Tabel basis data | 17 |
 | Berkas migrasi | 7 |
-| Route aplikasi | 32 |
-| Hal yang dinilai (dimensi) | 6 |
-| Bidang di kamus | 21 |
+| Route aplikasi (18 halaman + 13 titik akhir API) | 31 |
+| Hal yang dinilai (dimensi) | 5 |
 | Bagian CV yang dapat diisi | 11 |
 | Template CV | 10 |
 | Ukuran kertas | 4 |
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 367 |
+| Pemeriksaan otomatis | 378 |
+
+Cara menghitungnya:
+
+```bash
+# berkas kode
+git ls-files '*.ts' '*.tsx' '*.prisma' | grep -v "^src/generated/" \
+  | grep -v "next-env.d.ts" | wc -l
+
+# baris kode
+git ls-files '*.ts' '*.tsx' '*.prisma' '*.ps1' | grep -v "^src/generated/" \
+  | xargs wc -l | tail -1
+
+grep -c "^model " prisma/schema.prisma                 # tabel
+ls prisma/migrations | grep -v migration_lock | wc -l  # migrasi
+git ls-files 'src/app/**/page.tsx' 'src/app/**/route.ts' | wc -l
+```
+
+Dimensi dibaca dari `DIMENSION_WEIGHTS` di `src/lib/ats/engine.ts`, bagian CV
+dari `SectionKey` di `src/lib/resume/types.ts`, dan template dari enum
+`TemplateId` di `prisma/schema.prisma`.
+
+Dua baris berubah bukan karena kodenya menyusut:
+
+- **Berkas 189 -> 175 dan ~45.000 -> ~37.500 baris.** Angka lama tidak dapat
+  direproduksi dengan metode mana pun yang dicoba di sesi 19, termasuk dengan
+  menyertakan `src/generated/` dan berkas konfigurasi. Yang tertulis sekarang
+  hasil hitungan baru berikut perintahnya; selisihnya kemungkinan besar
+  perbedaan cara menghitung, bukan kode yang hilang.
+- **Dimensi 6 -> 5 dan baris "Bidang di kamus 21" dibuang.** Keduanya
+  tertinggal dari fitur portofolio yang dicabut di sesi 15;
+  `src/lib/portfolio/` sudah tidak ada, dan `DIMENSION_WEIGHTS` memang berisi
+  lima kunci.
+
+Route 32 -> 31 memang perubahan kode sesi 16-18, dan pemeriksaan 367 -> 378
+perubahan sesi 16-19 (dua yang terakhir menjaga `.teks-intro`).
 
 ---
