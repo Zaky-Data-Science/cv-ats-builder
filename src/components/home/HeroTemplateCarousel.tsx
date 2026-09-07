@@ -6,6 +6,8 @@ import { TemplatePreview } from "@/components/home/TemplatePreview";
 import type { Locale } from "@/lib/i18n/config";
 import { TEMPLATE_INFO, TEMPLATE_ORDER } from "@/lib/resume/templates";
 import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
+import { useMulaiDesain } from "./PilihDesain";
 
 /**
  * ============================================================================
@@ -69,6 +71,7 @@ export function HeroTemplateCarousel({
   locale,
   teks,
   lencana,
+  signedIn,
 }: {
   locale: Locale;
   teks: {
@@ -78,7 +81,13 @@ export function HeroTemplateCarousel({
     next: string;
     /** Label bagi seluruh carousel-nya. */
     label: string;
+    /** Pola label bagi tindakan "pakai desain ini", memuat `{desain}`. */
+    pakai: string;
+    /** Label pendek pada ajakan yang menempel di kartu. */
+    pakaiSingkat: string;
   };
+  /** Menentukan ke mana ketukan membawa - lihat `useMulaiDesain`. */
+  signedIn: boolean;
   /**
    * Lencana melayang yang menempel pada KARTU TENGAH.
    *
@@ -90,6 +99,7 @@ export function HeroTemplateCarousel({
   lencana?: React.ReactNode;
 }) {
   const total = TEMPLATE_ORDER.length;
+  const { mulai, sibuk } = useMulaiDesain(signedIn);
   const info = TEMPLATE_INFO[locale];
 
   const [aktif, setAktif] = React.useState(0);
@@ -185,7 +195,10 @@ export function HeroTemplateCarousel({
         sementara sapuan mendatar ditangani sendiri.
       */}
       <div
-        className="relative mx-auto overflow-hidden rounded-xl shadow-2xl"
+        className={cn(
+          "group relative mx-auto overflow-hidden rounded-xl shadow-2xl",
+          sibuk ? "cursor-progress" : "cursor-pointer",
+        )}
         style={{
           width: "calc(210mm * var(--doc-scale))",
           height: "calc(210mm * var(--doc-scale) * 297 / 210)",
@@ -202,13 +215,53 @@ export function HeroTemplateCarousel({
           const dx = e.clientX - awal;
           // 40 piksel: cukup jauh untuk membedakan sapuan dari ketukan yang
           // jarinya sedikit bergeser, cukup dekat untuk terasa ringan.
-          if (Math.abs(dx) < 40) return;
+          //
+          // Ambang yang sama kini memutuskan DUA hal, bukan satu: di atasnya
+          // sebuah sapuan yang menggeser kartu, di bawahnya sebuah ketukan
+          // yang membuka penyusun dengan desain yang sedang tampil. Keduanya
+          // memakai satu angka dengan sengaja - kalau ketukan dan sapuan
+          // dibedakan oleh dua ambang berbeda, akan ada gerakan di antaranya
+          // yang tidak melakukan apa-apa, dan itu terbaca sebagai kerusakan.
+          if (Math.abs(dx) < 40) {
+            void mulai(TEMPLATE_ORDER[aktif]);
+            return;
+          }
           geser(dx < 0 ? 1 : -1);
         }}
         onPointerCancel={() => {
           seretRef.current = null;
         }}
       >
+        {/*
+          Ajakan "pakai desain ini", menempel pada kartu yang sedang tampil.
+
+          Kartunya sendiri sudah dapat ditekan, tetapi tanpa tanda apa pun itu
+          hanya diketahui orang yang kebetulan mencoba. Ia tersembunyi sampai
+          kursor datang, dan SELALU terlihat di layar sentuh - lihat
+          `.ajakan-desain` di globals.css.
+
+          `z-30` supaya ia berdiri di atas kartu tengah yang `z-20`, dan
+          `pointer-events-none` supaya ketukannya tetap sampai ke panggung
+          yang menanganinya.
+
+          DI TENGAH, BUKAN DI TEPI BAWAH
+
+          Percobaan pertama menaruhnya di tepi bawah beserta gradasi gelap.
+          Terlihat di layar sentuh dan langsung ketahuan salah: ia bertabrakan
+          dengan lencana "Tersimpan otomatis" yang memang duduk di kanan bawah,
+          dan tulisannya terpotong separuh. Tengah kartu satu-satunya tempat
+          yang tidak diperebutkan - lencana skor di kiri atas, lencana simpan
+          di kanan bawah. Gradasinya ikut dibuang: kertas CV itu yang justru
+          ingin dilihat, dan menggelapkannya demi sebuah ajakan menukar hal
+          yang penting dengan hal yang mendukungnya.
+        */}
+        <span className="ajakan-desain pointer-events-none absolute inset-0 z-30 grid place-items-center px-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-ink-900 px-4 py-2.5 text-[12px] font-semibold text-white shadow-2xl ring-1 ring-white/25">
+            {teks.pakaiSingkat}
+            <ArrowRight size={14} />
+          </span>
+        </span>
+
         {TEMPLATE_ORDER.map((id, i) => {
           /*
             Jarak MELINGKAR yang terpendek dari kartu aktif: -1 berarti satu
@@ -353,16 +406,34 @@ export function HeroTemplateCarousel({
       {/* ------------------------------------------------------------- */}
       {/* Keterangan dan titik penanda                                   */}
       {/* ------------------------------------------------------------- */}
-      <p
-        className="mt-3 text-center text-[11px] text-ink-500"
-        aria-live="polite"
+      {/*
+        Keterangannya sebuah TOMBOL, bukan sekadar tulisan.
+
+        Ketukan pada kartunya sendiri sudah membuka penyusun, tetapi ketukan
+        itu hidup pada sebuah `<div>` panggung - tidak dapat dijangkau papan
+        ketik dan tidak disebutkan pembaca layar sebagai sesuatu yang dapat
+        dilakukan. Menjadikan keterangan ini tombol menutup keduanya tanpa
+        menambah satu piksel pun tinggi hero, yang di sini memang dijatah
+        ketat: barisnya sudah ada, hanya sifatnya yang berubah.
+      */}
+      <button
+        type="button"
+        onClick={() => void mulai(TEMPLATE_ORDER[aktif])}
+        disabled={sibuk}
+        aria-label={teks.pakai.replace(
+          "{desain}",
+          info[TEMPLATE_ORDER[aktif]].name,
+        )}
+        className="tap-target mt-3 block w-full text-center text-[11px] text-ink-500 transition-colors hover:text-ink-800 disabled:cursor-progress"
       >
-        {teks.caption}
-        {" — "}
-        <span className="font-semibold text-ink-700">
-          {info[TEMPLATE_ORDER[aktif]].name}
+        <span aria-live="polite">
+          {teks.caption}
+          {" — "}
+          <span className="font-semibold text-ink-700">
+            {info[TEMPLATE_ORDER[aktif]].name}
+          </span>
         </span>
-      </p>
+      </button>
 
       {/*
         Titiknya tombol sungguhan, bukan hiasan: sepuluh desain terlalu banyak

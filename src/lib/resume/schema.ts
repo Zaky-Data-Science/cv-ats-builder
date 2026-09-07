@@ -243,6 +243,15 @@ export const createResumeSchema = z.object({
   title: z.string().min(1).max(160).optional(),
   /** "blank" = CV kosong, "sample" = langsung terisi contoh lengkap. */
   preset: z.enum(["blank", "sample"]).default("blank"),
+  /**
+   * Desain awal CV-nya.
+   *
+   * Ada supaya galeri desain di halaman depan dapat langsung membuka penyusun
+   * dengan desain yang ditekan - tanpa itu, setiap CV baru selalu lahir
+   * sebagai CLASSIC dan penggunanya harus mencari lagi desain yang tadi ia
+   * pilih. Opsional: tanpa nilai, bawaannya tetap seperti sebelumnya.
+   */
+  template: templateIdSchema.optional(),
 });
 
 export const renameResumeSchema = z.object({

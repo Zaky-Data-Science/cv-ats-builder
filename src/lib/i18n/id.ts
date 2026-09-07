@@ -265,6 +265,16 @@ export const id = {
     ctaTryHint: "Langsung pakai, tanpa daftar, tanpa email",
     loading: "Menyiapkan editor...",
 
+    dialogTitle: "Sebelum mulai, pilih dulu",
+    dialogBody:
+      "Kamu bisa langsung menyusun CV tanpa daftar. Tapi ada bedanya soal penyimpanan, dan lebih baik kamu tahu sekarang daripada setelah CV-nya jadi.",
+    dialogGuest: "Lanjut tanpa akun",
+    dialogGuestNote:
+      "Datanya cuma di browser ini. Ganti perangkat atau bersihkan data situs, CV-nya hilang.",
+    dialogGoogle: "Masuk dengan Google",
+    dialogRegister: "Buat akun gratis",
+    dialogSavedNote: "CV-mu tersimpan dan bisa dibuka lagi dari mana saja.",
+
     bannerTitle: "CV ini cuma tersimpan di browser ini.",
     bannerBody:
       "Tidak ada yang dikirim ke mana pun, jadi kamu tidak perlu akun. Tapi ada risikonya: buka dari HP lain, bersihkan data browser, atau pakai mode penyamaran, CV ini ikut hilang. Unduh berkasnya, atau pindahkan ke akun kalau mau disimpan selamanya.",
@@ -431,6 +441,8 @@ export const id = {
     statTemplates: "pilihan desain",
     statFormats: "pilihan unduhan",
     statsPrompt: "Ketuk angkanya buat tahu maksudnya.",
+    pilihDesainAria: "Pakai desain {desain} dan mulai menyusun CV",
+    pilihDesainPakai: "Pakai desain ini",
     statSectionsWhy:
       "Data pribadi, ringkasan, pengalaman kerja, pendidikan, keahlian, proyek, sertifikat, organisasi, penghargaan, bahasa, dan publikasi. Bagian yang nggak kamu isi nggak akan muncul di CV, jadi santai saja: nggak perlu diisi semua.",
     statTemplatesWhy:

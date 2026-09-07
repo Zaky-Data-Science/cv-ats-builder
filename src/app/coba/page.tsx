@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { auth } from "@/auth";
+import { auth, googleEnabled } from "@/auth";
 import { getT } from "@/lib/i18n/server";
 import { GuestEditor } from "./GuestEditor";
 import { GuestHeader } from "./GuestHeader";
+import { DialogTamu } from "./DialogTamu";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -34,6 +35,14 @@ export default async function CobaPage() {
       <main className="flex min-h-0 flex-1 flex-col">
         <GuestEditor />
       </main>
+
+      {/*
+        Hanya bagi yang belum masuk. Yang sudah masuk dan mampir ke sini
+        biasanya sedang memindahkan CV tamunya ke akun - menanyakan lagi soal
+        penyimpanan kepada orang yang datanya memang sudah tersimpan cuma
+        menghalangi.
+      */}
+      {!signedIn && <DialogTamu googleEnabled={googleEnabled} />}
     </div>
   );
 }

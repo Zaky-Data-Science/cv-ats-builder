@@ -247,6 +247,16 @@ export const en: Dictionary = {
     ctaTryHint: "Start right away, no sign-up, no email",
     loading: "Preparing the editor...",
 
+    dialogTitle: "Before you start, pick one",
+    dialogBody:
+      "You can build a CV right away without signing up. But saving works differently, and it is better to know now than after the CV is finished.",
+    dialogGuest: "Continue without an account",
+    dialogGuestNote:
+      "Data stays in this browser only. Switch devices or clear site data and the CV is gone.",
+    dialogGoogle: "Sign in with Google",
+    dialogRegister: "Create a free account",
+    dialogSavedNote: "Your CV is saved and can be opened from anywhere.",
+
     bannerTitle: "This CV lives only in this browser.",
     bannerBody:
       "Nothing is sent anywhere, which is why you need no account. But there is a catch: open it on another device, clear your browser data, or use a private window, and this CV goes with it. Download the files, or move it into an account if you want it kept for good.",
@@ -409,6 +419,8 @@ export const en: Dictionary = {
     statTemplates: "designs to pick from",
     statFormats: "ways to download it",
     statsPrompt: "Tap a number to see what it means.",
+    pilihDesainAria: "Use the {desain} design and start building a CV",
+    pilihDesainPakai: "Use this design",
     statSectionsWhy:
       "Personal details, summary, work experience, education, skills, projects, certificates, organisations, awards, languages, and publications. Anything you leave empty never shows up on the CV, so relax: you do not have to fill them all in.",
     statTemplatesWhy:

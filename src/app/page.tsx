@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { HeroStats } from "@/components/home/HeroStats";
 import { HeroTemplateCarousel } from "@/components/home/HeroTemplateCarousel";
+import { PilihDesain } from "@/components/home/PilihDesain";
 import { TemplatePreview } from "@/components/home/TemplatePreview";
 import { InkBackground } from "@/components/ink/InkBackground";
 import { HeroGlow } from "@/components/ink/HeroGlow";
@@ -402,7 +403,10 @@ export default async function LandingPage() {
                     prev: t.home.heroPrevTemplate,
                     next: t.home.heroNextTemplate,
                     label: t.home.heroCarousel,
+                    pakai: t.home.pilihDesainAria,
+                    pakaiSingkat: t.home.pilihDesainPakai,
                   }}
+                  signedIn={signedIn}
                   /*
                     Lencana melayang dititipkan ke carousel-nya, bukan
                     diletakkan di sebelahnya. Letaknya harus dihitung terhadap
@@ -673,6 +677,8 @@ export default async function LandingPage() {
               ids={withoutPhoto}
               heading={t.home.templatesWithoutPhoto}
               locale={locale}
+              signedIn={signedIn}
+              pakai={t.home.pilihDesainPakai}
             />
 
             <TemplateGrid
@@ -680,6 +686,8 @@ export default async function LandingPage() {
               heading={t.home.templatesWithPhoto}
               locale={locale}
               note={t.home.templatesPhotoNote}
+              signedIn={signedIn}
+              pakai={t.home.pilihDesainPakai}
             />
           </div>
         </section>
@@ -776,11 +784,17 @@ function TemplateGrid({
   heading,
   locale,
   note,
+  signedIn,
+  pakai,
 }: {
   ids: TemplateId[];
   heading: string;
   locale: "id" | "en";
   note?: string;
+  /** Menentukan ke mana ketukan pada sebuah desain membawa - lihat PilihDesain. */
+  signedIn: boolean;
+  /** Label ajakan pada kartunya, mis. "Pakai desain ini". */
+  pakai: string;
 }) {
   return (
     <div className="mt-10">
@@ -797,14 +811,32 @@ function TemplateGrid({
         </p>
       )}
 
+
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {ids.map((id, index) => {
           const info = TEMPLATE_INFO[locale][id];
 
           return (
             <Reveal key={id} delay={index * 60} className="scene">
+              <PilihDesain
+                template={id}
+                signedIn={signedIn}
+                label={info.name}
+                className="group rounded-xl focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
               <TiltCard maxTilt={6}>
-                <div className="overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm">
+                <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm transition-shadow group-hover:shadow-md">
+                  {/*
+                    Ajakan yang menempel pada kartunya - lihat `.ajakan-desain`
+                    di globals.css. `pointer-events-none` supaya ia tidak
+                    pernah menghalangi ketukan yang justru dituju.
+                  */}
+                  <span className="ajakan-desain pointer-events-none absolute inset-0 z-10 grid place-items-center px-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-ink-900 px-3 py-2 text-[11px] font-semibold text-white shadow-2xl ring-1 ring-white/25">
+                      {pakai}
+                      <ArrowRight size={12} />
+                    </span>
+                  </span>
                   <div
                     className="mx-auto [--tpl-scale:0.36] xs:[--tpl-scale:0.42] sm:[--tpl-scale:0.3] lg:[--tpl-scale:0.31]"
                     style={{
@@ -826,12 +858,13 @@ function TemplateGrid({
                   </div>
                 </div>
               </TiltCard>
-              <h4 className="mt-3 text-sm font-semibold text-ink-900">
+              <h4 className="mt-3 text-sm font-semibold text-ink-900 group-hover:underline">
                 {info.name}
               </h4>
               <p className="mt-1 text-[12px] leading-relaxed text-ink-600">
                 {info.description}
               </p>
+              </PilihDesain>
             </Reveal>
           );
         })}

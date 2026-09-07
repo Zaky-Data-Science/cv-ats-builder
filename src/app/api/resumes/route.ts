@@ -57,11 +57,14 @@ export async function POST(request: Request) {
   try {
     const user = await requireUser();
     const body = await request.json().catch(() => ({}));
-    const { title, preset } = createResumeSchema.parse(body);
+    const { title, preset, template } = createResumeSchema.parse(body);
 
     const base =
       preset === "sample" ? sampleResume("", await getLocale()) : emptyResume();
     if (title) base.title = title;
+    // Desain yang dipilih dari galeri halaman depan. Tanpa ini, CV baru selalu
+    // lahir sebagai CLASSIC dan pilihan penggunanya hilang di tengah jalan.
+    if (template) base.template = template;
 
     const parsed = resumeDataSchema.parse(base);
     const resume = await createResume(user.id, parsed);

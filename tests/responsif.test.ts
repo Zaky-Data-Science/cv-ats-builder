@@ -147,6 +147,43 @@ export function runResponsifTests(): void {
   );
 
   /* ---------------------------------------------------------------------- */
+  section("Responsif: ajakan pakai desain harus terlihat di layar sentuh");
+
+  /*
+    Ajakan "Pakai desain ini" menutupi pratinjau CV dan muncul saat kursor
+    datang. Di layar sentuh tidak ada kursor sama sekali - tanpa aturan
+    `@media (hover: none)` ia TIDAK PERNAH muncul di sana, dan kartunya kembali
+    terbaca sebagai gambar biasa yang tidak membawa ke mana-mana.
+
+    Cacat itu mustahil terlihat di komputer mana pun, dan bahkan peramban uji
+    pun berbohong: emulasi ukuran layar TIDAK mengubah `hover`/`pointer` -
+    keduanya baru berubah setelah emulasi sentuh dinyalakan. Karena itu yang
+    menjaganya pemindaian sumber, bukan perenderan.
+
+    Diminta zaky dengan alasan yang tidak dapat dibantah: "orang indonesia itu
+    kurang suka membaca ... jadi gimana caranya langsung praktik". Ajakan yang
+    tidak pernah muncul di ponsel adalah kebalikan persis dari itu.
+  */
+  const cssAjakan = readFileSync(join(AKAR, "app/globals.css"), "utf8");
+  const blokSentuh = /@media\s*\(hover:\s*none\)\s*\{[^}]*\.ajakan-desain\s*\{[^}]*opacity:\s*1/.test(
+    cssAjakan,
+  );
+  check(
+    "`.ajakan-desain` tetap terlihat pada `@media (hover: none)`",
+    blokSentuh,
+    "tanpa ini, kartunya tidak pernah terlihat dapat ditekan di ponsel",
+  );
+
+  const memakaiAjakan = berkas.filter((f) =>
+    readFileSync(f, "utf8").includes("ajakan-desain"),
+  );
+  check(
+    "ajakan dipakai pada kartu hero dan galeri desain",
+    memakaiAjakan.length >= 2,
+    `${memakaiAjakan.length} berkas`,
+  );
+
+  /* ---------------------------------------------------------------------- */
   section("Responsif: tombol tidak boleh diperas oleh tetangganya");
 
   /*

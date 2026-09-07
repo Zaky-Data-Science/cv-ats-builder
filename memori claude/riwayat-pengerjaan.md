@@ -3023,7 +3023,7 @@ JavaScript.
 
 ---
 
-## Sesi 19 - 7 September 2026: server lokal yang membalas 404, catatan yang tertinggal tiga sesi, dan hero yang akhirnya muat satu layar
+## Sesi 19 - 7 September 2026: server lokal yang membalas 404, catatan yang tertinggal tiga sesi, hero yang muat satu layar, dan desain yang dapat ditekan
 
 ### Gejalanya: bukan galat, melainkan "Halamannya tidak ada"
 
@@ -3599,6 +3599,141 @@ ditambahkan di sana.
 
 Gerbang kualitas: typecheck bersih, lint bersih, 379 uji lulus 0 gagal.
 
+### Desain yang dapat ditekan, dan sebuah pilihan yang menjelaskan risikonya
+
+Diminta zaky: *"aku mau contoh template ini jika di pencet langsung ke halaman
+pembuatan cv sesuai template yang di pencet, begitu juga contoh cv yang ada di
+halaman utama."*
+
+Sebelum ini galerinya hanya gambar. Pengunjung melihat sepuluh desain,
+menyukai salah satunya, lalu harus menekan tombol lain, membuat CV yang lahir
+sebagai CLASSIC, dan mencari sendiri desain yang tadi ia lihat.
+
+### Dua jalur, menurut keadaan masuk
+
+| Keadaan | Yang terjadi saat sebuah desain ditekan |
+|---|---|
+| Sudah masuk | `POST /api/resumes` beserta desainnya, lalu penyuntingnya dibuka |
+| Belum masuk | Ke `/coba?desain=...`, penyusun tanpa akun, desainnya langsung terpasang |
+
+Jalur tamu dipilih zaky sendiri dari tiga kemungkinan yang ditawarkan, dengan
+satu tambahan: *"pas masuk halaman editnya aku mau mereka dikasih pop up
+pilihan tanpa akun tapi gk nyimpan datanya, atau login pake google atau buat
+akun dan datanya kesimpan, jadi biar mereka tau resikonya."*
+
+`createResumeSchema` karena itu menerima `template` yang opsional, dan
+`POST /api/resumes` memakainya bila ada. Tanpa nilai, perilakunya persis
+seperti sebelumnya.
+
+### `<button>` bagi yang sudah masuk, `<Link>` bagi yang belum
+
+Bukan selera. Menekannya bagi pengguna yang sudah masuk **mengubah data** -
+sebuah CV baru sungguh dibuat. Tautan dituntut aman dipanggil berulang:
+peramban dan pemindai boleh memuatnya lebih dulu, dan satu tautan yang membuat
+CV setiap kali disentuh akan menumpuk CV kosong di akun orang. Bagi yang belum
+masuk tidak ada yang diubah, jadi di sana ia memang tautan biasa - klik tengah
+dan "buka di tab baru" tetap bekerja.
+
+Keduanya memanggil satu hook, `useMulaiDesain`, supaya kartu hero dan kartu
+galeri tidak mungkin berperilaku berbeda.
+
+### Ketukan pada kartu hero memakai ambang yang sudah ada
+
+Panggung carousel sudah membedakan sapuan dari ketukan dengan ambang 40 piksel.
+Ambang yang sama kini memutuskan dua hal: di atasnya sapuan yang menggeser
+kartu, di bawahnya ketukan yang membuka penyusun. Satu angka dengan sengaja -
+kalau keduanya dibedakan oleh dua ambang berbeda, akan ada gerakan di antaranya
+yang tidak melakukan apa-apa, dan itu terbaca sebagai kerusakan.
+
+Keterangan di bawah kartu ("Contoh hasil jadi - Klasik") berubah menjadi
+**tombol**. Ketukan pada kartunya hidup di sebuah `<div>` panggung yang tidak
+dapat dijangkau papan ketik; menjadikan keterangan itu tombol menutup lubang
+tersebut tanpa menambah satu piksel pun tinggi hero, yang memang dijatah ketat.
+
+### Petunjuk tertulis dibuang, diganti ajakan yang menempel
+
+Percobaan pertama menaruh satu baris tulisan di atas galeri: "ketuk desainnya
+buat langsung mulai". Ditolak zaky dengan alasan yang tidak dapat dibantah:
+
+> *"orang indonesia itu kurang suka membaca dan sebenarnya rata rata juga malas
+> membaca, jadi gimana caranya langsung praktik."*
+
+Petunjuk yang harus dibaca lebih dulu memang bukan jawaban bagi orang yang
+tidak membaca. Yang dipakai sekarang ajakan **"Pakai desain ini →"** yang
+menempel di tengah kartunya sendiri - tidak menjelaskan aturan, hanya
+menunjukkan bahwa benda itu dapat ditekan.
+
+Dua keadaan, sebab dua jenis perangkat:
+
+- **Berkursor**: tersembunyi sampai kursornya datang. Sepuluh kartu yang
+  masing-masing memajang ajakan sepanjang waktu akan meramaikan galeri dan
+  menutupi CV yang justru ingin dilihat.
+- **Bersentuh**: selalu terlihat. Di sana tidak ada hover sama sekali.
+
+Terukur: **11 dari 11 ajakan terlihat** di layar sentuh, **0 dari 11** di layar
+berkursor sampai kursornya datang.
+
+### Dua jebakan yang tertangkap sebelum sampai ke pengguna
+
+**Ajakannya sempat bertabrakan.** Letak pertamanya di tepi bawah kartu beserta
+gradasi gelap - dan di sana ia menimpa lencana "Tersimpan otomatis" yang memang
+duduk di kanan bawah, sehingga tulisannya terpotong separuh. Tengah kartu
+satu-satunya tempat yang tidak diperebutkan: lencana skor di kiri atas, lencana
+simpan di kanan bawah. Gradasinya ikut dibuang - kertas CV itu yang justru
+ingin dilihat.
+
+**Peramban uji berbohong soal layar sentuh.** `Emulation.setDeviceMetricsOverride`
+mengubah ukuran layar tetapi **tidak** mengubah `hover` maupun `pointer`;
+diperiksa dengan itu saja, `matchMedia("(hover: none)")` tetap menjawab
+`false` dan ajakannya tampak tidak pernah muncul. Yang mengubahnya
+`Emulation.setTouchEmulationEnabled` beserta `setEmitTouchEventsForMouse` -
+itulah yang dipakai device mode DevTools. `setEmulatedMedia` tidak mendukung
+kedua fitur itu.
+
+Ini kelas kesalahan yang sama dengan tombol Panduan sebelumnya: **cacat yang
+hanya ada di keadaan yang tidak sedang diperiksa.**
+
+### Dialog pilihan tamu
+
+Muncul sekali per perangkat, bagi yang belum masuk saja. Tiga jalan, dan yang
+membedakannya satu hal: datanya tersimpan atau tidak.
+
+Keadaannya dibaca lewat `useSyncExternalStore`, bukan `setState` di dalam
+effect - pola yang sama dengan `guest.ts`, dan lint project ini memang
+melarang bentuk yang satunya. Di server jawabannya "sudah memilih", sehingga
+tidak ada dialog yang ikut terkirim bersama HTML dan tidak ada kedipan saat
+halaman dihidrasi.
+
+Ketiga tombolnya memakai `h-auto`, yang **menimpa** tinggi tetap `h-10` milik
+`buttonClass`: isinya dua baris - namanya di atas, akibatnya di bawah -
+sementara tombol biasa dirancang untuk satu baris. Tanpa itu tulisannya
+meluber, persis cacat tombol Panduan yang baru saja diperbaiki di sesi ini.
+
+### Dibuktikan dengan menekan sungguhan
+
+Bukan dengan memanggil fungsinya, melainkan dengan mengirim ketukan tetikus
+lewat DevTools Protocol:
+
+| Jalur | Hasil |
+|---|---|
+| Tamu menekan "Akademik" | `/` -> `/coba`, `localStorage` memuat `template: "ACADEMIC"` |
+| Sudah masuk menekan "Akademik" | `/` -> `/resume/<id>`, jumlah CV 6 -> 7 |
+
+CV uji coba yang lahir dari pembuktian itu dihapus kembali lewat API.
+
+`?desain=` dibuang dari alamat sesudah diterapkan. Tanpa itu, memuat ulang
+halaman akan memaksakan desain itu lagi - dan orang yang sesudah tiba
+menggantinya sendiri akan mendapati pilihannya dibatalkan setiap kali
+menyegarkan halaman. Isinya divalidasi `templateIdSchema`, sebab alamat dapat
+ditulis siapa saja.
+
+`tests/responsif.test.ts` bertambah dua pemeriksaan (379 -> 381), keduanya
+menjaga hal yang tidak terlihat di komputer: bahwa `.ajakan-desain` punya
+aturan `@media (hover: none)`, dan bahwa ia memang dipakai di kedua tempat.
+
+Gerbang kualitas: typecheck bersih, lint bersih, 381 uji lulus 0 gagal. Keenam
+viewport laptop/desktop tetap muat satu layar dengan sisa 0.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya
@@ -3651,7 +3786,7 @@ supaya sesi berikutnya dapat mengulanginya dan membandingkannya dengan jujur.
 | Format unduhan | 4 |
 | Bahasa antarmuka | 2 |
 | Diagram alur (dua bahasa, SVG dan PNG) | 4 |
-| Pemeriksaan otomatis | 379 |
+| Pemeriksaan otomatis | 381 |
 
 Cara menghitungnya:
 

@@ -439,6 +439,52 @@ body {
   max-width: none;
 }
 
+/*
+  Ajakan "pakai desain ini" yang menempel pada pratinjau CV.
+
+  KENAPA BUKAN KALIMAT PETUNJUK DI ATAS PETAKNYA
+
+  Percobaan pertama menaruh satu baris tulisan - "ketuk desainnya buat langsung
+  mulai" - di atas galeri. Ditolak zaky dengan alasan yang tidak dapat dibantah:
+  *"orang indonesia itu kurang suka membaca dan sebenarnya rata rata juga malas
+  membaca, jadi gimana caranya langsung praktik."* Petunjuk yang harus dibaca
+  lebih dulu memang bukan jawaban bagi orang yang tidak membaca.
+
+  Yang dipakai sekarang ajakan yang menempel pada bendanya sendiri, muncul
+  tepat di tempat tangan sudah berada. Ia tidak menjelaskan aturan; ia
+  menunjukkan bahwa benda itu dapat ditekan.
+
+  DUA KEADAAN, SEBAB DUA JENIS PERANGKAT
+
+  Berkursor : tersembunyi sampai kursornya datang. Sepuluh kartu yang
+              masing-masing memajang ajakan sepanjang waktu akan meramaikan
+              galeri dan menutupi CV yang justru ingin dilihat.
+  Bersentuh : SELALU terlihat. Di sana tidak ada hover sama sekali - ajakan
+              yang menunggu kursor tidak akan pernah muncul, dan cacat itu
+              tidak terlihat di komputer mana pun.
+*/
+.ajakan-desain {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.group:hover .ajakan-desain,
+.group:focus-visible .ajakan-desain {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ajakan-desain {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ajakan-desain {
+    transition: none;
+  }
+}
+
 /* ==========================================================================
    HERO SATU LAYAR
    --------------------------------------------------------------------------
