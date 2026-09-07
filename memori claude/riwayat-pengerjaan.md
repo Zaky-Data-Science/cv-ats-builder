@@ -3802,6 +3802,61 @@ dengan `template: "ACADEMIC"` tersimpan.
 `tests/responsif.test.ts` bertambah satu pemeriksaan (381 -> 382) yang menjaga
 bentuknya: kendali dibentangkan, bukan membungkus.
 
+### Production disapu, dan aturan komentar dikunci
+
+Diminta zaky dua hal sekaligus: periksa seluruh halaman production, lalu
+kunci sebuah aturan kerja.
+
+**Sapuan production.** Dua belas halaman publik pada dua lebar (1440 dan 390),
+ditambah dasbor dan pengaturan dalam keadaan sudah masuk - akun demo ternyata
+ada juga di production. Yang direkam tiga lapis sekaligus: status HTTP, pesan
+konsol beserta pengecualian JavaScript, dan permintaan jaringan yang gagal.
+
+Hasilnya **nol galat JavaScript, nol galat hidrasi, nol luberan mendatar** di
+seluruh halaman. Dua hal yang tampak seperti masalah tetapi bukan, dan
+keduanya diperiksa dulu sebelum disebut aman:
+
+- `net::ERR_ABORTED` pada beberapa halaman ternyata prefetch Next.js ke
+  `/login?_rsc=...` yang dibatalkan sendiri (`canceled: true`) - perilaku
+  normal, bukan kegagalan.
+- `/halaman-yang-tidak-ada` membalas 404. Memang begitu seharusnya; alamat itu
+  sengaja dibuat tidak ada untuk menguji halaman "tidak ditemukan".
+
+**Aturan komentar.** Zaky menguncinya untuk perintah apa pun:
+
+> *"aku mau semua apapun nanti tambahan coding nanti harus rapi terstruktur dan
+> wajib selalu ada comment biar gk membingungkan ... biar gk berantakan isi
+> codingannya pas saya buka di vscode."*
+
+Yang menentukan bentuk komentarnya alasannya: ia membuka kodenya sendiri di VS
+Code dan menyunting dengan tangan. Yang dibutuhkan bukan komentar yang
+menjelaskan bahasa pemrogramannya, melainkan yang menyebutkan **akibat** -
+angka ini mengatur bagian yang mana. Contohnya dari dia sendiri: *"10px itu
+tinggi landing page"*.
+
+Aturannya ditulis di `AGENTS.md` supaya berlaku bagi sesi AI mana pun, bukan
+hanya yang membaca memori pribadi. Lima butir: tiap berkas punya kepala, tiap
+angka rupa diberi nama akibatnya, bagian bersetelan banyak diberi blok
+`PETA SETELAN`, alasan keputusan tetap ditulis, dan berlaku juga bagi kode
+lama yang kebetulan disentuh.
+
+**Contoh nyatanya dikerjakan di halaman depan**, sebab itu yang zaky sebut
+sendiri:
+
+- `src/app/page.tsx` mendapat blok `PETA SETELAN HERO` - tabel berisi dua
+  belas setelan, letaknya, dan nilai sekarang, ditutup catatan **tiga hal yang
+  saling menarik**: kertas lebih besar mempersempit kolom kiri sehingga judul
+  bisa pecah tiga baris; jarak tepi lebih besar membuat hero berhenti muat satu
+  layar; judul lebih besar berakibat sama dengan yang pertama.
+- Enam angka di dalamnya diberi penanda `SETELAN` di baris tepat di atasnya.
+- `src/app/globals.css` mendapat daftar isi di kepalanya: delapan kelas yang
+  paling sering disentuh beserta nilai sekarang, dan satu peringatan tentang
+  yang paling mudah salah.
+
+Tidak ada satu pun perilaku yang berubah - seluruhnya komentar. Dibuktikan:
+382 uji tetap lulus dan keenam viewport laptop/desktop tetap muat satu layar
+dengan sisa 0, angka yang identik dengan sebelum perubahan.
+
 ### Dijaga
 
 `tests/responsif.test.ts` bertambah dua pemeriksaan (376 -> 378). Keduanya

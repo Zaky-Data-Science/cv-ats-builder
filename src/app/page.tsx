@@ -134,11 +134,52 @@ export default async function LandingPage() {
           `border-y`. Menambahkan `border-b` di sini akan menghasilkan dua
           garis berdampingan.
         */}
+        {/*
+          ==================================================================
+           PETA SETELAN HERO
+          ==================================================================
+
+          Semua angka yang mengatur RUPA hero ada di tabel ini. Kalau ingin
+          menggeser sesuatu dengan tangan, cari namanya di sini lebih dulu -
+          jangan menebak dari kelas Tailwind-nya, sebab beberapa di antaranya
+          saling menarik.
+
+          | Yang ingin diubah          | Ubah di mana                        | Nilai sekarang            |
+          |----------------------------|-------------------------------------|---------------------------|
+          | Tinggi bilah atas          | `--tinggi-bilah` di globals.css     | 3.5rem / 4rem + 1px garis |
+          | Tinggi hero                | `.hero-satu-layar` di globals.css   | 100svh - tinggi bilah     |
+          | Ukuran kertas CV           | `.kertas-hero` di globals.css       | 0,5 / 0,53 / 0,58 / 0,62  |
+          | Jarak tepi atas-bawah hero | baris `wadah ... lg:py-[...]`        | clamp(1rem, 3vh, 2.5rem)  |
+          | Lebar isi hero             | baris `max-w-[92rem]`               | 92rem (1472px)            |
+          | Jarak kolom kiri ke kartu  | `lg:gap-x-10` / `xl:gap-x-12`       | 40px / 48px               |
+          | Ukuran judul               | `lg:text-[clamp(...)]` pada `<h1>`  | clamp(2.2rem,3.4vw,3.25rem)|
+          | Jarak judul ke penjelasan  | `mt-5` pada `<p>` penjelasan        | 20px                      |
+          | Jarak penjelasan ke tombol | `lg:mt-7` pada baris tombol         | 28px                      |
+          | Jarak tombol ke statistik  | `lg:mt-9` pada blok statistik       | 36px                      |
+          | Urutan di ponsel           | kelas `order-1..4`                  | teks, kertas, tombol, angka|
+
+          TIGA HAL YANG SALING MENARIK - ubah satu, periksa dua lainnya:
+
+          1. Kertas CV lebih besar  -> kolom kiri menyempit -> judul bisa pecah
+             tiga baris. Kalau itu terjadi, naikkan `max-w-[92rem]`.
+          2. Jarak tepi lebih besar -> hero lebih tinggi -> di layar 720 piksel
+             ia berhenti muat satu layar.
+          3. Judul lebih besar      -> menuntut kolom kiri lebih lebar, akibat
+             yang sama dengan nomor 1.
+
+          Cara memeriksanya bukan dengan melihat satu layar saja: aturan 10
+          `docs/panduan-responsif.md` menyebut dua belas ukuran yang wajib
+          diperiksa, dan yang paling ketat 1280x720.
+        */}
         <section>
           <div className="hero-panel hero-satu-layar relative isolate overflow-hidden">
             <HeroGlow />
             <InkBackground />
 
+            {/* SETELAN jarak tepi atas-bawah hero. Di ponsel tetap (40px lalu 48px);
+                mulai lg ia mengikuti TINGGI layar, sebab di sanalah hero dituntut
+                muat satu layar. Menaikkannya membuat hero lebih lega tetapi lebih
+                cepat tidak muat di layar 720 piksel. */}
             <div className="wadah relative z-[1] w-full py-10 sm:py-12 lg:py-[clamp(1rem,3vh,2.5rem)]">
             {/*
               Tiga blok, bukan dua.
@@ -182,6 +223,11 @@ export default async function LandingPage() {
               logonya tetap 48 piksel dari tepi seperti yang diminta
               sebelumnya. Yang dibatasi isi hero-nya saja.
             */}
+            {/* SETELAN lebar isi hero (92rem) dan jarak antar-kolom (40px, 48px mulai
+              xl). `gap-7 sm:gap-8` hanya berlaku di ponsel, tempat ketiga bloknya
+              bertumpuk. Menurunkan 92rem merapatkan kolom kiri ke kartu CV;
+              menaikkannya memberi judul ruang lebih tetapi merenggangkan
+              keduanya. */}
             <div className="mx-auto grid w-full max-w-[92rem] gap-7 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-12">
               {/*
                 Kolom kiri dibungkus SATU wadah, dan wadah itu `display:contents`
@@ -235,6 +281,10 @@ export default async function LandingPage() {
                   berpengaruh sama sekali: Chromium mematikannya begitu blok
                   itu memuat `<br>`, dan judul ini memang punya satu.
                 */}
+                {/* SETELAN ukuran judul. Tiga nilai, satu per golongan layar:
+                  ponsel clamp(1.7-2.1rem), tablet 3rem (`sm:text-5xl`), layar
+                  lebar clamp(2.2-3.25rem). Yang paling sering perlu disentuh
+                  angka terakhir - lihat catatan panjang di atas soal 18 piksel. */}
                 <h1 className="mt-4 text-[clamp(1.7rem,7.4vw,2.1rem)] leading-[1.12] font-bold tracking-tight text-ink-900 sm:text-5xl lg:text-[clamp(2.2rem,3.4vw,3.25rem)]">
                   {t.home.heroTitleLine1}
                   <br />
@@ -296,6 +346,10 @@ export default async function LandingPage() {
                   dapat diverifikasi. Yang disampaikan hanya mekanisme yang
                   memang dapat dibuktikan kerjanya oleh aplikasi ini.
                 */}
+                {/* SETELAN jarak judul ke penjelasan (20px) dan ukuran hurufnya
+                  (15px di ponsel, 16px mulai sm). `lg:max-w-none` melepas batas
+                  lebarnya mulai layar lebar - yang membatasi di sana kolom
+                  gridnya sendiri, bukan angka di sini. */}
                 <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-600 sm:text-base lg:max-w-none">
                   {t.home.heroBody}
                 </p>
@@ -325,6 +379,9 @@ export default async function LandingPage() {
                 tersentuh sama sekali.
               */}
               <Reveal delay={60} className="order-3">
+                {/* SETELAN jarak penjelasan ke tombol (28px, hanya mulai lg - di bawah
+                  itu jaraknya datang dari `gap` grid). Tombolnya bertumpuk di
+                  ponsel dan berjajar mulai sm. */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-7">
                   <Link
                     href={signedIn ? "/dashboard" : "/login"}
@@ -350,6 +407,9 @@ export default async function LandingPage() {
                 </div>
               </Reveal>
 
+              {/* SETELAN jarak tombol ke barisan statistik (36px mulai lg). `order-4`
+                menaruhnya paling bawah di ponsel; mulai lg urutan diabaikan sebab
+                penempatan baris/kolomnya ditulis tegas. */}
               <Reveal delay={90} className="order-4 mt-1 lg:mt-9">
                 <HeroStats
                   prompt={t.home.statsPrompt}
@@ -450,6 +510,9 @@ export default async function LandingPage() {
         {/* ================================================================ */}
         {/* Dua cara memakainya                                              */}
         {/* ================================================================ */}
+        {/* SETELAN jarak tegak bagian (64px, 80px mulai sm). Angka yang sama
+            dipakai SELURUH bagian di bawah hero - kalau diubah di sini, ubah
+            juga di bagian lain supaya iramanya tidak pincang. */}
         <section className="border-y border-ink-200 bg-ink-50 py-16 sm:py-20">
           <div className="wadah">
             <Reveal>

@@ -1,6 +1,35 @@
 @import "tailwindcss";
 @import "../styles/ink.css";
 
+/*
+  ============================================================================
+   PETA SETELAN - CARI DI SINI DULU
+  ============================================================================
+
+  Berkas ini panjang. Daftar di bawah menyebutkan setelan yang paling sering
+  perlu disentuh, beserta apa yang berubah kalau diubah. Cari nama kelasnya
+  dengan Ctrl+F untuk sampai ke penjelasan lengkapnya.
+
+  | Setelan            | Mengatur apa                          | Nilai sekarang            |
+  |--------------------|---------------------------------------|---------------------------|
+  | `--tinggi-bilah`   | Tinggi bilah atas, dipakai hero        | 3.5rem / 4rem, + 1px garis|
+  | `.wadah`           | Lebar dan jarak tepi SEMUA halaman     | maks 120rem, tepi 16-48px |
+  | `.wadah-dokumen`   | Kolom Panduan/Tentang/Alur, di tengah  | maks 64rem                |
+  | `.teks-baca`       | Lebar tubuh tulisan (paragraf berurut) | maks 48rem                |
+  | `.teks-intro`      | Lebar pengantar bagian - TANPA batas   | none, dibatasi `.wadah`   |
+  | `.hero-satu-layar` | Tinggi hero halaman depan              | 100svh - tinggi bilah     |
+  | `.kertas-hero`     | Ukuran kertas CV di hero, ikut TINGGI  | 0,5 / 0,53 / 0,58 / 0,62  |
+  | `.ajakan-desain`   | Ajakan "Pakai desain ini" pada kartu   | 0, jadi 1 saat disentuh   |
+
+  YANG PALING MUDAH SALAH
+
+  Mengubah `.kertas-hero` mengubah lebar kolom kiri hero juga - kartunya lebih
+  besar berarti tulisannya lebih sempit. Kalau judulnya lalu pecah tiga baris,
+  yang perlu dinaikkan `max-w-[92rem]` di `src/app/page.tsx`, bukan ukuran
+  judulnya. Lihat PETA SETELAN HERO di berkas itu.
+*/
+
+
 /* ==========================================================================
    TOKEN DESAIN
    --------------------------------------------------------------------------
