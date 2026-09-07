@@ -238,14 +238,23 @@ export default async function LandingPage() {
                   {t.home.heroTitleLine1}
                   <br />
                   {/*
-                    Penekanan dibuat dengan garis bawah tipis, bukan warna.
-                    Pada tema hitam-putih, mewarnai satu baris judul akan
-                    menjadi satu-satunya warna di seluruh halaman - dan justru
-                    terlihat seperti kekeliruan.
+                    TANPA penekanan apa pun, dan itu keputusan yang disengaja.
+
+                    "Format ATS-nya" dulu digarisbawahi tipis - garis, bukan
+                    warna, sebab pada tema hitam-putih mewarnai satu baris judul
+                    akan menjadi satu-satunya warna di seluruh halaman.
+
+                    Garis itu dibuang atas permintaan zaky: "aku mau hapus, sama
+                    ratakan, gk pake garis di bawah kalimatnya". Judulnya kini
+                    satu gaya dari awal sampai akhir.
+
+                    Kedua untaiannya tetap terpisah di kamus bahasa - lihat
+                    catatan `<br className="lg:hidden" />` di bawah, yang masih
+                    memerlukan batas antara keduanya untuk mematahkan barisnya
+                    di layar sempit. Jadi jangan menggabungkan
+                    `heroTitleLine2` dan `heroTitleLine3` menjadi satu kunci.
                   */}
-                  <span className="underline decoration-ink-300 decoration-[3px] underline-offset-[6px]">
-                    {t.home.heroTitleLine2}
-                  </span>{" "}
+                  {t.home.heroTitleLine2}{" "}
                   {/*
                     Baris ketiga tidak dipatahkan sendiri DI LAYAR LEBAR, dan
                     ini sengaja.
