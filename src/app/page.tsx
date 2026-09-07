@@ -138,7 +138,7 @@ export default async function LandingPage() {
             <HeroGlow />
             <InkBackground />
 
-            <div className="wadah relative z-[1] w-full py-10 sm:py-12 lg:py-[clamp(1.5rem,4vh,3rem)]">
+            <div className="wadah relative z-[1] w-full py-10 sm:py-12 lg:py-[clamp(1rem,3vh,2.5rem)]">
             {/*
               Tiga blok, bukan dua.
 
@@ -181,7 +181,7 @@ export default async function LandingPage() {
               logonya tetap 48 piksel dari tepi seperti yang diminta
               sebelumnya. Yang dibatasi isi hero-nya saja.
             */}
-            <div className="mx-auto grid w-full max-w-[88rem] gap-7 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-12">
+            <div className="mx-auto grid w-full max-w-[92rem] gap-7 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-12">
               {/*
                 Kolom kiri dibungkus SATU wadah, dan wadah itu `display:contents`
                 di bawah `lg`.

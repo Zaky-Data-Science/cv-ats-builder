@@ -529,9 +529,21 @@ body {
   seperti ini justru lebih dapat diuji: tiap anak tangga punya angka yang bisa
   dibuktikan pada viewport tertentu.
 
-  Batas bawahnya 0,42 dan itu bukan angka bebas: di bawah itu tulisan di dalam
-  kertas berhenti terbaca sebagai tulisan dan tinggal menyerupai garis abu -
-  padahal seluruh alasan kertas ini dipajang justru supaya isinya terlihat.
+  ANGKANYA DINAIKKAN SETELAH DILIHAT
+
+  Tangga pertama - 0,42 sampai 0,56 - memang membuat seluruh hero muat satu
+  layar, tetapi zaky membandingkannya dengan versi sebelumnya dan menolaknya:
+  kertasnya terbaca sebagai gambar kecil, bukan sebagai pusat perhatian.
+  Aturannya kemudian ditegaskan begini, dan berlaku seterusnya:
+
+    Yang diperkecil ruang kosongnya - jarak, padding, celah antar-blok.
+    BUKAN kertas CV-nya. Kalau harus memilih antara mengecilkan kertas dan
+    merapatkan tata letak, selalu merapatkan tata letak.
+
+  Ikut dengannya satu kelonggaran yang membuat angka ini mungkin: tepi bawah
+  kertas BOLEH melewati tepi layar. Yang wajib terlihat utuh judul,
+  penjelasan, tombol, statistik, lencana skor, dan panahnya - bukan setiap
+  piksel kertasnya.
 */
 .kertas-hero {
   --doc-scale: 0.36;
@@ -551,25 +563,25 @@ body {
 
 @media (min-width: 64rem) {
   .kertas-hero {
-    --doc-scale: 0.42;
+    --doc-scale: 0.5;
   }
 }
 
 @media (min-width: 64rem) and (min-height: 47.5rem) {
   .kertas-hero {
-    --doc-scale: 0.46;
+    --doc-scale: 0.53;
   }
 }
 
 @media (min-width: 64rem) and (min-height: 53.75rem) {
   .kertas-hero {
-    --doc-scale: 0.52;
+    --doc-scale: 0.58;
   }
 }
 
 @media (min-width: 64rem) and (min-height: 62.5rem) {
   .kertas-hero {
-    --doc-scale: 0.56;
+    --doc-scale: 0.62;
   }
 }
 

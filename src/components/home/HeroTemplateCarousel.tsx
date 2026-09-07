@@ -354,7 +354,7 @@ export function HeroTemplateCarousel({
       {/* Keterangan dan titik penanda                                   */}
       {/* ------------------------------------------------------------- */}
       <p
-        className="mt-5 text-center text-[11px] text-ink-500"
+        className="mt-3 text-center text-[11px] text-ink-500"
         aria-live="polite"
       >
         {teks.caption}
@@ -369,7 +369,7 @@ export function HeroTemplateCarousel({
         untuk dilewati satu per satu dengan panah, dan yang sudah melihat
         semuanya sekali biasanya ingin kembali ke satu yang tadi disukainya.
       */}
-      <div className="mt-2.5 flex items-center justify-center gap-1.5">
+      <div className="mt-2 flex items-center justify-center gap-1.5">
         {TEMPLATE_ORDER.map((id, i) => (
           <button
             key={id}

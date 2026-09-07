@@ -3332,14 +3332,13 @@ menjadi tangga TINGGI di `.kertas-hero`:
 
 | Tinggi layar | Skala | Kertas |
 |---|---:|---:|
-| < 760 | 0,42 | 471px |
-| >= 760 | 0,46 | 516px |
-| >= 860 | 0,52 | 583px |
-| >= 1000 | 0,56 | 628px |
+| < 760 | 0,50 | 561px |
+| >= 760 | 0,53 | 595px |
+| >= 860 | 0,58 | 651px |
+| >= 1000 | 0,62 | 696px |
 
-Batas bawah 0,42 bukan angka bebas: di bawah itu tulisan di dalam kertas
-berhenti terbaca sebagai tulisan dan tinggal menyerupai garis abu - padahal
-seluruh alasan kertas ini dipajang justru supaya isinya terlihat.
+Angka ini hasil putaran KEDUA - lihat "Kertasnya terlalu kecil" di bawah.
+Putaran pertama memakai 0,42 sampai 0,56 dan ditolak.
 
 Media query `min-height`, bukan `clamp()`. CSS tidak dapat membagi satu panjang
 dengan panjang lain, sehingga skala tanpa satuan memang **tidak mungkin**
@@ -3417,6 +3416,87 @@ kepala kertas CV - persis urutan yang diminta.
 Tidak ada luberan mendatar di satu pun dari dua belas viewport, sebelum maupun
 sesudah.
 
+### Kertasnya terlalu kecil - putaran kedua
+
+Hero yang muat satu layar diterima, tetapi kertas CV-nya ditolak. Zaky
+membandingkannya dengan versi sebelum seluruh pekerjaan ini dimulai:
+*"versi terbaru memang lebih compact, tetapi CV preview menjadi terlalu kecil
+sehingga kehilangan visual impact."*
+
+Dan ia menetapkan aturannya sekaligus, yang lebih berharga daripada
+perbaikannya sendiri:
+
+> Yang diperkecil ruang kosongnya. **Bukan** titik fokusnya. Kalau harus
+> memilih antara mengecilkan CV dan merapatkan tata letak, selalu merapatkan
+> tata letak.
+
+Ikut dengannya satu kelonggaran yang membuat aturan itu bisa dijalankan: **tepi
+bawah kertas boleh melewati tepi layar.** Ternyata kelonggaran itu tidak sampai
+terpakai - lihat angkanya di bawah.
+
+### Ruangnya memang masih ada, tinggal diambil
+
+Putaran pertama berhenti terlalu dini. `min-height` sudah membuat hero setinggi
+satu layar, sehingga tinggi isinya tidak lagi terlihat sebagai batasan - padahal
+di dalamnya masih ada 80-an piksel menganggur pada 1366x768.
+
+Tiga tempat yang dirapatkan, seluruhnya ruang kosong:
+
+- jarak tepi tegak hero: `clamp(1.5rem,4vh,3rem)` menjadi `clamp(1rem,3vh,2.5rem)`
+- keterangan di bawah kertas: `mt-5` menjadi `mt-3`
+- titik penanda carousel: `mt-2.5` menjadi `mt-2`
+
+Ruang yang dibebaskan seluruhnya diberikan kepada kertasnya.
+
+### Hasilnya lebih besar daripada versi yang disukai
+
+Perbandingan terhadap versi SEBELUM seluruh pekerjaan satu layar dimulai -
+versi yang kertasnya zaky sukai:
+
+| Viewport | Skala lama | Putaran 1 | Sekarang | Kertas |
+|---|---:|---:|---:|---:|
+| 1920x1080 | 0,58 | 0,56 | **0,62** | 492 x 696 |
+| 1600x900 | 0,50 | 0,52 | **0,58** | 460 x 651 |
+| 1440x900 | 0,50 | 0,52 | **0,58** | 460 x 651 |
+| 1366x768 | 0,50 | 0,46 | **0,53** | 421 x 595 |
+| 1280x720 | 0,50 | 0,42 | **0,50** | 397 x 561 |
+| 1024x768 | 0,50 | 0,46 | **0,53** | 421 x 595 |
+
+Kertasnya kini **sama atau lebih besar daripada versi yang disukai di setiap
+viewport laptop dan desktop**, sementara seluruh hero tetap muat satu layar
+dengan sisa 0. Kelonggaran "boleh melewati tepi layar" tidak sampai terpakai:
+tepi bawah blok kertas masih menyisakan 26 sampai 138 piksel di bawahnya.
+
+### Wadah hero dilebarkan, dan sebabnya bukan selera
+
+Kertas yang membesar mempersempit kolom kiri, dan pada 1920 judulnya kembali
+pecah tiga baris dengan satu kata sendirian - persoalan yang sama seperti
+sebelumnya, tetapi dari arah berlawanan. Terukur: kolom kiri 868 piksel
+sementara "Format ATS-nya biar kami yang urus" menuntut 877.
+
+Batas hero karena itu naik dari 88rem ke 92rem. Angka 88rem sendiri berasal
+dari sesi 18, ketika kartunya masih kecil dan yang dikeluhkan celah menganga di
+tengah; dengan kartu yang sekarang, celah itu memang tidak ada lagi. Terukur
+sesudahnya - judul dua baris di kelima viewport laptop/desktop, dan celah
+tengah 48 piksel yang rata di semuanya:
+
+| Viewport | Baris judul | Kolom kiri | Celah tengah |
+|---|---:|---:|---:|
+| 1920x1080 | 2 | 932 | 48 |
+| 1600x900 | 2 | 964 | 48 |
+| 1440x900 | 2 | 853 | 48 |
+| 1366x768 | 2 | 818 | 48 |
+| 1280x720 | 2 | 756 | 48 |
+
+Pada 1024x768 judulnya tetap empat baris - kolom kirinya 484 piksel di sana -
+dan itu batasan yang sama seperti sebelumnya, bukan akibat perubahan ini.
+
+Tablet dan ponsel tidak tersentuh: skala kertasnya di sana memang tidak pernah
+diubah sejak awal, dan yang berubah cuma dua belas piksel ruang di bawah
+kertasnya. Hero ponsel 1351 menjadi 1341 piksel.
+
+Gerbang kualitas: typecheck bersih, lint bersih, 378 uji lulus 0 gagal.
+
 ### Yang TIDAK dikerjakan, dan sebabnya
 
 **Proporsi kolom 52-55% / 45-48% tidak tercapai**, dan itu bertabrakan langsung
@@ -3430,9 +3510,11 @@ Perbandingannya sekarang sekitar 63/37 pada 1920 dan 66/34 pada 1366.
 **Ruang kosong di dalam kertas CV tidak dipangkas.** Kertas A4 di hero terisi
 sekitar dua pertiganya; memangkas sepertiga bawahnya akan membebaskan sekitar
 140 piksel yang dapat dipakai memperbesar kertasnya. Tidak dikerjakan karena
-tidak diperlukan - satu layar sudah tercapai tanpa itu - dan karena kertas yang
-terpotong menuntut gradasi memudar supaya tidak terbaca sebagai cacat. Dicatat
-sebagai langkah lanjutan yang tersedia, bukan sebagai kekurangan.
+tidak diperlukan - satu layar sudah tercapai tanpa itu, dan sesudah putaran
+kedua kertasnya bahkan sudah lebih besar daripada versi yang disukai - serta
+karena kertas yang terpotong menuntut gradasi memudar supaya tidak terbaca
+sebagai cacat. Dicatat sebagai langkah lanjutan yang tersedia, bukan sebagai
+kekurangan.
 
 **Hero pada 1024-1279 masih menampilkan judul tiga baris**, sebab kolom kirinya
 di sana paling sempit. Muat satu layar tetap tercapai.

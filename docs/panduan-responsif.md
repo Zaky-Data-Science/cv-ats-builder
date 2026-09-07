@@ -293,10 +293,10 @@ membagi satu panjang dengan panjang lain - jadi ia tidak mungkin diturunkan
 dari `svh`. Yang dipakai tangga bertingkat:
 
 ```css
-@media (min-width: 64rem) { .kertas-hero { --doc-scale: 0.42; } }
-@media (min-width: 64rem) and (min-height: 47.5rem) { --doc-scale: 0.46 }
-@media (min-width: 64rem) and (min-height: 53.75rem) { --doc-scale: 0.52 }
-@media (min-width: 64rem) and (min-height: 62.5rem) { --doc-scale: 0.56 }
+@media (min-width: 64rem) { .kertas-hero { --doc-scale: 0.5; } }
+@media (min-width: 64rem) and (min-height: 47.5rem) { --doc-scale: 0.53 }
+@media (min-width: 64rem) and (min-height: 53.75rem) { --doc-scale: 0.58 }
+@media (min-width: 64rem) and (min-height: 62.5rem) { --doc-scale: 0.62 }
 ```
 
 Tangga seperti ini justru lebih dapat diuji daripada rumus: tiap anak tangga
@@ -314,6 +314,32 @@ Satu layar dikejar mulai `lg` saja. Di ponsel dan tablet portrait, memaksa
 seluruh hero masuk satu layar menuntut pengecilan yang merusak keterbacaan; di
 sana yang dikejar **urutan prioritas** - apa yang terlihat lebih dulu - bukan
 semuanya sekaligus.
+
+### Yang dikorbankan saat ruangnya kurang - dan yang TIDAK
+
+Tangga di atas sempat dimulai dari 0,42 dan berakhir di 0,56. Angkanya memang
+membuat seluruh hero muat, tetapi zaky membandingkannya dengan versi sebelum
+perubahan dan menolaknya: kertasnya terbaca sebagai gambar kecil, bukan sebagai
+pusat perhatian. *"Jangan mengecilkan CV preview secara berlebihan hanya agar
+semua elemen masuk viewport."*
+
+Urutan pengorbanannya karena itu ditetapkan, dan berlaku bagi bagian mana pun
+yang dituntut muat satu layar:
+
+1. **ruang kosong** - jarak tepi, celah antar-blok, margin
+2. **jarak tegak antar-elemen**
+3. **tipografi, sedikit saja**
+4. **titik fokusnya - hanya kalau ketiga di atas sudah habis**
+
+Ikut dengannya satu kelonggaran yang membuat urutan itu mungkin dijalankan:
+**tepi bawah titik fokus boleh melewati tepi layar.** Yang wajib terlihat utuh
+elemen yang membawa keputusan - judul, penjelasan, tombol, statistik - bukan
+setiap piksel gambarnya.
+
+Sesudah urutan itu dijalankan, kertas CV di hero justru menjadi **lebih besar**
+daripada sebelum seluruh pekerjaan satu layar dimulai: 0,53 lawan 0,5 pada
+1366x768, dan 0,62 lawan 0,58 pada 1920x1080. Ruang kosongnya yang menyusut,
+bukan gambarnya.
 
 > Sebelum menambah `padding` atau `margin` tegak yang besar pada bagian yang
 > dituntut muat satu layar, tanyakan dulu: pada 1280x720 masih tersisa berapa?
